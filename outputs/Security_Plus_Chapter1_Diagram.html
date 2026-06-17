@@ -1,0 +1,2062 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CompTIA Security+ SY0-701 — Chapter 1: Today's Security Professional</title>
+<style>
+/* ── Variables ── */
+:root {
+  --bg:#0f172a; --surface:#1e293b; --surface2:#263348; --border:#334155;
+  --text:#cbd5e1; --text-dim:#64748b; --text-bright:#f1f5f9;
+  --red:#e74c3c; --green:#2ecc71; --blue:#3498db; --orange:#e67e22;
+  --purple:#9b59b6; --teal:#1abc9c; --gray:#95a5a6; --yellow:#f1c40f;
+  --red-dim:rgba(231,76,60,.15); --green-dim:rgba(46,204,113,.12);
+  --blue-dim:rgba(52,152,219,.12); --orange-dim:rgba(230,126,34,.12);
+  --purple-dim:rgba(155,89,182,.12); --teal-dim:rgba(26,188,156,.12);
+  --sidebar-w:140px; --detail-w:300px; --header-h:52px; --footer-h:40px;
+  --radius:6px; --tr:.25s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--text);
+  font-family:'Segoe UI',system-ui,sans-serif;font-size:13px;overflow:hidden}
+
+/* ── App Grid ── */
+#app{
+  display:grid;
+  grid-template-rows:var(--header-h) 1fr var(--footer-h);
+  grid-template-columns:var(--sidebar-w) 1fr 0px;
+  grid-template-areas:"header header header" "sidebar canvas detail" "footer footer footer";
+  width:100vw;height:100vh;
+  transition:grid-template-columns var(--tr);
+}
+body.detail-open #app{grid-template-columns:var(--sidebar-w) 1fr var(--detail-w)}
+
+/* ── Header ── */
+#header{
+  grid-area:header;display:flex;align-items:center;gap:8px;padding:0 14px;
+  background:var(--surface);border-bottom:1px solid var(--border);z-index:100;
+}
+#btn-toc{
+  display:inline-flex;align-items:center;padding:4px 10px;border-radius:4px;
+  border:1px solid var(--border);background:var(--surface2);color:var(--text);
+  font-size:11px;font-weight:600;text-decoration:none;white-space:nowrap;
+  flex-shrink:0;transition:background var(--tr),color var(--tr),border-color var(--tr);
+}
+#btn-toc:hover{background:var(--blue-dim);border-color:var(--blue);color:var(--blue)}
+#header h1{font-size:13px;font-weight:700;color:var(--text-bright);white-space:nowrap;margin-right:6px}
+#header h1 span{color:var(--blue)}
+.hdr-sep{width:1px;height:20px;background:var(--border);flex-shrink:0}
+.hdr-spacer{flex:1}
+.hdr-btn{
+  padding:4px 10px;border-radius:4px;border:1px solid var(--border);
+  background:var(--surface2);color:var(--text);font-size:11px;font-weight:600;
+  cursor:pointer;white-space:nowrap;letter-spacing:.3px;
+  transition:background var(--tr),color var(--tr),border-color var(--tr);
+}
+.hdr-btn:hover{background:var(--border);color:var(--text-bright)}
+
+/* ── Sidebar ── */
+#sidebar{
+  grid-area:sidebar;display:flex;flex-direction:column;
+  border-right:1px solid var(--border);overflow:hidden;z-index:50;background:var(--surface);
+}
+#sidebar-title{
+  font-size:9px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--text-dim);padding:10px 8px 6px;border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+#cat-list{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+#cat-list::-webkit-scrollbar{width:3px}
+#cat-list::-webkit-scrollbar-thumb{background:var(--border)}
+.cat-btn{
+  display:flex;align-items:center;gap:6px;padding:8px 8px;
+  border:none;border-bottom:1px solid rgba(255,255,255,.04);
+  background:transparent;color:var(--text-dim);font-size:9.5px;font-weight:600;
+  text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;
+  line-height:1.3;width:100%;
+  transition:background var(--tr),color var(--tr);
+}
+.cat-btn:hover{background:var(--surface2);color:var(--text-bright)}
+.cat-btn.active{color:var(--text-bright);background:var(--surface2)}
+.cat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+#clear-btn{
+  margin:8px;padding:5px 0;border-radius:4px;border:1px solid var(--border);
+  background:transparent;color:var(--text-dim);font-size:10px;font-weight:600;
+  cursor:pointer;transition:background var(--tr),color var(--tr);
+}
+#clear-btn:hover{background:var(--surface2);color:var(--text-bright)}
+.filter-banner{
+  margin:6px;padding:6px 8px;border-radius:4px;font-size:9px;
+  font-weight:700;text-align:center;line-height:1.4;
+  border:1px solid currentColor;cursor:pointer;display:none;
+}
+
+/* ── Canvas ── */
+#canvas{
+  grid-area:canvas;overflow:auto;padding:18px;
+  display:flex;flex-direction:column;gap:14px;
+  background:var(--bg);
+}
+#canvas::-webkit-scrollbar{width:6px;height:6px}
+#canvas::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* ── Zones ── */
+.zone{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:12px 14px;
+}
+.zone-header{
+  display:flex;align-items:center;gap:8px;margin-bottom:10px;
+}
+.zone-icon{font-size:14px}
+.zone-title{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--text-bright)}
+.zone-sub{font-size:10px;color:var(--text-dim);margin-left:auto}
+.zone-nodes{display:flex;flex-wrap:wrap;gap:7px}
+
+/* Two-column zone rows */
+.zone-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.zone-row.cols3{grid-template-columns:1fr 1fr 1fr}
+.zone-row.wide{grid-template-columns:2fr 1fr}
+.zone-full{width:100%}
+
+/* ── Nodes ── */
+.node{
+  display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:6px 10px;border-radius:var(--radius);border:1px solid var(--border);
+  background:var(--surface2);cursor:pointer;text-align:center;
+  transition:opacity var(--tr),transform var(--tr),box-shadow var(--tr),filter var(--tr);
+  min-width:70px;
+}
+.node:hover{filter:brightness(1.2)}
+.node.selected{box-shadow:0 0 0 2px var(--blue),0 0 10px rgba(52,152,219,.25)}
+.node-label{font-size:10px;font-weight:700;color:var(--text-bright);line-height:1.3}
+.node-sub{font-size:8.5px;color:var(--text-dim);margin-top:1px;line-height:1.2}
+.node-tag{
+  font-size:8px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+  padding:1px 5px;border-radius:3px;margin-top:3px;
+}
+
+/* Node color themes */
+.node.teal  {border-color:rgba(26,188,156,.4); background:rgba(26,188,156,.08)}
+.node.green {border-color:rgba(46,204,113,.4); background:rgba(46,204,113,.08)}
+.node.blue  {border-color:rgba(52,152,219,.4); background:rgba(52,152,219,.08)}
+.node.orange{border-color:rgba(230,126,34,.4); background:rgba(230,126,34,.08)}
+.node.red   {border-color:rgba(231,76,60,.4);  background:rgba(231,76,60,.08)}
+.node.purple{border-color:rgba(155,89,182,.4); background:rgba(155,89,182,.08)}
+.node.yellow{border-color:rgba(241,196,15,.4); background:rgba(241,196,15,.08)}
+.node.gray  {border-color:rgba(149,165,166,.4);background:rgba(149,165,166,.08)}
+
+/* ── Filter states ── */
+body.cat-filtered .node.cat-dim{opacity:.07;transform:scale(.93);pointer-events:none;filter:grayscale(90%)}
+body.cat-filtered .node.cat-match{opacity:1;box-shadow:0 0 0 2px currentColor,0 0 10px rgba(255,255,255,.1)}
+body.cat-filtered .zone.zone-all-dim{opacity:.15}
+
+/* ── Detail Panel ── */
+#detail-panel{
+  grid-area:detail;background:var(--surface);border-left:1px solid var(--border);
+  overflow:hidden;display:flex;flex-direction:column;z-index:60;
+  transition:opacity var(--tr);
+}
+#detail-panel.collapsed{opacity:0;pointer-events:none}
+body.detail-open #detail-panel{opacity:1;pointer-events:auto}
+#detail-close{
+  position:absolute;top:10px;right:10px;width:22px;height:22px;
+  border-radius:50%;border:1px solid var(--border);background:var(--surface2);
+  color:var(--text-dim);font-size:14px;cursor:pointer;display:flex;
+  align-items:center;justify-content:center;z-index:5;
+}
+#detail-close:hover{color:var(--text-bright);background:var(--border)}
+#detail-scroll{flex:1;overflow-y:auto;padding:14px 14px 20px}
+#detail-scroll::-webkit-scrollbar{width:4px}
+#detail-scroll::-webkit-scrollbar-thumb{background:var(--border)}
+#detail-title{font-size:14px;font-weight:800;color:var(--text-bright);margin-bottom:4px;padding-right:28px;line-height:1.3}
+#detail-category{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px}
+#detail-body{font-size:12px;line-height:1.65;color:var(--text)}
+#detail-body h4{font-size:10px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;
+  color:var(--text-dim);margin:12px 0 5px}
+#detail-body p{margin-bottom:8px}
+#detail-body ul{padding-left:16px;margin-bottom:8px}
+#detail-body li{margin-bottom:3px}
+#detail-body .exam-tip{
+  background:rgba(26,188,156,.1);border:1px solid rgba(26,188,156,.3);
+  border-radius:4px;padding:8px 10px;margin-top:10px;font-size:11px;
+  color:var(--teal);
+}
+#detail-body .exam-tip::before{content:'★ EXAM TIP  ';font-weight:800}
+#detail-body code{
+  background:var(--surface2);border:1px solid var(--border);border-radius:3px;
+  padding:1px 5px;font-family:monospace;font-size:11px;color:var(--green);
+}
+#detail-body .tag{
+  display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;
+  border-radius:3px;margin:1px;border:1px solid currentColor;
+}
+
+/* ── Footer ── */
+#footer{
+  grid-area:footer;display:flex;align-items:center;gap:6px;
+  padding:0 14px;background:var(--surface);border-top:1px solid var(--border);
+  overflow:hidden;font-size:10px;color:var(--text-dim);
+}
+.foot-label{font-weight:700;letter-spacing:.5px;margin-right:4px;white-space:nowrap}
+.foot-pill{
+  padding:2px 8px;border-radius:10px;border:1px solid var(--border);
+  font-size:9px;font-weight:600;white-space:nowrap;background:var(--surface2);
+}
+.foot-pill.green{border-color:rgba(46,204,113,.4);color:var(--green)}
+.foot-pill.blue {border-color:rgba(52,152,219,.4);color:var(--blue)}
+.foot-pill.teal {border-color:rgba(26,188,156,.4);color:var(--teal)}
+.foot-pill.red  {border-color:rgba(231,76,60,.4);color:var(--red)}
+.foot-pill.orange{border-color:rgba(230,126,34,.4);color:var(--orange)}
+.foot-pill.purple{border-color:rgba(155,89,182,.4);color:var(--purple)}
+.foot-sep{width:1px;height:14px;background:var(--border);flex-shrink:0;margin:0 4px}
+
+/* ── Graph View ── */
+#graph-view{
+  grid-area:canvas;display:none;flex-direction:column;
+  background:var(--bg);position:relative;overflow:hidden;
+}
+#graph-view.visible{display:flex}
+#graph-svg{flex:1;width:100%;cursor:grab}
+#graph-svg:active{cursor:grabbing}
+#graph-toolbar{
+  position:absolute;top:10px;right:12px;display:flex;gap:6px;z-index:10;
+}
+#graph-toolbar button{
+  padding:4px 10px;border-radius:4px;border:1px solid var(--border);
+  background:var(--surface);color:var(--text-dim);font-size:10px;
+  font-weight:600;cursor:pointer;
+  transition:background var(--tr),color var(--tr);
+}
+#graph-toolbar button:hover{background:var(--surface2);color:var(--text-bright)}
+#graph-hint{
+  position:absolute;bottom:12px;left:50%;transform:translateX(-50%);
+  background:rgba(15,23,42,.85);border:1px solid var(--border);
+  border-radius:4px;padding:5px 12px;font-size:10px;color:var(--text-dim);
+  pointer-events:none;white-space:nowrap;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ═══ HEADER ═══ -->
+<header id="header">
+  <a href="../index.html" id="btn-toc">&#8592; Contents</a>
+  <h1>Security<span>+</span> SY0-701 &nbsp;·&nbsp; Chapter 1</h1>
+  <div class="hdr-sep"></div>
+  <button class="hdr-btn" onclick="toggleStudyMode()" id="btn-study">👁 Study Mode</button>
+  <div class="hdr-sep"></div>
+  <button class="hdr-btn" id="btn-graph" onclick="toggleGraphView()">🗺 Graph View</button>
+  <button class="hdr-btn" id="btn-illustrated" onclick="toggleIllustrated()">🖼 Illustrated</button>
+  <div class="hdr-spacer"></div>
+  <span style="font-size:11px;color:var(--text-dim)">Click any concept to explore</span>
+</header>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside id="sidebar">
+  <div id="sidebar-title">Filter by Topic</div>
+  <div id="cat-list"></div>
+  <button id="clear-btn" onclick="clearFilter()" style="display:none">✕ Clear Filter</button>
+  <div class="filter-banner" id="filter-banner"></div>
+</aside>
+
+<!-- ═══ CANVAS ═══ -->
+<main id="canvas">
+
+  <!-- Row 1: CIA Triad + Risk Management -->
+  <div class="zone-row">
+
+    <div class="zone" id="zone-cia">
+      <div class="zone-header">
+        <span class="zone-icon">🔒</span>
+        <span class="zone-title">CIA Triad</span>
+        <span class="zone-sub">Foundation of Security</span>
+      </div>
+      <div class="zone-nodes">
+        <div class="node teal" data-node-id="confidentiality" onclick="openDetail('confidentiality')">
+          <span class="node-label">Confidentiality</span>
+          <span class="node-sub">only authorized access</span>
+        </div>
+        <div class="node teal" data-node-id="integrity" onclick="openDetail('integrity')">
+          <span class="node-label">Integrity</span>
+          <span class="node-sub">data is unaltered</span>
+        </div>
+        <div class="node teal" data-node-id="availability" onclick="openDetail('availability')">
+          <span class="node-label">Availability</span>
+          <span class="node-sub">systems stay up</span>
+        </div>
+        <div class="node green" data-node-id="hashing" onclick="openDetail('hashing')">
+          <span class="node-label">Hashing</span>
+          <span class="node-sub">integrity verification</span>
+        </div>
+        <div class="node blue" data-node-id="access-controls" onclick="openDetail('access-controls')">
+          <span class="node-label">Access Controls</span>
+          <span class="node-sub">enforce confidentiality</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="zone" id="zone-risk">
+      <div class="zone-header">
+        <span class="zone-icon">⚠</span>
+        <span class="zone-title">Risk Management</span>
+        <span class="zone-sub">Identify · Assess · Mitigate</span>
+      </div>
+      <div class="zone-nodes">
+        <div class="node orange" data-node-id="risk" onclick="openDetail('risk')">
+          <span class="node-label">Risk</span>
+          <span class="node-sub">likelihood × impact</span>
+        </div>
+        <div class="node red" data-node-id="vulnerability" onclick="openDetail('vulnerability')">
+          <span class="node-label">Vulnerability</span>
+          <span class="node-sub">exploitable weakness</span>
+        </div>
+        <div class="node red" data-node-id="security-incident" onclick="openDetail('security-incident')">
+          <span class="node-label">Security Incident</span>
+          <span class="node-sub">policy violation event</span>
+        </div>
+        <div class="node blue" data-node-id="risk-mitigation" onclick="openDetail('risk-mitigation')">
+          <span class="node-label">Risk Mitigation</span>
+          <span class="node-sub">reduce likelihood/impact</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /zone-row -->
+
+  <!-- Row 2: Control Categories + Control Types -->
+  <div class="zone-row">
+
+    <div class="zone" id="zone-ctrl-cat">
+      <div class="zone-header">
+        <span class="zone-icon">🏛</span>
+        <span class="zone-title">Control Categories</span>
+        <span class="zone-sub">Who implements it?</span>
+      </div>
+      <div class="zone-nodes">
+        <div class="node blue" data-node-id="technical-controls" onclick="openDetail('technical-controls')">
+          <span class="node-label">Technical</span>
+          <span class="node-sub">tech-enforced</span>
+        </div>
+        <div class="node blue" data-node-id="operational-controls" onclick="openDetail('operational-controls')">
+          <span class="node-label">Operational</span>
+          <span class="node-sub">people & process</span>
+        </div>
+        <div class="node blue" data-node-id="managerial-controls" onclick="openDetail('managerial-controls')">
+          <span class="node-label">Managerial</span>
+          <span class="node-sub">policy & governance</span>
+        </div>
+        <div class="node blue" data-node-id="physical-controls" onclick="openDetail('physical-controls')">
+          <span class="node-label">Physical</span>
+          <span class="node-sub">locks · guards · barriers</span>
+        </div>
+        <div class="node teal" data-node-id="nist" onclick="openDetail('nist')">
+          <span class="node-label">NIST / SP800</span>
+          <span class="node-sub">control frameworks</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="zone" id="zone-ctrl-type">
+      <div class="zone-header">
+        <span class="zone-icon">🛡</span>
+        <span class="zone-title">Control Types</span>
+        <span class="zone-sub">What does it do?</span>
+      </div>
+      <div class="zone-nodes">
+        <div class="node green" data-node-id="preventive" onclick="openDetail('preventive')">
+          <span class="node-label">Preventive</span>
+          <span class="node-sub">stops attacks</span>
+        </div>
+        <div class="node orange" data-node-id="deterrent" onclick="openDetail('deterrent')">
+          <span class="node-label">Deterrent</span>
+          <span class="node-sub">discourages attacks</span>
+        </div>
+        <div class="node yellow" data-node-id="detective" onclick="openDetail('detective')">
+          <span class="node-label">Detective</span>
+          <span class="node-sub">identifies attacks</span>
+        </div>
+        <div class="node blue" data-node-id="corrective" onclick="openDetail('corrective')">
+          <span class="node-label">Corrective</span>
+          <span class="node-sub">reduces damage</span>
+        </div>
+        <div class="node purple" data-node-id="compensating" onclick="openDetail('compensating')">
+          <span class="node-label">Compensating</span>
+          <span class="node-sub">substitute control</span>
+        </div>
+        <div class="node gray" data-node-id="directive" onclick="openDetail('directive')">
+          <span class="node-label">Directive</span>
+          <span class="node-sub">instructs behavior</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /zone-row -->
+
+  <!-- Row 3: Data Protection + Cryptography -->
+  <div class="zone-row">
+
+    <div class="zone" id="zone-data">
+      <div class="zone-header">
+        <span class="zone-icon">🗄</span>
+        <span class="zone-title">Data Protection</span>
+        <span class="zone-sub">Protect sensitive data</span>
+      </div>
+      <div class="zone-nodes">
+        <div class="node red" data-node-id="pii" onclick="openDetail('pii')">
+          <span class="node-label">PII</span>
+          <span class="node-sub">personally identifiable info</span>
+        </div>
+        <div class="node purple" data-node-id="tokenization" onclick="openDetail('tokenization')">
+          <span class="node-label">Tokenization</span>
+          <span class="node-sub">substitute with token</span>
+        </div>
+        <div class="node purple" data-node-id="data-masking" onclick="openDetail('data-masking')">
+          <span class="node-label">Data Masking</span>
+          <span class="node-sub">obscure real values</span>
+        </div>
+        <div class="node purple" data-node-id="obfuscation" onclick="openDetail('obfuscation')">
+          <span class="node-label">Obfuscation</span>
+          <span class="node-sub">make data unclear</span>
+        </div>
+        <div class="node purple" data-node-id="steganography" onclick="openDetail('steganography')">
+          <span class="node-label">Steganography</span>
+          <span class="node-sub">hide data in media</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="zone" id="zone-crypto">
+      <div class="zone-header">
+        <span class="zone-icon">🔑</span>
+        <span class="zone-title">Cryptography</span>
+        <span class="zone-sub">Secure data mathematically</span>
+      </div>
+      <div class="zone-nodes">
+        <div class="node green" data-node-id="hashing" onclick="openDetail('hashing')">
+          <span class="node-label">Hashing</span>
+          <span class="node-sub">one-way digest</span>
+        </div>
+        <div class="node green" data-node-id="key-stretching" onclick="openDetail('key-stretching')">
+          <span class="node-label">Key Stretching</span>
+          <span class="node-sub">strengthen weak keys</span>
+        </div>
+        <div class="node green" data-node-id="pfs" onclick="openDetail('pfs')">
+          <span class="node-label">PFS</span>
+          <span class="node-sub">Perfect Forward Secrecy</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /zone-row -->
+
+  <!-- Row 4: Logging + SIEM -->
+  <div class="zone-row wide">
+
+    <div class="zone" id="zone-logging">
+      <div class="zone-header">
+        <span class="zone-icon">📋</span>
+        <span class="zone-title">Logging & Monitoring</span>
+        <span class="zone-sub">Record · Collect · Analyze</span>
+      </div>
+      <div class="zone-nodes">
+        <div class="node yellow" data-node-id="security-log" onclick="openDetail('security-log')">
+          <span class="node-label">Security Log</span>
+          <span class="node-sub">auth & access events</span>
+        </div>
+        <div class="node yellow" data-node-id="system-log" onclick="openDetail('system-log')">
+          <span class="node-label">System Log</span>
+          <span class="node-sub">OS-level events</span>
+        </div>
+        <div class="node yellow" data-node-id="application-log" onclick="openDetail('application-log')">
+          <span class="node-label">Application Log</span>
+          <span class="node-sub">app-level events</span>
+        </div>
+        <div class="node yellow" data-node-id="linux-logs" onclick="openDetail('linux-logs')">
+          <span class="node-label">Linux Logs</span>
+          <span class="node-sub">/var/log/ files</span>
+        </div>
+        <div class="node yellow" data-node-id="firewall-logs" onclick="openDetail('firewall-logs')">
+          <span class="node-label">Firewall Logs</span>
+          <span class="node-sub">allow/deny traffic</span>
+        </div>
+        <div class="node blue" data-node-id="syslog" onclick="openDetail('syslog')">
+          <span class="node-label">Syslog</span>
+          <span class="node-sub">UDP 514 log protocol</span>
+        </div>
+        <div class="node gray" data-node-id="packet-captures" onclick="openDetail('packet-captures')">
+          <span class="node-label">Packet Captures</span>
+          <span class="node-sub">raw network traffic</span>
+        </div>
+        <div class="node gray" data-node-id="metadata" onclick="openDetail('metadata')">
+          <span class="node-label">Metadata</span>
+          <span class="node-sub">data about data</span>
+        </div>
+        <div class="node gray" data-node-id="originators" onclick="openDetail('originators')">
+          <span class="node-label">Originators</span>
+          <span class="node-sub">log source devices</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="zone" id="zone-siem">
+      <div class="zone-header">
+        <span class="zone-icon">🖥</span>
+        <span class="zone-title">SIEM & Detection</span>
+        <span class="zone-sub">Correlate & Alert</span>
+      </div>
+      <div class="zone-nodes">
+        <div class="node blue" data-node-id="siem" onclick="openDetail('siem')">
+          <span class="node-label">SIEM</span>
+          <span class="node-sub">log aggregation & correlation</span>
+        </div>
+        <div class="node blue" data-node-id="siem-dashboards" onclick="openDetail('siem-dashboards')">
+          <span class="node-label">SIEM Dashboards</span>
+          <span class="node-sub">visual threat view</span>
+        </div>
+        <div class="node orange" data-node-id="ids-ips" onclick="openDetail('ids-ips')">
+          <span class="node-label">IDS / IPS</span>
+          <span class="node-sub">detect / prevent intrusions</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /zone-row -->
+
+  <!-- Row 5: Infrastructure & Resilience (full width) -->
+  <div class="zone zone-full" id="zone-infra">
+    <div class="zone-header">
+      <span class="zone-icon">⚙</span>
+      <span class="zone-title">Infrastructure & Resilience</span>
+      <span class="zone-sub">Keep systems running</span>
+    </div>
+    <div class="zone-nodes">
+      <div class="node gray" data-node-id="nic" onclick="openDetail('nic')">
+        <span class="node-label">NIC</span>
+        <span class="node-sub">network interface card</span>
+      </div>
+      <div class="node blue" data-node-id="tcp" onclick="openDetail('tcp')">
+        <span class="node-label">TCP</span>
+        <span class="node-sub">reliable transport</span>
+      </div>
+      <div class="node green" data-node-id="redundancy" onclick="openDetail('redundancy')">
+        <span class="node-label">Redundancy</span>
+        <span class="node-sub">duplicate components</span>
+      </div>
+      <div class="node green" data-node-id="resiliency" onclick="openDetail('resiliency')">
+        <span class="node-label">Resiliency</span>
+        <span class="node-sub">recover from failure</span>
+      </div>
+      <div class="node teal" data-node-id="scalability" onclick="openDetail('scalability')">
+        <span class="node-label">Scalability</span>
+        <span class="node-sub">handle increased load</span>
+      </div>
+      <div class="node teal" data-node-id="horizontal-scaling" onclick="openDetail('horizontal-scaling')">
+        <span class="node-label">Horizontal Scaling</span>
+        <span class="node-sub">add more nodes</span>
+      </div>
+      <div class="node teal" data-node-id="vertical-scaling" onclick="openDetail('vertical-scaling')">
+        <span class="node-label">Vertical Scaling</span>
+        <span class="node-sub">upgrade single node</span>
+      </div>
+      <div class="node teal" data-node-id="elasticity" onclick="openDetail('elasticity')">
+        <span class="node-label">Elasticity</span>
+        <span class="node-sub">auto scale up/down</span>
+      </div>
+      <div class="node orange" data-node-id="patching" onclick="openDetail('patching')">
+        <span class="node-label">Patching</span>
+        <span class="node-sub">fix known vulnerabilities</span>
+      </div>
+    </div>
+  </div>
+
+</main><!-- /canvas -->
+
+<!-- ═══ GRAPH VIEW ═══ -->
+<div id="graph-view">
+  <div id="graph-toolbar">
+    <button onclick="runGraphLayout(200)">↺ Re-layout</button>
+    <button onclick="fitGraph()">⊡ Fit</button>
+  </div>
+  <svg id="graph-svg" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="ga-gray"  markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#475569"/></marker>
+      <marker id="ga-green" markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#2ecc71"/></marker>
+      <marker id="ga-blue"  markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#3498db"/></marker>
+      <marker id="ga-red"   markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#e74c3c"/></marker>
+      <marker id="ga-teal"  markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#1abc9c"/></marker>
+    </defs>
+    <g id="graph-root"><g id="ge"></g><g id="gn"></g></g>
+  </svg>
+  <div id="graph-hint">Scroll to zoom · Drag nodes · Click to inspect</div>
+</div>
+
+<!-- ═══ DETAIL PANEL ═══ -->
+<aside id="detail-panel" class="collapsed">
+  <div style="position:relative;flex-shrink:0;padding:14px 14px 0">
+    <button id="detail-close" onclick="closeDetail()">✕</button>
+    <div id="detail-title">—</div>
+    <div id="detail-category">—</div>
+  </div>
+  <div id="detail-scroll">
+    <div id="detail-body"></div>
+  </div>
+</aside>
+
+<!-- ═══ FOOTER ═══ -->
+<footer id="footer">
+  <span class="foot-label">Key Concepts:</span>
+  <span class="foot-pill teal">CIA Triad</span>
+  <span class="foot-pill orange">Risk = Likelihood × Impact</span>
+  <span class="foot-pill blue">4 Control Categories</span>
+  <span class="foot-pill purple">6 Control Types</span>
+  <span class="foot-sep"></span>
+  <span class="foot-pill green">Hashing = Integrity</span>
+  <span class="foot-pill blue">SIEM aggregates all logs</span>
+  <span class="foot-pill red">Vulnerability ≠ Risk</span>
+</footer>
+
+</div><!-- /app -->
+
+<script>
+/* ═══════════════════════════════════════════════════
+   NODE DATA — detail panel content
+═══════════════════════════════════════════════════ */
+const NODE_DATA = {
+
+'confidentiality': { title:'Confidentiality', cat:'CIA Triad', html:`
+  <p>Ensures that data is accessible <strong>only to authorized users</strong>. One of the three pillars of the CIA Triad.</p>
+  <h4>Key Methods</h4>
+  <ul>
+    <li>Encryption (data at rest & in transit)</li>
+    <li>Access controls & permissions</li>
+    <li>Data classification</li>
+    <li>Need-to-know principle</li>
+  </ul>
+  <div class="exam-tip">Confidentiality is violated by unauthorized disclosure. Encryption is the primary technical control.</div>
+`},
+
+'integrity': { title:'Integrity', cat:'CIA Triad', html:`
+  <p>Ensures data is <strong>accurate and unaltered</strong> by unauthorized parties.</p>
+  <h4>Key Methods</h4>
+  <ul>
+    <li>Hashing (MD5, SHA-256) — detect changes</li>
+    <li>Digital signatures</li>
+    <li>Checksums</li>
+    <li>Version control</li>
+  </ul>
+  <div class="exam-tip">Integrity is violated by unauthorized modification. Hashing detects but does not prevent changes.</div>
+`},
+
+'availability': { title:'Availability', cat:'CIA Triad', html:`
+  <p>Ensures systems and data are <strong>accessible when needed</strong> by authorized users.</p>
+  <h4>Key Methods</h4>
+  <ul>
+    <li>Redundancy & failover</li>
+    <li>Load balancing</li>
+    <li>Backups & disaster recovery</li>
+    <li>DDoS protection</li>
+  </ul>
+  <div class="exam-tip">Availability is targeted by DoS/DDoS attacks. Uptime SLAs measure availability commitments.</div>
+`},
+
+'hashing': { title:'Hashing', cat:'Cryptography / Integrity', html:`
+  <p>A <strong>one-way mathematical function</strong> that converts data into a fixed-length digest. Any change to input produces a completely different hash.</p>
+  <h4>Common Algorithms</h4>
+  <ul>
+    <li><code>MD5</code> — 128-bit, deprecated (collisions)</li>
+    <li><code>SHA-1</code> — 160-bit, deprecated</li>
+    <li><code>SHA-256</code> — 256-bit, current standard</li>
+    <li><code>bcrypt</code> — password hashing with salt</li>
+  </ul>
+  <h4>Uses</h4>
+  <ul>
+    <li>File integrity verification</li>
+    <li>Password storage</li>
+    <li>Digital signatures (hash then sign)</li>
+  </ul>
+  <div class="exam-tip">Hashing is NOT encryption — it cannot be reversed. It verifies integrity, not confidentiality.</div>
+`},
+
+'access-controls': { title:'Access Controls', cat:'CIA Triad / Security Controls', html:`
+  <p>Mechanisms that <strong>restrict access</strong> to resources based on identity and permissions.</p>
+  <h4>Models</h4>
+  <ul>
+    <li><strong>DAC</strong> — Discretionary (owner sets permissions)</li>
+    <li><strong>MAC</strong> — Mandatory (system-enforced labels)</li>
+    <li><strong>RBAC</strong> — Role-Based (permissions by job role)</li>
+    <li><strong>ABAC</strong> — Attribute-Based (context-aware)</li>
+  </ul>
+  <div class="exam-tip">RBAC is most common in enterprise. Principle of least privilege applies to all models.</div>
+`},
+
+'risk': { title:'Risk', cat:'Risk Management', html:`
+  <p>The <strong>likelihood that a threat will exploit a vulnerability</strong>, causing harm to an asset.</p>
+  <h4>Formula</h4>
+  <p><code>Risk = Likelihood × Impact</code></p>
+  <h4>Risk Responses</h4>
+  <ul>
+    <li><strong>Accept</strong> — tolerate the risk</li>
+    <li><strong>Avoid</strong> — eliminate the activity</li>
+    <li><strong>Transfer</strong> — insurance / contracts</li>
+    <li><strong>Mitigate</strong> — reduce likelihood or impact</li>
+  </ul>
+  <div class="exam-tip">Know all four risk responses. Risk can never be fully eliminated — only reduced or transferred.</div>
+`},
+
+'vulnerability': { title:'Vulnerability', cat:'Risk Management', html:`
+  <p>A <strong>weakness in a system</strong> that could be exploited by a threat actor.</p>
+  <h4>Types</h4>
+  <ul>
+    <li>Software bugs / unpatched systems</li>
+    <li>Misconfiguration</li>
+    <li>Weak credentials</li>
+    <li>Missing encryption</li>
+    <li>Zero-day (unknown to vendor)</li>
+  </ul>
+  <h4>Discovery</h4>
+  <ul>
+    <li>Vulnerability scans (Nessus, OpenVAS)</li>
+    <li>Penetration testing</li>
+    <li>CVE database</li>
+  </ul>
+  <div class="exam-tip">Vulnerability ≠ Risk. A vulnerability only becomes a risk if a threat exists to exploit it.</div>
+`},
+
+'security-incident': { title:'Security Incident', cat:'Risk Management', html:`
+  <p>An event that <strong>violates a security policy</strong> or compromises CIA of an asset.</p>
+  <h4>Incident vs. Event</h4>
+  <ul>
+    <li><strong>Event</strong> — any observable occurrence (most are benign)</li>
+    <li><strong>Incident</strong> — event with negative security impact</li>
+  </ul>
+  <h4>IR Lifecycle (NIST)</h4>
+  <ul>
+    <li>Preparation → Detection → Containment → Eradication → Recovery → Lessons Learned</li>
+  </ul>
+  <div class="exam-tip">All incidents are events but not all events are incidents. NIST SP 800-61 covers incident response.</div>
+`},
+
+'risk-mitigation': { title:'Risk Mitigation', cat:'Risk Management', html:`
+  <p>Implementing <strong>security controls to reduce</strong> the likelihood or impact of a risk.</p>
+  <h4>Techniques</h4>
+  <ul>
+    <li>Patching vulnerabilities</li>
+    <li>Deploying firewalls / IPS</li>
+    <li>Security awareness training</li>
+    <li>Encryption of sensitive data</li>
+    <li>Network segmentation</li>
+  </ul>
+  <div class="exam-tip">Mitigation reduces risk — it does not eliminate it. Pair with monitoring to detect residual risk.</div>
+`},
+
+'technical-controls': { title:'Technical Controls', cat:'Control Categories', html:`
+  <p>Controls <strong>implemented through technology</strong> — hardware or software enforced.</p>
+  <h4>Examples</h4>
+  <ul>
+    <li>Firewalls, IDS/IPS</li>
+    <li>Encryption</li>
+    <li>Authentication systems (MFA)</li>
+    <li>Antivirus / EDR</li>
+    <li>Access control lists (ACLs)</li>
+  </ul>
+  <div class="exam-tip">Technical controls are automated and consistent. They're the most scalable control category.</div>
+`},
+
+'operational-controls': { title:'Operational Controls', cat:'Control Categories', html:`
+  <p>Controls <strong>implemented by people</strong> through day-to-day operations and procedures.</p>
+  <h4>Examples</h4>
+  <ul>
+    <li>Security awareness training</li>
+    <li>Background checks</li>
+    <li>Incident response procedures</li>
+    <li>Change management processes</li>
+    <li>Guard patrols</li>
+  </ul>
+  <div class="exam-tip">Operational controls are the most commonly failed because they rely on human behavior.</div>
+`},
+
+'managerial-controls': { title:'Managerial Controls', cat:'Control Categories', html:`
+  <p>Controls focused on <strong>governance, policy, and strategy</strong> — the "management" layer.</p>
+  <h4>Examples</h4>
+  <ul>
+    <li>Security policies and procedures</li>
+    <li>Risk assessments</li>
+    <li>Security audits</li>
+    <li>Business continuity planning</li>
+    <li>Vendor management</li>
+  </ul>
+  <div class="exam-tip">Also called "administrative controls." They set the direction that operational and technical controls follow.</div>
+`},
+
+'physical-controls': { title:'Physical Controls', cat:'Control Categories', html:`
+  <p>Controls that <strong>physically restrict or monitor access</strong> to facilities and hardware.</p>
+  <h4>Examples</h4>
+  <ul>
+    <li>Locks, badge readers, mantraps</li>
+    <li>Security cameras (CCTV)</li>
+    <li>Security guards</li>
+    <li>Fencing and bollards</li>
+    <li>Cable locks on hardware</li>
+  </ul>
+  <div class="exam-tip">Physical security is often the first line of defense. No amount of software security helps if an attacker has physical access.</div>
+`},
+
+'nist': { title:'NIST & SP800 Documents', cat:'Frameworks', html:`
+  <p>The <strong>National Institute of Standards and Technology</strong> publishes security frameworks and special publications (SP 800 series).</p>
+  <h4>Key Documents</h4>
+  <ul>
+    <li><strong>NIST CSF</strong> — Cybersecurity Framework (Identify, Protect, Detect, Respond, Recover)</li>
+    <li><strong>SP 800-53</strong> — Security and Privacy Controls</li>
+    <li><strong>SP 800-61</strong> — Incident Response</li>
+    <li><strong>SP 800-171</strong> — Protecting CUI</li>
+    <li><strong>SP 800-37</strong> — Risk Management Framework (RMF)</li>
+  </ul>
+  <div class="exam-tip">NIST CSF five functions are heavily tested: Identify · Protect · Detect · Respond · Recover.</div>
+`},
+
+'preventive': { title:'Preventive Controls', cat:'Control Types', html:`
+  <p>Controls that <strong>stop a threat from succeeding</strong> before it occurs.</p>
+  <h4>Examples</h4>
+  <ul>
+    <li>Firewall blocking malicious traffic</li>
+    <li>Access control lists</li>
+    <li>Encryption of data</li>
+    <li>Security awareness training</li>
+  </ul>
+  <div class="exam-tip">Preventive is the most desirable control type — stopping the attack before it happens.</div>
+`},
+
+'deterrent': { title:'Deterrent Controls', cat:'Control Types', html:`
+  <p>Controls that <strong>discourage attackers</strong> from attempting an attack.</p>
+  <h4>Examples</h4>
+  <ul>
+    <li>Warning banners / legal notices</li>
+    <li>Security cameras (visible)</li>
+    <li>Security guard presence</li>
+    <li>Prosecution policies</li>
+  </ul>
+  <div class="exam-tip">Deterrents don't stop attacks — they reduce the likelihood by making attack less appealing.</div>
+`},
+
+'detective': { title:'Detective Controls', cat:'Control Types', html:`
+  <p>Controls that <strong>identify and record</strong> that an attack has occurred or is occurring.</p>
+  <h4>Examples</h4>
+  <ul>
+    <li>IDS (Intrusion Detection System)</li>
+    <li>Security logs / SIEM alerts</li>
+    <li>Audit trails</li>
+    <li>Motion sensors</li>
+  </ul>
+  <div class="exam-tip">Detective controls do not prevent — they detect. Response must follow detection.</div>
+`},
+
+'corrective': { title:'Corrective Controls', cat:'Control Types', html:`
+  <p>Controls that <strong>reduce the impact</strong> of a threat after it has occurred.</p>
+  <h4>Examples</h4>
+  <ul>
+    <li>System backups / restore</li>
+    <li>Patch deployment after exploit</li>
+    <li>Incident response actions</li>
+    <li>Quarantining infected systems</li>
+  </ul>
+  <div class="exam-tip">Corrective controls restore normal operations. They work after the incident, not before.</div>
+`},
+
+'compensating': { title:'Compensating Controls', cat:'Control Types', html:`
+  <p>Controls used <strong>in place of a primary control</strong> when the primary is not feasible.</p>
+  <h4>Examples</h4>
+  <ul>
+    <li>Manual review when automation fails</li>
+    <li>Extra monitoring when patching is delayed</li>
+    <li>Network isolation for legacy systems</li>
+  </ul>
+  <div class="exam-tip">Compensating controls are a workaround — they should be temporary until the primary control can be implemented.</div>
+`},
+
+'directive': { title:'Directive Controls', cat:'Control Types', html:`
+  <p>Controls that <strong>direct behavior</strong> through policies, procedures, and guidelines.</p>
+  <h4>Examples</h4>
+  <ul>
+    <li>Acceptable use policies (AUP)</li>
+    <li>Password policies</li>
+    <li>Employee security handbooks</li>
+    <li>Regulatory requirements (HIPAA, PCI)</li>
+  </ul>
+  <div class="exam-tip">Directive controls set expectations — compliance depends on people following them.</div>
+`},
+
+'pii': { title:'PII — Personally Identifiable Information', cat:'Data Protection', html:`
+  <p>Any data that can be used <strong>alone or combined</strong> to identify a specific individual.</p>
+  <h4>Examples of PII</h4>
+  <ul>
+    <li>Name, SSN, date of birth</li>
+    <li>Email address, phone number</li>
+    <li>Biometric data</li>
+    <li>IP address (in some jurisdictions)</li>
+    <li>Location data</li>
+  </ul>
+  <h4>Regulations</h4>
+  <ul>
+    <li>GDPR (Europe), CCPA (California), HIPAA (health)</li>
+  </ul>
+  <div class="exam-tip">Know the difference between PII and PHI (protected health information). Both require special handling.</div>
+`},
+
+'tokenization': { title:'Tokenization', cat:'Data Protection', html:`
+  <p>Replaces sensitive data with a <strong>non-sensitive placeholder (token)</strong>. The original data is stored in a separate token vault.</p>
+  <h4>How it works</h4>
+  <ul>
+    <li>Original value: <code>4111-1111-1111-1111</code></li>
+    <li>Token: <code>8f2a-9b3c-7d4e-1f6a</code></li>
+    <li>Token has no mathematical relationship to original</li>
+  </ul>
+  <h4>Use Cases</h4>
+  <ul>
+    <li>Credit card processing (PCI DSS)</li>
+    <li>Healthcare records</li>
+  </ul>
+  <div class="exam-tip">Tokenization ≠ Encryption. Tokens have no mathematical link to original data. Encryption can be reversed with a key; tokens cannot without the vault.</div>
+`},
+
+'data-masking': { title:'Data Masking', cat:'Data Protection', html:`
+  <p>Replaces sensitive data with <strong>realistic but fake values</strong>, often for testing/development environments.</p>
+  <h4>Types</h4>
+  <ul>
+    <li><strong>Static masking</strong> — permanent replacement in a copy</li>
+    <li><strong>Dynamic masking</strong> — masks data on-the-fly per user role</li>
+  </ul>
+  <h4>Example</h4>
+  <ul>
+    <li>Original: <code>John Smith, SSN: 123-45-6789</code></li>
+    <li>Masked: <code>Jane Doe, SSN: 987-65-4321</code></li>
+  </ul>
+  <div class="exam-tip">Data masking preserves format and structure while replacing values. Used to protect PII in non-production environments.</div>
+`},
+
+'obfuscation': { title:'Obfuscation', cat:'Data Protection', html:`
+  <p>Making information <strong>difficult to understand</strong> without necessarily encrypting it.</p>
+  <h4>Examples</h4>
+  <ul>
+    <li>Code obfuscation (minification, variable renaming)</li>
+    <li>Network obfuscation (using proxies, VPNs)</li>
+    <li>Data obfuscation (shuffling, substitution)</li>
+  </ul>
+  <div class="exam-tip">Obfuscation is "security through obscurity" — not a substitute for real controls but adds a layer of difficulty.</div>
+`},
+
+'steganography': { title:'Steganography', cat:'Data Protection', html:`
+  <p>The practice of <strong>hiding secret data within ordinary, non-secret files</strong> (images, audio, video).</p>
+  <h4>How it Works</h4>
+  <ul>
+    <li>LSB (Least Significant Bit) — alter last bit of each pixel</li>
+    <li>Message is invisible to the naked eye</li>
+    <li>Requires steganography tool to extract</li>
+  </ul>
+  <h4>Security Use</h4>
+  <ul>
+    <li>Malware can hide in images (stegware)</li>
+    <li>Data exfiltration via innocent-looking files</li>
+    <li>Watermarking for copyright</li>
+  </ul>
+  <div class="exam-tip">Steganography hides the existence of data (not just its contents). Cryptography hides the meaning. They can be combined.</div>
+`},
+
+'key-stretching': { title:'Key Stretching', cat:'Cryptography', html:`
+  <p>A technique that <strong>increases the computational cost</strong> of deriving a key from a password, making brute-force attacks slower.</p>
+  <h4>Algorithms</h4>
+  <ul>
+    <li><code>bcrypt</code> — adaptive cost factor</li>
+    <li><code>PBKDF2</code> — iterates hash thousands of times</li>
+    <li><code>Argon2</code> — memory-hard, modern standard</li>
+    <li><code>scrypt</code> — memory and CPU intensive</li>
+  </ul>
+  <h4>How It Works</h4>
+  <ul>
+    <li>Apply hash function N times (e.g. 100,000 iterations)</li>
+    <li>Add salt to prevent rainbow table attacks</li>
+  </ul>
+  <div class="exam-tip">Key stretching makes a weak password harder to crack. It doesn't make the password stronger — it makes guessing slower.</div>
+`},
+
+'pfs': { title:'Perfect Forward Secrecy (PFS)', cat:'Cryptography', html:`
+  <p>A property ensuring that <strong>session keys cannot be compromised</strong> even if the server's private key is later stolen.</p>
+  <h4>How it Works</h4>
+  <ul>
+    <li>Each session generates a <strong>unique ephemeral key</strong></li>
+    <li>Uses Diffie-Hellman Ephemeral (DHE) or ECDHE</li>
+    <li>Session key is discarded after session ends</li>
+    <li>Past sessions cannot be decrypted with current keys</li>
+  </ul>
+  <h4>Without PFS</h4>
+  <ul>
+    <li>Attacker captures traffic now, decrypts later when private key is obtained</li>
+  </ul>
+  <div class="exam-tip">PFS is required by modern TLS 1.3. Look for DHE or ECDHE cipher suites — these provide PFS. RSA key exchange does NOT provide PFS.</div>
+`},
+
+'security-log': { title:'Security Log', cat:'Logging & Monitoring', html:`
+  <p>Records <strong>authentication and authorization events</strong> — who logged in, failed attempts, privilege escalations.</p>
+  <h4>Common Events</h4>
+  <ul>
+    <li>Successful / failed logins (Event ID 4624 / 4625 Windows)</li>
+    <li>Account lockouts (Event ID 4740)</li>
+    <li>Privilege use (Event ID 4672)</li>
+    <li>Account creation / deletion</li>
+  </ul>
+  <div class="exam-tip">Security logs are the primary source for investigating unauthorized access. Protect them from tampering — write-once storage is ideal.</div>
+`},
+
+'system-log': { title:'System Log', cat:'Logging & Monitoring', html:`
+  <p>Records <strong>OS-level events</strong> — service starts/stops, driver errors, hardware failures.</p>
+  <h4>Windows Examples</h4>
+  <ul>
+    <li>Service started / stopped</li>
+    <li>Driver loaded / failed</li>
+    <li>System shutdown / restart</li>
+  </ul>
+  <h4>Linux: <code>/var/log/syslog</code> or <code>/var/log/messages</code></h4>
+  <div class="exam-tip">System logs help with troubleshooting crashes and detecting malware that installs services.</div>
+`},
+
+'application-log': { title:'Application Log', cat:'Logging & Monitoring', html:`
+  <p>Records events generated by <strong>specific applications</strong> — errors, transactions, user actions within the app.</p>
+  <h4>Examples</h4>
+  <ul>
+    <li>Web server: HTTP 404/500 errors, access logs</li>
+    <li>Database: query errors, connection attempts</li>
+    <li>Email: messages sent/received, spam filtering</li>
+    <li>Custom apps: business transactions, API calls</li>
+  </ul>
+  <div class="exam-tip">Application logs are most useful for detecting application-layer attacks like SQL injection or brute-force login attempts.</div>
+`},
+
+'linux-logs': { title:'Linux Logs', cat:'Logging & Monitoring', html:`
+  <p>Linux stores logs in <strong><code>/var/log/</code></strong> as plain text files or via journald.</p>
+  <h4>Key Log Files</h4>
+  <ul>
+    <li><code>/var/log/syslog</code> — general system events</li>
+    <li><code>/var/log/auth.log</code> — authentication (SSH, sudo)</li>
+    <li><code>/var/log/kern.log</code> — kernel messages</li>
+    <li><code>/var/log/apache2/access.log</code> — web server</li>
+    <li><code>/var/log/audit/audit.log</code> — auditd events</li>
+  </ul>
+  <h4>Commands</h4>
+  <ul>
+    <li><code>journalctl -xe</code> — systemd journal</li>
+    <li><code>tail -f /var/log/auth.log</code> — live auth log</li>
+  </ul>
+  <div class="exam-tip">Know <code>/var/log/auth.log</code> for SSH investigation and <code>/var/log/syslog</code> for general troubleshooting.</div>
+`},
+
+'firewall-logs': { title:'Firewall Logs', cat:'Logging & Monitoring', html:`
+  <p>Records <strong>all traffic decisions</strong> made by the firewall — allowed and denied connections.</p>
+  <h4>Log Fields</h4>
+  <ul>
+    <li>Timestamp, source IP, destination IP</li>
+    <li>Source port, destination port</li>
+    <li>Protocol (TCP/UDP)</li>
+    <li>Action: ALLOW / DENY / DROP</li>
+    <li>Rule name that triggered the action</li>
+  </ul>
+  <div class="exam-tip">Firewall logs show reconnaissance (port scans), blocked intrusion attempts, and policy violations. Feed into SIEM for correlation.</div>
+`},
+
+'syslog': { title:'Syslog', cat:'Logging & Monitoring', html:`
+  <p>A standard protocol for <strong>sending log messages</strong> from devices to a central log server.</p>
+  <h4>Details</h4>
+  <ul>
+    <li>Port: <code>UDP 514</code> (traditional), <code>TCP 514</code> or <code>TCP 6514</code> (TLS)</li>
+    <li>Severity levels: 0 (Emergency) → 7 (Debug)</li>
+    <li>Facility codes: auth, kern, mail, daemon, etc.</li>
+  </ul>
+  <h4>Versions</h4>
+  <ul>
+    <li><strong>Syslog (RFC 3164)</strong> — original</li>
+    <li><strong>Syslog-ng / rsyslog</strong> — modern implementations with filtering</li>
+  </ul>
+  <div class="exam-tip">Syslog UDP 514 is the standard exam answer. Syslog does not provide encryption by default — use TLS (syslog over TCP 6514) for secure transport.</div>
+`},
+
+'packet-captures': { title:'Packet Captures', cat:'Logging & Monitoring', html:`
+  <p>Raw capture of <strong>all network traffic</strong> passing through an interface, stored as .pcap files.</p>
+  <h4>Tools</h4>
+  <ul>
+    <li><code>Wireshark</code> — GUI capture and analysis</li>
+    <li><code>tcpdump</code> — CLI capture tool</li>
+    <li>Network TAPs / SPAN ports for passive capture</li>
+  </ul>
+  <h4>Uses</h4>
+  <ul>
+    <li>Forensic investigation</li>
+    <li>Malware communication analysis</li>
+    <li>Protocol troubleshooting</li>
+  </ul>
+  <div class="exam-tip">Packet captures capture all data including plaintext passwords on unencrypted protocols. PCAP files are gold for forensics.</div>
+`},
+
+'metadata': { title:'Metadata', cat:'Logging & Monitoring', html:`
+  <p><strong>Data about data</strong> — describes the properties of a file or communication without containing the actual content.</p>
+  <h4>Examples</h4>
+  <ul>
+    <li>Email: sender, recipient, timestamp, subject, server hops</li>
+    <li>File: created date, author, GPS coordinates (photos)</li>
+    <li>Network: source IP, destination IP, ports, timestamps</li>
+    <li>Phone: call duration, numbers dialed, cell tower location</li>
+  </ul>
+  <div class="exam-tip">Metadata can reveal sensitive information even when content is encrypted. NSA surveillance programs primarily collected metadata.</div>
+`},
+
+'originators': { title:'Originators', cat:'Logging & Monitoring', html:`
+  <p>The <strong>source devices or systems</strong> that generate and send log data to a SIEM or log aggregator.</p>
+  <h4>Examples</h4>
+  <ul>
+    <li>Firewalls, routers, switches</li>
+    <li>Servers (web, database, mail)</li>
+    <li>Endpoints (workstations, laptops)</li>
+    <li>Authentication systems</li>
+    <li>Cloud services</li>
+  </ul>
+  <div class="exam-tip">In SIEM architecture: Originators → Collectors → SIEM Engine → Dashboards/Alerts. More originators = better visibility.</div>
+`},
+
+'siem': { title:'SIEM — Security Information and Event Management', cat:'SIEM & Detection', html:`
+  <p>A system that <strong>aggregates, correlates, and analyzes logs</strong> from across the environment to detect threats.</p>
+  <h4>Core Functions</h4>
+  <ul>
+    <li><strong>Log aggregation</strong> — collect from all sources</li>
+    <li><strong>Normalization</strong> — standardize log formats</li>
+    <li><strong>Correlation</strong> — link related events across systems</li>
+    <li><strong>Alerting</strong> — notify on rule matches</li>
+    <li><strong>Retention</strong> — long-term log storage for compliance</li>
+  </ul>
+  <h4>Examples</h4>
+  <ul>
+    <li>Splunk, IBM QRadar, Microsoft Sentinel, ArcSight</li>
+  </ul>
+  <div class="exam-tip">SIEM provides centralized visibility. Key exam concept: SIEM correlates events across multiple sources to find patterns a single log would miss.</div>
+`},
+
+'siem-dashboards': { title:'SIEM Dashboards', cat:'SIEM & Detection', html:`
+  <p><strong>Visual interfaces</strong> within a SIEM that display real-time and historical security data.</p>
+  <h4>Common Dashboard Views</h4>
+  <ul>
+    <li>Top talkers (most active IPs)</li>
+    <li>Failed login attempts over time</li>
+    <li>Geographic map of connections</li>
+    <li>Alert severity summary</li>
+    <li>Compliance status reports</li>
+  </ul>
+  <div class="exam-tip">Dashboards make it possible for analysts to quickly spot anomalies. Customize dashboards per role: SOC analyst vs. CISO view differs significantly.</div>
+`},
+
+'ids-ips': { title:'IDS / IPS', cat:'SIEM & Detection', html:`
+  <p><strong>Intrusion Detection System</strong> — monitors and alerts. <strong>Intrusion Prevention System</strong> — monitors and blocks.</p>
+  <h4>Detection Methods</h4>
+  <ul>
+    <li><strong>Signature-based</strong> — matches known attack patterns (low false positives)</li>
+    <li><strong>Anomaly-based</strong> — detects deviation from baseline (catches zero-days)</li>
+    <li><strong>Heuristic</strong> — behavioral analysis</li>
+  </ul>
+  <h4>Placement</h4>
+  <ul>
+    <li><strong>NIDS/NIPS</strong> — network-based (inline or passive)</li>
+    <li><strong>HIDS/HIPS</strong> — host-based (on endpoint)</li>
+  </ul>
+  <div class="exam-tip">IDS = passive (alerts only). IPS = active (blocks traffic). IPS must be inline; IDS can be passive via SPAN port.</div>
+`},
+
+'nic': { title:'NIC — Network Interface Card', cat:'Infrastructure', html:`
+  <p>Hardware that <strong>connects a computer to a network</strong>. Each NIC has a unique MAC address burned in at manufacture.</p>
+  <h4>Details</h4>
+  <ul>
+    <li>MAC address: 48-bit, 6 octets (e.g. <code>AA:BB:CC:DD:EE:FF</code>)</li>
+    <li>First 3 octets = OUI (manufacturer ID)</li>
+    <li>Can be wired (Ethernet) or wireless (Wi-Fi)</li>
+    <li>Operates at OSI Layer 2</li>
+  </ul>
+  <div class="exam-tip">MAC addresses can be spoofed — don't rely on them as sole authentication. MAC filtering is a deterrent, not a strong control.</div>
+`},
+
+'tcp': { title:'TCP — Transmission Control Protocol', cat:'Infrastructure', html:`
+  <p>A <strong>connection-oriented, reliable</strong> transport protocol. Guarantees delivery and ordering of packets.</p>
+  <h4>Three-Way Handshake</h4>
+  <ul>
+    <li><strong>SYN</strong> — client initiates</li>
+    <li><strong>SYN-ACK</strong> — server acknowledges</li>
+    <li><strong>ACK</strong> — client confirms</li>
+  </ul>
+  <h4>Key Features</h4>
+  <ul>
+    <li>Error checking and retransmission</li>
+    <li>Flow control (sliding window)</li>
+    <li>Port numbers identify services</li>
+  </ul>
+  <div class="exam-tip">SYN flood attack exploits the TCP handshake by sending SYNs without completing the connection, exhausting server resources.</div>
+`},
+
+'redundancy': { title:'Redundancy', cat:'Infrastructure & Resilience', html:`
+  <p>Duplicating <strong>critical components</strong> so failure of one does not cause system outage.</p>
+  <h4>Types</h4>
+  <ul>
+    <li><strong>Hardware</strong> — RAID, dual power supplies, clustered servers</li>
+    <li><strong>Network</strong> — multiple ISPs, redundant paths</li>
+    <li><strong>Data</strong> — backups, replication</li>
+    <li><strong>Geographic</strong> — hot/warm/cold sites</li>
+  </ul>
+  <div class="exam-tip">Redundancy supports Availability (CIA). RAID provides disk redundancy — RAID 1 (mirror), RAID 5 (parity), RAID 10 (mirror+stripe).</div>
+`},
+
+'resiliency': { title:'Resiliency', cat:'Infrastructure & Resilience', html:`
+  <p>The ability of a system to <strong>withstand and recover from failures</strong> or attacks, returning to normal operation.</p>
+  <h4>Resiliency vs. Redundancy</h4>
+  <ul>
+    <li><strong>Redundancy</strong> — prevents failure via duplication</li>
+    <li><strong>Resiliency</strong> — recovers quickly after failure</li>
+  </ul>
+  <h4>Techniques</h4>
+  <ul>
+    <li>Automated failover</li>
+    <li>Chaos engineering (test failures deliberately)</li>
+    <li>Backup and restore procedures</li>
+    <li>Incident response playbooks</li>
+  </ul>
+  <div class="exam-tip">Resilience = ability to bounce back. Design systems assuming failure will occur, not if it will occur.</div>
+`},
+
+'scalability': { title:'Scalability', cat:'Infrastructure & Resilience', html:`
+  <p>The ability of a system to <strong>handle increased workload</strong> by adding resources.</p>
+  <h4>Two Types</h4>
+  <ul>
+    <li><strong>Horizontal scaling</strong> — add more machines (scale out)</li>
+    <li><strong>Vertical scaling</strong> — upgrade existing machine (scale up)</li>
+  </ul>
+  <div class="exam-tip">Scalability supports Availability. Cloud environments are designed for elastic scalability — scale up during peak, scale down to save costs.</div>
+`},
+
+'horizontal-scaling': { title:'Horizontal Scaling', cat:'Infrastructure & Resilience', html:`
+  <p>Adding <strong>more identical nodes</strong> to distribute load — also called "scaling out."</p>
+  <h4>Examples</h4>
+  <ul>
+    <li>Adding more web servers behind a load balancer</li>
+    <li>Kubernetes adding more pods</li>
+    <li>Database read replicas</li>
+  </ul>
+  <h4>Advantages</h4>
+  <ul>
+    <li>Near-infinite scale</li>
+    <li>No single point of failure</li>
+    <li>Cost-effective (commodity hardware)</li>
+  </ul>
+  <div class="exam-tip">Horizontal scaling is preferred for availability. If one node fails, others continue serving requests.</div>
+`},
+
+'vertical-scaling': { title:'Vertical Scaling', cat:'Infrastructure & Resilience', html:`
+  <p>Upgrading the <strong>resources of an existing machine</strong> — also called "scaling up."</p>
+  <h4>Examples</h4>
+  <ul>
+    <li>Adding more RAM to a server</li>
+    <li>Upgrading to a faster CPU</li>
+    <li>Adding SSD storage</li>
+  </ul>
+  <h4>Limitations</h4>
+  <ul>
+    <li>Hardware limits (max RAM/CPU)</li>
+    <li>Usually requires downtime</li>
+    <li>Single point of failure remains</li>
+  </ul>
+  <div class="exam-tip">Vertical scaling has a ceiling — eventually you need horizontal scaling. It also creates a SPOF (single point of failure).</div>
+`},
+
+'elasticity': { title:'Elasticity', cat:'Infrastructure & Resilience', html:`
+  <p>The ability to <strong>automatically scale resources up or down</strong> in response to demand — core cloud computing concept.</p>
+  <h4>Examples</h4>
+  <ul>
+    <li>AWS Auto Scaling Groups</li>
+    <li>Azure Scale Sets</li>
+    <li>Serverless functions (Lambda)</li>
+  </ul>
+  <h4>Elasticity vs. Scalability</h4>
+  <ul>
+    <li><strong>Scalability</strong> — ability to grow</li>
+    <li><strong>Elasticity</strong> — automatic grow AND shrink</li>
+  </ul>
+  <div class="exam-tip">Elasticity is scalability + automation + bidirectional. Cloud providers sell elasticity as a key feature for cost and availability.</div>
+`},
+
+'patching': { title:'Patching', cat:'Infrastructure & Resilience', html:`
+  <p>Applying <strong>software updates</strong> that fix known vulnerabilities, bugs, or performance issues.</p>
+  <h4>Patch Management Process</h4>
+  <ul>
+    <li>Inventory all systems and versions</li>
+    <li>Monitor CVE feeds for new vulnerabilities</li>
+    <li>Test patches in dev/staging before production</li>
+    <li>Deploy within defined SLA (e.g. critical = 24 hrs)</li>
+    <li>Verify and document</li>
+  </ul>
+  <h4>Tools</h4>
+  <ul>
+    <li>WSUS (Windows Server Update Services)</li>
+    <li>SCCM / Intune, Ansible, Chef, Puppet</li>
+  </ul>
+  <div class="exam-tip">Unpatched systems are the #1 source of vulnerabilities. Zero-day = no patch available yet. Patching is a corrective AND preventive control.</div>
+`},
+
+};
+
+/* ═══════════════════════════════════════════════════
+   CATEGORIES (sidebar filter)
+═══════════════════════════════════════════════════ */
+const CATEGORIES = [
+  { id:'cia',      label:'CIA Triad',             color:'#1abc9c',
+    nodes:['confidentiality','integrity','availability','hashing','access-controls'] },
+  { id:'risk',     label:'Risk Management',       color:'#e67e22',
+    nodes:['risk','vulnerability','security-incident','risk-mitigation'] },
+  { id:'ctrlcat',  label:'Control Categories',    color:'#3498db',
+    nodes:['technical-controls','operational-controls','managerial-controls','physical-controls','nist'] },
+  { id:'ctrltype', label:'Control Types',         color:'#9b59b6',
+    nodes:['preventive','deterrent','detective','corrective','compensating','directive'] },
+  { id:'data',     label:'Data Protection',       color:'#a855f7',
+    nodes:['pii','tokenization','data-masking','obfuscation','steganography'] },
+  { id:'crypto',   label:'Cryptography',          color:'#2ecc71',
+    nodes:['hashing','key-stretching','pfs'] },
+  { id:'logging',  label:'Logging & Monitoring',  color:'#f1c40f',
+    nodes:['security-log','system-log','application-log','linux-logs',
+           'firewall-logs','syslog','packet-captures','metadata','originators'] },
+  { id:'siem',     label:'SIEM & Detection',      color:'#3b82f6',
+    nodes:['siem','siem-dashboards','ids-ips'] },
+  { id:'infra',    label:'Infrastructure',        color:'#64748b',
+    nodes:['nic','tcp','redundancy','resiliency','scalability',
+           'horizontal-scaling','vertical-scaling','elasticity','patching'] },
+  { id:'frameworks',label:'Frameworks',           color:'#06b6d4',
+    nodes:['nist'] },
+];
+
+/* Reverse map: node id → category ids */
+const NODE_CAT_MAP = {};
+CATEGORIES.forEach(c => c.nodes.forEach(n => {
+  if (!NODE_CAT_MAP[n]) NODE_CAT_MAP[n] = [];
+  NODE_CAT_MAP[n].push(c.id);
+}));
+
+/* ── Build sidebar buttons ── */
+(function buildSidebar() {
+  const list = document.getElementById('cat-list');
+  CATEGORIES.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn';
+    btn.dataset.catId = c.id;
+    btn.innerHTML =
+      `<span class="cat-dot" style="background:${c.color}"></span>`+
+      `<span>${c.label}</span>`;
+    btn.addEventListener('click', () => {
+      if (activeCat === c.id) clearFilter();
+      else applyFilter(c.id);
+    });
+    list.appendChild(btn);
+  });
+})();
+
+/* ═══════════════════════════════════════════════════
+   FILTER LOGIC
+═══════════════════════════════════════════════════ */
+let activeCat = null;
+
+function applyFilter(catId) {
+  activeCat = catId;
+  const cat = CATEGORIES.find(c => c.id === catId);
+  const matchSet = new Set(cat.nodes);
+
+  document.querySelectorAll('.node[data-node-id]').forEach(n => {
+    n.classList.remove('cat-match','cat-dim');
+    n.classList.add(matchSet.has(n.dataset.nodeId) ? 'cat-match' : 'cat-dim');
+  });
+
+  document.querySelectorAll('.zone').forEach(zone => {
+    const nodes = zone.querySelectorAll('.node[data-node-id]');
+    const allDim = [...nodes].every(n => n.classList.contains('cat-dim'));
+    zone.classList.toggle('zone-all-dim', allDim && nodes.length > 0);
+  });
+
+  document.body.classList.add('cat-filtered');
+
+  document.querySelectorAll('.cat-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.catId === catId));
+
+  const banner = document.getElementById('filter-banner');
+  banner.style.display = 'block';
+  banner.style.color = cat.color;
+  banner.style.borderColor = cat.color;
+  banner.innerHTML = `${cat.label}<br><span style="opacity:.55;font-size:8px">click to clear</span>`;
+  banner.onclick = clearFilter;
+
+  document.getElementById('clear-btn').style.display = 'block';
+}
+
+function clearFilter() {
+  activeCat = null;
+  document.body.classList.remove('cat-filtered');
+  document.querySelectorAll('.node').forEach(n =>
+    n.classList.remove('cat-match','cat-dim'));
+  document.querySelectorAll('.zone').forEach(z =>
+    z.classList.remove('zone-all-dim'));
+  document.querySelectorAll('.cat-btn').forEach(b =>
+    b.classList.remove('active'));
+  document.getElementById('filter-banner').style.display = 'none';
+  document.getElementById('clear-btn').style.display = 'none';
+}
+
+/* ═══════════════════════════════════════════════════
+   DETAIL PANEL
+═══════════════════════════════════════════════════ */
+let selectedNode = null;
+
+function openDetail(id) {
+  const d = NODE_DATA[id];
+  if (!d) return;
+
+  if (selectedNode) selectedNode.classList.remove('selected');
+  const el = document.querySelector(`.node[data-node-id="${id}"]`);
+  if (el) { el.classList.add('selected'); selectedNode = el; }
+
+  document.getElementById('detail-title').textContent = d.title;
+  document.getElementById('detail-category').textContent = d.cat;
+  document.getElementById('detail-body').innerHTML = d.html;
+  document.getElementById('detail-panel').classList.remove('collapsed');
+  document.body.classList.add('detail-open');
+}
+
+function closeDetail() {
+  document.getElementById('detail-panel').classList.add('collapsed');
+  document.body.classList.remove('detail-open');
+  if (selectedNode) { selectedNode.classList.remove('selected'); selectedNode = null; }
+}
+
+/* ═══════════════════════════════════════════════════
+   STUDY MODE
+═══════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   GRAPH VIEW — force-directed bubble chart
+═══════════════════════════════════════════════════ */
+
+/* helpers */
+function gn(id,label,color,nodeId,x,y){return{id,label,color,nodeId:nodeId||null,x,y,vx:0,vy:0,r:20,pinned:false}}
+function ge(s,t,type,label){return{s,t,type:type||'relates',label:label||null}}
+
+/* ── Category anchor nodes (large, colored rings) ── */
+const GNODES = [
+  /* Category anchors */
+  gn('cat-cia',    'CIA\nTriad',          '#1abc9c', null,     0,    0),
+  gn('cat-risk',   'Risk\nMgmt',          '#e67e22', null,   320, -180),
+  gn('cat-ctrlcat','Control\nCategories', '#3498db', null,  -320, -180),
+  gn('cat-ctrltype','Control\nTypes',     '#9b59b6', null,  -320,  180),
+  gn('cat-data',   'Data\nProtection',    '#a855f7', null,   320,  180),
+  gn('cat-crypto', 'Crypto\ngraphy',      '#2ecc71', null,     0, -360),
+  gn('cat-logging','Logging &\nMonitor',  '#f1c40f', null,   500,    0),
+  gn('cat-siem',   'SIEM &\nDetection',   '#3b82f6', null,   500,  260),
+  gn('cat-infra',  'Infra &\nResilience', '#64748b', null,     0,  360),
+
+  /* CIA Triad nodes */
+  gn('confidentiality','Confidentiality','#1abc9c','confidentiality', -80, -120),
+  gn('integrity',      'Integrity',      '#1abc9c','integrity',        80,  -80),
+  gn('availability',   'Availability',   '#1abc9c','availability',      0,  120),
+  gn('hashing',        'Hashing',        '#2ecc71','hashing',         160, -160),
+  gn('access-controls','Access\nControls','#3498db','access-controls',-160,  80),
+
+  /* Risk nodes */
+  gn('risk',            'Risk',           '#e67e22','risk',            260, -260),
+  gn('vulnerability',   'Vulnerability',  '#e74c3c','vulnerability',   400, -300),
+  gn('security-incident','Security\nIncident','#e74c3c','security-incident',460,-180),
+  gn('risk-mitigation', 'Risk\nMitigation','#3498db','risk-mitigation',360, -80),
+
+  /* Control Categories */
+  gn('technical-controls', 'Technical',    '#3498db','technical-controls', -480,-260),
+  gn('operational-controls','Operational', '#3498db','operational-controls',-480,-180),
+  gn('managerial-controls', 'Managerial',  '#3498db','managerial-controls', -480,-100),
+  gn('physical-controls',   'Physical',    '#3498db','physical-controls',   -460,-320),
+  gn('nist',                'NIST\nSP800', '#1abc9c','nist',               -200,-260),
+
+  /* Control Types */
+  gn('preventive',  'Preventive',  '#2ecc71','preventive',   -500,  80),
+  gn('deterrent',   'Deterrent',   '#e67e22','deterrent',    -460, 160),
+  gn('detective',   'Detective',   '#f1c40f','detective',    -460, 260),
+  gn('corrective',  'Corrective',  '#3498db','corrective',   -400, 320),
+  gn('compensating','Compensating','#9b59b6','compensating', -300, 360),
+  gn('directive',   'Directive',   '#95a5a6','directive',    -200, 320),
+
+  /* Data Protection */
+  gn('pii',          'PII',          '#e74c3c','pii',           280,  280),
+  gn('tokenization', 'Tokenization', '#a855f7','tokenization',  400,  300),
+  gn('data-masking', 'Data\nMasking','#a855f7','data-masking',  440,  380),
+  gn('obfuscation',  'Obfuscation',  '#a855f7','obfuscation',   360,  420),
+  gn('steganography','Steganography','#a855f7','steganography', 240,  420),
+
+  /* Cryptography */
+  gn('key-stretching','Key\nStretching','#2ecc71','key-stretching',  80, -420),
+  gn('pfs',           'PFS',           '#2ecc71','pfs',            -120, -420),
+
+  /* Logging */
+  gn('security-log',  'Security\nLog',  '#f1c40f','security-log',   580, -140),
+  gn('system-log',    'System\nLog',    '#f1c40f','system-log',     680,  -80),
+  gn('application-log','App Log',       '#f1c40f','application-log', 700,   20),
+  gn('linux-logs',    'Linux\nLogs',    '#f1c40f','linux-logs',     660,  100),
+  gn('firewall-logs', 'Firewall\nLogs', '#f1c40f','firewall-logs',  580,  160),
+  gn('syslog',        'Syslog',         '#3498db','syslog',         480, -100),
+  gn('packet-captures','Packet\nCapture','#95a5a6','packet-captures',760,   60),
+  gn('metadata',      'Metadata',       '#95a5a6','metadata',       760,  160),
+  gn('originators',   'Originators',    '#95a5a6','originators',    580,   80),
+
+  /* SIEM */
+  gn('siem',          'SIEM',           '#3b82f6','siem',           560,  300),
+  gn('siem-dashboards','SIEM\nDashboards','#3b82f6','siem-dashboards',680, 340),
+  gn('ids-ips',       'IDS / IPS',      '#e67e22','ids-ips',        620,  420),
+
+  /* Infrastructure */
+  gn('nic',               'NIC',              '#95a5a6','nic',              -160, 440),
+  gn('tcp',               'TCP',              '#3498db','tcp',              -60,  480),
+  gn('redundancy',        'Redundancy',       '#2ecc71','redundancy',        80,  460),
+  gn('resiliency',        'Resiliency',       '#2ecc71','resiliency',       200,  480),
+  gn('scalability',       'Scalability',      '#1abc9c','scalability',       20,  500),
+  gn('horizontal-scaling','Horizontal\nScale','#1abc9c','horizontal-scaling',-80, 520),
+  gn('vertical-scaling',  'Vertical\nScale',  '#1abc9c','vertical-scaling',  60,  560),
+  gn('elasticity',        'Elasticity',       '#1abc9c','elasticity',       -20,  580),
+  gn('patching',          'Patching',         '#e67e22','patching',         200,  560),
+];
+
+const GEDGES = [
+  /* Category membership */
+  ge('cat-cia','confidentiality','member'), ge('cat-cia','integrity','member'),
+  ge('cat-cia','availability','member'),    ge('cat-cia','hashing','member'),
+  ge('cat-cia','access-controls','member'),
+
+  ge('cat-risk','risk','member'),           ge('cat-risk','vulnerability','member'),
+  ge('cat-risk','security-incident','member'), ge('cat-risk','risk-mitigation','member'),
+
+  ge('cat-ctrlcat','technical-controls','member'),  ge('cat-ctrlcat','operational-controls','member'),
+  ge('cat-ctrlcat','managerial-controls','member'),  ge('cat-ctrlcat','physical-controls','member'),
+  ge('cat-ctrlcat','nist','member'),
+
+  ge('cat-ctrltype','preventive','member'),  ge('cat-ctrltype','deterrent','member'),
+  ge('cat-ctrltype','detective','member'),   ge('cat-ctrltype','corrective','member'),
+  ge('cat-ctrltype','compensating','member'),ge('cat-ctrltype','directive','member'),
+
+  ge('cat-data','pii','member'),         ge('cat-data','tokenization','member'),
+  ge('cat-data','data-masking','member'),ge('cat-data','obfuscation','member'),
+  ge('cat-data','steganography','member'),
+
+  ge('cat-crypto','hashing','member'),   ge('cat-crypto','key-stretching','member'),
+  ge('cat-crypto','pfs','member'),
+
+  ge('cat-logging','security-log','member'), ge('cat-logging','system-log','member'),
+  ge('cat-logging','application-log','member'), ge('cat-logging','linux-logs','member'),
+  ge('cat-logging','firewall-logs','member'), ge('cat-logging','syslog','member'),
+  ge('cat-logging','packet-captures','member'), ge('cat-logging','metadata','member'),
+  ge('cat-logging','originators','member'),
+
+  ge('cat-siem','siem','member'), ge('cat-siem','siem-dashboards','member'),
+  ge('cat-siem','ids-ips','member'),
+
+  ge('cat-infra','nic','member'),   ge('cat-infra','tcp','member'),
+  ge('cat-infra','redundancy','member'), ge('cat-infra','resiliency','member'),
+  ge('cat-infra','scalability','member'), ge('cat-infra','horizontal-scaling','member'),
+  ge('cat-infra','vertical-scaling','member'), ge('cat-infra','elasticity','member'),
+  ge('cat-infra','patching','member'),
+
+  /* Semantic relationships */
+  ge('confidentiality','hashing','supports','verifies'),
+  ge('confidentiality','access-controls','enforced-by'),
+  ge('integrity','hashing','verified-by'),
+  ge('availability','redundancy','supported-by'),
+  ge('availability','resiliency','supported-by'),
+  ge('availability','scalability','supported-by'),
+
+  ge('risk','vulnerability','contains'),
+  ge('risk','security-incident','triggers'),
+  ge('vulnerability','risk-mitigation','addressed-by'),
+  ge('risk-mitigation','patching','uses','patch vulns'),
+  ge('risk-mitigation','technical-controls','uses'),
+
+  ge('hashing','key-stretching','related'),
+  ge('pfs','confidentiality','protects'),
+
+  ge('pii','tokenization','protected-by'),
+  ge('pii','data-masking','protected-by'),
+  ge('obfuscation','steganography','related'),
+
+  ge('technical-controls','preventive','implements'),
+  ge('technical-controls','detective','implements'),
+  ge('operational-controls','detective','implements'),
+  ge('managerial-controls','directive','implements'),
+
+  ge('nist','managerial-controls','guides'),
+  ge('nist','risk-mitigation','guides'),
+
+  ge('syslog','siem','feeds','log stream'),
+  ge('originators','syslog','sends-to'),
+  ge('security-log','siem','feeds'),
+  ge('firewall-logs','siem','feeds'),
+  ge('siem','siem-dashboards','powers'),
+  ge('siem','ids-ips','correlates-with'),
+  ge('ids-ips','detective','type-of'),
+  ge('ids-ips','preventive','type-of'),
+  ge('packet-captures','siem','feeds'),
+  ge('metadata','siem','feeds'),
+
+  ge('scalability','horizontal-scaling','type-of'),
+  ge('scalability','vertical-scaling','type-of'),
+  ge('elasticity','scalability','extends'),
+  ge('redundancy','resiliency','enables'),
+  ge('tcp','nic','uses'),
+  ge('patching','vulnerability','mitigates'),
+  ge('access-controls','technical-controls','type-of'),
+];
+
+/* ── Simulation constants ── */
+const G_REPEL   = 18000;
+const G_SPRING  = 0.03;
+const G_IDEAL   = 120;
+const G_GRAVITY = 0.003;
+const G_DAMPING = 0.80;
+
+let gNodes=[], gNodeMap={}, gGraphInited=false, gGraphActive=false;
+let gDragNode=null, gDragOff={}, gPanning=false, gPanStart={};
+let gTx={x:0,y:0,k:1};
+
+function gTick(){
+  const ns=gNodes;
+  for(let i=0;i<ns.length;i++){
+    const a=ns[i]; if(a.pinned)continue;
+    for(let j=i+1;j<ns.length;j++){
+      const b=ns[j];
+      let dx=b.x-a.x,dy=b.y-a.y;
+      const d2=dx*dx+dy*dy+1,d=Math.sqrt(d2);
+      const f=G_REPEL/d2,fx=f*dx/d,fy=f*dy/d;
+      a.vx-=fx;a.vy-=fy;
+      if(!b.pinned){b.vx+=fx;b.vy+=fy;}
+    }
+  }
+  for(const e of GEDGES){
+    const a=gNodeMap[e.s],b=gNodeMap[e.t];
+    if(!a||!b)continue;
+    const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)+0.001;
+    const f=G_SPRING*(d-G_IDEAL),fx=f*dx/d,fy=f*dy/d;
+    if(!a.pinned){a.vx+=fx;a.vy+=fy;}
+    if(!b.pinned){b.vx-=fx;b.vy-=fy;}
+  }
+  for(const n of ns){
+    if(n.pinned)continue;
+    n.vx+=-n.x*G_GRAVITY;n.vy+=-n.y*G_GRAVITY;
+    n.vx*=G_DAMPING;n.vy*=G_DAMPING;
+    n.x+=n.vx;n.y+=n.vy;
+  }
+}
+
+function runGraphLayout(steps){
+  gNodes.forEach(n=>{n.pinned=false;n.vx=0;n.vy=0;});
+  for(let i=0;i<steps;i++)gTick();
+  gRender();
+}
+
+const GESTYLE={
+  member:  {color:'#1e3a5f',w:1,  dash:'3,7', mk:null},
+  'supports':    {color:'#2ecc71',w:1.5,dash:'',   mk:'ga-green'},
+  'enforced-by': {color:'#3498db',w:1.5,dash:'',   mk:'ga-blue'},
+  'verified-by': {color:'#2ecc71',w:1.5,dash:'',   mk:'ga-green'},
+  'supported-by':{color:'#1abc9c',w:1.5,dash:'',   mk:'ga-teal'},
+  'contains':    {color:'#e67e22',w:1.5,dash:'',   mk:'ga-gray'},
+  'triggers':    {color:'#e74c3c',w:1.5,dash:'5,3',mk:'ga-red'},
+  'addressed-by':{color:'#3498db',w:1.5,dash:'',   mk:'ga-blue'},
+  'uses':        {color:'#334155',w:1.5,dash:'',   mk:'ga-gray'},
+  'feeds':       {color:'#f1c40f',w:1.5,dash:'',   mk:'ga-gray'},
+  'powers':      {color:'#3b82f6',w:1.5,dash:'',   mk:'ga-blue'},
+  'related':     {color:'#475569',w:1,  dash:'4,4', mk:null},
+  'type-of':     {color:'#334155',w:1,  dash:'',   mk:'ga-gray'},
+  'implements':  {color:'#3498db',w:1,  dash:'',   mk:'ga-blue'},
+  'mitigates':   {color:'#2ecc71',w:1.5,dash:'',   mk:'ga-green'},
+  'guides':      {color:'#1abc9c',w:1,  dash:'3,4', mk:'ga-teal'},
+  'sends-to':    {color:'#f1c40f',w:1,  dash:'',   mk:'ga-gray'},
+  'correlates-with':{color:'#3b82f6',w:1,dash:'4,4',mk:null},
+  'extends':     {color:'#1abc9c',w:1.5,dash:'',   mk:'ga-teal'},
+  'enables':     {color:'#2ecc71',w:1.5,dash:'',   mk:'ga-green'},
+  'protected-by':{color:'#a855f7',w:1.5,dash:'',   mk:'ga-gray'},
+  'protects':    {color:'#1abc9c',w:1.5,dash:'',   mk:'ga-teal'},
+};
+
+function gRender(){
+  const svgGe=document.getElementById('ge');
+  const svgGn=document.getElementById('gn');
+  svgGe.innerHTML='';svgGn.innerHTML='';
+
+  function el(tag,attrs){
+    const e=document.createElementNS('http://www.w3.org/2000/svg',tag);
+    for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);
+    return e;
+  }
+
+  for(const e of GEDGES){
+    const a=gNodeMap[e.s],b=gNodeMap[e.t];
+    if(!a||!b)continue;
+    const st=GESTYLE[e.type]||GESTYLE.uses;
+    const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)+0.001;
+    const sr=a.r+2,er=b.r+(st.mk?9:2);
+    const x1=a.x+dx/d*sr,y1=a.y+dy/d*sr,x2=b.x-dx/d*er,y2=b.y-dy/d*er;
+    const line=el('line',{x1,y1,x2,y2,stroke:st.color,'stroke-width':st.w,
+      opacity:e.type==='member'?'0.3':'0.65','data-gs':e.s,'data-gt':e.t});
+    if(st.dash)line.setAttribute('stroke-dasharray',st.dash);
+    if(st.mk)line.setAttribute('marker-end',`url(#${st.mk})`);
+    svgGe.appendChild(line);
+    if(e.label){
+      const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+      const t=el('text',{x:mx,y:my-4,'text-anchor':'middle','font-size':'8',
+        'font-family':'Segoe UI,system-ui,sans-serif','font-weight':'600',
+        fill:st.color,opacity:'0.8','pointer-events':'none'});
+      t.textContent=e.label;
+      svgGe.appendChild(t);
+    }
+  }
+
+  for(const n of gNodes){
+    const isCat=n.id.startsWith('cat-');
+    const g=el('g',{transform:`translate(${n.x.toFixed(1)},${n.y.toFixed(1)})`,
+      cursor:'pointer','data-g-node-id':n.id});
+    const circle=el('circle',{r:n.r,fill:n.color+'22',stroke:n.color,
+      'stroke-width':isCat?'2.5':'1.5'});
+    g.appendChild(circle);
+    const lines=n.label.split('\n');
+    const lh=11,sy=-(lines.length-1)*lh/2;
+    lines.forEach((lbl,i)=>{
+      const t=el('text',{'text-anchor':'middle','dominant-baseline':'middle',
+        y:sy+i*lh,'font-size':n.r>28?'10':'9',
+        'font-family':'Segoe UI,system-ui,sans-serif',
+        'font-weight':'700',fill:n.color,'pointer-events':'none'});
+      t.textContent=lbl;
+      g.appendChild(t);
+    });
+    g.addEventListener('mouseenter',()=>{
+      circle.setAttribute('fill',n.color+'44');
+      circle.setAttribute('stroke-width','2.5');
+    });
+    g.addEventListener('mouseleave',()=>{
+      if(gDragNode!==n){
+        circle.setAttribute('fill',n.color+'22');
+        circle.setAttribute('stroke-width',isCat?'2.5':'1.5');
+      }
+    });
+    g.addEventListener('mousedown',ev=>{
+      ev.stopPropagation();
+      gDragNode=n;n.pinned=true;
+      const pt=gSvgPt(ev);
+      gDragOff={x:pt.x-n.x,y:pt.y-n.y};
+    });
+    g.addEventListener('click',ev=>{
+      ev.stopPropagation();
+      if(n.nodeId&&NODE_DATA[n.nodeId]) openDetail(n.nodeId);
+    });
+    svgGn.appendChild(g);
+  }
+  gApplyTx();
+  if(activeCat) applyGraphFilter(activeCat);
+}
+
+function gSvgPt(e){
+  const r=document.getElementById('graph-svg').getBoundingClientRect();
+  return{x:(e.clientX-r.left-gTx.x)/gTx.k,y:(e.clientY-r.top-gTx.y)/gTx.k};
+}
+function gApplyTx(){
+  document.getElementById('graph-root').setAttribute('transform',
+    `translate(${gTx.x.toFixed(1)},${gTx.y.toFixed(1)}) scale(${gTx.k.toFixed(4)})`);
+}
+function fitGraph(){
+  if(!gNodes.length)return;
+  const svg=document.getElementById('graph-svg');
+  const{width:W,height:H}=svg.getBoundingClientRect();
+  let mnx=1e9,mxx=-1e9,mny=1e9,mxy=-1e9;
+  gNodes.forEach(n=>{mnx=Math.min(mnx,n.x-n.r);mxx=Math.max(mxx,n.x+n.r);
+    mny=Math.min(mny,n.y-n.r);mxy=Math.max(mxy,n.y+n.r);});
+  const pad=50,k=Math.min((W-pad*2)/(mxx-mnx),(H-pad*2)/(mxy-mny),1.8);
+  gTx.k=k;gTx.x=W/2-(mnx+mxx)/2*k;gTx.y=H/2-(mny+mxy)/2*k;
+  gApplyTx();
+}
+
+function gSetupInteraction(){
+  const svg=document.getElementById('graph-svg');
+  svg.addEventListener('wheel',e=>{
+    e.preventDefault();
+    const r=svg.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+    const f=e.deltaY<0?1.12:0.89;
+    gTx.x=mx-(mx-gTx.x)*f;gTx.y=my-(my-gTx.y)*f;
+    gTx.k=Math.max(0.12,Math.min(4,gTx.k*f));
+    gApplyTx();
+  },{passive:false});
+  svg.addEventListener('mousedown',e=>{
+    const tgt=e.target;
+    if(tgt===svg||tgt.id==='graph-root'||tgt.id==='ge'||tgt.id==='gn'){
+      gPanning=true;gPanStart={x:e.clientX-gTx.x,y:e.clientY-gTx.y};
+    }
+  });
+  window.addEventListener('mousemove',e=>{
+    if(gDragNode){
+      const pt=gSvgPt(e);
+      gDragNode.x=pt.x-gDragOff.x;gDragNode.y=pt.y-gDragOff.y;
+      gRender();
+    }else if(gPanning){
+      gTx.x=e.clientX-gPanStart.x;gTx.y=e.clientY-gPanStart.y;
+      gApplyTx();
+    }
+  });
+  window.addEventListener('mouseup',()=>{gDragNode=null;gPanning=false;});
+}
+
+function applyGraphFilter(catId){
+  const cat=CATEGORIES.find(c=>c.id===catId);
+  if(!cat)return;
+  const matchSet=new Set(cat.nodes);
+  document.querySelectorAll('#gn > g[data-g-node-id]').forEach(g=>{
+    const nid=g.dataset.gNodeId;
+    const isCat=nid.startsWith('cat-');
+    const nodeId=GNODES.find(n=>n.id===nid)?.nodeId;
+    const vis=isCat||(nodeId&&matchSet.has(nodeId));
+    g.style.opacity=vis?'1':'0.05';
+    g.style.pointerEvents=vis?'auto':'none';
+  });
+  document.querySelectorAll('#ge > line[data-gs][data-gt]').forEach(line=>{
+    const sNode=GNODES.find(n=>n.id===line.dataset.gs);
+    const tNode=GNODES.find(n=>n.id===line.dataset.gt);
+    const sVis=!sNode||sNode.id.startsWith('cat-')||(sNode.nodeId&&matchSet.has(sNode.nodeId));
+    const tVis=!tNode||tNode.id.startsWith('cat-')||(tNode.nodeId&&matchSet.has(tNode.nodeId));
+    line.style.opacity=(sVis&&tVis)?'0.6':'0.04';
+  });
+}
+function clearGraphFilter(){
+  document.querySelectorAll('#gn > g[data-g-node-id]').forEach(g=>{
+    g.style.opacity='';g.style.pointerEvents='';
+  });
+  document.querySelectorAll('#ge > line').forEach(l=>l.style.opacity='');
+}
+
+function toggleGraphView(){
+  gGraphActive=!gGraphActive;
+  const btn=document.getElementById('btn-graph');
+  const gview=document.getElementById('graph-view');
+  const canvas=document.getElementById('canvas');
+  if(gGraphActive){
+    btn.style.cssText='border-color:var(--teal);color:var(--teal);background:rgba(26,188,156,.1)';
+    gview.classList.add('visible');
+    canvas.style.display='none';
+    if(!gGraphInited){
+      gNodes=GNODES.map(n=>({...n}));
+      gNodeMap={};
+      gNodes.forEach(n=>gNodeMap[n.id]=n);
+      const deg={};
+      gNodes.forEach(n=>deg[n.id]=0);
+      GEDGES.forEach(e=>{if(deg[e.s]!==undefined)deg[e.s]++;if(deg[e.t]!==undefined)deg[e.t]++;});
+      gNodes.forEach(n=>{
+        const isCat=n.id.startsWith('cat-');
+        n.r=isCat?36:Math.max(18,Math.min(34,18+((deg[n.id]||0)*1.6)));
+      });
+      runGraphLayout(300);
+      gSetupInteraction();
+      gGraphInited=true;
+    }
+    setTimeout(fitGraph,60);
+    if(activeCat)applyGraphFilter(activeCat);
+  }else{
+    btn.style.cssText='';
+    gview.classList.remove('visible');
+    canvas.style.display='';
+  }
+}
+
+/* Patch clearFilter and applyFilter to also update graph */
+const _origApply=applyFilter;
+applyFilter=function(catId){
+  _origApply(catId);
+  if(gGraphActive&&gGraphInited)applyGraphFilter(catId);
+};
+const _origClear=clearFilter;
+clearFilter=function(){
+  _origClear();
+  if(gGraphActive&&gGraphInited)clearGraphFilter();
+};
+
+/* ═══ ILLUSTRATED MODE ═══ */
+let illustratedMode = false;
+
+const GICONS = {
+  'cat-cia':'🔒','cat-risk':'⚠','cat-ctrlcat':'🏛','cat-ctrltype':'🛡',
+  'cat-data':'🗄','cat-crypto':'🔑','cat-logging':'📋','cat-siem':'🖥','cat-infra':'⚙',
+  'confidentiality':'🤫','integrity':'✅','availability':'⬆','hashing':'#️',
+  'access-controls':'🚪','risk':'⚠','vulnerability':'🕳','security-incident':'🚨',
+  'risk-mitigation':'🛠','technical-controls':'💻','operational-controls':'👥',
+  'managerial-controls':'📊','physical-controls':'🔐','nist':'📜',
+  'preventive':'🛡','deterrent':'⚡','detective':'🔍','corrective':'🔧',
+  'compensating':'⚖','directive':'📋','pii':'👤','tokenization':'🎟',
+  'data-masking':'🎭','obfuscation':'🌫','steganography':'🖼',
+  'key-stretching':'💪','pfs':'🔄','security-log':'🔒','system-log':'💻',
+  'application-log':'📱','linux-logs':'🐧','firewall-logs':'🧱',
+  'syslog':'📡','packet-captures':'📦','metadata':'🏷','originators':'📤',
+  'siem':'📊','siem-dashboards':'📈','ids-ips':'🚨',
+  'nic':'🔌','tcp':'📡','redundancy':'♻','resiliency':'💪',
+  'scalability':'📈','horizontal-scaling':'↔','vertical-scaling':'↕',
+  'elasticity':'🌊','patching':'🩹',
+};
+
+const GEDGE_DESC = {
+  'confidentiality->hashing':'Hashing verifies\ndata hasn\'t changed',
+  'confidentiality->access-controls':'Access controls\nenforce who sees data',
+  'integrity->hashing':'Hashing detects\nunauthorized changes',
+  'availability->redundancy':'Redundancy prevents\ndowntime failures',
+  'availability->resiliency':'Resiliency ensures\nquick recovery',
+  'availability->scalability':'Scaling maintains\navailability under load',
+  'risk->vulnerability':'Vulnerabilities are\nexploitable weaknesses in risk',
+  'risk->security-incident':'Realized risks become\nsecurity incidents',
+  'vulnerability->risk-mitigation':'Mitigations address\nknown vulnerabilities',
+  'risk-mitigation->patching':'Patching closes\nvulnerable software',
+  'risk-mitigation->technical-controls':'Technical controls\nreduce risk',
+  'hashing->key-stretching':'Key stretching applies\nhashing iteratively',
+  'pfs->confidentiality':'PFS protects past\nsessions\' confidentiality',
+  'pii->tokenization':'Tokenization protects\nPII with safe tokens',
+  'pii->data-masking':'Masking hides\nreal PII values',
+  'obfuscation->steganography':'Steganography is\nadvanced obfuscation',
+  'technical-controls->preventive':'Firewalls are\npreventive tech controls',
+  'technical-controls->detective':'IDS/IPS are\ndetective tech controls',
+  'operational-controls->detective':'Guards and audits\ndetect incidents',
+  'managerial-controls->directive':'Policies are\nmanagerial directives',
+  'nist->managerial-controls':'NIST guides\nmanagerial policy creation',
+  'nist->risk-mitigation':'NIST RMF guides\nrisk mitigation steps',
+  'syslog->siem':'Syslog streams\nlogs into SIEM',
+  'originators->syslog':'Devices send logs\nvia Syslog protocol',
+  'security-log->siem':'Security events\nfeed into SIEM',
+  'firewall-logs->siem':'Firewall events\nfeed into SIEM',
+  'siem->siem-dashboards':'SIEM powers\nvisual dashboards',
+  'siem->ids-ips':'SIEM correlates\nIDS/IPS alerts',
+  'ids-ips->detective':'IDS is a\ndetective control type',
+  'ids-ips->preventive':'IPS is a\npreventive control type',
+  'packet-captures->siem':'PCAP data feeds\ninto SIEM analysis',
+  'metadata->siem':'Metadata enriches\nSIEM investigations',
+  'scalability->horizontal-scaling':'Horizontal = add\nmore nodes (scale out)',
+  'scalability->vertical-scaling':'Vertical = upgrade\nexisting node (scale up)',
+  'elasticity->scalability':'Elasticity is\nauto-scaling capability',
+  'redundancy->resiliency':'Redundancy is the\nfoundation of resilience',
+  'tcp->nic':'TCP packets are\ntransmitted via NIC',
+  'patching->vulnerability':'Patching closes\nknown vulnerabilities',
+  'access-controls->technical-controls':'Access controls are\na technical control type',
+};
+
+function getEdgeDesc(e) {
+  return GEDGE_DESC[`${e.s}->${e.t}`] || null;
+}
+
+const _origGRender = gRender;
+gRender = function() {
+  if (!illustratedMode) { _origGRender(); return; }
+  const svgGe=document.getElementById('ge'), svgGn=document.getElementById('gn');
+  svgGe.innerHTML=''; svgGn.innerHTML='';
+  function el(tag,attrs){
+    const e=document.createElementNS('http://www.w3.org/2000/svg',tag);
+    for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);return e;
+  }
+  for(const e of GEDGES){
+    const a=gNodeMap[e.s],b=gNodeMap[e.t];if(!a||!b)continue;
+    const st=GESTYLE[e.type]||GESTYLE.uses;
+    const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)+0.001;
+    const sr=36,er=36+(st.mk?9:2);
+    const x1=a.x+dx/d*sr,y1=a.y+dy/d*sr,x2=b.x-dx/d*er,y2=b.y-dy/d*er;
+    const line=el('line',{x1,y1,x2,y2,stroke:st.color,'stroke-width':st.w,
+      opacity:e.type==='member'?'0.2':'0.7','data-gs':e.s,'data-gt':e.t});
+    if(st.dash)line.setAttribute('stroke-dasharray',st.dash);
+    if(st.mk)line.setAttribute('marker-end',`url(#${st.mk})`);
+    svgGe.appendChild(line);
+    const desc=getEdgeDesc(e);
+    if(desc&&e.type!=='member'){
+      const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+      const lines=desc.split('\n');
+      const bw=76,bh=lines.length*10+6;
+      svgGe.appendChild(el('rect',{x:mx-bw/2,y:my-bh/2,width:bw,height:bh,rx:'3',
+        fill:'#0f172a',stroke:st.color,'stroke-width':'0.5',opacity:'0.92'}));
+      lines.forEach((ln,i)=>{
+        const t=el('text',{x:mx,y:my-(lines.length-1)*5+i*10,
+          'text-anchor':'middle','dominant-baseline':'middle','font-size':'7.5',
+          'font-family':'Segoe UI,system-ui,sans-serif','font-weight':'600',
+          fill:st.color,'pointer-events':'none'});
+        t.textContent=ln;svgGe.appendChild(t);
+      });
+    }
+  }
+  const NW=72,NH=58;
+  for(const n of gNodes){
+    const isCat=n.id.startsWith('cat-');
+    const g=el('g',{transform:`translate(${n.x.toFixed(1)},${n.y.toFixed(1)})`,
+      cursor:'pointer','data-g-node-id':n.id});
+    const rect=el('rect',{x:-NW/2,y:-NH/2,width:NW,height:NH,rx:'8',
+      fill:n.color+'18',stroke:n.color,'stroke-width':isCat?'2.5':'1.5'});
+    g.appendChild(rect);
+    const icon=el('text',{y:'-7','text-anchor':'middle','dominant-baseline':'middle',
+      'font-size':isCat?'20':'16','pointer-events':'none'});
+    icon.textContent=GICONS[n.id]||'●';g.appendChild(icon);
+    const lbl=el('text',{y:'13','text-anchor':'middle','dominant-baseline':'middle',
+      'font-size':'7.5','font-family':'Segoe UI,system-ui,sans-serif',
+      'font-weight':'700',fill:n.color,'pointer-events':'none'});
+    lbl.textContent=n.label.replace(/\n/g,' ');g.appendChild(lbl);
+    g.addEventListener('mouseenter',()=>rect.setAttribute('fill',n.color+'35'));
+    g.addEventListener('mouseleave',()=>{if(gDragNode!==n)rect.setAttribute('fill',n.color+'18');});
+    g.addEventListener('mousedown',ev=>{ev.stopPropagation();gDragNode=n;n.pinned=true;
+      const pt=gSvgPt(ev);gDragOff={x:pt.x-n.x,y:pt.y-n.y};});
+    g.addEventListener('click',ev=>{ev.stopPropagation();
+      if(n.nodeId&&NODE_DATA[n.nodeId])openDetail(n.nodeId);});
+    svgGn.appendChild(g);
+  }
+  gApplyTx();
+  if(activeCat)applyGraphFilter(activeCat);
+};
+
+function toggleIllustrated(){
+  if(!gGraphActive)toggleGraphView();
+  illustratedMode=!illustratedMode;
+  const btn=document.getElementById('btn-illustrated');
+  btn.style.cssText=illustratedMode?'border-color:var(--purple);color:var(--purple);background:rgba(155,89,182,.12)':'';
+  btn.textContent=illustratedMode?'🖼 Bubble View':'🖼 Illustrated';
+  gRender();
+}
+
+let studyMode = false;
+function toggleStudyMode() {
+  studyMode = !studyMode;
+  const btn = document.getElementById('btn-study');
+  if (studyMode) {
+    document.querySelectorAll('.node-label,.node-sub').forEach(el =>
+      el.style.opacity = '0');
+    btn.style.cssText = 'border-color:var(--teal);color:var(--teal);background:rgba(26,188,156,.1)';
+    btn.textContent = '👁 Labels Hidden';
+  } else {
+    document.querySelectorAll('.node-label,.node-sub').forEach(el =>
+      el.style.opacity = '');
+    btn.style.cssText = '';
+    btn.textContent = '👁 Study Mode';
+  }
+}
+</script>
+<style id="declutter-overrides">
+/* Declutter: keep only the bubble chart + Graph/Bubble toggle */
+#sidebar, #footer, #btn-study, #btn-illustrated, #header .hdr-sep { display: none !important; }
+#app { grid-template-columns: 0 1fr 0 !important; grid-template-rows: var(--header-h) 1fr 0 !important; }
+body.detail-open #app { grid-template-columns: 0 1fr var(--detail-w) !important; }
+</style>
+<script>
+/* Declutter: flip the single toggle button label between Graph View / Bubble View */
+document.addEventListener('DOMContentLoaded', function () {
+  var b = document.getElementById('btn-graph');
+  if (!b) return;
+  function upd() {
+    var cv = document.getElementById('canvas'), gv = document.getElementById('graph-view');
+    var active = (cv && cv.style.display === 'none') || (gv && gv.classList.contains('visible'));
+    b.textContent = active ? '🫧 Bubble View' : '🗺 Graph View';
+  }
+  b.addEventListener('click', function () { setTimeout(upd, 0); });
+  upd();
+});
+</script>
+</body>
+</html>

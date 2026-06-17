@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CompTIA Security+ SY0-701 — Study Guide</title>
+<style>
+:root {
+  --bg:      #0f172a;
+  --surface: #1e293b;
+  --border:  #334155;
+  --text:    #cbd5e1;
+  --dim:     #64748b;
+  --bright:  #f1f5f9;
+  --blue:    #3498db;
+  --green:   #2ecc71;
+  --yellow:  #f1c40f;
+  --radius:  8px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 14px;
+}
+
+/* ── Page shell ── */
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+
+/* ── Header ── */
+.site-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+.site-header .badge {
+  display: inline-block;
+  background: var(--blue);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-bottom: 14px;
+}
+.site-header h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--bright);
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+.site-header h1 span { color: var(--blue); }
+.site-header p {
+  color: var(--dim);
+  font-size: 13px;
+}
+
+/* ── Progress bar ── */
+.progress-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.progress-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--dim);
+  white-space: nowrap;
+}
+.progress-bar-bg {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  width: calc(5/11 * 100%);
+  background: linear-gradient(90deg, var(--blue), var(--green));
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+.progress-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--blue);
+  white-space: nowrap;
+}
+
+/* ── Section heading ── */
+.section-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 14px;
+  padding-left: 2px;
+}
+
+/* ── Chapter grid ── */
+.chapters {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.chapter-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  text-decoration: none;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color 0.18s, background 0.18s, transform 0.18s;
+  position: relative;
+  overflow: hidden;
+}
+.chapter-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--border);
+  transition: background 0.18s;
+}
+
+/* Available chapter */
+.chapter-card.available {
+  cursor: pointer;
+}
+.chapter-card.available::before { background: var(--blue); }
+.chapter-card.available:hover {
+  border-color: var(--blue);
+  background: #1e2d45;
+  transform: translateY(-2px);
+}
+.chapter-card.available:hover .ch-title { color: var(--blue); }
+
+/* Locked chapter */
+.chapter-card.locked {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.ch-num {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.ch-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--bright);
+  line-height: 1.3;
+  transition: color 0.18s;
+}
+.ch-topics {
+  font-size: 11px;
+  color: var(--dim);
+  line-height: 1.5;
+  margin-top: 2px;
+}
+.ch-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+.ch-status.done   { color: var(--green); }
+.ch-status.locked { color: var(--dim); }
+.ch-status.done::before   { content: '●'; font-size: 8px; }
+.ch-status.locked::before { content: '○'; font-size: 8px; }
+
+/* ── Footer ── */
+.site-footer {
+  text-align: center;
+  color: var(--dim);
+  font-size: 11px;
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="badge">SY0-701</div>
+    <h1>CompTIA <span>Security+</span> Study Guide</h1>
+    <p>Interactive concept diagrams for each chapter — click a chapter to explore.</p>
+  </header>
+
+  <!-- Progress -->
+  <div class="progress-wrap">
+    <span class="progress-label">Progress</span>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill"></div>
+    </div>
+    <span class="progress-count">5 / 11 chapters</span>
+  </div>
+
+  <!-- Chapter list -->
+  <div class="section-label">Chapters</div>
+  <div class="chapters">
+
+    <a class="chapter-card available" href="outputs/Security_Plus_Chapter1_Diagram.html">
+      <span class="ch-num">Chapter 1</span>
+      <span class="ch-title">Mastering Security Basics</span>
+      <span class="ch-topics">CIA Triad · Risk management · Security controls · Cryptography · SIEM · Logging</span>
+      <span class="ch-status done">Available</span>
+    </a>
+
+    <a class="chapter-card available" href="outputs/Security_Plus_Chapter2_Diagram.html">
+      <span class="ch-num">Chapter 2</span>
+      <span class="ch-title">Understanding Identity & Access Management</span>
+      <span class="ch-topics">AAA · Auth factors · MFA · Biometrics · PAM · SSO · SAML · Access control models</span>
+      <span class="ch-status done">Available</span>
+    </a>
+
+    <a class="chapter-card available" href="outputs/Security_Plus_Chapter3_Diagram.html">
+      <span class="ch-num">Chapter 3</span>
+      <span class="ch-title">Exploring Network Technologies & Tools</span>
+      <span class="ch-topics">OSI model · Firewalls · Zero Trust · VPNs · Protocols · Network zones</span>
+      <span class="ch-status done">Available</span>
+    </a>
+
+    <a class="chapter-card available" href="outputs/Security_Plus_Chapter4_Diagram.html">
+      <span class="ch-num">Chapter 4</span>
+      <span class="ch-title">Securing Your Network</span>
+      <span class="ch-topics">IDS/IPS · Honeypots · Wireless security · WPA2/3 · EAP · VPN · NAC · TACACS+</span>
+      <span class="ch-status done">Available</span>
+    </a>
+
+    <a class="chapter-card available" href="outputs/Security_Plus_Chapter5_Diagram.html">
+      <span class="ch-num">Chapter 5</span>
+      <span class="ch-title">Securing Hosts and Data</span>
+      <span class="ch-topics">Virtualization · Cloud security · EDR/XDR · TPM · DLP · MDM · IoT · UEFI · Hardening</span>
+      <span class="ch-status done">Available</span>
+    </a>
+
+    <div class="chapter-card locked">
+      <span class="ch-num">Chapter 6</span>
+      <span class="ch-title">The Cloud & Virtualization</span>
+      <span class="ch-topics">Cloud models · Virtualization · Containers · Serverless · Shared responsibility</span>
+      <span class="ch-status locked">Coming soon</span>
+    </div>
+
+    <div class="chapter-card locked">
+      <span class="ch-num">Chapter 7</span>
+      <span class="ch-title">Cryptography & PKI</span>
+      <span class="ch-topics">Symmetric · Asymmetric · Hashing · Certificates · PKI · Key management</span>
+      <span class="ch-status locked">Coming soon</span>
+    </div>
+
+    <div class="chapter-card locked">
+      <span class="ch-num">Chapter 8</span>
+      <span class="ch-title">Resilience & Physical Security</span>
+      <span class="ch-topics">Redundancy · Backups · Availability · Physical controls · Site security</span>
+      <span class="ch-status locked">Coming soon</span>
+    </div>
+
+    <div class="chapter-card locked">
+      <span class="ch-num">Chapter 9</span>
+      <span class="ch-title">Monitoring, Logging & Auditing</span>
+      <span class="ch-topics">SIEM · Log management · Audit trails · Anomaly detection</span>
+      <span class="ch-status locked">Coming soon</span>
+    </div>
+
+    <div class="chapter-card locked">
+      <span class="ch-num">Chapter 10</span>
+      <span class="ch-title">Incident Response</span>
+      <span class="ch-topics">IR lifecycle · Forensics · Chain of custody · Playbooks</span>
+      <span class="ch-status locked">Coming soon</span>
+    </div>
+
+    <div class="chapter-card locked">
+      <span class="ch-num">Chapter 11</span>
+      <span class="ch-title">Governance, Risk & Compliance</span>
+      <span class="ch-topics">Policies · Risk assessment · Regulations · Privacy · Third-party risk</span>
+      <span class="ch-status locked">Coming soon</span>
+    </div>
+
+  </div>
+
+  <footer class="site-footer">
+    CompTIA Security+ SY0-701 &nbsp;·&nbsp; Personal study reference &nbsp;·&nbsp; Add chapters as you go
+  </footer>
+
+</div>
+</body>
+</html>

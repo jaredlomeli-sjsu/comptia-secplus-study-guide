@@ -1,0 +1,3723 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CompTIA Security+ SY0-701 — Chapter 3 Network Security Concepts</title>
+<style>
+/* ───────────────────────────────────────────────
+   CSS CUSTOM PROPERTIES — Color Language
+─────────────────────────────────────────────── */
+:root {
+  --bg:          #0f172a;
+  --surface:     #1e293b;
+  --surface2:    #263348;
+  --border:      #334155;
+  --text:        #cbd5e1;
+  --text-dim:    #64748b;
+  --text-bright: #f1f5f9;
+
+  --red:    #e74c3c;
+  --green:  #2ecc71;
+  --blue:   #3498db;
+  --orange: #e67e22;
+  --purple: #9b59b6;
+  --teal:   #1abc9c;
+  --gray:   #95a5a6;
+  --yellow: #f1c40f;
+
+  --red-dim:    rgba(231,76,60,0.15);
+  --green-dim:  rgba(46,204,113,0.12);
+  --blue-dim:   rgba(52,152,219,0.12);
+  --orange-dim: rgba(230,126,34,0.12);
+  --purple-dim: rgba(155,89,182,0.12);
+  --teal-dim:   rgba(26,188,156,0.12);
+
+  --osi-sidebar-w: 128px;
+  --detail-panel-w: 300px;
+  --header-h: 52px;
+  --footer-h: 44px;
+
+  --radius: 6px;
+  --transition: 0.25s ease;
+}
+
+/* ───────────────────────────────────────────────
+   RESET & BASE
+─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 13px;
+  overflow: hidden;
+}
+
+/* ───────────────────────────────────────────────
+   APP SHELL
+─────────────────────────────────────────────── */
+#app {
+  display: grid;
+  grid-template-rows: var(--header-h) 1fr var(--footer-h);
+  grid-template-columns: var(--osi-sidebar-w) 1fr 0px;
+  grid-template-areas:
+    "header  header  header"
+    "osi     canvas  detail"
+    "footer  footer  footer";
+  width: 100vw;
+  height: 100vh;
+  transition: grid-template-columns 0.25s ease;
+}
+body.detail-open #app {
+  grid-template-columns: var(--osi-sidebar-w) 1fr var(--detail-panel-w);
+}
+
+/* ───────────────────────────────────────────────
+   HEADER
+─────────────────────────────────────────────── */
+#header {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+}
+#header h1 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-bright);
+  white-space: nowrap;
+  margin-right: 8px;
+}
+#header h1 span { color: var(--blue); }
+
+#btn-toc {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+  flex-shrink: 0;
+}
+#btn-toc:hover { background: var(--blue-dim); border-color: var(--blue); color: var(--blue); }
+
+.hdr-btn {
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+}
+.hdr-btn:hover { background: var(--border); color: var(--text-bright); }
+.hdr-btn.active-red    { background: var(--red-dim);    border-color: var(--red);    color: var(--red);    }
+.hdr-btn.active-green  { background: var(--green-dim);  border-color: var(--green);  color: var(--green);  }
+.hdr-btn.active-blue   { background: var(--blue-dim);   border-color: var(--blue);   color: var(--blue);   }
+.hdr-btn.active-purple { background: var(--purple-dim); border-color: var(--purple); color: var(--purple); }
+
+.hdr-sep { width: 1px; height: 24px; background: var(--border); margin: 0 4px; }
+.hdr-spacer { flex: 1; }
+
+#btn-linkedin { border-color: #0077b5; color: #0077b5; }
+#btn-linkedin:hover { background: rgba(0,119,181,0.15); }
+#btn-linkedin.active-linkedin { background: rgba(0,119,181,0.2); border-color: #0077b5; color: #0ab5f5; }
+
+/* ───────────────────────────────────────────────
+   OSI SIDEBAR
+─────────────────────────────────────────────── */
+#osi-sidebar {
+  grid-area: osi;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+  z-index: 50;
+}
+
+#sidebar-osi {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.osi-layer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 6px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: filter var(--transition), transform var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.osi-layer:last-child { border-bottom: none; }
+.osi-layer:hover { filter: brightness(1.2); }
+
+.osi-layer.pulse {
+  animation: osi-pulse 0.6s ease-out 2;
+}
+@keyframes osi-pulse {
+  0%   { filter: brightness(1); }
+  50%  { filter: brightness(2.2); }
+  100% { filter: brightness(1); }
+}
+
+.osi-layer-num {
+  font-size: 9px;
+  font-weight: 700;
+  opacity: 0.7;
+  letter-spacing: 0.5px;
+}
+.osi-layer-name {
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.2;
+  margin: 1px 0;
+}
+.osi-layer-proto {
+  font-size: 8px;
+  opacity: 0.75;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* Layer colors */
+#osi-7  { background: rgba(230,126,34,0.20); color: #f39c12; }
+#osi-6  { background: rgba(155,89,182,0.20); color: #b07fe0; }
+#osi-5  { background: rgba(26,188,156,0.20); color: #1abc9c; }
+#osi-4  { background: rgba(46,204,113,0.20); color: #2ecc71; }
+#osi-3  { background: rgba(52,152,219,0.20); color: #3498db; }
+#osi-2  { background: rgba(139,90,43,0.35);  color: #c0865a; }
+#osi-1  { background: rgba(149,165,166,0.20); color: #95a5a6; }
+
+/* ───────────────────────────────────────────────
+   MAIN CANVAS
+─────────────────────────────────────────────── */
+#canvas {
+  grid-area: canvas;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  background: var(--bg);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+#canvas::-webkit-scrollbar { width: 6px; }
+#canvas::-webkit-scrollbar-track { background: var(--bg); }
+#canvas::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* SVG overlay layer for arrows */
+#overlay-svg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* ───────────────────────────────────────────────
+   ZONE BANDS
+─────────────────────────────────────────────── */
+.zone {
+  position: relative;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  margin-bottom: 8px;
+  padding: 8px 10px 10px;
+  min-height: 70px;
+}
+.zone-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.zone-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.2;
+}
+.zone-nodes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+/* Zone color themes */
+.zone-internet  { background: rgba(231,76,60,0.06);  border-color: rgba(231,76,60,0.25);  }
+.zone-internet .zone-label  { color: var(--red); }
+
+.zone-perimeter { background: rgba(230,126,34,0.06); border-color: rgba(230,126,34,0.25); }
+.zone-perimeter .zone-label { color: var(--orange); }
+
+.zone-dmz       { background: rgba(241,196,15,0.05); border-color: rgba(241,196,15,0.20); }
+.zone-dmz .zone-label       { color: var(--yellow); }
+
+.zone-nat       { background: rgba(52,152,219,0.06); border-color: rgba(52,152,219,0.20); }
+.zone-nat .zone-label       { color: var(--blue); }
+
+.zone-internal  { background: rgba(46,204,113,0.05); border-color: rgba(46,204,113,0.20); }
+.zone-internal .zone-label  { color: var(--green); }
+
+.zone-remote    { background: rgba(155,89,182,0.06); border-color: rgba(155,89,182,0.20); }
+.zone-remote .zone-label    { color: var(--purple); }
+
+.zone-zt        { background: rgba(26,188,156,0.05); border-color: rgba(26,188,156,0.20); }
+.zone-zt .zone-label        { color: var(--teal); }
+
+.zone-scada {
+  background: rgba(149,165,166,0.05);
+  border-color: rgba(149,165,166,0.25);
+  border-style: dashed;
+}
+.zone-scada .zone-label { color: var(--gray); }
+
+/* ───────────────────────────────────────────────
+   NODE CHIPS
+─────────────────────────────────────────────── */
+.node {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+  position: relative;
+  user-select: none;
+}
+.node:hover {
+  border-color: currentColor;
+  color: var(--text-bright);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.4);
+}
+.node.selected {
+  box-shadow: 0 0 0 2px currentColor;
+}
+
+/* Node color variants */
+.node-red    { color: var(--red);    border-color: rgba(231,76,60,0.35);    background: rgba(231,76,60,0.08); }
+.node-green  { color: var(--green);  border-color: rgba(46,204,113,0.35);   background: rgba(46,204,113,0.08); }
+.node-blue   { color: var(--blue);   border-color: rgba(52,152,219,0.35);   background: rgba(52,152,219,0.08); }
+.node-orange { color: var(--orange); border-color: rgba(230,126,34,0.35);   background: rgba(230,126,34,0.08); }
+.node-purple { color: var(--purple); border-color: rgba(155,89,182,0.35);   background: rgba(155,89,182,0.08); }
+.node-teal   { color: var(--teal);   border-color: rgba(26,188,156,0.35);   background: rgba(26,188,156,0.08); }
+.node-gray   { color: var(--gray);   border-color: rgba(149,165,166,0.35);  background: rgba(149,165,166,0.08); }
+.node-yellow { color: var(--yellow); border-color: rgba(241,196,15,0.35);   background: rgba(241,196,15,0.08); }
+
+.node-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+/* defense / attack overlay badges */
+.node .badge-defense,
+.node .badge-attack {
+  display: none;
+  position: absolute;
+  top: -6px; right: -6px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  font-size: 9px;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+.node .badge-defense { background: var(--green);  color: #000; }
+.node .badge-attack  { background: var(--red);    color: #fff; }
+
+body.overlay-defense .has-defense .badge-defense { display: flex; }
+body.overlay-attack  .has-attack  .badge-attack  { display: flex; }
+
+/* ── OSI Layer Filter ── */
+/* topology canvas nodes */
+body.osi-filtered .node { transition: opacity 0.25s, transform 0.25s, filter 0.25s; }
+body.osi-filtered .node.osi-dim {
+  opacity: 0.07;
+  transform: scale(0.93);
+  pointer-events: none;
+  filter: grayscale(90%);
+}
+body.osi-filtered .node.osi-cross {
+  opacity: 0.28;   /* cross-layer / null concepts — dimmed but not hidden */
+  pointer-events: none;
+}
+body.osi-filtered .node.osi-match {
+  opacity: 1;
+  pointer-events: auto;
+  box-shadow: 0 0 0 2px currentColor, 0 0 10px rgba(255,255,255,0.12);
+}
+/* OSI sidebar bands when filtered */
+body.osi-filtered .osi-layer { transition: opacity 0.2s, filter 0.2s; }
+body.osi-filtered .osi-layer.osi-band-dim    { opacity: 0.25; filter: grayscale(60%); }
+body.osi-filtered .osi-layer.osi-band-active { filter: brightness(1.6); box-shadow: inset 4px 0 0 currentColor; }
+/* zone bands — fade zones that have no matching nodes */
+body.osi-filtered .zone { transition: opacity 0.25s; }
+body.osi-filtered .zone.zone-all-dim { opacity: 0.35; }
+
+/* defense glow ring */
+body.overlay-defense .has-defense {
+  box-shadow: 0 0 0 2px var(--green), 0 0 12px rgba(46,204,113,0.4);
+  animation: defense-pulse 2s ease-in-out infinite;
+}
+@keyframes defense-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px var(--green), 0 0 8px rgba(46,204,113,0.3); }
+  50%       { box-shadow: 0 0 0 2px var(--green), 0 0 18px rgba(46,204,113,0.6); }
+}
+
+/* attack red flash */
+body.overlay-attack .has-attack {
+  box-shadow: 0 0 0 2px var(--red), 0 0 12px rgba(231,76,60,0.4);
+  animation: attack-pulse 1.5s ease-in-out infinite;
+}
+@keyframes attack-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px var(--red), 0 0 6px rgba(231,76,60,0.3); }
+  50%       { box-shadow: 0 0 0 2px var(--red), 0 0 16px rgba(231,76,60,0.7); }
+}
+
+/* upgrade blue glow */
+body.overlay-upgrade .node-red,
+body.overlay-upgrade .node-gray {
+  opacity: 0.55;
+}
+body.overlay-upgrade .node-green.has-defense {
+  box-shadow: 0 0 0 2px var(--blue), 0 0 14px rgba(52,152,219,0.5);
+}
+
+/* SVG overlay arrow labels */
+.svg-arrow-label {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+/* animated dash flows */
+@keyframes dash-attack  { to { stroke-dashoffset: -22; } }
+@keyframes dash-upgrade { to { stroke-dashoffset: -18; } }
+
+/* ───────────────────────────────────────────────
+   ZERO TRUST SUB-DIAGRAM (hidden by default)
+─────────────────────────────────────────────── */
+#zt-diagram {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  gap: 16px;
+  height: 100%;
+  overflow-y: auto;
+}
+#zt-diagram.visible { display: flex; }
+#canvas.zt-active > .zone  { display: none; }
+#canvas.zt-active #zt-diagram { display: flex; }
+
+.zt-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 18px;
+  text-align: center;
+  min-width: 140px;
+}
+.zt-box h3 { font-size: 12px; color: var(--teal); margin-bottom: 4px; }
+.zt-box p  { font-size: 10px; color: var(--text-dim); }
+
+.zt-plane-label {
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 700;
+  opacity: 0.5;
+  border-bottom: 1px dashed var(--border);
+  width: 100%;
+  text-align: center;
+  padding-bottom: 6px;
+}
+.zt-row { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; justify-content: center; }
+.zt-arrow {
+  font-size: 20px;
+  color: var(--teal);
+  opacity: 0.7;
+}
+.zt-control-plane {
+  background: rgba(26,188,156,0.07);
+  border: 1px solid rgba(26,188,156,0.25);
+  border-radius: 10px;
+  padding: 14px 20px;
+  width: 100%;
+  max-width: 580px;
+}
+.zt-data-plane {
+  background: rgba(52,152,219,0.07);
+  border: 1px solid rgba(52,152,219,0.20);
+  border-radius: 10px;
+  padding: 14px 20px;
+  width: 100%;
+  max-width: 580px;
+}
+.zt-title { font-size: 18px; font-weight: 800; color: var(--teal); letter-spacing: 1px; margin-bottom: 4px; }
+.zt-subtitle { font-size: 11px; color: var(--text-dim); margin-bottom: 16px; }
+.zt-concept-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 8px;
+  width: 100%;
+  max-width: 600px;
+}
+.zt-concept {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.zt-concept:hover { border-color: var(--teal); transform: translateY(-1px); }
+.zt-concept h4 { font-size: 11px; color: var(--teal); margin-bottom: 3px; }
+.zt-concept p  { font-size: 10px; color: var(--text-dim); line-height: 1.4; }
+
+/* ───────────────────────────────────────────────
+   DETAIL PANEL
+─────────────────────────────────────────────── */
+#detail-panel {
+  grid-area: detail;
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width 0.25s ease, min-width 0.25s ease;
+  min-width: 0;
+  width: var(--detail-panel-w);
+}
+#detail-panel.collapsed {
+  overflow: hidden;
+  min-width: 0;
+  width: 0;
+  border-left: none;
+  padding: 0;
+}
+
+#detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+#detail-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-bright);
+}
+#detail-osi-tag {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: var(--surface2);
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+}
+#detail-close {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background var(--transition);
+  line-height: 1;
+}
+#detail-close:hover { background: var(--surface2); color: var(--text-bright); }
+
+#detail-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+#detail-body::-webkit-scrollbar { width: 5px; }
+#detail-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* Detail panel sections */
+.dp-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.dp-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.dp-content {
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.55;
+}
+.dp-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 2px 0;
+}
+.dp-port-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.dp-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+}
+.dp-pill.insecure { background: var(--red-dim);   border-color: var(--red);   color: var(--red); }
+.dp-pill.secure   { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.dp-pill.port     { background: var(--blue-dim);  border-color: var(--blue);  color: var(--blue); }
+
+.dp-exam-tip {
+  background: rgba(241,196,15,0.08);
+  border: 1px solid rgba(241,196,15,0.25);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 11px;
+  color: var(--yellow);
+  line-height: 1.5;
+}
+.dp-exam-tip::before { content: "📝 Exam Tip: "; font-weight: 700; }
+
+.dp-warn {
+  background: var(--red-dim);
+  border: 1px solid rgba(231,76,60,0.3);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--red);
+}
+.dp-warn::before { content: "⚠ Insecure: "; font-weight: 700; }
+
+.dp-secure {
+  background: var(--green-dim);
+  border: 1px solid rgba(46,204,113,0.3);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--green);
+}
+.dp-secure::before { content: "✅ Secure: "; font-weight: 700; }
+
+.dp-cli {
+  background: #0a0f1a;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-family: 'Cascadia Code', 'Consolas', monospace;
+  font-size: 11px;
+  color: #7dd3fc;
+  white-space: pre;
+  overflow-x: auto;
+}
+.dp-cli::before { content: "💻 CLI\A"; white-space: pre; color: var(--text-dim); font-size: 9px; letter-spacing: 1px; }
+
+.dp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+.dp-table th {
+  background: var(--surface2);
+  color: var(--text-dim);
+  text-align: left;
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+}
+.dp-table td {
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: top;
+}
+.dp-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+.dp-placeholder {
+  color: var(--text-dim);
+  font-size: 12px;
+  text-align: center;
+  padding: 40px 20px;
+  line-height: 1.6;
+}
+
+/* ───────────────────────────────────────────────
+   FOOTER — Protocol Reference Strip
+─────────────────────────────────────────────── */
+#footer {
+  grid-area: footer;
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  padding: 0 12px;
+  gap: 0;
+  flex-shrink: 0;
+}
+#footer::-webkit-scrollbar { height: 3px; }
+#footer::-webkit-scrollbar-thumb { background: var(--border); }
+
+.proto-pair {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 10px;
+  border-right: 1px solid var(--border);
+  height: 100%;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.proto-pair:hover { background: var(--surface2); }
+.proto-pair:first-child { padding-left: 0; }
+
+.proto-insecure {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--red);
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: var(--red-dim);
+}
+.proto-arrow { font-size: 10px; color: var(--text-dim); }
+.proto-secure {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--green);
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: var(--green-dim);
+}
+
+/* ───────────────────────────────────────────────
+   OVERLAY ARROWS (SVG-based, injected by JS)
+─────────────────────────────────────────────── */
+.attack-arrow  { stroke: var(--red);   stroke-width: 2; fill: none; stroke-dasharray: 6,4; }
+.defense-glow  { filter: drop-shadow(0 0 6px var(--green)); }
+.upgrade-arrow { stroke: var(--blue);  stroke-width: 1.5; fill: none; stroke-dasharray: 4,3; }
+
+@keyframes dash-flow {
+  to { stroke-dashoffset: -20; }
+}
+.attack-arrow.animated  { animation: dash-flow 0.8s linear infinite; }
+.upgrade-arrow.animated { animation: dash-flow 1.2s linear infinite; }
+
+/* ───────────────────────────────────────────────
+   LINKEDIN VIEW MODE
+─────────────────────────────────────────────── */
+body.linkedin-mode {
+  overflow: hidden;
+}
+body.linkedin-mode #app {
+  grid-template-columns: 0 1fr 0;
+  grid-template-areas:
+    "header  header  header"
+    ".       canvas  ."
+    "footer  footer  footer";
+}
+body.linkedin-mode #osi-sidebar,
+body.linkedin-mode #detail-panel { display: none; }
+
+body.linkedin-mode #canvas {
+  width: 1200px;
+  height: 627px;
+  min-height: 627px;
+  max-height: 627px;
+  overflow: hidden;
+  margin: 0 auto;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 0 40px rgba(0,0,0,0.7);
+  background: var(--bg);
+  padding: 12px 14px 10px;
+  align-self: center;
+}
+/* In LinkedIn mode shrink zones to fit the fixed height */
+body.linkedin-mode .zone {
+  margin-bottom: 5px;
+  padding: 5px 8px 7px;
+  min-height: 0;
+}
+body.linkedin-mode .zone-label {
+  font-size: 9px;
+  margin-bottom: 5px;
+}
+body.linkedin-mode .node {
+  pointer-events: none;
+  font-size: 10px;
+  padding: 3px 7px;
+}
+body.linkedin-mode .node .badge-defense,
+body.linkedin-mode .node .badge-attack { display: none !important; }
+
+/* LinkedIn title card — covers top of canvas */
+#linkedin-overlay {
+  display: none;
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  background: linear-gradient(160deg, rgba(15,23,42,0.96) 0%, rgba(15,23,42,0.7) 60%, transparent 100%);
+  padding: 16px 22px 40px;
+  z-index: 30;
+  pointer-events: none;
+  border-radius: 8px 8px 0 0;
+}
+body.linkedin-mode #linkedin-overlay { display: block; }
+
+#linkedin-overlay .li-badge {
+  display: inline-block;
+  background: var(--blue);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+}
+#linkedin-overlay h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-bright);
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+}
+#linkedin-overlay h2 span { color: var(--blue); }
+#linkedin-overlay p {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 5px;
+}
+#linkedin-overlay .li-legend {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+#linkedin-overlay .li-legend span {
+  font-size: 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+#linkedin-overlay .li-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* ───────────────────────────────────────────────
+   STUDY MODE
+─────────────────────────────────────────────── */
+body.study-mode .node-label {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+body.study-mode .node:hover .node-label {
+  opacity: 1;
+}
+body.study-mode .node {
+  min-width: 22px;
+  justify-content: center;
+}
+body.study-mode .node .node-dot {
+  margin: 0;
+}
+/* Dim OSI labels in study mode */
+body.study-mode .osi-layer-proto {
+  opacity: 0;
+}
+body.study-mode .osi-layer:hover .osi-layer-proto {
+  opacity: 0.75;
+}
+
+/* Study mode quiz banner */
+#study-banner {
+  display: none;
+  position: fixed;
+  bottom: calc(var(--footer-h) + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--purple);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 20px;
+  z-index: 300;
+  letter-spacing: 0.5px;
+  pointer-events: none;
+  box-shadow: 0 4px 16px rgba(155,89,182,0.5);
+}
+body.study-mode #study-banner { display: block; }
+
+/* ───────────────────────────────────────────────
+   TOOLTIP
+─────────────────────────────────────────────── */
+.tooltip {
+  position: fixed;
+  z-index: 200;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--text-bright);
+  pointer-events: none;
+  max-width: 220px;
+  line-height: 1.5;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  display: none;
+}
+.tooltip.visible { display: block; }
+
+/* ───────────────────────────────────────────────
+   SCROLLBAR global
+─────────────────────────────────────────────── */
+* { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ═══════════════════════════════════════════
+       HEADER
+  ═══════════════════════════════════════════ -->
+  <header id="header">
+    <a href="../index.html" id="btn-toc" title="Table of Contents">&#8592; Contents</a>
+    <h1>Security<span>+</span> SY0-701 &nbsp;·&nbsp; Chapter 3</h1>
+    <div class="hdr-sep"></div>
+    <button class="hdr-btn" id="btn-attack"   onclick="toggleOverlay('attack')"  >⚠ Attack Paths</button>
+    <button class="hdr-btn" id="btn-defense"  onclick="toggleOverlay('defense')" >🛡 Defense Controls</button>
+    <button class="hdr-btn" id="btn-upgrade"  onclick="toggleOverlay('upgrade')" >🔒 Protocol Upgrades</button>
+    <div class="hdr-sep"></div>
+    <button class="hdr-btn" id="btn-zt"       onclick="toggleZeroTrust()"        >◎ Zero Trust View</button>
+    <button class="hdr-btn" id="btn-study"    onclick="toggleStudyMode()"        >👁 Study Mode</button>
+    <div class="hdr-sep"></div>
+    <button class="hdr-btn" id="btn-graph"   onclick="toggleGraphView()"        >🗺 Graph View</button>
+    <button class="hdr-btn" id="btn-illustrated" onclick="toggleIllustrated()">🖼 Illustrated</button>
+    <div class="hdr-spacer"></div>
+    <button class="hdr-btn" id="btn-linkedin" onclick="toggleLinkedIn()"         >📸 LinkedIn View</button>
+  </header>
+
+  <!-- ═══════════════════════════════════════════
+       OSI SIDEBAR
+  ═══════════════════════════════════════════ -->
+  <aside id="osi-sidebar">
+    <!-- Tab row -->
+    <div id="sidebar-tabs">
+      <button class="sb-tab active" data-tab="osi"    onclick="switchSidebarTab('osi')">OSI</button>
+      <button class="sb-tab"        data-tab="themes" onclick="switchSidebarTab('themes')">Topics</button>
+    </div>
+
+    <!-- OSI layers panel -->
+    <div id="sidebar-osi">
+      <div class="osi-layer" id="osi-7" data-layer="7" onclick="selectOsiLayer(7)">
+        <span class="osi-layer-num">LAYER 7</span>
+        <span class="osi-layer-name">Application</span>
+        <span class="osi-layer-proto">HTTP · HTTPS · FTP · DNS · SMTP · RDP · SSH · LDAP · SNMP</span>
+      </div>
+      <div class="osi-layer" id="osi-6" data-layer="6" onclick="selectOsiLayer(6)">
+        <span class="osi-layer-num">LAYER 6</span>
+        <span class="osi-layer-name">Presentation</span>
+        <span class="osi-layer-proto">SSL · TLS Encryption / Formatting</span>
+      </div>
+      <div class="osi-layer" id="osi-5" data-layer="5" onclick="selectOsiLayer(5)">
+        <span class="osi-layer-num">LAYER 5</span>
+        <span class="osi-layer-name">Session</span>
+        <span class="osi-layer-proto">SIP · RTP Session Setup</span>
+      </div>
+      <div class="osi-layer" id="osi-4" data-layer="4" onclick="selectOsiLayer(4)">
+        <span class="osi-layer-num">LAYER 4</span>
+        <span class="osi-layer-name">Transport</span>
+        <span class="osi-layer-proto">TCP · UDP Logical Ports</span>
+      </div>
+      <div class="osi-layer" id="osi-3" data-layer="3" onclick="selectOsiLayer(3)">
+        <span class="osi-layer-num">LAYER 3</span>
+        <span class="osi-layer-name">Network</span>
+        <span class="osi-layer-proto">IP · ICMP · ARP* Routers · IPv4 · IPv6</span>
+      </div>
+      <div class="osi-layer" id="osi-2" data-layer="2" onclick="selectOsiLayer(2)">
+        <span class="osi-layer-num">LAYER 2</span>
+        <span class="osi-layer-name">Data Link</span>
+        <span class="osi-layer-proto">Switches · MAC · VLANs · STP · ARP*</span>
+      </div>
+      <div class="osi-layer" id="osi-1" data-layer="1" onclick="selectOsiLayer(1)">
+        <span class="osi-layer-num">LAYER 1</span>
+        <span class="osi-layer-name">Physical</span>
+        <span class="osi-layer-proto">Cables · Air Gap · Hardware</span>
+      </div>
+    </div>
+
+    <!-- Topics / themes panel (generated by JS) -->
+    <div id="sidebar-themes"></div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════════
+       MAIN CANVAS
+  ═══════════════════════════════════════════ -->
+  <main id="canvas">
+    <!-- SVG overlay for arrows -->
+    <svg id="overlay-svg" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow-red"   markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#e74c3c"/>
+        </marker>
+        <marker id="arrow-blue"  markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#3498db"/>
+        </marker>
+        <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#2ecc71"/>
+        </marker>
+      </defs>
+      <!-- arrows injected by JS -->
+    </svg>
+
+    <!-- LinkedIn title overlay -->
+    <div id="linkedin-overlay">
+      <div class="li-badge">CompTIA Security+</div>
+      <h2>SY0-701 &nbsp;<span>Chapter 3</span></h2>
+      <p>Network Security Concepts — Protocols, Zones, Zero Trust, Hardening</p>
+      <div class="li-legend">
+        <span><span class="li-dot" style="background:#e74c3c"></span>Insecure / Threat</span>
+        <span><span class="li-dot" style="background:#2ecc71"></span>Secure / Hardened</span>
+        <span><span class="li-dot" style="background:#3498db"></span>Infrastructure</span>
+        <span><span class="li-dot" style="background:#e67e22"></span>Perimeter / Firewall</span>
+        <span><span class="li-dot" style="background:#9b59b6"></span>Identity / ZeroTrust</span>
+        <span><span class="li-dot" style="background:#1abc9c"></span>Monitoring / SASE</span>
+      </div>
+    </div>
+
+    <!-- ─── ZONE: INTERNET / THREAT ─── -->
+    <div class="zone zone-internet" id="zone-internet">
+      <div class="zone-label">🌐 Internet / Threat Zone</div>
+      <div class="zone-nodes" id="nodes-internet">
+        <span class="node node-red has-attack" data-node-id="attack-surface"><span class="node-dot"></span><span class="node-label">Attack Surface</span><span class="badge-attack">!</span></span>
+        <span class="node node-red" data-node-id="data-in-transit"><span class="node-dot"></span><span class="node-label">Data in Transit</span></span>
+        <span class="node node-blue" data-node-id="tcp"><span class="node-dot"></span><span class="node-label">TCP</span></span>
+        <span class="node node-blue" data-node-id="udp"><span class="node-dot"></span><span class="node-label">UDP</span></span>
+        <span class="node node-blue" data-node-id="ip"><span class="node-dot"></span><span class="node-label">IP</span></span>
+        <span class="node node-blue" data-node-id="icmp"><span class="node-dot"></span><span class="node-label">ICMP</span></span>
+        <span class="node node-blue" data-node-id="arp"><span class="node-dot"></span><span class="node-label">ARP</span></span>
+      </div>
+    </div>
+
+    <!-- ─── ZONE: PERIMETER ─── -->
+    <div class="zone zone-perimeter" id="zone-perimeter">
+      <div class="zone-label">🔥 Perimeter — Firewall / WAF / NGFW / UTM</div>
+      <div class="zone-nodes" id="nodes-perimeter">
+        <span class="node node-orange has-defense" data-node-id="firewall"><span class="node-dot"></span><span class="node-label">Firewall</span><span class="badge-defense">✓</span></span>
+        <span class="node node-orange has-defense" data-node-id="waf"><span class="node-dot"></span><span class="node-label">WAF</span><span class="badge-defense">✓</span></span>
+        <span class="node node-orange has-defense" data-node-id="ngfw"><span class="node-dot"></span><span class="node-label">NGFW</span><span class="badge-defense">✓</span></span>
+        <span class="node node-orange has-defense" data-node-id="utm"><span class="node-dot"></span><span class="node-label">UTM</span><span class="badge-defense">✓</span></span>
+        <span class="node node-orange has-defense" data-node-id="email-gateway"><span class="node-dot"></span><span class="node-label">Email Gateway</span><span class="badge-defense">✓</span></span>
+        <span class="node node-blue has-defense" data-node-id="nat-gateway"><span class="node-dot"></span><span class="node-label">NAT Gateway</span><span class="badge-defense">✓</span></span>
+        <span class="node node-blue" data-node-id="proxy"><span class="node-dot"></span><span class="node-label">Proxy Server</span></span>
+        <span class="node node-orange" data-node-id="screened-subnet"><span class="node-dot"></span><span class="node-label">Screened Subnet</span></span>
+        <span class="node node-orange" data-node-id="dmz-zone"><span class="node-dot"></span><span class="node-label">DMZ</span></span>
+        <span class="node node-orange" data-node-id="fail-modes"><span class="node-dot"></span><span class="node-label">Fail-open / Fail-closed</span></span>
+      </div>
+    </div>
+
+    <!-- ─── ZONE: DMZ ─── -->
+    <div class="zone zone-dmz" id="zone-dmz">
+      <div class="zone-label">⚡ DMZ — Screened Subnet / Semi-Trusted</div>
+      <div class="zone-nodes" id="nodes-dmz">
+        <span class="node node-yellow has-defense" data-node-id="web-server"><span class="node-dot"></span><span class="node-label">Web Server</span><span class="badge-defense">✓</span></span>
+        <span class="node node-yellow has-defense" data-node-id="mail-server"><span class="node-dot"></span><span class="node-label">Mail Server</span><span class="badge-defense">✓</span></span>
+        <span class="node node-yellow has-defense" data-node-id="dns-server"><span class="node-dot"></span><span class="node-label">DNS Server</span><span class="badge-defense">✓</span></span>
+        <span class="node node-purple has-defense" data-node-id="ca"><span class="node-dot"></span><span class="node-label">Certificate Authority (CA)</span><span class="badge-defense">✓</span></span>
+        <span class="node node-red has-attack" data-node-id="http"><span class="node-dot"></span><span class="node-label">HTTP</span><span class="badge-attack">!</span></span>
+        <span class="node node-green has-defense" data-node-id="https"><span class="node-dot"></span><span class="node-label">HTTPS</span><span class="badge-defense">✓</span></span>
+        <span class="node node-gray" data-node-id="ssl"><span class="node-dot"></span><span class="node-label">SSL (deprecated)</span></span>
+        <span class="node node-green has-defense" data-node-id="tls"><span class="node-dot"></span><span class="node-label">TLS</span><span class="badge-defense">✓</span></span>
+        <span class="node node-red has-attack" data-node-id="ftp"><span class="node-dot"></span><span class="node-label">FTP</span><span class="badge-attack">!</span></span>
+        <span class="node node-red has-attack" data-node-id="tftp"><span class="node-dot"></span><span class="node-label">TFTP</span><span class="badge-attack">!</span></span>
+        <span class="node node-green has-defense" data-node-id="sftp"><span class="node-dot"></span><span class="node-label">SFTP</span><span class="badge-defense">✓</span></span>
+        <span class="node node-green has-defense" data-node-id="ftps"><span class="node-dot"></span><span class="node-label">FTPS</span><span class="badge-defense">✓</span></span>
+        <span class="node node-red has-attack" data-node-id="smtp"><span class="node-dot"></span><span class="node-label">SMTP</span><span class="badge-attack">!</span></span>
+        <span class="node node-green has-defense" data-node-id="smtsp"><span class="node-dot"></span><span class="node-label">SMTSP</span><span class="badge-defense">✓</span></span>
+        <span class="node node-blue" data-node-id="pop3"><span class="node-dot"></span><span class="node-label">POP3</span></span>
+        <span class="node node-blue" data-node-id="imap"><span class="node-dot"></span><span class="node-label">IMAP</span></span>
+        <span class="node node-green has-defense" data-node-id="spf"><span class="node-dot"></span><span class="node-label">SPF</span><span class="badge-defense">✓</span></span>
+        <span class="node node-green has-defense" data-node-id="dkim"><span class="node-dot"></span><span class="node-label">DKIM</span><span class="badge-defense">✓</span></span>
+        <span class="node node-green has-defense" data-node-id="dmarc"><span class="node-dot"></span><span class="node-label">DMARC</span><span class="badge-defense">✓</span></span>
+      </div>
+    </div>
+
+    <!-- ─── ZONE: NAT / SERVICES ─── -->
+    <div class="zone zone-nat" id="zone-nat">
+      <div class="zone-label">⚙ NAT / DHCP / NTP / Network Services</div>
+      <div class="zone-nodes" id="nodes-nat">
+        <span class="node node-blue" data-node-id="nat"><span class="node-dot"></span><span class="node-label">NAT</span></span>
+        <span class="node node-blue" data-node-id="pat"><span class="node-dot"></span><span class="node-label">PAT</span></span>
+        <span class="node node-blue" data-node-id="static-nat"><span class="node-dot"></span><span class="node-label">Static NAT</span></span>
+        <span class="node node-blue" data-node-id="dynamic-nat"><span class="node-dot"></span><span class="node-label">Dynamic NAT</span></span>
+        <span class="node node-blue" data-node-id="dhcp"><span class="node-dot"></span><span class="node-label">DHCP</span></span>
+        <span class="node node-blue" data-node-id="ntp"><span class="node-dot"></span><span class="node-label">NTP</span></span>
+        <span class="node node-blue" data-node-id="ipv4"><span class="node-dot"></span><span class="node-label">IPv4</span></span>
+        <span class="node node-blue" data-node-id="rfc1918"><span class="node-dot"></span><span class="node-label">RFC 1918</span></span>
+        <span class="node node-blue" data-node-id="ipv6"><span class="node-dot"></span><span class="node-label">IPv6</span></span>
+        <span class="node node-blue" data-node-id="unicast"><span class="node-dot"></span><span class="node-label">Unicast / Broadcast</span></span>
+      </div>
+    </div>
+
+    <!-- ─── ZONE: INTERNAL LAN ─── -->
+    <div class="zone zone-internal" id="zone-internal">
+      <div class="zone-label">🏢 Internal LAN — Trusted Network</div>
+      <div class="zone-nodes" id="nodes-internal">
+        <span class="node node-blue has-defense" data-node-id="switch"><span class="node-dot"></span><span class="node-label">Switch</span><span class="badge-defense">✓</span></span>
+        <span class="node node-green has-defense" data-node-id="vlan"><span class="node-dot"></span><span class="node-label">VLAN</span><span class="badge-defense">✓</span></span>
+        <span class="node node-green" data-node-id="port-security"><span class="node-dot"></span><span class="node-label">Port Security</span></span>
+        <span class="node node-green" data-node-id="mac-filter"><span class="node-dot"></span><span class="node-label">MAC Filtering</span></span>
+        <span class="node node-green has-defense" data-node-id="stp"><span class="node-dot"></span><span class="node-label">STP / Rapid STP</span><span class="badge-defense">✓</span></span>
+        <span class="node node-green has-defense" data-node-id="bpdu-guard"><span class="node-dot"></span><span class="node-label">BPDU Guard</span><span class="badge-defense">✓</span></span>
+        <span class="node node-blue has-defense" data-node-id="router"><span class="node-dot"></span><span class="node-label">Router</span><span class="badge-defense">✓</span></span>
+        <span class="node node-green has-defense" data-node-id="acl"><span class="node-dot"></span><span class="node-label">ACL</span><span class="badge-defense">✓</span></span>
+        <span class="node node-green" data-node-id="implicit-deny"><span class="node-dot"></span><span class="node-label">Implicit Deny</span></span>
+        <span class="node node-teal has-defense" data-node-id="snmpv3"><span class="node-dot"></span><span class="node-label">SNMP v3</span><span class="badge-defense">✓</span></span>
+        <span class="node node-red has-attack" data-node-id="snmpv1"><span class="node-dot"></span><span class="node-label">SNMP v1/v2</span><span class="badge-attack">!</span></span>
+        <span class="node node-purple has-defense" data-node-id="ldaps"><span class="node-dot"></span><span class="node-label">LDAPS</span><span class="badge-defense">✓</span></span>
+        <span class="node node-red has-attack" data-node-id="ldap"><span class="node-dot"></span><span class="node-label">LDAP</span><span class="badge-attack">!</span></span>
+        <span class="node node-purple" data-node-id="directory-services"><span class="node-dot"></span><span class="node-label">Directory Services</span></span>
+        <span class="node node-green has-defense" data-node-id="voip"><span class="node-dot"></span><span class="node-label">VoIP</span><span class="badge-defense">✓</span></span>
+        <span class="node node-teal" data-node-id="sip"><span class="node-dot"></span><span class="node-label">SIP</span></span>
+        <span class="node node-red" data-node-id="rtp"><span class="node-dot"></span><span class="node-label">RTP</span></span>
+        <span class="node node-green has-defense" data-node-id="srtp"><span class="node-dot"></span><span class="node-label">SRTP</span><span class="badge-defense">✓</span></span>
+        <span class="node node-orange" data-node-id="forward-proxy"><span class="node-dot"></span><span class="node-label">Forward Proxy</span></span>
+        <span class="node node-orange" data-node-id="reverse-proxy"><span class="node-dot"></span><span class="node-label">Reverse Proxy</span></span>
+        <span class="node node-blue" data-node-id="east-west"><span class="node-dot"></span><span class="node-label">East-West Traffic</span></span>
+        <span class="node node-green" data-node-id="intranet"><span class="node-dot"></span><span class="node-label">Intranet</span></span>
+        <span class="node node-yellow" data-node-id="extranet"><span class="node-dot"></span><span class="node-label">Extranet</span></span>
+        <span class="node node-orange" data-node-id="jump-server"><span class="node-dot"></span><span class="node-label">Jump Server</span></span>
+      </div>
+    </div>
+
+    <!-- ─── ZONE: REMOTE ACCESS ─── -->
+    <div class="zone zone-remote" id="zone-remote">
+      <div class="zone-label">🔑 Remote Access — VPN / SSH / RDP</div>
+      <div class="zone-nodes" id="nodes-remote">
+        <span class="node node-green has-defense" data-node-id="ssh"><span class="node-dot"></span><span class="node-label">SSH</span><span class="badge-defense">✓</span></span>
+        <span class="node node-green" data-node-id="openssh"><span class="node-dot"></span><span class="node-label">OpenSSH</span></span>
+        <span class="node node-red has-attack" data-node-id="rdp"><span class="node-dot"></span><span class="node-label">RDP</span><span class="badge-attack">!</span></span>
+        <span class="node node-green has-defense" data-node-id="vpn"><span class="node-dot"></span><span class="node-label">VPN</span><span class="badge-defense">✓</span></span>
+        <span class="node node-green has-defense" data-node-id="ipsec"><span class="node-dot"></span><span class="node-label">IPsec</span><span class="badge-defense">✓</span></span>
+      </div>
+    </div>
+
+    <!-- ─── ZONE: ZERO TRUST (toggle) ─── -->
+    <div class="zone zone-zt" id="zone-zt">
+      <div class="zone-label">◎ Zero Trust / SASE Architecture</div>
+      <div class="zone-nodes" id="nodes-zt">
+        <span class="node node-teal has-defense" data-node-id="ztna"><span class="node-dot"></span><span class="node-label">ZTNA</span><span class="badge-defense">✓</span></span>
+        <span class="node node-teal has-defense" data-node-id="pep"><span class="node-dot"></span><span class="node-label">PEP</span><span class="badge-defense">✓</span></span>
+        <span class="node node-teal" data-node-id="pe"><span class="node-dot"></span><span class="node-label">Policy Engine (PE)</span></span>
+        <span class="node node-teal" data-node-id="pa"><span class="node-dot"></span><span class="node-label">Policy Admin (PA)</span></span>
+        <span class="node node-teal" data-node-id="control-plane"><span class="node-dot"></span><span class="node-label">Control Plane</span></span>
+        <span class="node node-blue" data-node-id="data-plane"><span class="node-dot"></span><span class="node-label">Data Plane</span></span>
+        <span class="node node-purple has-defense" data-node-id="adaptive-id"><span class="node-dot"></span><span class="node-label">Adaptive Identity</span><span class="badge-defense">✓</span></span>
+        <span class="node node-teal has-defense" data-node-id="sase"><span class="node-dot"></span><span class="node-label">SASE</span><span class="badge-defense">✓</span></span>
+        <span class="node node-gray" data-node-id="implicit-trust"><span class="node-dot"></span><span class="node-label">Implicit Trust (old)</span></span>
+        <span class="node node-purple" data-node-id="subject"><span class="node-dot"></span><span class="node-label">Subject</span></span>
+        <span class="node node-blue" data-node-id="resource"><span class="node-dot"></span><span class="node-label">Enterprise Resource</span></span>
+      </div>
+    </div>
+
+    <!-- ─── ZONE: SCADA / AIR GAP ─── -->
+    <div class="zone zone-scada" id="zone-scada">
+      <div class="zone-label">🏭 SCADA / Air-Gapped Systems — Physically Isolated</div>
+      <div class="zone-nodes" id="nodes-scada">
+        <span class="node node-gray" data-node-id="scada"><span class="node-dot"></span><span class="node-label">SCADA</span></span>
+        <span class="node node-gray has-defense" data-node-id="air-gap"><span class="node-dot"></span><span class="node-label">Air Gap</span><span class="badge-defense">✓</span></span>
+        <span class="node node-gray" data-node-id="air-gapped-system"><span class="node-dot"></span><span class="node-label">Air-Gapped System</span></span>
+        <span class="node node-gray has-defense" data-node-id="physical-isolation"><span class="node-dot"></span><span class="node-label">Physical Isolation</span><span class="badge-defense">✓</span></span>
+      </div>
+    </div>
+
+    <!-- Zero Trust full sub-diagram (shown via toggle) -->
+    <div id="zt-diagram">
+      <div class="zt-title">Zero Trust Architecture</div>
+      <div class="zt-subtitle">"Never trust, always verify" — every request is authenticated, authorized, and continuously validated</div>
+
+      <div class="zt-control-plane">
+        <div class="zt-plane-label">Control Plane — decides policy</div>
+        <div class="zt-row" style="margin-top:12px;">
+          <div class="zt-box node" data-node-id="pe" style="border-color:rgba(26,188,156,0.4);">
+            <h3>Policy Engine (PE)</h3>
+            <p>Makes allow/deny access decisions based on rules &amp; signals</p>
+          </div>
+          <div class="zt-arrow">⟺</div>
+          <div class="zt-box node" data-node-id="pa" style="border-color:rgba(26,188,156,0.4);">
+            <h3>Policy Admin (PA)</h3>
+            <p>Communicates PE decision to the PEP</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="zt-row">
+        <div class="zt-box node" data-node-id="subject" style="border-color:rgba(155,89,182,0.4);">
+          <h3 style="color:var(--purple)">Subject</h3>
+          <p>User / Device / Service requesting access</p>
+        </div>
+        <div class="zt-arrow">→</div>
+        <div class="zt-box node" data-node-id="pep" style="border-color:rgba(26,188,156,0.5); min-width:160px;">
+          <h3>PEP</h3>
+          <p>Policy Enforcement Point — the gateway that allows/blocks the request</p>
+        </div>
+        <div class="zt-arrow">→</div>
+        <div class="zt-box node" data-node-id="resource" style="border-color:rgba(52,152,219,0.4);">
+          <h3 style="color:var(--blue)">Enterprise Resource</h3>
+          <p>App, data, or system being accessed</p>
+        </div>
+      </div>
+
+      <div class="zt-data-plane">
+        <div class="zt-plane-label">Data Plane — transmits actual traffic</div>
+      </div>
+
+      <div class="zt-concept-grid">
+        <div class="zt-concept node" data-node-id="implicit-trust">
+          <h4>Implicit Trust</h4>
+          <p>Old model: inside network = trusted. Zero Trust eliminates this.</p>
+        </div>
+        <div class="zt-concept node" data-node-id="ztna">
+          <h4>ZTNA</h4>
+          <p>Zero Trust Network Access — replaces VPN in ZT architectures</p>
+        </div>
+        <div class="zt-concept node" data-node-id="adaptive-id">
+          <h4>Adaptive Identity</h4>
+          <p>Continuously evaluates device health, location, behavior</p>
+        </div>
+        <div class="zt-concept node" data-node-id="sase">
+          <h4>SASE</h4>
+          <p>Cloud-delivered: ZTNA + CASB + FWaaS + SD-WAN</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════
+       DETAIL PANEL
+  ═══════════════════════════════════════════ -->
+  <aside id="detail-panel" class="collapsed">
+    <div id="detail-header">
+      <div style="display:flex;flex-direction:column;gap:4px;">
+        <span id="detail-title">Select a node</span>
+        <span id="detail-osi-tag">—</span>
+      </div>
+      <button id="detail-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div id="detail-body">
+      <p class="dp-placeholder">Click any node on the diagram to see its definition, port numbers, OSI layer, exam tips, and CLI commands.</p>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════════
+       FOOTER — Protocol Reference Strip
+  ═══════════════════════════════════════════ -->
+  <footer id="footer">
+    <div class="proto-pair" onclick="openNodeById('ftp')">
+      <span class="proto-insecure">FTP 21</span>
+      <span class="proto-arrow">→</span>
+      <span class="proto-secure">SFTP 22</span>
+    </div>
+    <div class="proto-pair" onclick="openNodeById('ftps')">
+      <span class="proto-insecure">FTP 21</span>
+      <span class="proto-arrow">→</span>
+      <span class="proto-secure">FTPS 990</span>
+    </div>
+    <div class="proto-pair" onclick="openNodeById('https')">
+      <span class="proto-insecure">HTTP 80</span>
+      <span class="proto-arrow">→</span>
+      <span class="proto-secure">HTTPS 443</span>
+    </div>
+    <div class="proto-pair" onclick="openNodeById('tls')">
+      <span class="proto-insecure">SSL</span>
+      <span class="proto-arrow">→</span>
+      <span class="proto-secure">TLS</span>
+    </div>
+    <div class="proto-pair" onclick="openNodeById('smtsp')">
+      <span class="proto-insecure">SMTP 25</span>
+      <span class="proto-arrow">→</span>
+      <span class="proto-secure">SMTSP</span>
+    </div>
+    <div class="proto-pair" onclick="openNodeById('ldaps')">
+      <span class="proto-insecure">LDAP 389</span>
+      <span class="proto-arrow">→</span>
+      <span class="proto-secure">LDAPS 636</span>
+    </div>
+    <div class="proto-pair" onclick="openNodeById('srtp')">
+      <span class="proto-insecure">RTP</span>
+      <span class="proto-arrow">→</span>
+      <span class="proto-secure">SRTP</span>
+    </div>
+    <div class="proto-pair" onclick="openNodeById('snmpv3')">
+      <span class="proto-insecure">SNMPv1/v2</span>
+      <span class="proto-arrow">→</span>
+      <span class="proto-secure">SNMPv3</span>
+    </div>
+    <div class="proto-pair" onclick="openNodeById('ssh')">
+      <span class="proto-insecure">Telnet 23</span>
+      <span class="proto-arrow">→</span>
+      <span class="proto-secure">SSH 22</span>
+    </div>
+    <div class="proto-pair" onclick="openNodeById('tftp')">
+      <span class="proto-insecure">TFTP 69</span>
+      <span class="proto-arrow">→</span>
+      <span class="proto-secure">SFTP 22</span>
+    </div>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════
+       GRAPH VIEW — force-directed concept map
+  ═══════════════════════════════════════════ -->
+  <div id="graph-view">
+    <div id="graph-toolbar">
+      <span class="gt-title">🗺 Concept Relationship Graph</span>
+      <div id="graph-legend">
+        <span class="gl-item"><span class="gl-line" style="background:#475569"></span>Uses / Part-of</span>
+        <span class="gl-item"><span class="gl-line" style="background:#3498db"></span>Upgrade →</span>
+        <span class="gl-item"><span class="gl-line" style="background:#2ecc71"></span>Secures</span>
+        <span class="gl-item"><span class="gl-line" style="background:#e74c3c;border-style:dashed"></span>Attack path</span>
+        <span class="gl-item"><span class="gl-line" style="background:#64748b;opacity:0.5"></span>OSI layer</span>
+      </div>
+      <div style="flex:1"></div>
+      <button class="hdr-btn" id="btn-graph-layout" onclick="runGraphLayout(200)">↺ Re-layout</button>
+      <button class="hdr-btn" onclick="fitGraph()">⊡ Fit</button>
+      <span id="graph-hint">Drag nodes · Scroll to zoom · Click for details</span>
+    </div>
+    <svg id="graph-svg" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="ga-blue"  markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L0,7 L7,3.5 z" fill="#3498db" opacity="0.9"/></marker>
+        <marker id="ga-green" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L0,7 L7,3.5 z" fill="#2ecc71" opacity="0.9"/></marker>
+        <marker id="ga-red"   markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L0,7 L7,3.5 z" fill="#e74c3c" opacity="0.9"/></marker>
+        <marker id="ga-gray"  markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L0,7 L7,3.5 z" fill="#64748b" opacity="0.7"/></marker>
+        <filter id="glow-green"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="glow-blue"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <g id="graph-root">
+        <g id="ge"></g>
+        <g id="gn"></g>
+      </g>
+    </svg>
+  </div>
+
+</div><!-- #app -->
+
+<!-- Study mode quiz banner -->
+<div id="study-banner">👁 Study Mode — hover nodes to reveal labels</div>
+
+<!-- Tooltip element -->
+<div id="tooltip" class="tooltip"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════ */
+let activeOverlay  = null;
+let ztActive       = false;
+let linkedInActive = false;
+let studyMode      = false;
+let selectedNode   = null;
+
+/* ═══════════════════════════════════════════════════════
+   HELPERS — build detail panel HTML blocks
+═══════════════════════════════════════════════════════ */
+function def(text) {
+  return `<div class="dp-section"><div class="dp-content">${text}</div></div>`;
+}
+function ports(...pairs) {
+  const pills = pairs.map(([p,l]) => `<span class="dp-pill port">${p}</span><span style="font-size:10px;color:var(--text-dim)">${l}</span>`).join(' ');
+  return `<div class="dp-section"><div class="dp-label">Ports</div><div class="dp-port-row">${pills}</div></div>`;
+}
+function insecure(text) { return `<div class="dp-warn">${text}</div>`; }
+function secure(text)   { return `<div class="dp-secure">${text}</div>`; }
+function tip(text)      { return `<div class="dp-exam-tip">${text}</div>`; }
+function cli(text)      { return `<div class="dp-cli">${text}</div>`; }
+function divider()      { return `<div class="dp-divider"></div>`; }
+function table(headers, rows) {
+  const ths = headers.map(h=>`<th>${h}</th>`).join('');
+  const trs = rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('');
+  return `<table class="dp-table"><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
+}
+function h(html) { return html; }
+
+/* ═══════════════════════════════════════════════════════
+   NODE DATA — all 17 clusters
+═══════════════════════════════════════════════════════ */
+const NODE_DATA = {
+
+  /* ── CLUSTER 1 / OSI reference nodes ── */
+  'osi-sidebar': { title: 'OSI Model', osi: null, html:
+    def('The Open Systems Interconnection model is a 7-layer conceptual framework describing how data travels across a network. Each layer has distinct responsibilities and hands data up/down to adjacent layers.') +
+    table(['Layer','Name','Key Protocols'],
+      [['7','Application','HTTP, HTTPS, FTP, SSH, DNS, SMTP, LDAP, SNMP'],
+       ['6','Presentation','SSL, TLS — encryption, formatting, compression'],
+       ['5','Session','SIP, RTP — session setup and teardown'],
+       ['4','Transport','TCP, UDP — ports, reliability, flow control'],
+       ['3','Network','IP, ICMP, ARP* — routing between networks'],
+       ['2','Data Link','Ethernet, MAC, Switches, VLANs, STP'],
+       ['1','Physical','Cables, hubs, air gap, physical hardware']]) +
+    tip('ARP spans Layer 2 and 3 — it maps IP addresses (L3) to MAC addresses (L2).')
+  },
+
+  /* ── CLUSTER 2 — Core Protocols ── */
+  'tcp': { title: 'TCP — Transmission Control Protocol', osi: 4, html:
+    def('Connection-oriented protocol that guarantees reliable, ordered delivery of data. Uses a 3-way handshake (SYN → SYN-ACK → ACK) before data transmission.') +
+    ports(['Various','Well-known ports use TCP for reliability']) +
+    secure('Used by: HTTP, HTTPS, FTP, SMTP, SSH, RDP') +
+    tip('TCP = reliable but slower. UDP = fast but no guarantee. Know which services use which.')
+  },
+  'udp': { title: 'UDP — User Datagram Protocol', osi: 4, html:
+    def('Connectionless protocol. No handshake, no guarantee of delivery. Sends packets and hopes they arrive. Faster and lower latency than TCP.') +
+    secure('Used by: DNS (port 53), DHCP, VoIP, RTP, TFTP, SNMP') +
+    tip('UDP is preferred when speed matters more than reliability — streaming, gaming, VoIP. DNS uses UDP for queries but TCP for zone transfers.')
+  },
+  'ip': { title: 'IP — Internet Protocol', osi: 3, html:
+    def('Responsible for addressing and routing packets across networks. IP is connectionless — it does not guarantee delivery, order, or error correction. IPv4 uses 32-bit addresses; IPv6 uses 128-bit.') +
+    tip('IP provides addressing; TCP/UDP provide transport. Together they form the foundation of the internet.')
+  },
+  'icmp': { title: 'ICMP — Internet Control Message Protocol', osi: 3, html:
+    def('Used for network diagnostics and error reporting. Not used to carry application data. Common tools: <code>ping</code> (tests reachability) and <code>traceroute</code> / <code>tracert</code> (maps network path).') +
+    insecure('Can be used in ICMP flood (ping flood) DoS attacks. Many firewalls restrict ICMP at perimeter.') +
+    tip('ICMP is Layer 3 — it works at the network level, not transport or application.')
+  },
+  'arp': { title: 'ARP — Address Resolution Protocol', osi: '2-3', html:
+    def('Resolves IP addresses (Layer 3) to MAC addresses (Layer 2) on a local network segment. A device broadcasts "Who has IP x.x.x.x?" and the owner replies with its MAC address.') +
+    insecure('ARP Poisoning: attacker sends fake ARP replies to associate their MAC with a legitimate IP — enables man-in-the-middle attacks on the LAN.') +
+    tip('ARP spans Layer 2/3 — this is a common exam trick. ARP has no authentication, making it inherently vulnerable.')
+  },
+  'data-in-transit': { title: 'Data in Transit', osi: null, html:
+    def('Data actively moving across a network between two endpoints. Protecting data in transit is one of the three data states (transit, rest, use). Unencrypted data in transit can be captured by packet sniffers.') +
+    secure('Protected by: TLS (HTTPS, SMTPS, LDAPS), IPsec (VPN), SSH (SFTP, tunnels)') +
+    insecure('Exposed by: HTTP, FTP, TFTP, SMTP (port 25), LDAP, Telnet, SNMP v1/v2') +
+    tip('Any protocol without encryption sends data in cleartext — credentials, emails, and file contents are all visible to anyone with network access.')
+  },
+
+  /* ── CLUSTER 3 — DNS & Network Services ── */
+  'dns-server': { title: 'DNS — Domain Name System', osi: 7, html:
+    def('Translates human-readable domain names (e.g. google.com) to IP addresses. Uses a hierarchical distributed database. Queries typically use UDP port 53; zone transfers use TCP port 53.') +
+    ports(['53 UDP','Queries'],['53 TCP','Zone transfers']) +
+    table(['Record','Purpose'],
+      [['A','Maps hostname → IPv4 address'],
+       ['AAAA','Maps hostname → IPv6 address'],
+       ['PTR','Reverse lookup: IP → hostname'],
+       ['MX','Mail exchange server for a domain'],
+       ['CNAME','Alias pointing to another hostname'],
+       ['SOA','Start of Authority — zone metadata and primary NS']]) +
+    insecure('DNS Poisoning: attacker injects false records into DNS cache, redirecting users to malicious IPs.') +
+    secure('DNSSEC: digitally signs DNS records using public key cryptography. RRSIG is the digital signature record attached to each signed DNS entry.') +
+    tip('Know all 6 record types and their purposes. DNS Poisoning → DNSSEC is a classic exam pairing.')
+  },
+  'dhcp': { title: 'DHCP — Dynamic Host Configuration Protocol', osi: 7, html:
+    def('Automatically assigns IP addresses, subnet masks, default gateways, and DNS server addresses to clients. Uses a 4-step process: Discover → Offer → Request → Acknowledge (DORA).') +
+    ports(['67 UDP','Server (receives client requests)'],['68 UDP','Client (receives offers)']) +
+    insecure('DHCP Starvation: attacker exhausts IP pool with fake requests. Rogue DHCP: attacker runs unauthorized DHCP server to hand out malicious gateway/DNS.') +
+    tip('DHCP runs on UDP — remember port 67 (server) and 68 (client).')
+  },
+  'ntp': { title: 'NTP — Network Time Protocol', osi: 7, html:
+    def('Synchronizes clocks across network devices. Accurate time is critical for log correlation, Kerberos authentication (tickets expire), and certificate validity checks.') +
+    ports(['123 UDP','NTP']) +
+    tip('If NTP is compromised or clocks are skewed, Kerberos authentication fails. Time accuracy is a security control, not just an admin convenience.')
+  },
+  'ipv4': { title: 'IPv4', osi: 3, html:
+    def('32-bit addressing scheme providing approximately 4.3 billion unique addresses. Addresses written in dotted-decimal notation (e.g., 192.168.1.1). Exhaustion of public IPv4 addresses drove adoption of NAT and IPv6.') +
+    tip('IPv4 = 32-bit. IPv6 = 128-bit. DNS A record = IPv4. DNS AAAA record = IPv6.')
+  },
+  'rfc1918': { title: 'RFC 1918 — Private IP Address Ranges', osi: 3, html:
+    def('Defines three ranges of IPv4 addresses reserved for private/internal use. These addresses are not routable on the public internet — NAT translates them to public IPs.') +
+    table(['Range','CIDR','Common Use'],
+      [['10.0.0.0–10.255.255.255','10.0.0.0/8','Large enterprise networks'],
+       ['172.16.0.0–172.31.255.255','172.16.0.0/12','Medium networks'],
+       ['192.168.0.0–192.168.255.255','192.168.0.0/16','Home/small office']]) +
+    tip('RFC 1918 addresses must be NATted to reach the internet. Memorize all three ranges.')
+  },
+  'ipv6': { title: 'IPv6', osi: 3, html:
+    def('128-bit addressing providing 3.4×10³⁸ unique addresses. Written in hexadecimal with colons (e.g., 2001:0db8::1). Eliminates the need for NAT. Includes built-in IPsec support.') +
+    tip('IPv6 uses AAAA records in DNS. No broadcast — uses multicast instead. No NAT required due to massive address space.')
+  },
+  'unicast': { title: 'Unicast / Broadcast (IPv4 Addressing Methods)', osi: 3, html:
+    def('<strong>Unicast:</strong> one-to-one communication — a packet sent from one specific source to one specific destination IP address.<br><br><strong>Broadcast:</strong> one-to-all communication — a packet sent to all devices on a subnet (e.g., 192.168.1.255). Broadcast is limited to a single broadcast domain; routers do not forward broadcasts.') +
+    tip('VLANs create separate broadcast domains, limiting the scope of broadcast traffic and reducing congestion.')
+  },
+
+  /* ── CLUSTER 4 — Email Security ── */
+  'mail-server': { title: 'Mail Server — Email Protocol Stack', osi: 7, html:
+    def('A mail server handles sending and receiving of email. Outbound mail uses SMTP; inbound retrieval uses POP3 or IMAP. Email authentication relies on SPF, DKIM, and DMARC to prevent spoofing.') +
+    table(['Protocol','Port','Purpose'],
+      [['SMTP','25','Send email between servers (cleartext)'],
+       ['SMTSP','465/587','SMTP with TLS encryption'],
+       ['POP3','110','Download mail, deletes from server'],
+       ['IMAP','143','Sync mail, stays on server'],
+       ['IMAPS','993','IMAP over TLS']]) +
+    tip('SPF + DKIM + DMARC work together. SPF checks sending IP, DKIM checks signature, DMARC sets the policy for failures.')
+  },
+  'smtp': { title: 'SMTP — Simple Mail Transfer Protocol', osi: 7, html:
+    def('Used to send email between mail servers and from clients to servers. Operates in cleartext — usernames, passwords, and message content are all visible on the network.') +
+    ports(['25','Server-to-server (cleartext)'],['587','Client submission (STARTTLS)'],['465','SMTPS (implicit TLS)']) +
+    insecure('Port 25 sends everything in cleartext. Commonly blocked by ISPs to prevent spam relaying.') +
+    secure('SMTSP/SMTPS: SMTP over TLS. Use port 587 (STARTTLS) or 465 (implicit TLS).') +
+    tip('Port 25 = insecure server relay. Port 587 = secure client submission. Know both.')
+  },
+  'smtsp': { title: 'SMTSP — Secure SMTP', osi: 7, html:
+    def('Encrypted and authenticated version of SMTP. Uses TLS to protect the connection, preventing eavesdropping and credential theft during email transmission.') +
+    ports(['465','Implicit TLS (SMTPS)'],['587','STARTTLS (upgrade to TLS mid-session']) +
+    secure('TLS-encrypted SMTP session — credentials and content are protected in transit.') +
+    tip('The exam may call this SMTSP or SMTPS. Either way: SMTP + TLS = secure email sending.')
+  },
+  'pop3': { title: 'POP3 — Post Office Protocol v3', osi: 7, html:
+    def('Downloads email from the mail server to the local client and typically deletes it from the server. Good for single-device use. Not ideal for multiple devices since mail is not synced.') +
+    ports(['110','POP3 (cleartext)'],['995','POP3S (over TLS)']) +
+    insecure('Port 110 transmits credentials and mail content in cleartext.') +
+    tip('POP3 = downloads and removes from server. IMAP = syncs and keeps on server. Classic exam distinction.')
+  },
+  'imap': { title: 'IMAP — Internet Message Access Protocol', osi: 7, html:
+    def('Allows email clients to access and manage mail directly on the server. Mail stays on the server and is synchronized across multiple devices — better for modern multi-device use than POP3.') +
+    ports(['143','IMAP (cleartext)'],['993','IMAPS (over TLS)']) +
+    tip('IMAP = syncs, stays on server. POP3 = downloads, removes from server. IMAP is preferred for mobile/multi-device users.')
+  },
+  'spf': { title: 'SPF — Sender Policy Framework', osi: 7, html:
+    def('A DNS TXT record that lists all IP addresses authorized to send email on behalf of a domain. When a receiving server gets an email, it checks the sender\'s DNS for an SPF record to verify the sending IP is legitimate.') +
+    tip('SPF stops email spoofing at the IP level. It lives in DNS as a TXT record. Failing SPF alone doesn\'t reject mail — DMARC decides the action.')
+  },
+  'dkim': { title: 'DKIM — DomainKeys Identified Mail', osi: 7, html:
+    def('Adds a cryptographic digital signature to outgoing email headers. The receiving server fetches the sender\'s public key from DNS and verifies the signature. Proves the email was not tampered with in transit and originated from the claimed domain.') +
+    tip('DKIM signs the message. SPF checks the sending server. DMARC enforces what happens when either fails.')
+  },
+  'dmarc': { title: 'DMARC — Domain-Based Message Authentication, Reporting, and Conformance', osi: 7, html:
+    def('A policy published in DNS that tells receiving mail servers what to do when an email fails SPF and/or DKIM checks. Policies: <em>none</em> (monitor only), <em>quarantine</em> (send to spam), <em>reject</em> (block entirely). Also provides reporting back to the domain owner.') +
+    tip('DMARC is the enforcement layer. SPF + DKIM collect evidence; DMARC decides the verdict. Know: none → quarantine → reject as escalating strictness.')
+  },
+  'email-gateway': { title: 'Email Gateway', osi: 7, html:
+    def('A security appliance or service that sits inline between the internet and the internal mail server. Inspects all inbound and outbound email for spam, malware, phishing, and policy violations before delivery.') +
+    secure('Enforces SPF/DKIM/DMARC checks, scans attachments for malware, blocks phishing URLs, and filters outbound data loss.') +
+    tip('Email Gateway sits at the perimeter — it\'s the first and last line of defense for email traffic.')
+  },
+
+  /* ── CLUSTER 5 — Web & Encryption ── */
+  'web-server': { title: 'Web Server (DMZ)', osi: 7, html:
+    def('Hosts public-facing web applications. Placed in the DMZ so that if compromised, the attacker cannot immediately reach the internal LAN. Protected by HTTPS/TLS, WAF, and firewall ACLs.') +
+    secure('HTTPS (port 443) + TLS 1.2/1.3 encrypts all traffic. WAF filters application-layer attacks (SQLi, XSS).') +
+    insecure('HTTP (port 80) transmits everything in cleartext — never use for authenticated or sensitive content.')
+  },
+  'http': { title: 'HTTP — Hypertext Transfer Protocol', osi: 7, html:
+    def('The foundation of web communication. Transfers web pages, APIs, and web content. All data is transmitted in cleartext — visible to anyone with network access between client and server.') +
+    ports(['80','HTTP (cleartext)']) +
+    insecure('Credentials, session cookies, and page content are fully exposed in transit. Never use for login or sensitive data.') +
+    secure('HTTPS (port 443): HTTP wrapped in TLS — encrypts all content.') +
+    tip('HTTP = cleartext = red. HTTPS = encrypted = green. Any exam scenario involving sensitive data over the web should use HTTPS.')
+  },
+  'https': { title: 'HTTPS — HTTP Secure', osi: 7, html:
+    def('HTTP transmitted over a TLS-encrypted connection. The TLS handshake negotiates encryption before any HTTP data is sent, protecting headers, cookies, credentials, and page content from interception.') +
+    ports(['443','HTTPS (TLS-encrypted)']) +
+    secure('TLS 1.2 and 1.3 are current standards. TLS 1.3 is faster and eliminates legacy cipher suites.') +
+    tip('HTTPS does not make a website secure — it only encrypts the connection. A phishing site can use HTTPS too. The padlock means encrypted, not trustworthy.')
+  },
+  'ssl': { title: 'SSL — Secure Sockets Layer (Deprecated)', osi: 6, html:
+    def('The predecessor to TLS. SSL 2.0 and 3.0 are both deprecated and contain critical vulnerabilities. Should not be used in any modern system.') +
+    insecure('SSL 3.0 → POODLE attack. SSL 2.0 → DROWN attack. Both allow decryption of encrypted traffic.') +
+    secure('TLS 1.2 and TLS 1.3 are the current standards. TLS 1.0 and 1.1 are also deprecated.') +
+    tip('"SSL" is still used colloquially (e.g., "SSL certificate") but the actual protocol is TLS. On the exam: SSL = deprecated, use TLS.')
+  },
+  'tls': { title: 'TLS — Transport Layer Security', osi: 6, html:
+    def('The current standard for encrypting data in transit. TLS wraps application protocols (HTTP, SMTP, LDAP, etc.) to create encrypted tunnels. Operates via a handshake that negotiates cipher suites and authenticates the server via certificate.') +
+    secure('TLS 1.2 — widely supported, current minimum. TLS 1.3 — faster handshake, removes legacy ciphers, most secure.') +
+    insecure('TLS 1.0 and 1.1 are deprecated. SSL is deprecated.') +
+    tip('TLS replaces SSL. TLS 1.3 is the gold standard. Know the deprecation chain: SSL → TLS 1.0 → TLS 1.1 → TLS 1.2 (acceptable) → TLS 1.3 (best).')
+  },
+  'ipsec': { title: 'IPsec — Internet Protocol Security', osi: 3, html:
+    def('A suite of protocols that encrypts and authenticates IP packets. Operates at Layer 3, making it transparent to applications. Commonly used for VPN tunnels.') +
+    table(['Mode','Description'],
+      [['Tunnel mode','Encrypts entire IP packet (new IP header added) — used for site-to-site VPN'],
+       ['Transport mode','Encrypts payload only, original IP header intact — used for host-to-host']]) +
+    secure('Protocols: AH (Authentication Header) — integrity only. ESP (Encapsulating Security Payload) — encryption + integrity.') +
+    tip('IPsec Tunnel mode = site-to-site VPN (entire packet encrypted). Transport mode = host-to-host (payload only). ESP provides encryption; AH does not.')
+  },
+
+  /* ── CLUSTER 6 — File Transfer ── */
+  'ftp': { title: 'FTP — File Transfer Protocol', osi: 7, html:
+    def('Transfers files between a client and server. Uses two channels: port 21 for commands (control) and port 20 for data transfer. All traffic including credentials is sent in cleartext.') +
+    ports(['21','Control / commands'],['20','Data transfer (active mode)']) +
+    insecure('Credentials and file contents fully visible in cleartext. No encryption whatsoever.') +
+    secure('Replace with SFTP (port 22, uses SSH) or FTPS (port 990/21, uses TLS).') +
+    tip('FTP uses TWO ports: 21 (control) and 20 (data). SFTP uses only port 22. They are completely different technologies despite the similar names.')
+  },
+  'tftp': { title: 'TFTP — Trivial File Transfer Protocol', osi: 7, html:
+    def('A simplified file transfer protocol with no authentication, no encryption, and no directory listing. Designed for simple boot/config file transfers on trusted isolated networks. Uses UDP for speed.') +
+    ports(['69','TFTP (UDP, no auth)']) +
+    insecure('No authentication at all — anyone on the network can read or write files. Never use on untrusted networks.') +
+    secure('If file transfer is needed: use SFTP (port 22, SSH-based) instead.') +
+    tip('TFTP has NO authentication — it\'s the most insecure file transfer protocol. Common use: pushing firmware/config to network devices on an isolated management VLAN.')
+  },
+  'sftp': { title: 'SFTP — SSH File Transfer Protocol', osi: 7, html:
+    def('A completely separate protocol from FTP — it is a file transfer subsystem of SSH, not FTP over SSL/TLS. All data is encrypted via the SSH session. Provides authentication, encryption, and directory operations.') +
+    ports(['22','SFTP (runs over SSH)']) +
+    secure('Full SSH encryption. Authenticates via password or SSH key pairs. Same port as SSH.') +
+    tip('SFTP ≠ FTPS. SFTP runs over SSH (port 22). FTPS runs over TLS (port 990 implicit or 21 explicit). They look similar but are fundamentally different — this is a common exam trap.')
+  },
+  'ftps': { title: 'FTPS — FTP Secure (FTP over TLS)', osi: 7, html:
+    def('FTP with TLS encryption added. FTPS is an extension of FTP — it adds TLS on top of the existing FTP protocol. Two modes: Implicit (port 990, TLS from the start) and Explicit (port 21, STARTTLS upgrades the connection).') +
+    ports(['990','Implicit FTPS (TLS from connection start)'],['21','Explicit FTPS (STARTTLS upgrade)']) +
+    secure('TLS encrypts credentials and file content.') +
+    tip('FTPS = FTP + TLS. SFTP = SSH-based (different protocol entirely). Port 990 = implicit FTPS. Port 22 = SFTP. Know both for the exam.')
+  },
+
+  /* ── CLUSTER 7 — Remote Access ── */
+  'ssh': { title: 'SSH — Secure Shell', osi: 7, html:
+    def('Provides encrypted terminal access to remote systems. Replaced Telnet (port 23), which sent all data including passwords in cleartext. SSH encrypts the entire session including authentication.') +
+    ports(['22','SSH']) +
+    secure('Supports password auth and public key authentication (SSH keys — more secure than passwords).') +
+    insecure('Replaced Telnet (port 23) — never use Telnet on any network.') +
+    tip('SSH port 22 is also used by SFTP. Telnet (port 23) = cleartext = always replace with SSH. Know that OpenSSH is the most common implementation on Linux/Unix systems.')
+  },
+  'openssh': { title: 'OpenSSH', osi: 7, html:
+    def('The open-source implementation of the SSH protocol suite. The default SSH client and server on Linux, macOS, and most Unix systems. Provides ssh (client), sshd (server), sftp, scp, and ssh-keygen utilities.') +
+    secure('Supports RSA, ECDSA, and Ed25519 key pairs. Supports SSH tunneling and port forwarding.') +
+    tip('OpenSSH is the reference implementation of SSH. On the exam, if you see SSH on Linux/Unix, it\'s almost certainly OpenSSH.')
+  },
+  'rdp': { title: 'RDP — Remote Desktop Protocol', osi: 7, html:
+    def('Microsoft\'s proprietary protocol for GUI remote access to Windows systems. Transmits the full desktop environment over the network. High-value attack target due to credential-based access.') +
+    ports(['3389','RDP']) +
+    insecure('Exposed RDP is one of the most commonly exploited services. Vulnerable to: brute force, BlueKeep (CVE-2019-0708), credential stuffing.') +
+    secure('Harden with: Network Level Authentication (NLA), firewall ACL to restrict source IPs, VPN requirement before RDP, MFA, account lockout policies.') +
+    tip('RDP port 3389 on the internet = red flag. Restrict via firewall or require VPN first. Never expose RDP directly to the internet.')
+  },
+  'vpn': { title: 'VPN — Virtual Private Network', osi: 3, html:
+    def('Creates an encrypted tunnel through an untrusted network (typically the internet), allowing remote users or sites to securely access internal resources as if directly connected.') +
+    table(['Type','Description'],
+      [['Site-to-site VPN','Connects two networks permanently (branch to HQ). Uses IPsec tunnel mode.'],
+       ['Remote-access VPN','Connects individual users to the corporate network. Uses TLS or IPsec.'],
+       ['Split-tunnel VPN','Only corporate traffic goes through VPN; other traffic goes direct to internet.'],
+       ['Full-tunnel VPN','All traffic routes through the VPN gateway.']]) +
+    tip('VPN encrypts the tunnel, not the data inside. If a user visits HTTP sites through VPN, that traffic is still cleartext inside the tunnel.')
+  },
+  'jump-server': { title: 'Jump Server (Jump Box)', osi: 7, html:
+    def('A hardened, dedicated intermediary host in a secured zone. Administrators must connect to the jump server first, then use it to reach internal systems. Eliminates direct exposure of internal servers to the internet or user workstations.') +
+    secure('Centralizes access logging and session recording. All admin activity passes through a single audited point. Reduces attack surface by limiting which systems are directly accessible.') +
+    tip('Jump Server = Privileged Access Workstation (PAW) concept. The jump server is the ONLY path to sensitive internal systems — not a convenience, it\'s a security control.')
+  },
+
+  /* ── CLUSTER 8 — VoIP ── */
+  'voip': { title: 'VoIP — Voice Over Internet Protocol', osi: 7, html:
+    def('Technology for transmitting voice calls over IP networks instead of traditional telephone infrastructure. VoIP uses SIP for call signaling and RTP for actual audio transmission.') +
+    tip('VoIP = application layer. SIP = session layer (setup/teardown). RTP = transport layer (media stream). SRTP = encrypted RTP.')
+  },
+  'sip': { title: 'SIP — Session Initiation Protocol', osi: 5, html:
+    def('Signaling protocol that establishes, manages, and terminates VoIP and multimedia sessions. SIP handles call setup and teardown; the actual audio is carried by RTP/SRTP.') +
+    ports(['5060','SIP (cleartext/UDP)'],['5061','SIPS (SIP over TLS)']) +
+    insecure('SIP on port 5060 sends signaling in cleartext — call metadata and credentials exposed.') +
+    secure('SIPS on port 5061 uses TLS for encrypted signaling.') +
+    tip('SIP = Layer 5 (Session). It manages the session, not the data. RTP carries the actual voice data at Layer 4.')
+  },
+  'rtp': { title: 'RTP — Real-Time Transport Protocol', osi: 4, html:
+    def('Carries the actual audio and video media streams during VoIP and multimedia calls. Uses UDP for low latency. RTP itself provides no encryption — media content is transmitted in cleartext.') +
+    insecure('RTP streams can be captured and reconstructed to eavesdrop on calls.') +
+    secure('SRTP: Secure RTP — adds AES encryption and HMAC-SHA1 authentication to protect the media stream.') +
+    tip('RTP = the voice data. SIP = the call setup. SRTP = encrypted RTP. Know this flow: SIP setup → RTP media → SIP teardown.')
+  },
+  'srtp': { title: 'SRTP — Secure Real-Time Transport Protocol', osi: 4, html:
+    def('An extension of RTP that adds AES encryption and message authentication (HMAC-SHA1) to protect voice/video media streams. Prevents eavesdropping and tampering of VoIP calls.') +
+    secure('Encrypts RTP payload with AES. Provides integrity via HMAC-SHA1. Does not add significant latency.') +
+    tip('SRTP is to RTP as HTTPS is to HTTP — the secure encrypted version. Use SRTP + SIPS together for fully secured VoIP.')
+  },
+
+  /* ── CLUSTER 9 — Directory Services ── */
+  'directory-services': { title: 'Directory Services', osi: 7, html:
+    def('A centralized database storing information about users, computers, groups, printers, and policies in a network. The most common implementation is Microsoft Active Directory (AD). Provides authentication and authorization for the entire organization.') +
+    tip('Directory Services = the phone book of the network. Active Directory is the dominant implementation. LDAP is the protocol used to query it.')
+  },
+  'ldap': { title: 'LDAP — Lightweight Directory Access Protocol', osi: 7, html:
+    def('The protocol used to query and modify directory services (like Active Directory). Uses a hierarchical tree structure: Domain → Organizational Unit (OU) → User/Computer objects. Cleartext by default.') +
+    ports(['389','LDAP (cleartext)'],['636','LDAPS (over TLS)']) +
+    insecure('Port 389 transmits credentials and directory queries in cleartext.') +
+    secure('LDAPS (port 636): LDAP over TLS — encrypts the entire session.') +
+    tip('LDAP = how you talk to Active Directory. Port 389 = insecure. Port 636 = secure (LDAPS). Classic port-pair exam question.')
+  },
+  'ldaps': { title: 'LDAPS — LDAP Secure (LDAP over TLS)', osi: 7, html:
+    def('LDAP wrapped in a TLS connection. Encrypts all directory queries, authentication credentials, and responses. Should always be used instead of plain LDAP in production environments.') +
+    ports(['636','LDAPS (TLS-encrypted)']) +
+    secure('Full TLS encryption of all LDAP traffic. Requires a valid certificate on the directory server.') +
+    tip('LDAP 389 → LDAPS 636. Same relationship as HTTP 80 → HTTPS 443. Memorize the port pair.')
+  },
+
+  /* ── CLUSTER 10 — Switch Hardening ── */
+  'switch': { title: 'Switch (Layer 2)', osi: 2, html:
+    def('A Layer 2 device that connects devices within the same LAN. Forwards frames based on destination MAC address using a MAC address table (CAM table). Unlike hubs, switches send frames only to the intended recipient port.') +
+    table(['Hardening Control','Purpose'],
+      [['Port Security','Limits MAC addresses per port'],
+       ['MAC Filtering','Allows/blocks by MAC address'],
+       ['BPDU Guard','Shuts port if BPDU received on edge port'],
+       ['Disable unused ports','Reduces physical attack surface'],
+       ['VLAN segmentation','Limits broadcast domain scope']]) +
+    tip('Switch hardening = Port Security + BPDU Guard + MAC Filtering + disable unused ports. Know all four.')
+  },
+  'vlan': { title: 'VLAN — Virtual LAN', osi: 2, html:
+    def('Logically segments a physical LAN into separate broadcast domains without requiring separate physical hardware. Devices on different VLANs cannot communicate without passing through a router or Layer 3 switch. Creates isolated network segments for different departments or security zones.') +
+    secure('Key use: separating guest Wi-Fi, IoT devices, servers, and workstations onto different VLANs prevents lateral movement if one segment is compromised.') +
+    tip('VLANs control East-West (lateral) traffic. A compromised device in VLAN 10 cannot directly reach devices in VLAN 20 — traffic must route through a firewall or L3 switch where ACLs can be applied.')
+  },
+  'port-security': { title: 'Port Security', osi: 2, html:
+    def('A switch feature that limits the number of MAC addresses allowed to communicate through a specific switch port. If an unauthorized MAC address is detected, the port can be set to shut down, restrict traffic, or send an alert.') +
+    secure('Prevents: unauthorized device connection, MAC flooding attacks (which fill the CAM table and force the switch to broadcast all traffic like a hub).') +
+    tip('Port Security is configured per switch port. It limits MAC addresses, not IP addresses. Three violation modes: protect, restrict, shutdown.')
+  },
+  'mac-filter': { title: 'MAC Filtering', osi: 2, html:
+    def('Allows or denies network access based on a device\'s hardware MAC address. Can be implemented on switches (per port) or wireless access points (per SSID).') +
+    insecure('MAC addresses can be spoofed (cloned) — MAC filtering is a weak control, not a strong security measure on its own. It adds friction, not real security.') +
+    tip('MAC filtering is "security through obscurity" when used alone. It\'s easily bypassed by MAC spoofing. Still a valid hardening layer but never rely on it as the sole control.')
+  },
+  'stp': { title: 'STP / Rapid STP — Spanning Tree Protocol', osi: 2, html:
+    def('Prevents switching loops in networks with redundant switch paths. Without STP, broadcast frames would loop indefinitely (broadcast storm), consuming all bandwidth. STP elects a Root Bridge and blocks redundant paths, keeping only one active path.') +
+    table(['Protocol','Description'],
+      [['STP (802.1D)','Original — slow convergence (30–50 seconds)'],
+       ['Rapid STP (802.1w)','Faster convergence (1–2 seconds) — use this'],
+       ['BPDU','Bridge Protocol Data Unit — messages switches use to communicate STP info'],
+       ['Edge Port','Port connected to an end device, not another switch'],
+       ['BPDU Guard','Shuts edge port immediately if BPDU received (rogue switch protection)']]) +
+    tip('BPDU Guard protects edge ports from rogue switch attacks. Rapid STP replaced STP — know which is faster.')
+  },
+  'bpdu-guard': { title: 'BPDU Guard', osi: 2, html:
+    def('A switch security feature that immediately disables (err-disables) an edge port if it receives a BPDU (Bridge Protocol Data Unit). Edge ports are connected to end devices (PCs, printers) and should never receive BPDUs — only switches send BPDUs.') +
+    secure('Prevents: rogue switch attacks where an attacker plugs in a switch to manipulate STP topology and intercept traffic.') +
+    tip('BPDU Guard = protection against rogue switches. Enable it on all access/edge ports. If a port receives a BPDU, something is wrong — shut it down immediately.')
+  },
+
+  /* ── CLUSTER 11 — Router Hardening ── */
+  'router': { title: 'Router (Layer 3)', osi: 3, html:
+    def('Forwards packets between different networks based on destination IP address. Routers connect network segments and make routing decisions using routing tables. They do not forward broadcast traffic.') +
+    table(['Hardening Control','Purpose'],
+      [['ACLs','Permit/deny traffic based on IP and port'],
+       ['Implicit Deny','Block all unmatched traffic by default'],
+       ['Disable unused services','Reduce attack surface'],
+       ['SNMP v3 only','Encrypted management protocol'],
+       ['Route authentication','Prevent routing table manipulation']]) +
+    cli('route          # show routing table (Linux)\nroute print    # show routing table (Windows)\nroute add <dst> mask <mask> <gw>  # add static route') +
+    tip('Routers separate broadcast domains (unlike switches). ACLs on routers filter inter-network traffic.')
+  },
+  'acl': { title: 'ACL — Access Control List', osi: 3, html:
+    def('An ordered list of permit/deny rules applied to network traffic on a router or firewall interface. Each rule specifies: protocol, source IP, destination IP, and port. Rules are evaluated top-to-bottom — first match wins.') +
+    table(['Field','Description'],
+      [['Permission','Permit or Deny'],
+       ['Protocol','TCP, UDP, ICMP, IP (any)'],
+       ['Source','Source IP address / range'],
+       ['Destination','Destination IP address / range'],
+       ['Port','Destination port number (e.g., 80, 443)']]) +
+    secure('Implicit Deny: an invisible "deny all" rule at the end of every ACL. If no rule matches, traffic is blocked.') +
+    tip('ACL rules are processed top-to-bottom. Put specific rules before general ones. The implicit deny at the end blocks everything not explicitly permitted.')
+  },
+  'implicit-deny': { title: 'Implicit Deny', osi: 3, html:
+    def('The default behavior at the end of every ACL — if no rule explicitly permits traffic, it is denied. This rule is not written but is always present. It is the foundational principle of least privilege in network access control.') +
+    tip('"Implicit deny" means the deny rule is implied/invisible but absolutely real. If you forget to add a permit rule, traffic is blocked. Always write ACLs with the implicit deny in mind — add only what you need to allow.')
+  },
+  'snmpv1': { title: 'SNMP v1 / v2 (Insecure)', osi: 7, html:
+    def('Simple Network Management Protocol versions 1 and 2. Used to monitor and manage network devices (routers, switches, servers). Both versions use community strings (like passwords) for authentication, but transmit them in cleartext.') +
+    ports(['161 UDP','SNMP agent (queries)'],['162 UDP','SNMP trap (alerts)']) +
+    insecure('Community strings sent in cleartext. Default community strings ("public" for read, "private" for write) are well-known and often unchanged.') +
+    secure('Use SNMP v3 — the only version with authentication (MD5/SHA) AND encryption (AES/DES).') +
+    tip('SNMP v1 and v2 = cleartext community strings = insecure. SNMP v3 = auth + encryption = secure. Only SNMP v3 is acceptable in production.')
+  },
+  'snmpv3': { title: 'SNMP v3 — Secure Network Management', osi: 7, html:
+    def('The only version of SNMP with both authentication and encryption. Replaces the insecure community string model with user-based security providing message integrity, authentication, and privacy.') +
+    ports(['161 UDP','SNMP queries'],['162 UDP','SNMP traps']) +
+    secure('Authentication: MD5 or SHA (verify message source). Encryption: AES or DES (protect content). Integrity: prevents tampering.') +
+    tip('SNMP v3 is the ONLY version with authentication AND encryption. The exam will ask this. v1 and v2 use cleartext community strings — never acceptable for production use.')
+  },
+
+  /* ── CLUSTER 12 — Firewalls ── */
+  'firewall': { title: 'Firewall', osi: 3, html:
+    def('A security device that monitors and controls incoming and outgoing network traffic based on defined rules. Acts as the enforcement point between network zones. Can be hardware appliance, software, or cloud-based.') +
+    table(['Type','Description'],
+      [['Host-based','Software on individual host — controls that host\'s traffic only (e.g., Windows Firewall)'],
+       ['Network-based','Dedicated hardware at network boundary — protects entire network segment'],
+       ['Software-based','Runs on general-purpose hardware — flexible but slower than dedicated appliance'],
+       ['Stateless','Filters by fixed rules only — fast, no session awareness'],
+       ['Stateful','Tracks connection state — blocks unsolicited inbound packets'],
+       ['WAF','HTTP/HTTPS-specific — protects web applications (SQLi, XSS)'],
+       ['NGFW','Stateful + DPI + App awareness + IPS + identity rules']]) +
+    tip('Know each firewall type and its use case. Stateless = fast, dumb. Stateful = smart, tracks sessions. NGFW = everything plus application intelligence.')
+  },
+  'waf': { title: 'WAF — Web Application Firewall', osi: 7, html:
+    def('A firewall that operates at Layer 7 specifically for HTTP/HTTPS traffic. Sits in front of web applications and filters requests based on application-layer rules. Protects against: SQL injection, cross-site scripting (XSS), CSRF, directory traversal, and other OWASP Top 10 attacks.') +
+    secure('Can operate in: Positive model (allow only known-good patterns) or Negative model (block known-bad signatures).') +
+    tip('WAF is application-aware — it understands HTTP requests and responses, not just ports and IPs. A regular firewall cannot stop SQLi; a WAF can.')
+  },
+  'ngfw': { title: 'NGFW — Next-Generation Firewall', osi: 7, html:
+    def('Combines traditional stateful firewall capabilities with deep packet inspection, application identification, intrusion prevention (IPS), TLS inspection, and identity-based policies. Can make access decisions based on user identity, not just IP address.') +
+    secure('Features: Stateful inspection + Deep Packet Inspection (DPI) + Application awareness + IPS + User/identity-based rules + TLS/SSL inspection.') +
+    tip('NGFW = stateful firewall + IPS + application control + identity awareness. It\'s the most capable firewall type. Use when you need to control by application or user, not just port/IP.')
+  },
+  'utm': { title: 'UTM — Unified Threat Management', osi: 7, html:
+    def('A single appliance that combines multiple security functions: firewall, IDS/IPS, antivirus, content filtering, spam filtering, and VPN. Simplifies management by consolidating tools — but a single point of failure for all security functions.') +
+    tip('UTM = one box, many functions. Simpler to manage but creates a single point of failure. NGFW is the modern evolution. The exam may distinguish them: UTM = bundled, NGFW = next-gen capabilities.')
+  },
+  'fail-modes': { title: 'Firewall Failure Modes', osi: null, html:
+    def('Defines how a firewall behaves when it experiences a hardware or software failure.') +
+    table(['Mode','Behavior','Priority'],
+      [['Fail-open','Traffic flows through if firewall fails','Availability over Security'],
+       ['Fail-closed','All traffic blocked if firewall fails','Security over Availability']]) +
+    tip('"Fail-open = available but unsafe. Fail-closed = secure but potentially disruptive." Know which to recommend: high-security environments (finance, healthcare) → fail-closed. High-availability requirements → fail-open. The exam will give you a scenario.')
+  },
+
+  /* ── CLUSTER 13 — Network Zones ── */
+  'screened-subnet': { title: 'Screened Subnet / DMZ', osi: null, html:
+    def('A subnet placed between two firewalls — one facing the internet, one facing the internal LAN. Also called a DMZ (Demilitarized Zone). Hosts public-facing services (web, mail, DNS) in a partially trusted zone isolated from the internal network.') +
+    secure('If an attacker compromises a DMZ server, they still face an internal firewall before reaching the LAN.') +
+    tip('"Screened subnet" and "DMZ" are used interchangeably on the exam. The key is two firewalls with a buffer zone between them.')
+  },
+  'dmz-zone': { title: 'DMZ — Demilitarized Zone', osi: null, html:
+    def('A network zone that sits between the internet-facing perimeter firewall and the internal network firewall. Hosts services that must be accessible from the internet (web servers, mail servers, DNS servers) while limiting attacker access to the internal LAN.') +
+    tip('DMZ = partially trusted zone. Internet = untrusted. Intranet = trusted. A CA placed in the DMZ provides certificates to public services.')
+  },
+  'attack-surface': { title: 'Attack Surface', osi: null, html:
+    def('The total sum of all exposure points where an attacker could attempt to enter, extract data from, or disrupt a system or network. Includes: open ports, running services, user accounts, APIs, physical access points, and unpatched software.') +
+    secure('Reduce attack surface by: closing unused ports, disabling unused services, removing unnecessary software, applying least privilege, and network segmentation.') +
+    tip('Smaller attack surface = fewer ways in. Every open port, active service, and user account is part of the attack surface.')
+  },
+  'intranet': { title: 'Intranet', osi: null, html:
+    def('A private internal network accessible only to authorized users within an organization. Uses internet technologies (HTTP, DNS) but is not accessible from the public internet. The trusted zone in network segmentation.') +
+    tip('Intranet = internal, trusted. Extranet = shared with external partners, semi-trusted. Internet = public, untrusted.')
+  },
+  'extranet': { title: 'Extranet', osi: null, html:
+    def('A controlled private network that grants limited access to external parties (partners, vendors, suppliers, customers). Sits between the fully trusted intranet and the untrusted internet. Often implemented as a segmented zone or via VPN.') +
+    tip('Extranet is semi-trusted. It extends a portion of the intranet to external partners with restricted access. Not the same as the internet.')
+  },
+  'east-west': { title: 'East-West Traffic (Horizontal Traffic)', osi: null, html:
+    def('Network traffic that moves laterally between systems within the same network — server to server, workstation to workstation. Contrast with North-South traffic (between internal network and internet/external).') +
+    insecure('Traditional perimeter security only inspects North-South traffic. Attackers who breach the perimeter can move laterally (East-West) without being detected.') +
+    secure('Zero Trust and micro-segmentation inspect East-West traffic, limiting lateral movement after a breach.') +
+    tip('East-West = lateral movement risk. Zero Trust controls East-West. VLANs limit East-West blast radius. This is key to modern security architecture.')
+  },
+  'ca': { title: 'CA — Certificate Authority', osi: 7, html:
+    def('An entity that issues, manages, and revokes digital certificates. Acts as the root of trust for Public Key Infrastructure (PKI). Browsers and operating systems ship with a list of trusted root CAs. TLS/HTTPS, code signing, and email encryption all rely on CA-issued certificates.') +
+    secure('Certificates bind a public key to an identity, verified by the CA\'s signature.') +
+    tip('The CA\'s job is to vouch for identity. If a CA is compromised, every certificate it issued becomes untrustworthy. Root CA compromise = catastrophic. Intermediate CAs add a layer of protection.')
+  },
+
+  /* ── CLUSTER 14 — NAT ── */
+  'nat': { title: 'NAT — Network Address Translation', osi: 3, html:
+    def('Translates private (RFC 1918) IP addresses to public IP addresses, allowing multiple internal devices to share one or more public IPs. Performed by the router or firewall at the network boundary.') +
+    table(['Type','Description'],
+      [['Static NAT','One private IP ↔ one public IP (1:1). Used for servers needing a consistent public IP.'],
+       ['Dynamic NAT','Pool of public IPs assigned on demand. Many private → pool of public IPs.'],
+       ['PAT (NAT Overload)','Many private IPs → one public IP, differentiated by port numbers. What home routers do.']]) +
+    tip('When people say "NAT," they almost always mean PAT. PAT uses port numbers to track many connections through one public IP.')
+  },
+  'nat-gateway': { title: 'NAT Gateway', osi: 3, html:
+    def('The device (typically router or firewall) that performs NAT. Maintains a translation table mapping internal private IP:port combinations to external public IP:port combinations.') +
+    tip('The NAT Gateway is the device that does the translating. It\'s where RFC 1918 private IPs become public IPs for internet communication.')
+  },
+  'pat': { title: 'PAT — Port Address Translation', osi: 3, html:
+    def('Also called NAT Overload. Maps many internal private IP addresses to a single public IP address, differentiated by unique port numbers. This is what home routers and most enterprise NAT implementations actually do.') +
+    tip('"NAT" in everyday use usually means PAT. The exam may test the distinction. PAT = many-to-one using port numbers. Static NAT = one-to-one. Dynamic NAT = many-to-pool.')
+  },
+  'static-nat': { title: 'Static NAT', osi: 3, html:
+    def('A permanent one-to-one mapping between a single private IP and a single public IP. Used when an internal server must always be reachable at a consistent public IP address (e.g., a web server in the DMZ).') +
+    tip('Static NAT = 1:1. The public IP is dedicated to one host. Used for DMZ servers that must receive inbound connections from the internet.')
+  },
+  'dynamic-nat': { title: 'Dynamic NAT', osi: 3, html:
+    def('Maps internal private IPs to a pool of available public IPs on demand. When an internal device needs internet access, it is assigned an available public IP from the pool. Less common than PAT in modern networks.') +
+    tip('Dynamic NAT = many-to-pool (but still 1:1 at any given moment). Not the same as PAT (many-to-one). Dynamic NAT can fail if the public IP pool is exhausted.')
+  },
+
+  /* ── CLUSTER 15 — SCADA / Air Gap ── */
+  'scada': { title: 'SCADA — Supervisory Control and Data Acquisition', osi: null, html:
+    def('Industrial control systems used to manage critical infrastructure: power grids, water treatment plants, oil pipelines, manufacturing facilities, and transportation systems. Historically designed for reliability and uptime, not cybersecurity.') +
+    insecure('SCADA systems were designed before internet connectivity was common. Many run legacy OSes (Windows XP), lack encryption, and were never designed to resist cyberattacks.') +
+    secure('Best practice: air-gap SCADA networks from all external connectivity. Implement strict physical access controls.') +
+    tip('SCADA = critical infrastructure = extremely high-impact target. Air gap is the strongest isolation control. Stuxnet (2010) demonstrated that even air-gapped SCADA systems can be compromised via USB.')
+  },
+  'air-gap': { title: 'Air Gap', osi: 1, html:
+    def('A physical isolation technique where a system or network has absolutely no wired or wireless network connections to any other network. The "gap" is literal — no cable, no Wi-Fi, no Bluetooth can bridge to external networks.') +
+    secure('Strongest form of network isolation. Eliminates remote network-based attack vectors entirely.') +
+    insecure('Does not eliminate all attack vectors: physical access, USB drives, malicious insiders, and electromagnetic emanations can still be used.') +
+    tip('Air gap = no network connection at all. It\'s a physical Layer 1 control. The dashed border on the SCADA zone in this diagram represents the air gap visually.')
+  },
+  'air-gapped-system': { title: 'Air-Gapped System', osi: 1, html:
+    def('A computer or network that is completely isolated from all unsecured networks through physical separation. No path exists (wired or wireless) to untrusted networks.') +
+    tip('Air-gapped systems are used for: classified military networks, nuclear control systems, SCADA, and financial trading infrastructure. The isolation IS the security control.')
+  },
+  'physical-isolation': { title: 'Physical Isolation', osi: 1, html:
+    def('Separating a system from all network connectivity at the hardware level. Broader concept than air gap — includes keeping systems in locked rooms, removing network interfaces, and controlling physical access.') +
+    secure('Combines with: locked server rooms, cable management, port blocking, and guard/access controls.') +
+    tip('Physical isolation is a Layer 1 control. No software firewall can substitute for physically disconnecting a system from a network.')
+  },
+
+  /* ── CLUSTER 16 — Network Appliances & Proxy ── */
+  'proxy': { title: 'Proxy Server', osi: 7, html:
+    def('An intermediary server that sits between clients and the internet (or between clients and servers). Clients send requests to the proxy, which forwards them on the client\'s behalf. Hides client identity from the destination server.') +
+    table(['Type','Description'],
+      [['Forward Proxy','Client-side — controls/monitors outbound user traffic. Provides caching and content filtering.'],
+       ['Reverse Proxy','Server-side — sits in front of backend servers. Protects servers, provides load balancing and caching.']]) +
+    tip('Forward proxy = protects clients / controls outbound. Reverse proxy = protects servers / handles inbound. Classic exam distinction.')
+  },
+  'forward-proxy': { title: 'Forward Proxy Server', osi: 7, html:
+    def('Sits between internal clients and the internet. Internal users send requests to the forward proxy, which fetches content on their behalf. Provides: caching (stores frequently accessed content locally to reduce bandwidth), content filtering (blocks categories of websites by policy), and anonymity (hides internal client IPs).') +
+    secure('Enforces acceptable use policies. Logs all outbound web requests for audit. Can perform TLS inspection to scan encrypted traffic.') +
+    tip('Forward proxy = faces outward, serves clients. Think: "I want to block employees from social media" → deploy a forward proxy.')
+  },
+  'reverse-proxy': { title: 'Reverse Proxy', osi: 7, html:
+    def('Sits in front of backend web servers and handles all inbound requests from the internet. The client interacts with the reverse proxy, which distributes requests to backend servers. Protects server identities, provides load balancing, TLS termination, and caching.') +
+    secure('Hides backend server IPs. Provides load balancing, SSL/TLS offloading, and WAF capability. Clients never directly reach backend servers.') +
+    tip('Reverse proxy = faces inward, serves servers. Think: "I want to protect my web server farm" → deploy a reverse proxy. CDN services (Cloudflare, Akamai) are large-scale reverse proxies.')
+  },
+
+  /* ── CLUSTER 17 — Zero Trust ── */
+  'implicit-trust': { title: 'Implicit Trust (Legacy Model)', osi: null, html:
+    def('The traditional network security assumption that users and devices inside the network perimeter are trusted. Once a user is inside the network (via VPN or physical access), they are treated as trusted and can access many internal resources freely.') +
+    insecure('Implicit trust is the root cause of lateral movement attacks. A single compromised internal account can reach many systems because "they\'re inside the network."') +
+    secure('Zero Trust eliminates implicit trust — every access request must be authenticated, authorized, and verified regardless of network location.') +
+    tip('"Never trust, always verify" is the zero trust mantra. Implicit trust = the old model. Zero trust = the new model.')
+  },
+  'ztna': { title: 'ZTNA — Zero Trust Network Access', osi: 7, html:
+    def('Technology implementing zero trust principles for application access. Instead of connecting users to a network (like VPN), ZTNA connects users to specific applications after verifying identity, device health, and context. Users cannot see or access applications they\'re not authorized for.') +
+    secure('Application-level access control. Device posture checking. Continuous authentication.') +
+    tip('ZTNA replaces VPN in zero trust architectures. VPN gives network access; ZTNA gives application access. Much narrower and more secure.')
+  },
+  'pep': { title: 'PEP — Policy Enforcement Point', osi: null, html:
+    def('The gateway that enforces access decisions made by the Policy Engine. The subject\'s requests pass through the PEP, which allows or blocks based on the PE/PA\'s decision. The PEP is in the data path — all traffic flows through it.') +
+    tip('PEP = enforces. PE = decides. PA = communicates the decision. Control Plane = PE + PA. Data Plane = where PEP operates. This is the most-tested Zero Trust architecture component.')
+  },
+  'pe': { title: 'Policy Engine (PE)', osi: null, html:
+    def('The brain of the zero trust architecture. Evaluates access requests against policy rules and signals (user identity, device health, location, time, behavioral analytics) to make an allow or deny decision. Can use AI/ML to detect anomalies.') +
+    tip('Control Plane = PE + PA. The PE decides; the PA communicates that decision to the PEP. Remember: "Engine = decision maker."')
+  },
+  'pa': { title: 'Policy Administrator (PA)', osi: null, html:
+    def('Communicates the Policy Engine\'s access decision to the Policy Enforcement Point. Acts as the translator between the control plane\'s decision and the enforcement action at the PEP. Manages session tokens and credentials for approved access.') +
+    tip('PA = the messenger between PE (decision) and PEP (enforcement). Control Plane = PE + PA together.')
+  },
+  'control-plane': { title: 'Control Plane (Zero Trust)', osi: null, html:
+    def('The part of the Zero Trust architecture that manages and enforces security policy. Contains the Policy Engine (makes decisions) and Policy Administrator (communicates decisions). Does not carry application data — only manages access decisions.') +
+    tip('"Control Plane = decides. Data Plane = transmits." This is the most-tested Zero Trust concept on the exam.')
+  },
+  'data-plane': { title: 'Data Plane (Zero Trust)', osi: null, html:
+    def('The path through which actual application data flows between the subject and the enterprise resource, once access has been granted by the control plane. The PEP sits in the data plane.') +
+    tip('"Data Plane = transmits. Control Plane = decides." Data flows through the data plane. Policy enforcement happens through the PEP, which sits in the data plane.')
+  },
+  'adaptive-id': { title: 'Adaptive Identity Authorization', osi: null, html:
+    def('Continuously evaluates identity signals beyond the initial login — including device health, geographic location, time of access, behavioral patterns, and risk score — to adapt access decisions in real time. High-risk signals can trigger step-up authentication or revoke access mid-session.') +
+    tip('Adaptive Identity = zero trust\'s continuous verification in practice. Not just "who are you at login" but "are you still behaving normally throughout the session."')
+  },
+  'sase': { title: 'SASE — Secure Access Service Edge', osi: null, html:
+    def('A cloud-delivered architecture that converges networking (SD-WAN) and security (ZTNA, CASB, FWaaS, SWG) into a single unified service. Security travels with the user regardless of location — no need to backhaul traffic to a data center.') +
+    table(['Component','Description'],
+      [['ZTNA','Zero Trust Network Access — replaces VPN'],
+       ['CASB','Cloud Access Security Broker — controls cloud app usage'],
+       ['FWaaS','Firewall as a Service — cloud-based perimeter firewall'],
+       ['SWG','Secure Web Gateway — web proxy and content filtering'],
+       ['SD-WAN','Software-defined WAN — intelligent traffic routing']]) +
+    tip('SASE = Zero Trust + cloud delivery. Security moves to the edge, not the data center. Gartner coined the term in 2019.')
+  },
+  'subject': { title: 'Subject (Zero Trust)', osi: null, html:
+    def('The entity requesting access to an enterprise resource in a Zero Trust model. Can be a human user, an IoT device, a service account, or an automated process. The subject\'s identity, device health, and context are all evaluated before access is granted.') +
+    tip('In Zero Trust: Subject → PEP → Enterprise Resource. The subject must be verified every time, even if they were verified 5 minutes ago.')
+  },
+  'resource': { title: 'Enterprise Resource', osi: null, html:
+    def('The application, data set, service, or system that the subject is trying to access. In Zero Trust, resources are hidden from unauthorized users — they cannot even discover that the resource exists until they are authorized.') +
+    tip('Enterprise Resources are protected by the PEP. Unlike VPN (which exposes the whole network), ZTNA only exposes the specific resource the user is authorized to access.')
+  },
+
+  /* ── Additional zone/concept nodes ── */
+  'nat-gateway': { title: 'NAT Gateway', osi: 3, html:
+    def('The device (typically router or firewall at the perimeter) that performs NAT/PAT. Maintains a translation table mapping internal private IP:port to external public IP:port for all active connections.') +
+    tip('The NAT Gateway is where RFC 1918 private IPs become public IPs. It\'s typically the edge router or firewall.')
+  },
+};
+
+/* ═══════════════════════════════════════════════════════
+   SVG ARROW ENGINE
+═══════════════════════════════════════════════════════ */
+
+/** Get centre of a node chip relative to the canvas scroll container */
+function nodeCenter(id) {
+  const el = document.querySelector(`[data-node-id="${id}"]`);
+  if (!el) return null;
+  const canvas = document.getElementById('canvas');
+  const cr = canvas.getBoundingClientRect();
+  const nr = el.getBoundingClientRect();
+  return {
+    x: nr.left - cr.left + nr.width  / 2,
+    y: nr.top  - cr.top  + nr.height / 2 + canvas.scrollTop
+  };
+}
+
+/** Get top-centre of a node (for arrows arriving at a node) */
+function nodeTop(id) {
+  const el = document.querySelector(`[data-node-id="${id}"]`);
+  if (!el) return null;
+  const canvas = document.getElementById('canvas');
+  const cr = canvas.getBoundingClientRect();
+  const nr = el.getBoundingClientRect();
+  return {
+    x: nr.left - cr.left + nr.width / 2,
+    y: nr.top  - cr.top  + canvas.scrollTop
+  };
+}
+
+/** Draw a curved animated arrow between two points */
+function drawArrow(svg, p1, p2, opts) {
+  if (!p1 || !p2) return;
+  const { color, marker, label, dashArray, animName, animDur, bend } = opts;
+
+  // control point for quadratic curve (adds slight arc)
+  const bx = bend || 0;
+  const mx = (p1.x + p2.x) / 2 + bx;
+  const my = (p1.y + p2.y) / 2 - 30;
+
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  const d = `M ${p1.x} ${p1.y} Q ${mx} ${my} ${p2.x} ${p2.y}`;
+  path.setAttribute('d', d);
+  path.setAttribute('fill', 'none');
+  path.setAttribute('stroke', color);
+  path.setAttribute('stroke-width', '2');
+  path.setAttribute('stroke-dasharray', dashArray || '7,4');
+  path.setAttribute('marker-end', `url(#${marker})`);
+  if (animName) {
+    path.style.animation = `${animName} ${animDur || '0.9s'} linear infinite`;
+  }
+  svg.appendChild(path);
+
+  // label at midpoint
+  if (label) {
+    const tx = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    tx.setAttribute('x', mx);
+    tx.setAttribute('y', my - 6);
+    tx.setAttribute('text-anchor', 'middle');
+    tx.setAttribute('class', 'svg-arrow-label');
+    tx.setAttribute('fill', color);
+    // dark background rect
+    const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    const pad = 4;
+    // We append text first to measure, then add rect before it
+    tx.textContent = label;
+    svg.appendChild(tx);
+    try {
+      const bb = tx.getBBox();
+      bg.setAttribute('x',      bb.x - pad);
+      bg.setAttribute('y',      bb.y - pad);
+      bg.setAttribute('width',  bb.width  + pad * 2);
+      bg.setAttribute('height', bb.height + pad * 2);
+      bg.setAttribute('rx', '3');
+      bg.setAttribute('fill', '#0f172a');
+      bg.setAttribute('fill-opacity', '0.82');
+      svg.insertBefore(bg, tx);
+    } catch(e) { /* getBBox can fail before paint */ }
+  }
+}
+
+/** Remove all dynamic SVG children (keep <defs>) */
+function clearSVG() {
+  const svg = document.getElementById('overlay-svg');
+  [...svg.children].forEach(c => { if (c.tagName !== 'defs') c.remove(); });
+}
+
+function redrawOverlay() {
+  if (activeOverlay) drawOverlayArrows(activeOverlay);
+}
+
+/* ═══════════════════════════════════════════════════════
+   OVERLAY DEFINITIONS
+═══════════════════════════════════════════════════════ */
+
+const ATTACK_ARROWS = [
+  { from: 'attack-surface', to: 'dns-server',    label: 'DNS Poisoning',          bend:  40 },
+  { from: 'attack-surface', to: 'arp',            label: 'ARP Poisoning',          bend: -40 },
+  { from: 'attack-surface', to: 'http',           label: 'Packet Sniffing',        bend:  20 },
+  { from: 'attack-surface', to: 'ftp',            label: 'Credential Theft',       bend: -20 },
+  { from: 'attack-surface', to: 'rdp',            label: 'Brute Force',            bend:  60 },
+  { from: 'attack-surface', to: 'mail-server',    label: 'Phishing / Spoofing',    bend: -60 },
+  { from: 'attack-surface', to: 'snmpv1',         label: 'Community String Sniff', bend:  30 },
+  { from: 'attack-surface', to: 'ldap',           label: 'Cleartext Bind',         bend: -30 },
+];
+
+const UPGRADE_ARROWS = [
+  { from: 'ftp',    to: 'sftp',    label: 'Use SSH tunnel'  },
+  { from: 'ftp',    to: 'ftps',    label: 'Add TLS'         },
+  { from: 'tftp',   to: 'sftp',    label: 'Use SFTP instead', bend: 50 },
+  { from: 'http',   to: 'https',   label: 'Wrap in TLS'    },
+  { from: 'ssl',    to: 'tls',     label: 'Deprecated → TLS' },
+  { from: 'smtp',   to: 'smtsp',   label: 'Add TLS'         },
+  { from: 'ldap',   to: 'ldaps',   label: 'Port 389 → 636'  },
+  { from: 'rtp',    to: 'srtp',    label: 'Add AES'         },
+  { from: 'snmpv1', to: 'snmpv3',  label: 'v1/v2 → v3'     },
+];
+
+function drawOverlayArrows(type) {
+  clearSVG();
+  const svg = document.getElementById('overlay-svg');
+
+  if (type === 'attack') {
+    ATTACK_ARROWS.forEach(a => {
+      drawArrow(svg, nodeCenter(a.from), nodeTop(a.to), {
+        color:     '#e74c3c',
+        marker:    'arrow-red',
+        label:     a.label,
+        dashArray: '7,4',
+        animName:  'dash-attack',
+        animDur:   '0.85s',
+        bend:      a.bend || 0,
+      });
+    });
+  }
+
+  if (type === 'upgrade') {
+    UPGRADE_ARROWS.forEach(a => {
+      drawArrow(svg, nodeCenter(a.from), nodeTop(a.to), {
+        color:     '#3498db',
+        marker:    'arrow-blue',
+        label:     a.label,
+        dashArray: '5,3',
+        animName:  'dash-upgrade',
+        animDur:   '1.1s',
+        bend:      a.bend || 0,
+      });
+    });
+  }
+
+  // Defense overlay uses CSS glow only (no SVG arrows needed — handled by body class)
+}
+
+/* ═══════════════════════════════════════════════════════
+   OVERLAY TOGGLES
+═══════════════════════════════════════════════════════ */
+function toggleOverlay(name) {
+  const btnMap   = { attack:'btn-attack', defense:'btn-defense', upgrade:'btn-upgrade' };
+  const cssClass = { attack:'active-red', defense:'active-green', upgrade:'active-blue' };
+  const bodyClass= { attack:'overlay-attack', defense:'overlay-defense', upgrade:'overlay-upgrade' };
+
+  if (activeOverlay === name) {
+    document.getElementById(btnMap[name]).classList.remove(cssClass[name]);
+    document.body.classList.remove(bodyClass[name]);
+    clearSVG();
+    activeOverlay = null;
+  } else {
+    if (activeOverlay) {
+      document.getElementById(btnMap[activeOverlay]).classList.remove(cssClass[activeOverlay]);
+      document.body.classList.remove(bodyClass[activeOverlay]);
+    }
+    activeOverlay = name;
+    document.getElementById(btnMap[name]).classList.add(cssClass[name]);
+    document.body.classList.add(bodyClass[name]);
+    // slight delay so DOM has settled after class changes
+    setTimeout(() => drawOverlayArrows(name), 50);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   ZERO TRUST TOGGLE
+═══════════════════════════════════════════════════════ */
+function toggleZeroTrust() {
+  ztActive = !ztActive;
+  const btn     = document.getElementById('btn-zt');
+  const diagram = document.getElementById('zt-diagram');
+  const canvas  = document.getElementById('canvas');
+  if (ztActive) {
+    btn.style.cssText = 'border-color:var(--teal);color:var(--teal);background:rgba(26,188,156,0.1)';
+    diagram.classList.add('visible');
+    canvas.classList.add('zt-active');
+  } else {
+    btn.style.cssText = '';
+    diagram.classList.remove('visible');
+    canvas.classList.remove('zt-active');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   LINKEDIN VIEW
+═══════════════════════════════════════════════════════ */
+function toggleLinkedIn() {
+  linkedInActive = !linkedInActive;
+  const btn = document.getElementById('btn-linkedin');
+  if (linkedInActive) {
+    // Close detail panel and any active overlays for a clean screenshot
+    closeDetail();
+    clearSVG();
+    document.body.classList.remove('overlay-attack','overlay-defense','overlay-upgrade');
+    if (activeOverlay) {
+      const btnMap = { attack:'btn-attack', defense:'btn-defense', upgrade:'btn-upgrade' };
+      const cssClass = { attack:'active-red', defense:'active-green', upgrade:'active-blue' };
+      document.getElementById(btnMap[activeOverlay]).classList.remove(cssClass[activeOverlay]);
+      activeOverlay = null;
+    }
+    document.body.classList.add('linkedin-mode');
+    btn.textContent = '← Back to Study Mode';
+    btn.classList.add('active-linkedin');
+  } else {
+    document.body.classList.remove('linkedin-mode');
+    btn.textContent = '📸 LinkedIn View';
+    btn.classList.remove('active-linkedin');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   STUDY MODE
+═══════════════════════════════════════════════════════ */
+function toggleStudyMode() {
+  studyMode = !studyMode;
+  const btn = document.getElementById('btn-study');
+  document.body.classList.toggle('study-mode', studyMode);
+  if (studyMode) {
+    btn.textContent = '👁 Labels On';
+    btn.style.cssText = 'border-color:var(--purple);color:var(--purple);background:rgba(155,89,182,0.12)';
+    // Close detail panel — in study mode you quiz yourself without hints
+    closeDetail();
+  } else {
+    btn.textContent = '👁 Study Mode';
+    btn.style.cssText = '';
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   DETAIL PANEL
+═══════════════════════════════════════════════════════ */
+const OSI_COLORS = { 7:'#f39c12', 6:'#b07fe0', 5:'#1abc9c', 4:'#2ecc71', 3:'#3498db', 2:'#c0865a', 1:'#95a5a6' };
+const OSI_NAMES  = {
+  7:'Layer 7 — Application', 6:'Layer 6 — Presentation', 5:'Layer 5 — Session',
+  4:'Layer 4 — Transport',   3:'Layer 3 — Network',       2:'Layer 2 — Data Link',
+  1:'Layer 1 — Physical',    '2-3':'Layer 2/3 — Data Link / Network'
+};
+
+function openDetail(nodeId, title, osiLayer, html) {
+  if (selectedNode) selectedNode.classList.remove('selected');
+  document.getElementById('detail-title').textContent = title;
+  document.getElementById('detail-body').innerHTML = html;
+
+  const tag = document.getElementById('detail-osi-tag');
+  if (osiLayer) {
+    const col = OSI_COLORS[osiLayer] || '#94a3b8';
+    tag.textContent = OSI_NAMES[osiLayer] || ('Layer ' + osiLayer);
+    tag.style.color = col;
+    tag.style.borderColor = col + '55';
+    tag.style.background  = col + '18';
+    pulseOsiLayer(osiLayer);
+  } else {
+    tag.textContent = 'Cross-layer / Concept';
+    tag.style.color = 'var(--text-dim)';
+    tag.style.borderColor = '';
+    tag.style.background  = '';
+  }
+  document.getElementById('detail-panel').classList.remove('collapsed');
+  document.body.classList.add('detail-open');
+  // Redraw overlay arrows after panel opens (canvas width changed)
+  if (activeOverlay && activeOverlay !== 'defense') {
+    clearSVG();
+    setTimeout(() => drawOverlayArrows(activeOverlay), 280);
+  }
+}
+
+function closeDetail() {
+  document.getElementById('detail-panel').classList.add('collapsed');
+  document.body.classList.remove('detail-open');
+  if (selectedNode) { selectedNode.classList.remove('selected'); selectedNode = null; }
+  // Redraw overlay arrows after panel closes (canvas width changed)
+  if (activeOverlay && activeOverlay !== 'defense') {
+    clearSVG();
+    setTimeout(() => drawOverlayArrows(activeOverlay), 280);
+  }
+}
+
+function openNodeById(id) {
+  const d = NODE_DATA[id];
+  if (d) openDetail(id, d.title, d.osi, d.html);
+}
+
+/* ═══════════════════════════════════════════════════════
+   OSI LAYER PULSE & FILTER
+═══════════════════════════════════════════════════════ */
+let activeOsiFilter = null;
+
+function pulseOsiLayer(layer) {
+  const el = document.getElementById('osi-' + layer);
+  if (!el) return;
+  el.classList.remove('pulse');
+  void el.offsetWidth;
+  el.classList.add('pulse');
+  el.addEventListener('animationend', () => el.classList.remove('pulse'), { once: true });
+}
+
+function selectOsiLayer(layer) {
+  pulseOsiLayer(layer);
+  if (activeOsiFilter === layer) {
+    clearOsiFilter();
+  } else {
+    applyOsiFilter(layer);
+  }
+}
+
+/* Build set of node-data IDs that belong to a given OSI layer */
+function nodeIdsForLayer(layer) {
+  const ids = new Set();
+  Object.entries(NODE_DATA).forEach(([id, d]) => {
+    if (!d.osi) return;
+    // handle '2-3' cross-layer entries
+    const layers = String(d.osi).split('-').map(Number);
+    if (layers.includes(layer)) ids.add(id);
+  });
+  return ids;
+}
+
+function applyOsiFilter(layer) {
+  activeOsiFilter = layer;
+  const matchIds = nodeIdsForLayer(layer);
+
+  /* ── Topology canvas ── */
+  document.querySelectorAll('.node[data-node-id]').forEach(node => {
+    const id = node.dataset.nodeId;
+    const d  = NODE_DATA[id];
+    node.classList.remove('osi-match', 'osi-dim', 'osi-cross');
+    if (!d || d.osi === null || d.osi === undefined) {
+      node.classList.add('osi-cross');           // cross-layer concept
+    } else if (matchIds.has(id)) {
+      node.classList.add('osi-match');
+    } else {
+      node.classList.add('osi-dim');
+    }
+  });
+
+  /* Dim zones whose every visible node is dimmed */
+  document.querySelectorAll('.zone').forEach(zone => {
+    const nodes = zone.querySelectorAll('.node[data-node-id]');
+    const allDim = [...nodes].every(n => n.classList.contains('osi-dim'));
+    zone.classList.toggle('zone-all-dim', allDim && nodes.length > 0);
+  });
+
+  /* ── OSI sidebar bands ── */
+  for (let i = 1; i <= 7; i++) {
+    const band = document.getElementById('osi-' + i);
+    if (!band) continue;
+    band.classList.remove('osi-band-active', 'osi-band-dim');
+    band.classList.add(i === layer ? 'osi-band-active' : 'osi-band-dim');
+  }
+
+  document.body.classList.add('osi-filtered');
+
+  /* ── Graph view: dim nodes not matching this OSI layer ── */
+  if (gGraphActive && gGraphInited) {
+    const matchIds = nodeIdsForLayer(layer);
+    document.querySelectorAll('#gn > g[data-g-node-id]').forEach(g => {
+      const nid = g.dataset.gNodeId;
+      const isCat = nid.startsWith('cat-');
+      const nodeId = GNODES.find(n => n.id === nid)?.nodeId;
+      const vis = isCat || (nodeId && matchIds.has(nodeId));
+      g.style.opacity = vis ? '1' : '0.06';
+      g.style.pointerEvents = vis ? 'auto' : 'none';
+    });
+    document.querySelectorAll('#ge > line').forEach(line => line.style.opacity = '0.06');
+    document.querySelectorAll('#ge > line[data-gs][data-gt]').forEach(line => {
+      const sN = GNODES.find(n => n.id === line.dataset.gs);
+      const tN = GNODES.find(n => n.id === line.dataset.gt);
+      const sv = !sN || sN.id.startsWith('cat-') || (sN.nodeId && matchIds.has(sN.nodeId));
+      const tv = !tN || tN.id.startsWith('cat-') || (tN.nodeId && matchIds.has(tN.nodeId));
+      if (sv && tv) line.style.opacity = '0.65';
+    });
+  }
+
+  /* Update filter indicator on OSI sidebar */
+  _updateFilterBanner(layer);
+}
+
+function clearOsiFilter() {
+  activeOsiFilter = null;
+
+  /* ── Topology canvas ── */
+  document.querySelectorAll('.node').forEach(n =>
+    n.classList.remove('osi-match', 'osi-dim', 'osi-cross'));
+  document.querySelectorAll('.zone').forEach(z =>
+    z.classList.remove('zone-all-dim'));
+
+  /* ── OSI sidebar bands ── */
+  for (let i = 1; i <= 7; i++) {
+    const band = document.getElementById('osi-' + i);
+    if (band) band.classList.remove('osi-band-active', 'osi-band-dim');
+  }
+
+  document.body.classList.remove('osi-filtered');
+
+  /* ── Graph view ── */
+  if (gGraphActive && gGraphInited) {
+    document.querySelectorAll('#gn > g').forEach(g => {
+      g.style.opacity = '1';
+      g.style.pointerEvents = 'auto';
+    });
+    document.querySelectorAll('#ge > line').forEach(line => {
+      line.style.opacity = '';
+    });
+  }
+
+  _updateFilterBanner(null);
+}
+
+/* Small banner that appears on the OSI sidebar when a filter is active */
+function _updateFilterBanner(layer) {
+  let banner = document.getElementById('osi-filter-banner');
+  if (!layer) {
+    if (banner) banner.remove();
+    return;
+  }
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'osi-filter-banner';
+    banner.style.cssText = [
+      'position:absolute','bottom:0','left:0','right:0',
+      'background:rgba(15,23,42,0.9)','border-top:1px solid var(--border)',
+      'padding:5px 6px','font-size:9px','font-weight:700',
+      'color:var(--text-dim)','text-align:center',
+      'letter-spacing:0.5px','z-index:60',
+      'cursor:pointer','line-height:1.4'
+    ].join(';');
+    banner.title = 'Click to clear filter';
+    banner.onclick = clearOsiFilter;
+    document.getElementById('osi-sidebar').style.position = 'relative';
+    document.getElementById('osi-sidebar').appendChild(banner);
+  }
+  const col = OSI_COLORS[layer] || '#fff';
+  banner.innerHTML =
+    `<span style="color:${col}">Layer ${layer} filter active</span><br>` +
+    `<span style="opacity:0.6">click to clear</span>`;
+}
+
+/* ═══════════════════════════════════════════════════════
+   NODE CLICK WIRING — attach to all .node elements
+═══════════════════════════════════════════════════════ */
+document.querySelectorAll('.node[data-node-id]').forEach(node => {
+  node.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (linkedInActive) return;
+
+    if (selectedNode) selectedNode.classList.remove('selected');
+    selectedNode = this;
+    this.classList.add('selected');
+
+    const id    = this.dataset.nodeId;
+    const label = this.querySelector('.node-label')?.textContent || this.textContent.trim();
+    const d     = NODE_DATA[id];
+
+    if (d) {
+      openDetail(id, d.title, d.osi, d.html);
+    } else {
+      openDetail(id, label, null,
+        `<p class="dp-placeholder">Detailed content for <strong>${label}</strong> coming in Phase 3.</p>`);
+    }
+  });
+});
+
+/* fallback: nodes without data-node-id */
+document.querySelectorAll('.node:not([data-node-id])').forEach(node => {
+  node.addEventListener('click', function(e) {
+    e.stopPropagation();
+    const label = this.querySelector('.node-label')?.textContent || this.textContent.trim();
+    openDetail(null, label, null,
+      `<p class="dp-placeholder">Click a labeled node for full details.</p>`);
+  });
+});
+
+/* close detail on canvas background click */
+document.getElementById('canvas').addEventListener('click', e => {
+  if (e.target.id === 'canvas') closeDetail();
+});
+
+/* ═══════════════════════════════════════════════════════
+   HOVER TOOLTIPS — show OSI layer on node hover
+═══════════════════════════════════════════════════════ */
+const tooltip = document.getElementById('tooltip');
+let tooltipTimer = null;
+
+document.querySelectorAll('.node[data-node-id]').forEach(node => {
+  node.addEventListener('mouseenter', function(e) {
+    if (linkedInActive) return;
+    tooltipTimer = setTimeout(() => {
+      const id = this.dataset.nodeId;
+      const d  = NODE_DATA[id];
+      if (!d) return;
+      const osiLabel = d.osi ? (OSI_NAMES[d.osi] || ('Layer ' + d.osi)) : 'Cross-layer concept';
+      const osiColor = d.osi ? (OSI_COLORS[d.osi] || '#94a3b8') : '#64748b';
+      tooltip.innerHTML =
+        `<span style="color:${osiColor};font-weight:700;font-size:9px;letter-spacing:.5px">${osiLabel}</span><br>` +
+        `<span style="font-size:11px">${d.title}</span>`;
+      tooltip.classList.add('visible');
+    }, 400);
+  });
+
+  node.addEventListener('mousemove', function(e) {
+    let tx = e.clientX + 14;
+    let ty = e.clientY + 14;
+    if (tx + 240 > window.innerWidth)  tx = e.clientX - 244;
+    if (ty + 56  > window.innerHeight) ty = e.clientY - 60;
+    tooltip.style.left = tx + 'px';
+    tooltip.style.top  = ty + 'px';
+  });
+
+  node.addEventListener('mouseleave', () => {
+    clearTimeout(tooltipTimer);
+    tooltip.classList.remove('visible');
+  });
+
+  node.addEventListener('click', () => {
+    clearTimeout(tooltipTimer);
+    tooltip.classList.remove('visible');
+  });
+});
+
+/* ═══════════════════════════════════════════════════════
+   FIRST-RUN HINT
+═══════════════════════════════════════════════════════ */
+(function showFirstRunHint() {
+  if (sessionStorage.getItem('ch3-hint-seen')) return;
+  const hint = document.createElement('div');
+  hint.style.cssText = [
+    'position:fixed','bottom:' + (44 + 12) + 'px','left:50%',
+    'transform:translateX(-50%)',
+    'background:var(--surface2)','border:1px solid var(--border)',
+    'border-radius:8px','padding:10px 18px',
+    'font-size:11px','color:var(--text)',
+    'z-index:500','pointer-events:none',
+    'box-shadow:0 4px 20px rgba(0,0,0,0.5)',
+    'text-align:center','line-height:1.6',
+    'opacity:1','transition:opacity 0.6s ease'
+  ].join(';');
+  hint.innerHTML =
+    '<strong style="color:var(--text-bright)">Click any node</strong> to open its definition &nbsp;·&nbsp; ' +
+    '<strong style="color:var(--orange)">Toggle buttons</strong> activate overlays &nbsp;·&nbsp; ' +
+    '<strong style="color:var(--teal)">OSI bands</strong> pulse on each click';
+  document.body.appendChild(hint);
+  setTimeout(() => { hint.style.opacity = '0'; }, 4500);
+  setTimeout(() => { hint.remove(); }, 5200);
+  sessionStorage.setItem('ch3-hint-seen', '1');
+})();
+
+/* ═══════════════════════════════════════════════════════
+   SVG OVERLAY — resize & scroll handling
+═══════════════════════════════════════════════════════ */
+function syncSvgSize() {
+  const canvas = document.getElementById('canvas');
+  const svg    = document.getElementById('overlay-svg');
+  svg.style.height = canvas.scrollHeight + 'px';
+}
+
+// Sync on load
+syncSvgSize();
+
+// Redraw arrows when canvas scrolls (arrows are absolute-positioned so they stay correct)
+document.getElementById('canvas').addEventListener('scroll', () => {
+  syncSvgSize();
+  if (activeOverlay && activeOverlay !== 'defense') {
+    clearSVG();
+    setTimeout(() => drawOverlayArrows(activeOverlay), 20);
+  }
+});
+
+// Redraw on window resize
+window.addEventListener('resize', () => {
+  syncSvgSize();
+  if (activeOverlay && activeOverlay !== 'defense') {
+    clearSVG();
+    setTimeout(() => drawOverlayArrows(activeOverlay), 50);
+  }
+});
+
+// Also sync size whenever canvas content might change (ZT toggle)
+const canvasObserver = new MutationObserver(() => {
+  syncSvgSize();
+});
+canvasObserver.observe(document.getElementById('canvas'), { childList: true, subtree: false });
+</script>
+
+<style>
+/* ═══════════════════════════════════════════
+   SIDEBAR TABS
+═══════════════════════════════════════════ */
+#sidebar-tabs {
+  display: flex;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+}
+.sb-tab {
+  flex: 1;
+  background: var(--surface);
+  border: none;
+  border-right: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  padding: 5px 2px;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+.sb-tab:last-child { border-right: none; }
+.sb-tab:hover { color: var(--text-bright); background: var(--surface2); }
+.sb-tab.active {
+  color: var(--text-bright);
+  background: var(--surface2);
+  border-bottom: 2px solid var(--blue);
+}
+
+/* ── Theme panel ── */
+#sidebar-themes {
+  display: none;
+  flex-direction: column;
+  overflow-y: auto;
+  flex: 1;
+}
+#sidebar-themes::-webkit-scrollbar { width: 3px; }
+#sidebar-themes::-webkit-scrollbar-thumb { background: var(--border); }
+
+.theme-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 8px;
+  border: none;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 9.5px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+  white-space: nowrap;
+  overflow: hidden;
+  line-height: 1.3;
+  width: 100%;
+}
+.theme-btn:hover { background: var(--surface2); color: var(--text-bright); }
+.theme-btn.active {
+  color: var(--text-bright);
+  background: var(--surface2);
+}
+.theme-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1.5px solid currentColor;
+  background: currentColor;
+  opacity: 0.85;
+}
+.theme-btn.active .theme-dot { box-shadow: 0 0 6px currentColor; opacity: 1; }
+
+/* ── Theme filter CSS (mirrors OSI filter) ── */
+body.theme-filtered .node { transition: opacity 0.25s, transform 0.25s, filter 0.25s; }
+body.theme-filtered .node.theme-dim {
+  opacity: 0.07;
+  transform: scale(0.93);
+  pointer-events: none;
+  filter: grayscale(90%);
+}
+body.theme-filtered .node.theme-match {
+  opacity: 1;
+  pointer-events: auto;
+  box-shadow: 0 0 0 2px currentColor, 0 0 10px rgba(255,255,255,0.12);
+}
+body.theme-filtered .zone { transition: opacity 0.25s; }
+body.theme-filtered .zone.zone-all-dim { opacity: 0.35; }
+
+/* Sidebar themes panel active state */
+body.theme-filtered .theme-btn.active {
+  box-shadow: inset 4px 0 0 currentColor;
+}
+
+/* ═══════════════════════════════════════════
+   GRAPH VIEW
+═══════════════════════════════════════════ */
+#graph-view {
+  display: none;
+  grid-area: canvas;
+  flex-direction: column;
+  background: var(--bg);
+  overflow: hidden;
+  position: relative;
+  z-index: 10;
+}
+#graph-view.visible { display: flex; }
+
+#graph-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.gt-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-bright);
+  white-space: nowrap;
+}
+#graph-legend {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.gl-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.gl-line {
+  display: inline-block;
+  width: 18px;
+  height: 2px;
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+#graph-hint {
+  font-size: 10px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+#graph-svg {
+  flex: 1;
+  width: 100%;
+  cursor: grab;
+  display: block;
+}
+#graph-svg:active { cursor: grabbing; }
+</style>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   GRAPH VIEW — Force-directed concept map
+═══════════════════════════════════════════════════════ */
+
+/* ── Node & edge constructors ── */
+function gn(id, label, color, nodeId, cx, cy) {
+  return { id, label, color, nodeId: nodeId||id,
+    x: cx + (Math.random()-.5)*50, y: cy + (Math.random()-.5)*50,
+    vx:0, vy:0, r:18, pinned:false };
+}
+function ge(s, t, type, label) {
+  return { s, t, type: type||'uses', label: label||'' };
+}
+
+/* ── Node definitions ── */
+const GNODES = [
+  // Category anchor nodes (matching THEMES)
+  gn('cat-transport','Transport\nProtocols','#64748b',null,    0,    0),
+  gn('cat-web',      'Web &\nProxies',      '#f97316',null, -360, -240),
+  gn('cat-encryption','Encryption\n& TLS',  '#2ecc71',null, -200, -380),
+  gn('cat-email',    'Email\nSecurity',     '#e67e22',null,  360, -300),
+  gn('cat-dns',      'DNS &\nServices',     '#38bdf8',null,  100, -480),
+  gn('cat-filetransfer','File\nTransfer',   '#fb923c',null, -400,  -80),
+  gn('cat-remote',   'Remote\nAccess',      '#8b5cf6',null,  460,  260),
+  gn('cat-voip',     'VoIP &\nReal-Time',   '#4ade80',null,  200,  480),
+  gn('cat-switches', 'Switches',            '#06b6d4',null, -200,  320),
+  gn('cat-routers',  'Routers',             '#3b82f6',null,  320,   80),
+  gn('cat-nat',      'NAT &\nAddressing',   '#0891b2',null,  100,  200),
+  gn('cat-firewalls','Firewalls',           '#ef4444',null,  580,   -80),
+  gn('cat-zones',    'Network\nZones',      '#eab308',null,  400,  -200),
+  gn('cat-identity', 'Identity\n& PKI',     '#a855f7',null, -360,  380),
+  gn('cat-zerotrust','Zero\nTrust',         '#1abc9c',null, -460,  480),
+  gn('cat-physical', 'Physical\n& OT',      '#78716c',null, -560,  100),
+  // Core transport
+  gn('tcp',       'TCP',           '#2ecc71','tcp',         -180,   0),
+  gn('udp',       'UDP',           '#2ecc71','udp',         -180,  80),
+  gn('ip',        'IP',            '#3498db','ip',          -220,  80),
+  gn('icmp',      'ICMP',          '#3498db','icmp',        -280, 110),
+  gn('arp',       'ARP',           '#c0865a','arp',         -240, 170),
+  gn('dtransit',  'Data in\nTransit','#e74c3c','data-in-transit',-190,-40),
+  // Web / encryption
+  gn('http',  'HTTP',          '#e74c3c','http',   -400,-280),
+  gn('https', 'HTTPS',         '#2ecc71','https',  -300,-280),
+  gn('ssl',   'SSL\n(deprecated)','#95a5a6','ssl', -420,-380),
+  gn('tls',   'TLS',           '#2ecc71','tls',    -300,-380),
+  gn('ipsec', 'IPsec',         '#2ecc71','ipsec',  -420,-180),
+  // File transfer
+  gn('ftp',   'FTP',           '#e74c3c','ftp',    -360,-180),
+  gn('tftp',  'TFTP',          '#e74c3c','tftp',   -440,-140),
+  gn('sftp',  'SFTP',          '#2ecc71','sftp',   -280,-200),
+  gn('ftps',  'FTPS',          '#2ecc71','ftps',   -360,-120),
+  // Email
+  gn('smtp',    'SMTP',         '#e74c3c','smtp',     340,-280),
+  gn('smtsp',   'SMTSP',        '#2ecc71','smtsp',    460,-280),
+  gn('pop3',    'POP3',         '#3498db','pop3',     300,-180),
+  gn('imap',    'IMAP',         '#3498db','imap',     400,-180),
+  gn('spf',     'SPF',          '#2ecc71','spf',      320,-380),
+  gn('dkim',    'DKIM',         '#2ecc71','dkim',     440,-380),
+  gn('dmarc',   'DMARC',        '#2ecc71','dmarc',    560,-320),
+  gn('emailgw', 'Email\nGateway','#e67e22','email-gateway',560,-200),
+  // DNS / services
+  gn('dns',    'DNS',           '#3498db','dns-server', 160,-380),
+  gn('dnssec', 'DNSSEC',        '#2ecc71','dns-server', 280,-380),
+  gn('rrsig',  'RRSIG',         '#2ecc71','dns-server', 320,-460),
+  gn('dhcp',   'DHCP',          '#3498db','dhcp',       60,-460),
+  gn('ntp',    'NTP',           '#3498db','ntp',       200,-460),
+  gn('ipv4',   'IPv4',          '#3498db','ipv4',      -60,-440),
+  gn('ipv6',   'IPv6',          '#3498db','ipv6',      100,-520),
+  gn('rfc1918','RFC 1918',      '#3498db','rfc1918',   -80,-520),
+  // Switch / L2
+  gn('sw',     'Switch',        '#3498db','switch',    220, 200),
+  gn('vlan',   'VLAN',          '#2ecc71','vlan',      340, 240),
+  gn('portsec','Port\nSecurity','#2ecc71','port-security',280,140),
+  gn('macfilt','MAC\nFilter',   '#2ecc71','mac-filter', 380,160),
+  gn('stp',    'STP /\nRapid STP','#2ecc71','stp',     240,320),
+  gn('bpdug',  'BPDU\nGuard',   '#2ecc71','bpdu-guard',360,340),
+  // Router
+  gn('router', 'Router',        '#3498db','router',    340,  80),
+  gn('acl',    'ACL',           '#2ecc71','acl',       460,  60),
+  gn('ideny',  'Implicit\nDeny','#2ecc71','implicit-deny',480,150),
+  gn('snmp12', 'SNMP\nv1/v2',   '#e74c3c','snmpv1',    520, 110),
+  gn('snmp3',  'SNMP v3',       '#1abc9c','snmpv3',    520,  20),
+  // Firewall / perimeter
+  gn('fw',     'Firewall',      '#e67e22','firewall',  600,   0),
+  gn('waf',    'WAF',           '#e67e22','waf',       700, -90),
+  gn('ngfw',   'NGFW',          '#e67e22','ngfw',      700,  40),
+  gn('utm',    'UTM',           '#e67e22','utm',       700, 130),
+  gn('failm',  'Fail-open /\nFail-closed','#e67e22','fail-modes',600,90),
+  // Zones
+  gn('dmz',    'DMZ /\nScreened\nSubnet','#f1c40f','screened-subnet',520,-200),
+  gn('atksurf','Attack\nSurface','#e74c3c','attack-surface',580,-310),
+  gn('ca',     'CA',            '#9b59b6','ca',        500,-290),
+  gn('intranet','Intranet',     '#2ecc71','intranet',  420,-200),
+  gn('ew',     'East-West\nTraffic','#3498db','east-west',400,-110),
+  gn('nat',    'NAT / PAT',     '#3498db','nat',       460,-110),
+  // Remote access
+  gn('ssh',    'SSH',           '#2ecc71','ssh',       540, 270),
+  gn('openssh','OpenSSH',       '#2ecc71','openssh',   620, 230),
+  gn('rdp',    'RDP',           '#e74c3c','rdp',       620, 320),
+  gn('vpn',    'VPN',           '#2ecc71','vpn',       540, 380),
+  gn('jump',   'Jump\nServer',  '#e67e22','jump-server',660,210),
+  // VoIP
+  gn('voip',   'VoIP',          '#2ecc71','voip',      200, 460),
+  gn('sip',    'SIP',           '#1abc9c','sip',       120, 480),
+  gn('rtp',    'RTP',           '#e74c3c','rtp',       220, 560),
+  gn('srtp',   'SRTP',          '#2ecc71','srtp',      340, 480),
+  // LDAP
+  gn('ldap',   'LDAP',          '#e74c3c','ldap',     -220, 400),
+  gn('ldaps',  'LDAPS',         '#9b59b6','ldaps',    -110, 400),
+  gn('dirsvc', 'Directory\nServices','#9b59b6','directory-services',-340,400),
+  // Zero Trust
+  gn('ztna',   'ZTNA',          '#1abc9c','ztna',     -400, 460),
+  gn('pep',    'PEP',           '#1abc9c','pep',      -300, 530),
+  gn('pe',     'Policy\nEngine','#1abc9c','pe',       -440, 560),
+  gn('pa',     'Policy\nAdmin', '#1abc9c','pa',       -300, 600),
+  gn('ctrlpl', 'Control\nPlane','#1abc9c','control-plane',-510,520),
+  gn('sase',   'SASE',          '#1abc9c','sase',     -540, 600),
+  gn('adaptid','Adaptive\nIdentity','#9b59b6','adaptive-id',-430,620),
+  // SCADA
+  gn('scada',  'SCADA',         '#95a5a6','scada',    -520, 180),
+  gn('airgap', 'Air Gap',       '#95a5a6','air-gap',  -520, 300),
+  gn('physiso','Physical\nIsolation','#95a5a6','physical-isolation',-520,80),
+];
+
+/* ── Edge definitions ── */
+const GEDGES = [
+  // Category membership
+  ge('cat-transport','tcp','member'), ge('cat-transport','udp','member'),
+  ge('cat-transport','ip','member'),  ge('cat-transport','icmp','member'),
+  ge('cat-transport','arp','member'), ge('cat-transport','dtransit','member'),
+  ge('cat-web','http','member'),    ge('cat-web','https','member'),
+  ge('cat-web','waf','member'),     ge('cat-web','emailgw','member'),
+  ge('cat-web','intranet','member'),
+  ge('cat-encryption','ssl','member'),  ge('cat-encryption','tls','member'),
+  ge('cat-encryption','ipsec','member'),ge('cat-encryption','srtp','member'),
+  ge('cat-encryption','sftp','member'), ge('cat-encryption','ftps','member'),
+  ge('cat-encryption','smtsp','member'),ge('cat-encryption','ldaps','member'),
+  ge('cat-email','smtp','member'),  ge('cat-email','smtsp','member'),
+  ge('cat-email','pop3','member'),  ge('cat-email','imap','member'),
+  ge('cat-email','spf','member'),   ge('cat-email','dkim','member'),
+  ge('cat-email','dmarc','member'), ge('cat-email','emailgw','member'),
+  ge('cat-dns','dns','member'),    ge('cat-dns','dnssec','member'),
+  ge('cat-dns','rrsig','member'),  ge('cat-dns','dhcp','member'),
+  ge('cat-dns','ntp','member'),    ge('cat-dns','snmp12','member'),
+  ge('cat-dns','snmp3','member'),
+  ge('cat-filetransfer','ftp','member'),  ge('cat-filetransfer','tftp','member'),
+  ge('cat-filetransfer','sftp','member'), ge('cat-filetransfer','ftps','member'),
+  ge('cat-remote','ssh','member'),    ge('cat-remote','openssh','member'),
+  ge('cat-remote','rdp','member'),    ge('cat-remote','vpn','member'),
+  ge('cat-remote','ipsec','member'),  ge('cat-remote','jump','member'),
+  ge('cat-voip','voip','member'), ge('cat-voip','sip','member'),
+  ge('cat-voip','rtp','member'),  ge('cat-voip','srtp','member'),
+  ge('cat-switches','sw','member'),      ge('cat-switches','vlan','member'),
+  ge('cat-switches','portsec','member'), ge('cat-switches','macfilt','member'),
+  ge('cat-switches','stp','member'),     ge('cat-switches','bpdug','member'),
+  ge('cat-switches','arp','member'),
+  ge('cat-routers','router','member'), ge('cat-routers','acl','member'),
+  ge('cat-routers','ideny','member'),  ge('cat-routers','snmp12','member'),
+  ge('cat-routers','snmp3','member'),
+  ge('cat-nat','nat','member'), ge('cat-nat','ipv4','member'),
+  ge('cat-nat','ipv6','member'),ge('cat-nat','rfc1918','member'),
+  ge('cat-firewalls','fw','member'),    ge('cat-firewalls','ngfw','member'),
+  ge('cat-firewalls','utm','member'),   ge('cat-firewalls','waf','member'),
+  ge('cat-firewalls','failm','member'), ge('cat-firewalls','dmz','member'),
+  ge('cat-zones','dmz','member'),     ge('cat-zones','atksurf','member'),
+  ge('cat-zones','intranet','member'),ge('cat-zones','ew','member'),
+  ge('cat-zones','vlan','member'),    ge('cat-zones','ca','member'),
+  ge('cat-identity','ldap','member'),  ge('cat-identity','ldaps','member'),
+  ge('cat-identity','dirsvc','member'),ge('cat-identity','ca','member'),
+  ge('cat-zerotrust','ztna','member'),   ge('cat-zerotrust','pep','member'),
+  ge('cat-zerotrust','pe','member'),     ge('cat-zerotrust','pa','member'),
+  ge('cat-zerotrust','ctrlpl','member'), ge('cat-zerotrust','sase','member'),
+  ge('cat-zerotrust','adaptid','member'),
+  ge('cat-physical','scada','member'), ge('cat-physical','airgap','member'),
+  ge('cat-physical','physiso','member'),
+  // Upgrades
+  ge('http',  'https', 'upgrade','add TLS'),
+  ge('ssl',   'tls',   'upgrade','deprecated'),
+  ge('ftp',   'sftp',  'upgrade','use SSH'),
+  ge('ftp',   'ftps',  'upgrade','add TLS'),
+  ge('tftp',  'sftp',  'upgrade','use SFTP'),
+  ge('smtp',  'smtsp', 'upgrade','add TLS'),
+  ge('ldap',  'ldaps', 'upgrade','port 636'),
+  ge('rtp',   'srtp',  'upgrade','add AES'),
+  ge('snmp12','snmp3', 'upgrade','v3 only'),
+  // TLS secures
+  ge('tls','https','secures'), ge('tls','ftps','secures'),
+  ge('tls','smtsp','secures'), ge('tls','ldaps','secures'),
+  // SSH
+  ge('ssh','sftp','secures'),  ge('ssh','openssh','part-of'),
+  // IPsec / VPN
+  ge('ipsec','vpn','secures'),
+  // TCP carries
+  ge('tcp','http','uses'),  ge('tcp','https','uses'), ge('tcp','ftp','uses'),
+  ge('tcp','smtp','uses'),  ge('tcp','pop3','uses'),  ge('tcp','imap','uses'),
+  ge('tcp','ssh','uses'),   ge('tcp','rdp','uses'),
+  ge('tcp','ldap','uses'),  ge('tcp','ldaps','uses'),
+  // UDP carries
+  ge('udp','dns','uses'),   ge('udp','dhcp','uses'),  ge('udp','ntp','uses'),
+  ge('udp','rtp','uses'),   ge('udp','srtp','uses'),  ge('udp','tftp','uses'),
+  ge('udp','snmp12','uses'),ge('udp','snmp3','uses'),
+  // IP / addressing
+  ge('ip','ipv4','part-of'), ge('ip','ipv6','part-of'),
+  ge('ipv4','rfc1918','part-of'), ge('rfc1918','nat','uses'),
+  // VoIP
+  ge('voip','sip','uses'), ge('voip','rtp','uses'), ge('sip','srtp','secures'),
+  // LDAP / directory
+  ge('ldap','dirsvc','uses'),
+  // DNS security
+  ge('dns','dnssec','secures'), ge('dnssec','rrsig','part-of'),
+  // Email security
+  ge('smtp','spf','secures'),   ge('smtp','dkim','secures'),
+  ge('dkim','dmarc','part-of'), ge('spf','dmarc','part-of'),
+  ge('emailgw','smtp','uses'),  ge('emailgw','dmarc','uses'),
+  // Switch hardening
+  ge('sw','vlan','part-of'),    ge('sw','portsec','uses'),
+  ge('sw','macfilt','uses'),    ge('sw','stp','uses'),
+  ge('stp','bpdug','part-of'),
+  // Router hardening
+  ge('router','acl','uses'),    ge('router','ideny','part-of'),
+  ge('router','snmp12','uses'), ge('router','snmp3','uses'),
+  // Firewall
+  ge('fw','waf','part-of'),     ge('fw','ngfw','part-of'),
+  ge('fw','utm','part-of'),     ge('fw','failm','part-of'),
+  ge('fw','dmz','secures'),     ge('waf','https','secures'),
+  ge('ngfw','acl','uses'),
+  // Zones
+  ge('dmz','ca','uses'),
+  // Zero Trust
+  ge('ztna','pep','uses'),
+  ge('pep','pe','part-of'),     ge('pep','pa','part-of'),
+  ge('pe','ctrlpl','part-of'),  ge('pa','ctrlpl','part-of'),
+  ge('sase','ztna','uses'),     ge('adaptid','pep','uses'),
+  // SCADA
+  ge('scada','airgap','uses'),  ge('airgap','physiso','part-of'),
+  // Remote access hardening
+  ge('jump','ssh','uses'),      ge('vpn','rdp','secures'),
+  // Attack paths
+  ge('atksurf','http',  'attacks','sniff'),
+  ge('atksurf','ftp',   'attacks','steal creds'),
+  ge('atksurf','rdp',   'attacks','brute force'),
+  ge('atksurf','ldap',  'attacks','cleartext bind'),
+  ge('atksurf','snmp12','attacks','community string'),
+  ge('atksurf','dns',   'attacks','DNS poison'),
+];
+
+/* ── Simulation constants ── */
+const G_REPEL    = 20000;
+const G_SPRING   = 0.035;
+const G_IDEAL    = 130;
+const G_GRAVITY  = 0.004;
+const G_DAMPING  = 0.80;
+
+/* ── State ── */
+let gNodes = [], gNodeMap = {}, gGraphInited = false, gGraphActive = false;
+let gDragNode = null, gDragOff = {};
+let gPanning = false, gPanStart = {};
+let gTx = { x: 0, y: 0, k: 1 };
+
+/* ── Force tick ── */
+function gTick() {
+  const ns = gNodes;
+  for (let i = 0; i < ns.length; i++) {
+    const a = ns[i]; if (a.pinned) continue;
+    for (let j = i+1; j < ns.length; j++) {
+      const b = ns[j];
+      let dx = b.x-a.x, dy = b.y-a.y;
+      const d2 = dx*dx + dy*dy + 1, d = Math.sqrt(d2);
+      const f = G_REPEL / d2, fx = f*dx/d, fy = f*dy/d;
+      a.vx -= fx; a.vy -= fy;
+      if (!b.pinned) { b.vx += fx; b.vy += fy; }
+    }
+  }
+  for (const e of GEDGES) {
+    const a = gNodeMap[e.s], b = gNodeMap[e.t];
+    if (!a||!b) continue;
+    const dx = b.x-a.x, dy = b.y-a.y;
+    const d = Math.sqrt(dx*dx+dy*dy)+0.001;
+    const f = G_SPRING*(d-G_IDEAL);
+    const fx = f*dx/d, fy = f*dy/d;
+    if (!a.pinned){a.vx+=fx;a.vy+=fy;}
+    if (!b.pinned){b.vx-=fx;b.vy-=fy;}
+  }
+  for (const n of ns) {
+    if (n.pinned) continue;
+    n.vx += -n.x*G_GRAVITY; n.vy += -n.y*G_GRAVITY;
+    n.vx *= G_DAMPING; n.vy *= G_DAMPING;
+    n.x  += n.vx;     n.y  += n.vy;
+  }
+}
+
+function runGraphLayout(steps) {
+  gNodes.forEach(n => { n.pinned=false; n.vx=0; n.vy=0; });
+  for (let i=0; i<steps; i++) gTick();
+  gRender();
+}
+
+/* ── Edge styles ── */
+const GESTYLE = {
+  osi:     { color:'#1e3a5f', w:1,   dash:'3,8',  mk:null },
+  uses:    { color:'#334155', w:1.5, dash:'',      mk:'ga-gray' },
+  'part-of':{ color:'#2d4060', w:1,  dash:'4,4',   mk:'ga-gray' },
+  upgrade: { color:'#3498db', w:2,   dash:'',      mk:'ga-blue' },
+  secures: { color:'#2ecc71', w:1.5, dash:'',      mk:'ga-green' },
+  attacks: { color:'#e74c3c', w:1.5, dash:'5,3',   mk:'ga-red' },
+};
+
+/* ── Render to SVG ── */
+function gRender() {
+  const svgGe = document.getElementById('ge');
+  const svgGn = document.getElementById('gn');
+  svgGe.innerHTML = ''; svgGn.innerHTML = '';
+  const ns = document.createElementNS;
+
+  function el(tag, attrs) {
+    const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    for (const [k,v] of Object.entries(attrs)) e.setAttribute(k,v);
+    return e;
+  }
+
+  // Edges
+  for (const e of GEDGES) {
+    const a = gNodeMap[e.s], b = gNodeMap[e.t];
+    if (!a||!b) continue;
+    const st = GESTYLE[e.type] || GESTYLE.uses;
+    const dx = b.x-a.x, dy = b.y-a.y, d = Math.sqrt(dx*dx+dy*dy)+0.001;
+    const sr = a.r+2, er = b.r+(st.mk?9:2);
+    const x1=a.x+dx/d*sr, y1=a.y+dy/d*sr, x2=b.x-dx/d*er, y2=b.y-dy/d*er;
+
+    const line = el('line',{x1,y1,x2,y2,stroke:st.color,'stroke-width':st.w,
+      opacity: e.type==='osi'?'0.35':'0.7',
+      'data-gs': e.s, 'data-gt': e.t});
+    if (st.dash) line.setAttribute('stroke-dasharray',st.dash);
+    if (st.mk)   line.setAttribute('marker-end',`url(#${st.mk})`);
+    svgGe.appendChild(line);
+
+    if (e.label && (e.type==='upgrade'||e.type==='attacks')) {
+      const mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
+      const t = el('text',{x:mx,y:my-4,'text-anchor':'middle',
+        'font-size':'8','font-family':'Segoe UI,system-ui,sans-serif',
+        'font-weight':'600',fill:st.color,opacity:'0.85','pointer-events':'none'});
+      t.textContent = e.label;
+      svgGe.appendChild(t);
+    }
+  }
+
+  // Nodes
+  for (const n of gNodes) {
+    const isCat = n.id.startsWith('cat-');
+    const g = el('g',{ transform:`translate(${n.x.toFixed(1)},${n.y.toFixed(1)})`, cursor:'pointer', 'data-g-node-id': n.id });
+
+    const circle = el('circle',{ r:n.r, fill:n.color+'22', stroke:n.color,
+      'stroke-width': isCat ? '2.5' : '1.5' });
+    g.appendChild(circle);
+
+    const lines = n.label.split('\n');
+    const lh = 11, sy = -(lines.length-1)*lh/2;
+    lines.forEach((lbl,i) => {
+      const t = el('text',{ 'text-anchor':'middle', 'dominant-baseline':'middle',
+        y: sy + i*lh, 'font-size': n.r>26?'10':'9',
+        'font-family':'Segoe UI,system-ui,sans-serif',
+        'font-weight':'700', fill:n.color, 'pointer-events':'none' });
+      t.textContent = lbl;
+      g.appendChild(t);
+    });
+
+    g.addEventListener('mouseenter', () => {
+      circle.setAttribute('fill', n.color+'44');
+      circle.setAttribute('stroke-width','2.5');
+    });
+    g.addEventListener('mouseleave', () => {
+      if (gDragNode!==n) {
+        circle.setAttribute('fill', n.color+'22');
+        circle.setAttribute('stroke-width', isCat?'2.5':'1.5');
+      }
+    });
+    g.addEventListener('mousedown', ev => {
+      ev.stopPropagation();
+      gDragNode = n; n.pinned = true;
+      const pt = gSvgPt(ev);
+      gDragOff = { x:pt.x-n.x, y:pt.y-n.y };
+    });
+    g.addEventListener('click', ev => {
+      ev.stopPropagation();
+      if (!n.nodeId) return;
+      const d = NODE_DATA[n.nodeId];
+      if (selectedNode) selectedNode.classList.remove('selected');
+      selectedNode = null;
+      if (d) openDetail(n.nodeId, d.title, d.osi, d.html);
+    });
+    svgGn.appendChild(g);
+  }
+  gApplyTx();
+  if (activeThemeFilter) applyThemeFilter(activeThemeFilter);
+}
+
+/* ── Zoom / Pan ── */
+function gSvgPt(e) {
+  const r = document.getElementById('graph-svg').getBoundingClientRect();
+  return { x:(e.clientX-r.left-gTx.x)/gTx.k, y:(e.clientY-r.top-gTx.y)/gTx.k };
+}
+function gApplyTx() {
+  document.getElementById('graph-root').setAttribute('transform',
+    `translate(${gTx.x.toFixed(1)},${gTx.y.toFixed(1)}) scale(${gTx.k.toFixed(4)})`);
+}
+function fitGraph() {
+  if (!gNodes.length) return;
+  const svg = document.getElementById('graph-svg');
+  const { width:W, height:H } = svg.getBoundingClientRect();
+  let mnx=1e9,mxx=-1e9,mny=1e9,mxy=-1e9;
+  gNodes.forEach(n => { mnx=Math.min(mnx,n.x-n.r); mxx=Math.max(mxx,n.x+n.r);
+                         mny=Math.min(mny,n.y-n.r); mxy=Math.max(mxy,n.y+n.r); });
+  const pad=50, k=Math.min((W-pad*2)/(mxx-mnx),(H-pad*2)/(mxy-mny),1.8);
+  gTx.k=k; gTx.x=W/2-(mnx+mxx)/2*k; gTx.y=H/2-(mny+mxy)/2*k;
+  gApplyTx();
+}
+
+function gSetupInteraction() {
+  const svg = document.getElementById('graph-svg');
+  svg.addEventListener('wheel', e => {
+    e.preventDefault();
+    const r=svg.getBoundingClientRect(), mx=e.clientX-r.left, my=e.clientY-r.top;
+    const f=e.deltaY<0?1.12:0.89;
+    gTx.x=mx-(mx-gTx.x)*f; gTx.y=my-(my-gTx.y)*f;
+    gTx.k=Math.max(0.12,Math.min(4, gTx.k*f));
+    gApplyTx();
+  },{passive:false});
+  svg.addEventListener('mousedown', e => {
+    const tgt = e.target;
+    if (tgt===svg||tgt.id==='graph-root'||tgt.id==='ge'||tgt.id==='gn') {
+      gPanning=true;
+      gPanStart={x:e.clientX-gTx.x, y:e.clientY-gTx.y};
+    }
+  });
+  window.addEventListener('mousemove', e => {
+    if (gDragNode) {
+      const pt=gSvgPt(e);
+      gDragNode.x=pt.x-gDragOff.x; gDragNode.y=pt.y-gDragOff.y;
+      gRender();
+    } else if (gPanning) {
+      gTx.x=e.clientX-gPanStart.x; gTx.y=e.clientY-gPanStart.y;
+      gApplyTx();
+    }
+  });
+  window.addEventListener('mouseup', () => {
+    gDragNode=null; gPanning=false;
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   TOPIC THEMES — definitions & node membership
+═══════════════════════════════════════════════════════ */
+
+const THEMES = [
+  { id:'firewalls',    label:'Firewalls',             color:'#ef4444',
+    desc:'Firewall · NGFW · UTM · WAF · Fail modes · Screened Subnet',
+    nodes:['firewall','ngfw','utm','waf','fail-modes','screened-subnet','dmz-zone'] },
+
+  { id:'routers',      label:'Routers',               color:'#3b82f6',
+    desc:'Router · ACL · Implicit Deny · IP · ICMP · Routing logic',
+    nodes:['router','acl','implicit-deny','ip','icmp'] },
+
+  { id:'switches',     label:'Switches',              color:'#06b6d4',
+    desc:'Switch · VLAN · Port Security · MAC Filter · STP · BPDU Guard',
+    nodes:['switch','vlan','port-security','mac-filter','stp','bpdu-guard','arp'] },
+
+  { id:'nat',          label:'NAT & IP Addressing',   color:'#0891b2',
+    desc:'NAT · PAT · Static NAT · Dynamic NAT · IPv4 · IPv6 · RFC 1918',
+    nodes:['nat','nat-gateway','pat','static-nat','dynamic-nat',
+           'ipv4','ipv6','rfc1918','unicast'] },
+
+  { id:'transport',    label:'Transport Protocols',   color:'#64748b',
+    desc:'TCP · UDP · IP · ICMP — core L3/L4 protocols',
+    nodes:['tcp','udp','ip','icmp','arp'] },
+
+  { id:'encryption',   label:'Encryption & TLS',      color:'#2ecc71',
+    desc:'SSL · TLS · IPsec · SRTP · HTTPS · SMTSP · LDAPS · SFTP · FTPS',
+    nodes:['ssl','tls','ipsec','srtp','https','smtsp','ldaps','sftp','ftps','data-in-transit'] },
+
+  { id:'web',          label:'Web & Proxies',         color:'#f97316',
+    desc:'HTTP · HTTPS · Web Server · Proxy · Forward Proxy · Reverse Proxy · WAF',
+    nodes:['http','https','web-server','proxy','forward-proxy','reverse-proxy','waf','ssl','tls'] },
+
+  { id:'email',        label:'Email Security',        color:'#e67e22',
+    desc:'SMTP · SMTSP · POP3 · IMAP · SPF · DKIM · DMARC · Gateway',
+    nodes:['mail-server','smtp','smtsp','pop3','imap','spf','dkim','dmarc','email-gateway'] },
+
+  { id:'remote',       label:'Remote Access',         color:'#8b5cf6',
+    desc:'SSH · OpenSSH · RDP · VPN · IPsec · Jump Server',
+    nodes:['ssh','openssh','rdp','vpn','ipsec','jump-server'] },
+
+  { id:'filetransfer', label:'File Transfer',         color:'#fb923c',
+    desc:'FTP · TFTP · SFTP · FTPS — insecure vs secure pairs',
+    nodes:['ftp','tftp','sftp','ftps'] },
+
+  { id:'voip',         label:'VoIP & Real-Time',      color:'#4ade80',
+    desc:'VoIP · SIP · RTP · SRTP · Session signaling',
+    nodes:['voip','sip','rtp','srtp'] },
+
+  { id:'dns',          label:'DNS & Network Services',color:'#38bdf8',
+    desc:'DNS · DHCP · NTP · SNMP v1 · SNMP v3',
+    nodes:['dns-server','dhcp','ntp','snmpv1','snmpv3'] },
+
+  { id:'zones',        label:'Network Zones',         color:'#eab308',
+    desc:'DMZ · Screened Subnet · Intranet · Extranet · Attack Surface · East-West',
+    nodes:['dmz-zone','screened-subnet','intranet','extranet','attack-surface','east-west','vlan'] },
+
+  { id:'zerotrust',    label:'Zero Trust',            color:'#1abc9c',
+    desc:'ZTNA · PEP · PE · PA · Control Plane · SASE · Adaptive Identity',
+    nodes:['ztna','pep','pe','pa','control-plane','data-plane',
+           'adaptive-id','sase','implicit-trust','subject','resource'] },
+
+  { id:'identity',     label:'Identity & PKI',        color:'#a855f7',
+    desc:'LDAP · LDAPS · Directory Services · CA · Adaptive Identity',
+    nodes:['ldap','ldaps','directory-services','ca','adaptive-id'] },
+
+  { id:'physical',     label:'Physical & OT Security',color:'#78716c',
+    desc:'SCADA · Air Gap · Air-Gapped System · Physical Isolation',
+    nodes:['scada','air-gap','air-gapped-system','physical-isolation'] },
+];
+
+/* Map: nodeDataId → array of theme ids it belongs to */
+const NODE_THEME_MAP = {};
+THEMES.forEach(t => {
+  t.nodes.forEach(nid => {
+    if (!NODE_THEME_MAP[nid]) NODE_THEME_MAP[nid] = [];
+    NODE_THEME_MAP[nid].push(t.id);
+  });
+});
+
+/* Map: graph node id → array of theme ids (via nodeId lookup) */
+// Used later in applyThemeFilter for the graph view
+
+/* ── Build theme buttons in sidebar ── */
+(function buildThemePanel() {
+  const panel = document.getElementById('sidebar-themes');
+  THEMES.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'theme-btn';
+    btn.dataset.themeId = t.id;
+    btn.style.color = t.color;
+    btn.title = t.desc;
+    btn.innerHTML =
+      `<span class="theme-dot" style="background:${t.color};border-color:${t.color}"></span>` +
+      `<span>${t.label}</span>`;
+    btn.addEventListener('click', () => {
+      if (activeThemeFilter === t.id) clearThemeFilter();
+      else applyThemeFilter(t.id);
+    });
+    panel.appendChild(btn);
+  });
+})();
+
+/* ═══════════════════════════════════════════════════════
+   THEME FILTER LOGIC
+═══════════════════════════════════════════════════════ */
+let activeThemeFilter = null;
+
+function applyThemeFilter(themeId) {
+  activeThemeFilter = themeId;
+  const theme = THEMES.find(t => t.id === themeId);
+  if (!theme) return;
+  const matchSet = new Set(theme.nodes);
+
+  /* ── Topology canvas ── */
+  document.querySelectorAll('.node[data-node-id]').forEach(node => {
+    const id = node.dataset.nodeId;
+    node.classList.remove('theme-match', 'theme-dim');
+    if (matchSet.has(id)) {
+      node.classList.add('theme-match');
+      // Tint the matching node's border to the theme colour
+      node.style.setProperty('--theme-color', theme.color);
+    } else {
+      node.classList.add('theme-dim');
+      node.style.removeProperty('--theme-color');
+    }
+  });
+
+  /* Dim zones whose every node is outside the theme */
+  document.querySelectorAll('.zone').forEach(zone => {
+    const nodes = zone.querySelectorAll('.node[data-node-id]');
+    const allDim = [...nodes].every(n => n.classList.contains('theme-dim'));
+    zone.classList.toggle('zone-all-dim', allDim && nodes.length > 0);
+  });
+
+  document.body.classList.add('theme-filtered');
+
+  /* ── Theme buttons ── */
+  document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.themeId === themeId);
+  });
+
+  /* ── Graph view ── */
+  if (gGraphActive && gGraphInited) {
+    const gMatchSet = new Set();
+    GNODES.forEach(n => {
+      if (n.id.startsWith('cat-')) { gMatchSet.add(n.id); return; }
+      const themes = NODE_THEME_MAP[n.nodeId] || [];
+      if (themes.includes(themeId)) gMatchSet.add(n.id);
+    });
+    document.querySelectorAll('#gn > g[data-g-node-id]').forEach(g => {
+      const nid = g.dataset.gNodeId;
+      g.style.opacity = gMatchSet.has(nid) ? '1' : '0.06';
+      g.style.pointerEvents = gMatchSet.has(nid) ? 'auto' : 'none';
+    });
+    document.querySelectorAll('#ge > line[data-gs][data-gt]').forEach(line => {
+      const s = line.dataset.gs, t2 = line.dataset.gt;
+      line.style.opacity = (gMatchSet.has(s) && gMatchSet.has(t2)) ? '0.65' : '0.05';
+    });
+  }
+
+  /* ── Filter banner ── */
+  _updateThemeBanner(theme);
+}
+
+function clearThemeFilter() {
+  activeThemeFilter = null;
+
+  document.querySelectorAll('.node').forEach(n => {
+    n.classList.remove('theme-match', 'theme-dim');
+    n.style.removeProperty('--theme-color');
+  });
+  document.querySelectorAll('.zone').forEach(z => z.classList.remove('zone-all-dim'));
+  document.body.classList.remove('theme-filtered');
+
+  document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+
+  if (gGraphActive && gGraphInited) {
+    document.querySelectorAll('#gn > g').forEach(g => {
+      g.style.opacity = '1'; g.style.pointerEvents = 'auto';
+    });
+    document.querySelectorAll('#ge > line').forEach(l => l.style.opacity = '');
+  }
+
+  _updateThemeBanner(null);
+}
+
+function _updateThemeBanner(theme) {
+  let banner = document.getElementById('theme-filter-banner');
+  if (!theme) { if (banner) banner.remove(); return; }
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'theme-filter-banner';
+    banner.style.cssText = [
+      'position:absolute','bottom:0','left:0','right:0',
+      'background:rgba(15,23,42,0.92)','border-top:1px solid var(--border)',
+      'padding:5px 6px','font-size:9px','font-weight:700',
+      'color:var(--text-dim)','text-align:center','letter-spacing:0.4px',
+      'z-index:60','cursor:pointer','line-height:1.5'
+    ].join(';');
+    banner.title = 'Click to clear filter';
+    banner.onclick = clearThemeFilter;
+    document.getElementById('osi-sidebar').appendChild(banner);
+  }
+  banner.innerHTML =
+    `<span style="color:${theme.color}">${theme.label}</span><br>` +
+    `<span style="opacity:0.55">click to clear</span>`;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SIDEBAR TAB SWITCHER
+═══════════════════════════════════════════════════════ */
+function switchSidebarTab(tab) {
+  /* Update tab buttons */
+  document.querySelectorAll('.sb-tab').forEach(b =>
+    b.classList.toggle('active', b.dataset.tab === tab));
+
+  /* Show/hide panels */
+  const osiPanel    = document.getElementById('sidebar-osi');
+  const themePanel  = document.getElementById('sidebar-themes');
+  osiPanel.style.display   = tab === 'osi'    ? 'flex' : 'none';
+  themePanel.style.display = tab === 'themes' ? 'flex' : 'none';
+
+  /* Clear whichever filter belongs to the panel we're leaving */
+  if (tab === 'osi'    && activeThemeFilter) clearThemeFilter();
+  if (tab === 'themes' && activeOsiFilter)   clearOsiFilter();
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   ILLUSTRATED MODE — emoji cards + edge descriptions
+═══════════════════════════════════════════════════════ */
+let illustratedMode = false;
+
+/* Emoji icon for each graph node id */
+const GICONS = {
+  l7:'📱', l6:'🔐', l5:'🤝', l4:'📦', l3:'🌐', l2:'🔗', l1:'⚡',
+  tcp:'🔁', udp:'💨', ip:'🌍', icmp:'📨', arp:'🔍', dtransit:'🔄',
+  http:'🌐', https:'🔒', ssl:'⚠️', tls:'🛡', ipsec:'🔐',
+  ftp:'📂', tftp:'⚡', sftp:'🗝', ftps:'📁',
+  smtp:'✉', smtsp:'📧', pop3:'📬', imap:'📥',
+  spf:'✅', dkim:'🔏', dmarc:'📋', emailgw:'🚦',
+  dns:'📡', dnssec:'🛡', rrsig:'📜', dhcp:'🏠', ntp:'⏰',
+  ipv4:'4️', ipv6:'6️', rfc1918:'🏘',
+  sw:'🔀', vlan:'🏷', portsec:'🔒', macfilt:'🎭', stp:'🌳', bpdug:'🛡',
+  router:'🔄', acl:'📋', ideny:'🚫', snmp12:'⚠', snmp3:'✅',
+  fw:'🧱', waf:'🔰', ngfw:'🛡', utm:'🏰', failm:'⚡',
+  dmz:'🏴', atksurf:'🎯', ca:'🏛', intranet:'🏢', ew:'↔', nat:'🔁',
+  ssh:'💻', openssh:'🔑', rdp:'🖥', vpn:'🔒', jump:'🚪',
+  voip:'📞', sip:'📱', rtp:'🎵', srtp:'🎶',
+  ldap:'📒', ldaps:'🔒', dirsvc:'🗂',
+  ztna:'◎', pep:'🚦', pe:'🧠', pa:'👔', ctrlpl:'⚙', sase:'☁', adaptid:'🎭',
+  scada:'🏭', airgap:'✂', physiso:'🔒',
+};
+
+/* Per-edge descriptions explaining the connection */
+const GEDGE_DESC = {
+  /* OSI layer membership */
+  'l7->http':'HTTP lives at\nApp Layer','l7->https':'HTTPS lives at\nApp Layer',
+  'l7->ftp':'FTP lives at\nApp Layer','l7->sftp':'SFTP lives at\nApp Layer',
+  'l7->ftps':'FTPS lives at\nApp Layer','l7->smtp':'SMTP lives at\nApp Layer',
+  'l7->smtsp':'SMTSP lives at\nApp Layer','l7->pop3':'POP3 lives at\nApp Layer',
+  'l7->imap':'IMAP lives at\nApp Layer','l7->dns':'DNS lives at\nApp Layer',
+  'l7->dhcp':'DHCP lives at\nApp Layer','l7->ntp':'NTP lives at\nApp Layer',
+  'l7->ssh':'SSH lives at\nApp Layer','l7->rdp':'RDP lives at\nApp Layer',
+  'l7->snmp3':'SNMPv3 lives at\nApp Layer','l7->ldap':'LDAP lives at\nApp Layer',
+  'l7->ldaps':'LDAPS lives at\nApp Layer','l7->voip':'VoIP lives at\nApp Layer',
+  'l7->emailgw':'Email GW lives at\nApp Layer',
+  'l6->ssl':'SSL operates at\nPresentation','l6->tls':'TLS operates at\nPresentation',
+  'l5->sip':'SIP sets up\nSessions','l4->tcp':'TCP is the\nTransport protocol',
+  'l4->udp':'UDP is the\nTransport protocol','l4->rtp':'RTP runs on\nTransport layer',
+  'l4->srtp':'SRTP runs on\nTransport layer','l3->ip':'IP routes at\nNetwork layer',
+  'l3->icmp':'ICMP operates at\nNetwork layer','l3->arp':'ARP bridges\nL2 and L3',
+  'l3->router':'Routers operate\nat Network layer','l3->ipsec':'IPsec secures\nIP packets',
+  'l3->nat':'NAT operates at\nNetwork layer','l2->sw':'Switches operate\nat Data Link',
+  'l2->vlan':'VLANs segment\nData Link layer','l2->stp':'STP prevents\nL2 loops',
+  'l1->airgap':'Air gap enforces\nPhysical separation','l1->physiso':'Physical isolation\nat Layer 1',
+  'l1->scada':'SCADA has\nPhysical components',
+  /* Upgrades */
+  'http->https':'Add TLS to\nencrypt traffic','ssl->tls':'TLS replaces\ndeprecated SSL',
+  'ftp->sftp':'SFTP encrypts\nvia SSH tunnel','ftp->ftps':'FTPS adds\nTLS to FTP',
+  'tftp->sftp':'Use SFTP instead\n(no auth in TFTP)','smtp->smtsp':'Add TLS to\nencrypt email',
+  'ldap->ldaps':'Add TLS on\nport 636','rtp->srtp':'Add AES to\nencrypt media',
+  'snmp12->snmp3':'SNMPv3 adds\nauth + encryption',
+  /* TLS secures */
+  'tls->https':'TLS provides\nHTTPS encryption','tls->ftps':'TLS encrypts\nFTP session',
+  'tls->smtsp':'TLS encrypts\nSMTP session','tls->ldaps':'TLS encrypts\nLDAP bind',
+  /* SSH */
+  'ssh->sftp':'SFTP is SSH\nfile transfer','ssh->openssh':'OpenSSH is the\nSSH implementation',
+  /* IPsec */
+  'ipsec->vpn':'IPsec creates\nencrypted VPN tunnels',
+  /* TCP carries */
+  'tcp->http':'HTTP uses TCP\nport 80','tcp->https':'HTTPS uses TCP\nport 443',
+  'tcp->ftp':'FTP uses TCP\nports 20/21','tcp->smtp':'SMTP uses TCP\nport 25',
+  'tcp->pop3':'POP3 uses TCP\nport 110','tcp->imap':'IMAP uses TCP\nport 143',
+  'tcp->ssh':'SSH uses TCP\nport 22','tcp->rdp':'RDP uses TCP\nport 3389',
+  'tcp->ldap':'LDAP uses TCP\nport 389','tcp->ldaps':'LDAPS uses TCP\nport 636',
+  /* UDP carries */
+  'udp->dns':'DNS uses UDP\nport 53','udp->dhcp':'DHCP uses UDP\nports 67/68',
+  'udp->ntp':'NTP uses UDP\nport 123','udp->rtp':'RTP uses UDP\nfor low latency',
+  'udp->srtp':'SRTP uses UDP\n(encrypted RTP)','udp->tftp':'TFTP uses UDP\nport 69',
+  'udp->snmp12':'SNMPv1/2 uses UDP\nport 161','udp->snmp3':'SNMPv3 uses UDP\nport 161',
+  /* IP / addressing */
+  'ip->ipv4':'IPv4 is the\nmain IP version','ip->ipv6':'IPv6 succeeds\nIPv4',
+  'ipv4->rfc1918':'RFC 1918 defines\nprivate IPv4 ranges','rfc1918->nat':'Private IPs need\nNAT to reach internet',
+  /* VoIP */
+  'voip->sip':'SIP sets up\nVoIP sessions','voip->rtp':'RTP carries\nVoIP media',
+  'sip->srtp':'SRTP secures\nSIP media streams',
+  /* LDAP */
+  'ldap->dirsvc':'LDAP is the\ndirectory protocol',
+  /* DNS */
+  'dns->dnssec':'DNSSEC signs\nDNS responses','dnssec->rrsig':'RRSIG is the\nDNSSEC signature record',
+  /* Email security */
+  'smtp->spf':'SPF validates\nSMTP sender IP','smtp->dkim':'DKIM signs\nSMTP messages',
+  'dkim->dmarc':'DMARC builds on\nDKIM + SPF','spf->dmarc':'DMARC requires\nSPF pass',
+  'emailgw->smtp':'Gateway relays\nvia SMTP','emailgw->dmarc':'Gateway enforces\nDMARC policy',
+  /* Switch hardening */
+  'sw->vlan':'VLANs segment\nswitch ports','sw->portsec':'Port security limits\nMAC addresses per port',
+  'sw->macfilt':'MAC filtering controls\nwhich devices connect','sw->stp':'STP prevents\nbroadcast storms',
+  'stp->bpdug':'BPDU Guard stops\nunauthorized STP claims',
+  /* Router hardening */
+  'router->acl':'ACLs filter\nrouter traffic','router->ideny':'Implicit deny\nblocks unlisted traffic',
+  'router->snmp12':'SNMP monitors\nrouter stats','router->snmp3':'SNMPv3 securely\nmonitors router',
+  /* Firewall */
+  'fw->waf':'WAF is a specialized\nweb firewall','fw->ngfw':'NGFW extends\nstateful inspection',
+  'fw->utm':'UTM bundles\nmultiple security tools','fw->failm':'Fail modes define\nbehavior on crash',
+  'fw->dmz':'Firewall controls\nDMZ traffic','waf->https':'WAF inspects\nHTTPS traffic',
+  'ngfw->acl':'NGFW uses ACLs\nfor traffic policy',
+  /* Zones */
+  'dmz->ca':'CA lives in DMZ\nfor external cert issuance',
+  /* Zero Trust */
+  'ztna->pep':'PEP enforces\nZTNA policies',
+  'pep->pe':'Policy Engine makes\naccess decisions',
+  'pep->pa':'Policy Admin configures\nPEP behavior',
+  'pe->ctrlpl':'Policy Engine lives\nin the Control Plane',
+  'pa->ctrlpl':'Policy Admin manages\nthe Control Plane',
+  'sase->ztna':'SASE delivers\nZTNA as a cloud service',
+  'adaptid->pep':'Adaptive Identity\nfeeds risk signals to PEP',
+  /* SCADA */
+  'scada->airgap':'Air gaps isolate\nSCADA from networks',
+  'airgap->physiso':'Air gap is a form\nof physical isolation',
+  /* Remote */
+  'jump->ssh':'Jump server connects\nvia SSH','vpn->rdp':'VPN tunnels protect\nRDP sessions',
+  /* Attack paths */
+  'atksurf->http':'Attacker sniffs\nunencrypted HTTP',
+  'atksurf->ftp':'Attacker steals\nFTP credentials',
+  'atksurf->rdp':'Attacker brute-forces\nRDP login',
+  'atksurf->ldap':'Attacker binds\nLDAP without TLS',
+  'atksurf->snmp12':'Attacker reads\ncommunity strings',
+  'atksurf->dns':'Attacker poisons\nDNS cache',
+};
+
+function getEdgeDesc(e) {
+  return GEDGE_DESC[`${e.s}->${e.t}`] || e.label || null;
+}
+
+/* Patch gRender to support illustrated mode */
+const _origGRender = gRender;
+gRender = function() {
+  if (!illustratedMode) { _origGRender(); return; }
+
+  const svgGe = document.getElementById('ge');
+  const svgGn = document.getElementById('gn');
+  svgGe.innerHTML = ''; svgGn.innerHTML = '';
+
+  function el(tag, attrs) {
+    const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    for (const [k,v] of Object.entries(attrs)) e.setAttribute(k, v);
+    return e;
+  }
+
+  // Edges with description labels
+  for (const e of GEDGES) {
+    const a = gNodeMap[e.s], b = gNodeMap[e.t];
+    if (!a || !b) continue;
+    const st = GESTYLE[e.type] || GESTYLE.uses;
+    const dx = b.x-a.x, dy = b.y-a.y, d = Math.sqrt(dx*dx+dy*dy)+0.001;
+    const nw = 48, nh = 44;
+    const sr = Math.sqrt((nw/2)**2+(nh/2)**2)+2;
+    const er = sr + (st.mk ? 9 : 2);
+    const x1 = a.x+dx/d*sr, y1 = a.y+dy/d*sr;
+    const x2 = b.x-dx/d*er, y2 = b.y-dy/d*er;
+
+    const line = el('line', {x1,y1,x2,y2, stroke:st.color, 'stroke-width':st.w,
+      opacity: e.type==='osi'?'0.3':'0.7', 'data-gs':e.s, 'data-gt':e.t});
+    if (st.dash) line.setAttribute('stroke-dasharray', st.dash);
+    if (st.mk)   line.setAttribute('marker-end', `url(#${st.mk})`);
+    svgGe.appendChild(line);
+
+    const desc = getEdgeDesc(e);
+    if (desc && e.type !== 'osi') {
+      const mx = (a.x+b.x)/2, my = (a.y+b.y)/2;
+      const lines = desc.split('\n');
+      const bw = 72, bh = lines.length * 10 + 6;
+      const bg = el('rect', {x:mx-bw/2, y:my-bh/2, width:bw, height:bh,
+        rx:'3', fill:'#0f172a', stroke:st.color, 'stroke-width':'0.5', opacity:'0.92'});
+      svgGe.appendChild(bg);
+      lines.forEach((ln, i) => {
+        const t = el('text', {x:mx, y: my - (lines.length-1)*5 + i*10,
+          'text-anchor':'middle', 'dominant-baseline':'middle',
+          'font-size':'7.5', 'font-family':'Segoe UI,system-ui,sans-serif',
+          'font-weight':'600', fill:st.color, 'pointer-events':'none'});
+        t.textContent = ln;
+        svgGe.appendChild(t);
+      });
+    }
+  }
+
+  // Nodes as emoji cards
+  const NW = 68, NH = 56;
+  for (const n of gNodes) {
+    const isAnchor = n.id.startsWith('cat-');
+    const g = el('g', {transform:`translate(${n.x.toFixed(1)},${n.y.toFixed(1)})`,
+      cursor:'pointer', 'data-g-node-id':n.id});
+
+    const rect = el('rect', {x:-NW/2, y:-NH/2, width:NW, height:NH, rx:'8',
+      fill:n.color+'18', stroke:n.color, 'stroke-width': isAnchor?'2.5':'1.5'});
+    g.appendChild(rect);
+
+    const icon = el('text', {y:'-6', 'text-anchor':'middle', 'dominant-baseline':'middle',
+      'font-size': isAnchor?'20':'16', 'pointer-events':'none'});
+    icon.textContent = GICONS[n.id] || '●';
+    g.appendChild(icon);
+
+    const lbl = el('text', {y:'14', 'text-anchor':'middle', 'dominant-baseline':'middle',
+      'font-size':'7.5', 'font-family':'Segoe UI,system-ui,sans-serif',
+      'font-weight':'700', fill:n.color, 'pointer-events':'none'});
+    lbl.textContent = n.label.replace(/\n/g,' ');
+    g.appendChild(lbl);
+
+    g.addEventListener('mouseenter', () => rect.setAttribute('fill', n.color+'35'));
+    g.addEventListener('mouseleave', () => { if(gDragNode!==n) rect.setAttribute('fill', n.color+'18'); });
+    g.addEventListener('mousedown', ev => {
+      ev.stopPropagation(); gDragNode = n; n.pinned = true;
+      const pt = gSvgPt(ev); gDragOff = {x:pt.x-n.x, y:pt.y-n.y};
+    });
+    g.addEventListener('click', ev => {
+      ev.stopPropagation();
+      const layerMatch = n.id.match(/^l([1-7])$/);
+      if (layerMatch) { selectOsiLayer(parseInt(layerMatch[1])); return; }
+      const d = NODE_DATA[n.nodeId];
+      if (selectedNode) selectedNode.classList.remove('selected');
+      selectedNode = null;
+      if (d) openDetail(n.nodeId, d.title, d.osi, d.html);
+    });
+    svgGn.appendChild(g);
+  }
+  gApplyTx();
+  if (activeOsiFilter) applyOsiFilter(activeOsiFilter);
+};
+
+function toggleIllustrated() {
+  if (!gGraphActive) toggleGraphView();
+  illustratedMode = !illustratedMode;
+  const btn = document.getElementById('btn-illustrated');
+  btn.style.cssText = illustratedMode
+    ? 'border-color:var(--purple);color:var(--purple);background:rgba(155,89,182,.12)'
+    : '';
+  btn.textContent = illustratedMode ? '🖼 Bubble View' : '🖼 Illustrated';
+  gRender();
+}
+
+/* ── Toggle ── */
+function toggleGraphView() {
+  gGraphActive = !gGraphActive;
+  const btn    = document.getElementById('btn-graph');
+  const gview  = document.getElementById('graph-view');
+  const canvas = document.getElementById('canvas');
+  if (gGraphActive) {
+    btn.style.cssText='border-color:var(--teal);color:var(--teal);background:rgba(26,188,156,0.1)';
+    gview.classList.add('visible');
+    canvas.style.display='none';
+    if (!gGraphInited) {
+      gNodes    = GNODES.map(n=>({...n}));
+      gNodeMap  = {};
+      gNodes.forEach(n=>gNodeMap[n.id]=n);
+      // degree-based radius
+      const deg={};
+      gNodes.forEach(n=>deg[n.id]=0);
+      GEDGES.forEach(e=>{ if(deg[e.s]!==undefined)deg[e.s]++; if(deg[e.t]!==undefined)deg[e.t]++;});
+      gNodes.forEach(n=>{
+        n.r = n.id.startsWith('cat-') ? 36 : Math.max(18,Math.min(34,18+((deg[n.id]||0)*1.4)));
+      });
+      runGraphLayout(280);
+      gSetupInteraction();
+      gGraphInited=true;
+    }
+    setTimeout(fitGraph,60);
+  } else {
+    btn.style.cssText='';
+    gview.classList.remove('visible');
+    canvas.style.display='';
+  }
+}
+</script>
+
+<style id="declutter-overrides">
+/* Declutter: keep only the bubble chart + Graph/Bubble toggle */
+#osi-sidebar, #footer,
+#btn-attack, #btn-defense, #btn-upgrade, #btn-zt,
+#btn-study, #btn-illustrated, #btn-linkedin,
+#header .hdr-sep { display: none !important; }
+#app { grid-template-columns: 0 1fr 0 !important; grid-template-rows: var(--header-h) 1fr 0 !important; }
+body.detail-open #app { grid-template-columns: 0 1fr var(--detail-panel-w) !important; }
+</style>
+<script>
+/* Declutter: flip the single toggle button label between Graph View / Bubble View */
+document.addEventListener('DOMContentLoaded', function () {
+  var b = document.getElementById('btn-graph');
+  if (!b) return;
+  function upd() {
+    var cv = document.getElementById('canvas'), gv = document.getElementById('graph-view');
+    var active = (cv && cv.style.display === 'none') || (gv && gv.classList.contains('visible'));
+    b.textContent = active ? '🫧 Bubble View' : '🗺 Graph View';
+  }
+  b.addEventListener('click', function () { setTimeout(upd, 0); });
+  upd();
+});
+</script>
+</body>
+</html>
