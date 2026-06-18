@@ -3,318 +3,310 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CompTIA Security+ SY0-701 — Study Guide</title>
-<style>
-:root {
-  --bg:      #0f172a;
-  --surface: #1e293b;
-  --border:  #334155;
-  --text:    #cbd5e1;
-  --dim:     #64748b;
-  --bright:  #f1f5f9;
-  --blue:    #3498db;
-  --green:   #2ecc71;
-  --yellow:  #f1c40f;
-  --radius:  8px;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body {
-  min-height: 100%;
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  font-size: 14px;
-}
-
-/* ── Page shell ── */
-.page {
-  max-width: 860px;
-  margin: 0 auto;
-  padding: 48px 24px 80px;
-}
-
-/* ── Header ── */
-.site-header {
-  text-align: center;
-  margin-bottom: 48px;
-}
-.site-header .badge {
-  display: inline-block;
-  background: var(--blue);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  padding: 3px 10px;
-  border-radius: 4px;
-  margin-bottom: 14px;
-}
-.site-header h1 {
-  font-size: 28px;
-  font-weight: 800;
-  color: var(--bright);
-  line-height: 1.2;
-  margin-bottom: 8px;
-}
-.site-header h1 span { color: var(--blue); }
-.site-header p {
-  color: var(--dim);
-  font-size: 13px;
-}
-
-/* ── Progress bar ── */
-.progress-wrap {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px 20px;
-  margin-bottom: 40px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.progress-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  color: var(--dim);
-  white-space: nowrap;
-}
-.progress-bar-bg {
-  flex: 1;
-  height: 6px;
-  background: var(--border);
-  border-radius: 3px;
-  overflow: hidden;
-}
-.progress-bar-fill {
-  height: 100%;
-  width: calc(5/11 * 100%);
-  background: linear-gradient(90deg, var(--blue), var(--green));
-  border-radius: 3px;
-  transition: width 0.4s ease;
-}
-.progress-count {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--blue);
-  white-space: nowrap;
-}
-
-/* ── Section heading ── */
-.section-label {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 1.4px;
-  text-transform: uppercase;
-  color: var(--dim);
-  margin-bottom: 14px;
-  padding-left: 2px;
-}
-
-/* ── Chapter grid ── */
-.chapters {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 12px;
-  margin-bottom: 40px;
-}
-
-.chapter-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 18px 20px;
-  text-decoration: none;
-  color: var(--text);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  transition: border-color 0.18s, background 0.18s, transform 0.18s;
-  position: relative;
-  overflow: hidden;
-}
-.chapter-card::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 3px;
-  background: var(--border);
-  transition: background 0.18s;
-}
-
-/* Available chapter */
-.chapter-card.available {
-  cursor: pointer;
-}
-.chapter-card.available::before { background: var(--blue); }
-.chapter-card.available:hover {
-  border-color: var(--blue);
-  background: #1e2d45;
-  transform: translateY(-2px);
-}
-.chapter-card.available:hover .ch-title { color: var(--blue); }
-
-/* Locked chapter */
-.chapter-card.locked {
-  opacity: 0.45;
-  cursor: default;
-}
-
-.ch-num {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--dim);
-}
-.ch-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--bright);
-  line-height: 1.3;
-  transition: color 0.18s;
-}
-.ch-topics {
-  font-size: 11px;
-  color: var(--dim);
-  line-height: 1.5;
-  margin-top: 2px;
-}
-.ch-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
-  margin-top: 6px;
-}
-.ch-status.done   { color: var(--green); }
-.ch-status.locked { color: var(--dim); }
-.ch-status.done::before   { content: '●'; font-size: 8px; }
-.ch-status.locked::before { content: '○'; font-size: 8px; }
-
-/* ── Footer ── */
-.site-footer {
-  text-align: center;
-  color: var(--dim);
-  font-size: 11px;
-  margin-top: 48px;
-  padding-top: 20px;
-  border-top: 1px solid var(--border);
-}
-</style>
+<title>Security+ SY0-701 — Enhanced Study Guide</title>
+<meta name="description" content="An exam-focused CompTIA Security+ SY0-701 study guide: weighted domains, chapter notes, interactive diagrams, and a master port reference.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="page">
 
-  <!-- Header -->
-  <header class="site-header">
-    <div class="badge">SY0-701</div>
-    <h1>CompTIA <span>Security+</span> Study Guide</h1>
-    <p>Interactive concept diagrams for each chapter — click a chapter to explore.</p>
-  </header>
+<a class="skip-link" href="#main">Skip to content</a>
+<nav class="topnav">
+  <a class="brand" href="index.html">Security<span>+</span> SY0-701</a>
+  <a class="navlink active" href="index.html">Home</a>
+  <a class="navlink" href="chapters1-2.html">Ch 1–2 · Basics &amp; IAM</a>
+  <a class="navlink" href="chapter3.html">Ch 3 · Networks</a>
+  <a class="navlink" href="chapters4-5.html">Ch 4–5 · Net Defense &amp; Hosts</a>
+  <a class="navlink" href="chapter6.html">Ch 6 · Threats</a>
+  <a class="navlink" href="chapter7.html">Ch 7 · Advanced Attacks</a>
+  <a class="navlink" href="practice.html">Practice</a>
+  <a class="navlink" href="glossary.html">Glossary</a>
+</nav>
 
-  <!-- Progress -->
-  <div class="progress-wrap">
-    <span class="progress-label">Progress</span>
-    <div class="progress-bar-bg">
-      <div class="progress-bar-fill"></div>
+<main class="page wide" id="main">
+
+  <!-- ════════ HERO ════════ -->
+  <section class="home-hero">
+    <div class="hero-grid">
+      <div>
+        <span class="hero-badge"><span class="dot"></span> CompTIA Security+ · Exam SY0-701</span>
+        <h1>Pass Security+ with <span class="grad">total confidence.</span></h1>
+        <p class="lead">An exam-focused study guide built around the five weighted domains — precise notes, original interactive diagrams, and a master port reference, all in one calm, distraction-free place.</p>
+        <div class="hero-cta">
+          <a href="chapters1-2.html#ch1" class="btn btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            Start with Chapter 1
+          </a>
+          <a href="#domains" class="btn btn-ghost">See exam domains</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hs"><span class="n" data-count="90">0</span><span class="l">Questions</span></div>
+          <div class="hs"><span class="n" data-count="90" data-suffix=" min">0</span><span class="l">Time limit</span></div>
+          <div class="hs"><span class="n" data-count="750">0</span><span class="l">Score to pass</span></div>
+          <div class="hs"><span class="n" data-count="7">0</span><span class="l">Live chapters</span></div>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <div class="term-head"><i class="r"></i><i class="y"></i><i class="g"></i><span>~/security-plus/score.sh</span></div>
+        <div class="gauge-row">
+          <div class="gauge" id="gauge"><div class="v"><b>750</b><small>to pass</small></div></div>
+          <div class="gauge-meta">
+            <span class="tag">PASS THRESHOLD</span>
+            <p>Scaled <b>100–900</b>. Aim past <b>750</b> by mastering the heavy-weight domains first — <b>Operations</b> and <b>Threats</b> alone are 50% of the exam.</p>
+          </div>
+        </div>
+        <div class="miniports">
+          <div class="row"><span><b>:443</b> HTTPS</span><span class="yes">● secure</span></div>
+          <div class="row"><span><b>:22</b> SSH</span><span class="yes">● secure</span></div>
+          <div class="row"><span><b>:80</b> HTTP</span><span class="no">● use 443</span></div>
+          <div class="row"><span><b>:389</b> LDAP</span><span class="no">● use 636</span></div>
+        </div>
+      </div>
     </div>
-    <span class="progress-count">5 / 11 chapters</span>
-  </div>
+  </section>
 
-  <!-- Chapter list -->
-  <div class="section-label">Chapters</div>
-  <div class="chapters">
+  <!-- ════════ EXAM FACTS ════════ -->
+  <section id="exam">
+    <div class="sec-head"><h2>The Exam at a Glance</h2><span class="sec-tag">Know what you're walking into</span></div>
+    <div class="stat-grid">
+      <div class="stat reveal">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7"/><path d="M9 3v18"/><rect x="9" y="3" width="12" height="18" rx="2"/></svg></div>
+        <div class="big">90 max</div>
+        <div class="lbl">Questions — multiple-choice + PBQs (PBQs usually appear first)</div>
+      </div>
+      <div class="stat reveal">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <div class="big">90 minutes</div>
+        <div class="lbl">≈ one minute per question — flag PBQs, return to them</div>
+      </div>
+      <div class="stat reveal">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <div class="big">750 / 900</div>
+        <div class="lbl">Passing score on a scaled 100–900 range</div>
+      </div>
+      <div class="stat reveal">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.4 6.4 2.8 2.8"/><path d="M2 12h4"/><circle cx="12" cy="14" r="6"/></svg></div>
+        <div class="big">Pick the BEST</div>
+        <div class="lbl">Read qualifiers: <em>first, best, most, least</em></div>
+      </div>
+    </div>
+  </section>
 
-    <a class="chapter-card available" href="outputs/Security_Plus_Chapter1_Diagram.html">
-      <span class="ch-num">Chapter 1</span>
-      <span class="ch-title">Mastering Security Basics</span>
-      <span class="ch-topics">CIA Triad · Risk management · Security controls · Cryptography · SIEM · Logging</span>
-      <span class="ch-status done">Available</span>
-    </a>
+  <!-- ════════ DOMAINS ════════ -->
+  <section id="domains">
+    <div class="sec-head"><h2>Five Weighted Domains</h2><span class="sec-tag">Study where the points actually are</span></div>
+    <div class="domain-grid">
+      <div class="domain reveal">
+        <div class="domain-top"><div><div class="code">DOMAIN 1.0</div><div class="name">General Security Concepts</div></div><div class="pct">12%</div></div>
+        <div class="bar"><span data-w="12" style="background:linear-gradient(90deg,#22d3ee,#38bdf8)"></span></div>
+        <p class="blurb">Controls, CIA triad, zero trust, cryptography fundamentals, and change management.</p>
+      </div>
+      <div class="domain reveal">
+        <div class="domain-top"><div><div class="code">DOMAIN 2.0</div><div class="name">Threats, Vulnerabilities &amp; Mitigations</div></div><div class="pct">22%</div></div>
+        <div class="bar"><span data-w="22" style="background:linear-gradient(90deg,#fb7185,#f43f5e)"></span></div>
+        <p class="blurb">Threat actors, attack surfaces, malware, social engineering, and mitigation techniques.</p>
+      </div>
+      <div class="domain reveal">
+        <div class="domain-top"><div><div class="code">DOMAIN 3.0</div><div class="name">Security Architecture</div></div><div class="pct">18%</div></div>
+        <div class="bar"><span data-w="18" style="background:linear-gradient(90deg,#818cf8,#6366f1)"></span></div>
+        <p class="blurb">Secure network design, cloud, zero-trust architecture, data protection, and resilience.</p>
+      </div>
+      <div class="domain reveal">
+        <div class="domain-top"><div><div class="code">DOMAIN 4.0</div><div class="name">Security Operations</div></div><div class="pct">28%</div></div>
+        <div class="bar"><span data-w="28" style="background:linear-gradient(90deg,#34d399,#10b981)"></span></div>
+        <p class="blurb">The biggest slice — monitoring, hardening, identity &amp; access, incident response, automation.</p>
+      </div>
+      <div class="domain wide reveal">
+        <div class="domain-top"><div><div class="code">DOMAIN 5.0</div><div class="name">Security Program Management &amp; Oversight</div></div><div class="pct">20%</div></div>
+        <div class="bar"><span data-w="20" style="background:linear-gradient(90deg,#fbbf24,#f59e0b)"></span></div>
+        <p class="blurb">Governance, risk management, third-party risk, compliance, audits, and awareness — the policy backbone tying every technical control to the business.</p>
+      </div>
+    </div>
+    <div class="tip"><b>Where the points are:</b> Domains 2 + 4 alone are half the exam. They map heavily to Chapters 3–5 (networks, wireless, hosts) — this guide's deepest pages.</div>
+  </section>
 
-    <a class="chapter-card available" href="outputs/Security_Plus_Chapter2_Diagram.html">
-      <span class="ch-num">Chapter 2</span>
-      <span class="ch-title">Understanding Identity & Access Management</span>
-      <span class="ch-topics">AAA · Auth factors · MFA · Biometrics · PAM · SSO · SAML · Access control models</span>
-      <span class="ch-status done">Available</span>
-    </a>
+  <!-- ════════ CHAPTERS ════════ -->
+  <section id="chapters">
+    <div class="sec-head"><h2>Study Guide Chapters</h2><span class="sec-tag">Deep-dive pages + original interactive diagrams</span></div>
 
-    <a class="chapter-card available" href="outputs/Security_Plus_Chapter3_Diagram.html">
-      <span class="ch-num">Chapter 3</span>
-      <span class="ch-title">Exploring Network Technologies & Tools</span>
-      <span class="ch-topics">OSI model · Firewalls · Zero Trust · VPNs · Protocols · Network zones</span>
-      <span class="ch-status done">Available</span>
-    </a>
-
-    <a class="chapter-card available" href="outputs/Security_Plus_Chapter4_Diagram.html">
-      <span class="ch-num">Chapter 4</span>
-      <span class="ch-title">Securing Your Network</span>
-      <span class="ch-topics">IDS/IPS · Honeypots · Wireless security · WPA2/3 · EAP · VPN · NAC · TACACS+</span>
-      <span class="ch-status done">Available</span>
-    </a>
-
-    <a class="chapter-card available" href="outputs/Security_Plus_Chapter5_Diagram.html">
-      <span class="ch-num">Chapter 5</span>
-      <span class="ch-title">Securing Hosts and Data</span>
-      <span class="ch-topics">Virtualization · Cloud security · EDR/XDR · TPM · DLP · MDM · IoT · UEFI · Hardening</span>
-      <span class="ch-status done">Available</span>
-    </a>
-
-    <div class="chapter-card locked">
-      <span class="ch-num">Chapter 6</span>
-      <span class="ch-title">The Cloud & Virtualization</span>
-      <span class="ch-topics">Cloud models · Virtualization · Containers · Serverless · Shared responsibility</span>
-      <span class="ch-status locked">Coming soon</span>
+    <div class="chapter-row reveal">
+      <div class="num">Ch 1</div>
+      <div class="body">
+        <h4>Mastering Security Basics</h4>
+        <p>CIA triad · 4 control categories × 6 control types · PII &amp; data obfuscation (tokenization, masking, steganography) · key stretching &amp; PFS · logs, syslog &amp; SIEM · redundancy, scalability, elasticity</p>
+      </div>
+      <div class="links">
+        <a class="guide" href="chapters1-2.html#ch1">Study Notes</a>
+        <a class="diagram" href="diagrams/Security_Plus_Chapter1_Diagram.html">Interactive Diagram</a>
+      </div>
     </div>
 
-    <div class="chapter-card locked">
-      <span class="ch-num">Chapter 7</span>
-      <span class="ch-title">Cryptography & PKI</span>
-      <span class="ch-topics">Symmetric · Asymmetric · Hashing · Certificates · PKI · Key management</span>
-      <span class="ch-status locked">Coming soon</span>
+    <div class="chapter-row reveal">
+      <div class="num">Ch 2</div>
+      <div class="body">
+        <h4>Identity &amp; Access Management</h4>
+        <p>AAA · 4 authentication factors &amp; MFA · HOTP vs TOTP · biometrics (FAR / FRR / CER) · account lifecycle · PAM, JIT &amp; least privilege · SSO, SAML &amp; OAuth · the 5 access control models · anomalous-behavior indicators</p>
+      </div>
+      <div class="links">
+        <a class="guide" href="chapters1-2.html#ch2">Study Notes</a>
+        <a class="diagram" href="diagrams/Security_Plus_Chapter2_Diagram.html">Interactive Diagram</a>
+      </div>
     </div>
 
-    <div class="chapter-card locked">
-      <span class="ch-num">Chapter 8</span>
-      <span class="ch-title">Resilience & Physical Security</span>
-      <span class="ch-topics">Redundancy · Backups · Availability · Physical controls · Site security</span>
-      <span class="ch-status locked">Coming soon</span>
+    <div class="chapter-row reveal">
+      <div class="num">Ch 3</div>
+      <div class="body">
+        <h4>Network Technologies &amp; Tools <span class="pill secure">deepest coverage</span></h4>
+        <p>OSI model · TCP/UDP/ICMP/ARP · DNS, DHCP, NTP · RFC 1918 · full email stack + SPF/DKIM/DMARC · TLS &amp; IPsec · every secure/insecure protocol pair with ports · switches, routers, firewalls (WAF/NGFW/UTM) · DMZ &amp; network zones · NAT/PAT · proxies · Zero Trust (PEP/PE/PA, planes, SASE)</p>
+      </div>
+      <div class="links">
+        <a class="guide" href="chapter3.html">Study Notes</a>
+        <a class="diagram" href="diagrams/Security_Plus_Chapter3_Diagram.html">Interactive Diagram</a>
+      </div>
     </div>
 
-    <div class="chapter-card locked">
-      <span class="ch-num">Chapter 9</span>
-      <span class="ch-title">Monitoring, Logging & Auditing</span>
-      <span class="ch-topics">SIEM · Log management · Audit trails · Anomaly detection</span>
-      <span class="ch-status locked">Coming soon</span>
+    <div class="chapter-row reveal">
+      <div class="num">Ch 4</div>
+      <div class="body">
+        <h4>Securing Your Network</h4>
+        <p>IDS vs IPS (signature vs anomaly, SPAN/tap) · honeypots → honeytokens · WEP → WPA3 evolution · PSK vs Enterprise vs SAE · EAP family · 802.1X · wireless attacks (evil twin, disassociation, bluesnarfing…) · VPN architectures (split/full tunnel, IPsec modes) · NAC · RADIUS vs TACACS+</p>
+      </div>
+      <div class="links">
+        <a class="guide" href="chapters4-5.html#ch4">Study Notes</a>
+        <a class="diagram" href="diagrams/Security_Plus_Chapter4_Diagram.html">Interactive Diagram</a>
+      </div>
     </div>
 
-    <div class="chapter-card locked">
-      <span class="ch-num">Chapter 10</span>
-      <span class="ch-title">Incident Response</span>
-      <span class="ch-topics">IR lifecycle · Forensics · Chain of custody · Playbooks</span>
-      <span class="ch-status locked">Coming soon</span>
+    <div class="chapter-row reveal">
+      <div class="num">Ch 5</div>
+      <div class="body">
+        <h4>Securing Hosts &amp; Data</h4>
+        <p>Type I/II hypervisors · VM escape &amp; sprawl · IaaS/PaaS/SaaS responsibility split · CASB, IaC, SDN · EDR vs XDR · hardening &amp; gold images · UEFI secure/measured boot · TPM vs HSM · FDE &amp; SED · DLP · MDM &amp; BYOD/COPE/CYOD · embedded systems, ICS/SCADA, RTOS · EOL/legacy risk</p>
+      </div>
+      <div class="links">
+        <a class="guide" href="chapters4-5.html#ch5">Study Notes</a>
+        <a class="diagram" href="diagrams/Security_Plus_Chapter5_Diagram.html">Interactive Diagram</a>
+      </div>
     </div>
 
-    <div class="chapter-card locked">
-      <span class="ch-num">Chapter 11</span>
-      <span class="ch-title">Governance, Risk & Compliance</span>
-      <span class="ch-topics">Policies · Risk assessment · Regulations · Privacy · Third-party risk</span>
-      <span class="ch-status locked">Coming soon</span>
+    <div class="chapter-row reveal">
+      <div class="num">Ch 6</div>
+      <div class="body">
+        <h4>Threats, Attacks &amp; Threat Intelligence</h4>
+        <p>Threat actors (nation-state, APT, organized crime, hacktivist, insider) · attributes &amp; motivations · threat vectors &amp; supply chain · attack surface &amp; shadow IT · malware families (virus → worm → RAT → ransomware) · infection indicators · social engineering &amp; the phishing family · SE principles · signature vs heuristic detection &amp; FIM · STIX/TAXII/AIS, OSINT &amp; intel sources</p>
+      </div>
+      <div class="links">
+        <a class="guide" href="chapter6.html">Study Notes</a>
+        <a class="diagram" href="diagrams/Security_Plus_Chapter6_Diagram.html">Interactive Diagram</a>
+      </div>
     </div>
 
-  </div>
+    <div class="chapter-row reveal">
+      <div class="num">Ch 7</div>
+      <div class="body">
+        <h4>Protecting Against Advanced Attacks <span class="pill insecure">new</span></h4>
+        <p>DoS/DDoS (reflected, amplified, SYN flood) · spoofing &amp; on-path (MITM, attacker-in-the-browser, SSL stripping) · replay &amp; credential replay · DNS attacks (poisoning, pharming, domain hijacking) &amp; defenses (DNSSEC, sinkhole, filtering) · secure coding &amp; input validation · injection (SQLi, XSS, LDAP, XML, directory traversal) &amp; memory flaws · code analysis &amp; secure-dev stages · automation &amp; SOAR</p>
+      </div>
+      <div class="links">
+        <a class="guide" href="chapter7.html">Study Notes</a>
+        <a class="diagram" href="diagrams/Security_Plus_Chapter7_Diagram.html">Interactive Diagram</a>
+      </div>
+    </div>
+    <div class="chapter-row locked reveal">
+      <div class="num">Ch 8</div>
+      <div class="body"><h4>Using Risk Management Tools</h4><p>Risk assessment · risk register · quantitative &amp; qualitative analysis · vulnerability scanning</p></div>
+      <div class="links"><span class="soon">Coming soon</span></div>
+    </div>
+    <div class="chapter-row locked reveal">
+      <div class="num">Ch 9</div>
+      <div class="body"><h4>Implementing Controls to Protect Assets</h4><p>Security controls · hardening · monitoring · resilience &amp; asset protection</p></div>
+      <div class="links"><span class="soon">Coming soon</span></div>
+    </div>
+    <div class="chapter-row locked reveal">
+      <div class="num">Ch 10</div>
+      <div class="body"><h4>Understanding Cryptography and PKI</h4><p>Symmetric · asymmetric · hashing · digital certificates · key management</p></div>
+      <div class="links"><span class="soon">Coming soon</span></div>
+    </div>
+    <div class="chapter-row locked reveal">
+      <div class="num">Ch 11</div>
+      <div class="body"><h4>Implementing Policies to Mitigate Risks</h4><p>Security policies · governance · compliance · third-party &amp; risk mitigation</p></div>
+      <div class="links"><span class="soon">Coming soon</span></div>
+    </div>
+  </section>
+
+  <!-- ════════ PRACTICE PROMO ════════ -->
+  <section id="practice-promo">
+    <div class="cta-band reveal">
+      <h2>500 questions + 20 PBQ labs. Every attempt is different.</h2>
+      <p>Drill with a randomized practice quiz, flip through flashcards, or tackle hands-on performance-based labs across all five domains — the question set and answer order reshuffle every time, so you learn the material, not the position.</p>
+      <div class="hero-cta">
+        <a href="practice.html" class="btn btn-primary">Start practicing →</a>
+        <a href="practice.html" class="btn btn-ghost">Flip flashcards</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ MASTER PORT TABLE ════════ -->
+  <section id="ports">
+    <div class="sec-head"><h2>Master Port Reference</h2><span class="sec-tag">Memorize this table cold — ports show up everywhere on the exam</span></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Port</th><th>Protocol</th><th>Transport</th><th>Status</th><th>Secure Alternative</th></tr></thead>
+      <tbody>
+        <tr><td>20 / 21</td><td>FTP (data / control)</td><td>TCP</td><td><span class="pill insecure">cleartext</span></td><td>SFTP (22) or FTPS (990)</td></tr>
+        <tr><td>22</td><td>SSH · SFTP · SCP</td><td>TCP</td><td><span class="pill secure">secure</span></td><td>—</td></tr>
+        <tr><td>23</td><td>Telnet</td><td>TCP</td><td><span class="pill insecure">cleartext</span></td><td>SSH (22)</td></tr>
+        <tr><td>25</td><td>SMTP (server-to-server relay)</td><td>TCP</td><td><span class="pill insecure">cleartext</span></td><td>587 (STARTTLS) or 465 (implicit TLS)</td></tr>
+        <tr><td>49</td><td>TACACS+</td><td>TCP</td><td><span class="pill secure">encrypts full payload</span></td><td>—</td></tr>
+        <tr><td>53</td><td>DNS</td><td>UDP queries / TCP zone transfers</td><td><span class="pill insecure">unauthenticated</span></td><td>DNSSEC (adds signing, not encryption)</td></tr>
+        <tr><td>67 / 68</td><td>DHCP (server / client)</td><td>UDP</td><td>—</td><td>—</td></tr>
+        <tr><td>69</td><td>TFTP</td><td>UDP</td><td><span class="pill insecure">no auth at all</span></td><td>SFTP (22)</td></tr>
+        <tr><td>80</td><td>HTTP</td><td>TCP</td><td><span class="pill insecure">cleartext</span></td><td>HTTPS (443)</td></tr>
+        <tr><td>88</td><td>Kerberos</td><td>UDP/TCP</td><td><span class="pill secure">secure</span></td><td>—</td></tr>
+        <tr><td>110</td><td>POP3</td><td>TCP</td><td><span class="pill insecure">cleartext</span></td><td>POP3S (995)</td></tr>
+        <tr><td>123</td><td>NTP</td><td>UDP</td><td>—</td><td>—</td></tr>
+        <tr><td>143</td><td>IMAP</td><td>TCP</td><td><span class="pill insecure">cleartext</span></td><td>IMAPS (993)</td></tr>
+        <tr><td>161 / 162</td><td>SNMP (agent / trap)</td><td>UDP</td><td><span class="pill insecure">v1/v2 cleartext</span></td><td>SNMPv3 (same ports, adds auth + encryption)</td></tr>
+        <tr><td>389</td><td>LDAP</td><td>TCP/UDP</td><td><span class="pill insecure">cleartext</span></td><td>LDAPS (636)</td></tr>
+        <tr><td>443</td><td>HTTPS (TLS) · SSTP VPN</td><td>TCP</td><td><span class="pill secure">secure</span></td><td>—</td></tr>
+        <tr><td>465 / 587</td><td>SMTPS (implicit TLS) / submission (STARTTLS)</td><td>TCP</td><td><span class="pill secure">secure</span></td><td>—</td></tr>
+        <tr><td>500</td><td>IKE (IPsec key exchange) · 4500 for NAT-T</td><td>UDP</td><td><span class="pill secure">secure</span></td><td>—</td></tr>
+        <tr><td>514</td><td>Syslog</td><td>UDP</td><td><span class="pill insecure">cleartext</span></td><td>Syslog-TLS (6514)</td></tr>
+        <tr><td>636</td><td>LDAPS</td><td>TCP</td><td><span class="pill secure">secure</span></td><td>—</td></tr>
+        <tr><td>993</td><td>IMAPS</td><td>TCP</td><td><span class="pill secure">secure</span></td><td>—</td></tr>
+        <tr><td>995</td><td>POP3S</td><td>TCP</td><td><span class="pill secure">secure</span></td><td>—</td></tr>
+        <tr><td>1433</td><td>Microsoft SQL Server</td><td>TCP</td><td>—</td><td>—</td></tr>
+        <tr><td>1701</td><td>L2TP</td><td>UDP</td><td><span class="pill insecure">no encryption alone</span></td><td>Pair with IPsec (L2TP/IPsec)</td></tr>
+        <tr><td>1812 / 1813</td><td>RADIUS (auth / accounting)</td><td>UDP</td><td><span class="pill insecure">only password encrypted</span></td><td>TACACS+ (49) encrypts entire session</td></tr>
+        <tr><td>3306</td><td>MySQL</td><td>TCP</td><td>—</td><td>—</td></tr>
+        <tr><td>3389</td><td>RDP</td><td>TCP</td><td>—</td><td>Gate behind VPN / jump server, enable NLA</td></tr>
+        <tr><td>5060 / 5061</td><td>SIP (cleartext / TLS)</td><td>TCP/UDP</td><td><span class="pill insecure">5060 cleartext</span></td><td>5061 (SIP-TLS) + SRTP for media</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>Exam pattern:</b> Port questions are rarely "what port is X?" — they're scenario-based: <em>"An admin needs to securely transfer files…"</em> → answer is the protocol+port pair (SFTP, 22). Learn each port <strong>with its secure replacement</strong>.</div>
+  </section>
+
+  <!-- ════════ CTA ════════ -->
+  <section>
+    <div class="cta-band reveal">
+      <h2>Your Security+ starts with one chapter.</h2>
+      <p>Open Chapter 1, follow the weighted path, and let the diagrams do the heavy lifting. No account, no noise — just the exam.</p>
+      <div class="hero-cta">
+        <a href="chapters1-2.html#ch1" class="btn btn-primary">Start studying →</a>
+        <a href="#domains" class="btn btn-ghost">Review the domains</a>
+      </div>
+    </div>
+  </section>
 
   <footer class="site-footer">
-    CompTIA Security+ SY0-701 &nbsp;·&nbsp; Personal study reference &nbsp;·&nbsp; Add chapters as you go
+    CompTIA Security+ SY0-701 · Enhanced personal study reference · Hub + 4 deep-dive pages
   </footer>
 
-</div>
+</main>
+<script src="guide.js"></script>
+<script src="glossary.js"></script>
+<script src="assistant.js"></script>
 </body>
 </html>

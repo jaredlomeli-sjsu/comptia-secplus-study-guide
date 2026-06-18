@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch 4–5 · Securing Networks &amp; Hosts — Security+ SY0-701</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+<nav class="topnav">
+  <a class="brand" href="index.html">Security<span>+</span> SY0-701</a>
+  <a class="navlink" href="index.html">Home</a>
+  <a class="navlink" href="chapters1-2.html">Ch 1–2 · Basics &amp; IAM</a>
+  <a class="navlink" href="chapter3.html">Ch 3 · Networks</a>
+  <a class="navlink active" href="chapters4-5.html">Ch 4–5 · Net Defense &amp; Hosts</a>
+  <a class="navlink" href="chapter6.html">Ch 6 · Threats</a>
+</nav>
+
+<main class="page" id="main">
+
+  <header class="page-header">
+    <div class="badge">Chapters 4–5</div>
+    <h1>Securing Your Network <span>&amp; Your Hosts</span></h1>
+    <p class="subtitle">IDS/IPS, deception tech, the full wireless security story, VPN architectures, NAC — then virtualization, cloud, endpoint defense, boot security, and mobile/embedded systems.</p>
+  </header>
+
+  <div class="toc">
+    <a href="#ids">IDS vs IPS</a>
+    <a href="#honeypots">Deception Tech</a>
+    <a href="#wireless">Wireless Basics</a>
+    <a href="#wpa">WEP → WPA3</a>
+    <a href="#eap">EAP &amp; 802.1X</a>
+    <a href="#wattacks">Wireless Attacks</a>
+    <a href="#vpn">VPNs</a>
+    <a href="#nac">NAC</a>
+    <a href="#authproto">RADIUS vs TACACS+</a>
+    <a href="#virt">Virtualization</a>
+    <a href="#cloud">Cloud Models</a>
+    <a href="#cloudsec">Cloud Security</a>
+    <a href="#endpoint">Endpoint Defense</a>
+    <a href="#hardening">Hardening &amp; Boot</a>
+    <a href="#encryption">TPM · HSM · FDE · DLP</a>
+    <a href="#mobile">Mobile / MDM</a>
+    <a href="#embedded">Embedded &amp; IoT</a>
+  </div>
+
+  <!-- ══════════════════════ CHAPTER 4 ══════════════════════ -->
+  <section id="ch4" style="margin-bottom:8px">
+    <div class="sec-head"><h2>Chapter 4 — Securing Your Network</h2><span class="sec-tag">Detection, wireless, and remote access</span></div>
+  </section>
+
+  <section id="ids">
+    <div class="sec-head"><h2>IDS vs IPS</h2><span class="sec-tag">Detect vs prevent — placement and method matter</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Axis</th><th>Option A</th><th>Option B</th></tr></thead>
+      <tbody>
+        <tr><td>Response</td><td><strong>IDS</strong> — detects and <em>alerts</em> (out-of-band, passive; sees a copy of traffic)</td><td><strong>IPS</strong> — sits <em>inline</em> and <em>blocks</em> in real time (preventive/corrective)</td></tr>
+        <tr><td>Scope</td><td><strong>HIDS</strong> — agent on one host; sees encrypted traffic after decryption, local files/logs</td><td><strong>NIDS</strong> — sensors watching network segments; broad view, can't see inside encrypted payloads or host activity</td></tr>
+        <tr><td>Method</td><td><strong>Signature-based</strong> — matches known attack patterns; low false positives but blind to <strong>zero-days</strong> (vulnerabilities with no patch/signature yet); needs constant updates</td><td><strong>Anomaly/trend-based</strong> — builds a <em>baseline</em> of normal, flags deviations; can catch novel attacks but higher false positives; re-baseline after network changes</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>Getting traffic to a NIDS:</strong> <em>port mirroring (SPAN)</em> — switch copies traffic to a monitor port — or a hardware <em>network tap</em>. An <em>aggregator</em> combines multiple links into one feed for the sensor.</p>
+    <figure class="diagram">
+      <svg width="640" viewBox="0 0 640 290" role="img" aria-label="An IDS receives a copy of traffic via SPAN and only alerts; an IPS sits inline in the traffic path and blocks attacks in real time">
+        <defs><marker id="m-ids" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--dim)"/></marker>
+        <marker id="m-idsb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--blue)"/></marker></defs>
+        <text x="20" y="26" font-size="11" font-weight="700" fill="var(--blue)">IDS — out-of-band: detects &amp; alerts</text>
+        <rect x="20" y="40" width="110" height="40" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="75" y="65" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--bright)">Traffic</text>
+        <line x1="132" y1="60" x2="246" y2="60" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-ids)"/>
+        <rect x="250" y="40" width="120" height="40" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="310" y="65" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--bright)">Switch</text>
+        <line x1="372" y1="60" x2="496" y2="60" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-ids)"/>
+        <rect x="500" y="40" width="120" height="40" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="560" y="65" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--bright)">Server</text>
+        <line x1="310" y1="82" x2="310" y2="116" stroke="var(--blue)" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#m-idsb)"/>
+        <text x="394" y="104" text-anchor="middle" font-size="10" font-weight="600" fill="var(--blue)">SPAN / tap — copy only</text>
+        <rect x="250" y="120" width="120" height="40" rx="8" fill="var(--blue-dim)" stroke="var(--blue)"/>
+        <text x="310" y="138" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--blue)">IDS sensor</text>
+        <text x="310" y="153" text-anchor="middle" font-size="9.5" fill="var(--dim)">alerts — can't stop it</text>
+
+        <text x="20" y="206" font-size="11" font-weight="700" fill="var(--red)">IPS — inline: blocks in real time</text>
+        <rect x="20" y="220" width="110" height="40" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="75" y="245" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--bright)">Traffic</text>
+        <line x1="132" y1="240" x2="246" y2="240" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-ids)"/>
+        <rect x="250" y="220" width="120" height="40" rx="8" fill="var(--red-dim)" stroke="var(--red)"/>
+        <text x="310" y="238" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--red)">IPS</text>
+        <text x="310" y="253" text-anchor="middle" font-size="9.5" fill="var(--dim)">drops malicious packets</text>
+        <line x1="372" y1="240" x2="496" y2="240" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-ids)"/>
+        <rect x="500" y="220" width="120" height="40" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="560" y="245" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--bright)">Server</text>
+      </svg>
+      <figcaption><b>Placement is the whole difference.</b> The IDS watches a <em>copy</em> of traffic, so the attack still reaches the target — it can only alert. The IPS sits in the actual path, so it can drop the packet — but if it fails closed, it takes the network down with it.</figcaption>
+    </figure>
+
+    <div class="tip"><b>Vocabulary:</b> false positive = alert with no attack (noise); false negative = attack with no alert (the dangerous one). An <strong>APT</strong> (Advanced Persistent Threat) is a well-funded, long-dwell adversary — typically nation-state — that anomaly detection and threat hunting target.</div>
+  </section>
+
+  <section id="honeypots">
+    <div class="sec-head"><h2>Deception Technology</h2><span class="sec-tag">Four honey-things, increasing granularity</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Tool</th><th>What It Is</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>Honeypot</td><td>Intentionally vulnerable-looking <strong>decoy server</strong>, isolated from production</td><td>Divert attackers + observe their tools/techniques; any traffic to it is suspect by definition</td></tr>
+        <tr><td>Honeynet</td><td>An entire <strong>fake network</strong> of honeypots</td><td>Make the deception convincing for longer engagement</td></tr>
+        <tr><td>Honeyfile</td><td>Bait file with an enticing name (<code>passwords.xlsx</code>)</td><td>Access to it triggers an alert — detects snooping insiders/intruders</td></tr>
+        <tr><td>Honeytoken</td><td>Bait <strong>data</strong>: fake credentials, fake API key, fake DB record</td><td>Any <em>use</em> of the token anywhere proves a breach and traces the leak path</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="wireless">
+    <div class="sec-head"><h2>Wireless Fundamentals</h2><span class="sec-tag">Bands, surveys, and antennas</span></div>
+    <ul class="plain">
+      <li><strong>SSID</strong> — the network name an AP broadcasts. Disabling the broadcast hides it from casual users only — tools see it instantly (security by obscurity, not a real control).</li>
+      <li><strong>Bands:</strong> 2.4 GHz = longer range, more interference (microwaves, Bluetooth), 3 non-overlapping channels (1/6/11). 5 GHz = faster, shorter range, many channels. 6 GHz = Wi-Fi 6E.</li>
+      <li><strong>802.11 standards:</strong> b/g (2.4 GHz) → n (both bands, "Wi-Fi 4") → ac (5 GHz, "Wi-Fi 5") → <strong>ax (Wi-Fi 6/6E)</strong>.</li>
+      <li><strong>Site survey</strong> — walk the space with a <strong>Wi-Fi analyzer</strong> to map coverage and interference; output is a <strong>heat map</strong>. Also used defensively to find rogue APs (<em>wireless footprinting</em> = mapping the wireless environment).</li>
+      <li><strong>Antenna choice as a control:</strong> omnidirectional radiates in all directions; <strong>directional</strong> focuses the signal — aim coverage <em>into</em> the building, reduce AP power so the signal doesn't bleed into the parking lot.</li>
+    </ul>
+  </section>
+
+  <section id="wpa">
+    <div class="sec-head"><h2>Wireless Security Evolution — WEP → WPA3</h2><span class="sec-tag">Know what broke and what fixed it</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Generation</th><th>Crypto</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><td>WEP</td><td>RC4 with tiny 24-bit <strong>IVs that repeat</strong></td><td><span class="pill insecure">broken</span> — crackable in minutes via IV attacks; never use</td></tr>
+        <tr><td>WPA</td><td>TKIP (still RC4) — stopgap for WEP-era hardware</td><td><span class="pill insecure">deprecated</span></td></tr>
+        <tr><td>WPA2 (802.11i)</td><td><strong>CCMP / AES</strong></td><td>Still common; PSK mode vulnerable to handshake capture + offline dictionary attacks on weak passphrases</td></tr>
+        <tr><td>WPA3</td><td>AES; <strong>SAE</strong> (Simultaneous Authentication of Equals — Dragonfly handshake) replaces the PSK exchange</td><td><span class="pill secure">current</span> — SAE resists offline dictionary attacks and adds forward secrecy</td></tr>
+      </tbody>
+    </table></div>
+    <div class="grid3">
+      <div class="card accent-orange">
+        <h4>PSK / Personal mode</h4>
+        <p>One shared passphrase for everyone. Fine at home; in business, no individual accountability and one leaver means re-keying every device.</p>
+      </div>
+      <div class="card accent-green">
+        <h4>Enterprise mode</h4>
+        <p><strong>802.1X + RADIUS</strong>: each user authenticates with their own credentials/certificate. Individual accountability, instant revocation. The AP and RADIUS server share a <em>shared secret</em>.</p>
+      </div>
+      <div class="card accent-blue">
+        <h4>Open / OWE</h4>
+        <p>Open = no encryption at all. WPA3's <strong>Enhanced Open (OWE)</strong> encrypts traffic on open networks without a password — fixes coffee-shop sniffing. A <strong>captive portal</strong> adds a web-based acceptance/payment page on top of open networks (free or paid tiers).</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="eap">
+    <div class="sec-head"><h2>EAP Family &amp; 802.1X</h2><span class="sec-tag">Certificate count is how you tell them apart</span></div>
+    <p><strong>IEEE 802.1X</strong> = port-based network access control: nothing passes a switch port or AP until the supplicant (client) authenticates through the authenticator (switch/AP) to the authentication server (RADIUS). <strong>EAP</strong> is the framework carrying that authentication; the variants differ by who presents a certificate:</p>
+
+    <figure class="diagram">
+      <svg width="640" viewBox="0 0 640 170" role="img" aria-label="802.1X roles: the supplicant talks EAP over LAN to the authenticator, which forwards authentication to the RADIUS server; the port stays closed until authentication succeeds">
+        <defs><marker id="m-dot1x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--dim)"/></marker></defs>
+        <rect x="20" y="44" width="160" height="56" rx="8" fill="var(--surface2)" stroke="var(--blue)"/>
+        <text x="100" y="68" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--bright)">Supplicant</text>
+        <text x="100" y="86" text-anchor="middle" font-size="9.5" fill="var(--dim)">client device + credentials</text>
+        <line x1="182" y1="72" x2="246" y2="72" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-dot1x)"/>
+        <text x="214" y="62" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--teal)">EAPOL</text>
+        <rect x="250" y="44" width="160" height="56" rx="8" fill="var(--surface2)" stroke="var(--orange)"/>
+        <text x="330" y="68" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--bright)">Authenticator</text>
+        <text x="330" y="86" text-anchor="middle" font-size="9.5" fill="var(--dim)">switch / AP — port closed</text>
+        <line x1="412" y1="72" x2="476" y2="72" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-dot1x)"/>
+        <text x="444" y="62" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--teal)">RADIUS</text>
+        <rect x="480" y="44" width="145" height="56" rx="8" fill="var(--purple-dim)" stroke="var(--purple)"/>
+        <text x="552" y="68" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--purple)">Auth server</text>
+        <text x="552" y="86" text-anchor="middle" font-size="9.5" fill="var(--dim)">RADIUS · checks identity</text>
+        <text x="330" y="136" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--green)">success → port opens, PTK session key derived</text>
+      </svg>
+      <figcaption><b>802.1X port-based access control.</b> The authenticator is just a middleman — it forwards EAP messages and opens the port only when the RADIUS server says yes. Nothing else passes before that.</figcaption>
+    </figure>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Variant</th><th>Server Cert</th><th>Client Cert</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>PEAP</td><td>✔</td><td>✘</td><td>Protects EAP inside a TLS tunnel; client uses password/MSCHAPv2</td></tr>
+        <tr><td>EAP-TTLS</td><td>✔</td><td>✘</td><td>Like PEAP; supports legacy inner auth methods</td></tr>
+        <tr><td>EAP-FAST</td><td>optional (PAC)</td><td>✘</td><td>Cisco's fix replacing LEAP; uses Protected Access Credential</td></tr>
+        <tr><td>EAP-TLS</td><td>✔</td><td>✔</td><td><strong>Most secure</strong> — mutual certificate authentication; heaviest to deploy (PKI for every client)</td></tr>
+      </tbody>
+    </table></div>
+    <p>After authentication, client and AP derive the <strong>PTK</strong> (Pairwise Transient Key) — the per-session encryption key. <strong>RADIUS federation</strong> extends 802.1X across organizations (e.g., <em>eduroam</em> lets SJSU credentials work at other universities).</p>
+    <div class="tip"><b>Exam cue:</b> "requires certificates on both server and clients" = <strong>EAP-TLS</strong>. "Certificate only on the server" = PEAP or EAP-TTLS.</div>
+  </section>
+
+  <section id="wattacks">
+    <div class="sec-head"><h2>Wireless &amp; Short-Range Attacks</h2><span class="sec-tag">Match the name to the one-line description</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Attack</th><th>What Happens</th></tr></thead>
+      <tbody>
+        <tr><td>Rogue AP</td><td>Any <strong>unauthorized</strong> access point on the network (often an employee's convenience AP) — instant backdoor past the firewall</td></tr>
+        <tr><td>Evil twin</td><td>Attacker's AP <strong>imitating a legitimate SSID</strong> to lure clients and harvest credentials/traffic — a rogue AP with intent</td></tr>
+        <tr><td>Disassociation attack</td><td>Spoofed deauth/disassociate frames kick clients off — DoS, or a forced reconnect to capture the WPA2 handshake or push victims to an evil twin</td></tr>
+        <tr><td>WPS attack</td><td>Brute-forcing the 8-digit WPS PIN (effectively ~11,000 tries; Pixie Dust is faster) → recovers the passphrase. <strong>Fix: disable WPS</strong></td></tr>
+        <tr><td>Jamming</td><td>Flooding the RF spectrum with noise — availability attack; locate with a spectrum analyzer</td></tr>
+        <tr><td>IV attack</td><td>Exploiting repeating initialization vectors to recover keys — what killed <strong>WEP</strong></td></tr>
+        <tr><td>Wireless replay</td><td>Capture legitimate frames, retransmit them to repeat an action or assist key cracking</td></tr>
+        <tr><td>War driving / war flying</td><td>Cruising (or droning) around discovering and mapping wireless networks; the legit version is a <em>wireless audit</em></td></tr>
+        <tr><td>Bluejacking</td><td>Sending unsolicited messages over Bluetooth — annoying, mostly harmless</td></tr>
+        <tr><td>Bluesnarfing</td><td><strong>Stealing data</strong> from a device over Bluetooth — the harmful one</td></tr>
+        <tr><td>Bluebugging</td><td>Taking <strong>control</strong> of the device — backdoor, calls, messages</td></tr>
+        <tr><td>NFC / RFID attacks</td><td>Skimming contactless cards/badges at close range; <strong>RFID cloning</strong> duplicates an access badge → shielded sleeves, badge + PIN</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>Memory hook:</b> blue<strong>jack</strong>ing = junk messages; blue<strong>snarf</strong>ing = snatching data; blue<strong>bug</strong>ging = planting a bug (control). Evil twin = fake SSID; rogue AP = any unauthorized AP.</div>
+  </section>
+
+  <section id="vpn">
+    <div class="sec-head"><h2>VPN Architectures</h2><span class="sec-tag">Tunnel scope and IPsec modes decide the answer</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Remote-access VPN</td><td>Individual user → corporate network, terminating at a <strong>VPN concentrator</strong> (dedicated device handling many encrypted tunnels)</td></tr>
+        <tr><td>Site-to-site VPN</td><td>Gateway-to-gateway tunnel permanently connecting two offices; transparent to users</td></tr>
+        <tr><td>Always-on VPN</td><td>Connects automatically whenever the device is on an untrusted network — removes user error</td></tr>
+        <tr><td>Full tunnel</td><td><strong>All</strong> traffic goes through the corporate tunnel — full inspection, more bandwidth load</td></tr>
+        <tr><td>Split tunnel</td><td>Only corporate-bound traffic uses the tunnel; general browsing goes direct — efficient, but that traffic bypasses corporate security controls</td></tr>
+        <tr><td>Clientless (HTML5 portal)</td><td>Browser-based TLS access to specific apps — no VPN client install needed</td></tr>
+      </tbody>
+    </table></div>
+    <figure class="diagram">
+      <svg width="640" viewBox="0 0 640 290" role="img" aria-label="Full tunnel sends all laptop traffic through the corporate VPN gateway; split tunnel sends only corporate traffic through the tunnel while web browsing goes direct">
+        <defs><marker id="m-vpn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--dim)"/></marker>
+        <marker id="m-vpnb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--blue)"/></marker></defs>
+        <text x="20" y="24" font-size="11" font-weight="700" fill="var(--bright)">Full tunnel — everything inspected</text>
+        <rect x="20" y="38" width="120" height="44" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="80" y="65" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--bright)">Laptop</text>
+        <line x1="142" y1="60" x2="276" y2="60" stroke="var(--blue)" stroke-width="4" marker-end="url(#m-vpnb)"/>
+        <text x="210" y="50" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--blue)">encrypted tunnel · ALL traffic</text>
+        <rect x="280" y="38" width="140" height="44" rx="8" fill="var(--blue-dim)" stroke="var(--blue)"/>
+        <text x="350" y="60" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--blue)">Corp VPN GW</text>
+        <text x="350" y="75" text-anchor="middle" font-size="9.5" fill="var(--dim)">inspects everything</text>
+        <line x1="422" y1="50" x2="496" y2="42" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-vpn)"/>
+        <rect x="500" y="24" width="120" height="36" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="560" y="47" text-anchor="middle" font-size="11" font-weight="600" fill="var(--bright)">Corp servers</text>
+        <line x1="422" y1="72" x2="496" y2="80" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-vpn)"/>
+        <rect x="500" y="64" width="120" height="36" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="560" y="87" text-anchor="middle" font-size="11" font-weight="600" fill="var(--bright)">Internet</text>
+
+        <text x="20" y="168" font-size="11" font-weight="700" fill="var(--bright)">Split tunnel — only corporate traffic tunneled</text>
+        <rect x="20" y="182" width="120" height="44" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="80" y="209" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--bright)">Laptop</text>
+        <line x1="142" y1="196" x2="276" y2="196" stroke="var(--blue)" stroke-width="4" marker-end="url(#m-vpnb)"/>
+        <text x="210" y="186" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--blue)">tunnel · corp traffic only</text>
+        <rect x="280" y="174" width="140" height="44" rx="8" fill="var(--blue-dim)" stroke="var(--blue)"/>
+        <text x="350" y="201" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--blue)">Corp VPN GW</text>
+        <line x1="422" y1="196" x2="496" y2="196" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-vpn)"/>
+        <rect x="500" y="174" width="120" height="36" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="560" y="197" text-anchor="middle" font-size="11" font-weight="600" fill="var(--bright)">Corp servers</text>
+        <line x1="120" y1="228" x2="496" y2="252" stroke="var(--dim)" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#m-vpn)"/>
+        <text x="300" y="262" text-anchor="middle" font-size="9.5" fill="var(--dim)">web browsing goes direct — bypasses corporate inspection</text>
+        <rect x="500" y="234" width="120" height="36" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="560" y="257" text-anchor="middle" font-size="11" font-weight="600" fill="var(--bright)">Internet</text>
+      </svg>
+      <figcaption><b>Full vs split tunnel.</b> Full = security (everything inspected, more bandwidth). Split = efficiency (direct browsing, but that traffic escapes corporate controls). The scenario's priority tells you which to pick.</figcaption>
+    </figure>
+
+    <h3>Protocols &amp; modes</h3>
+    <ul class="plain">
+      <li><strong>IPsec tunnel mode</strong> — encrypts the <strong>entire packet</strong> (including the original IP header); used for traffic crossing the internet (site-to-site). <strong>Transport mode</strong> — encrypts payload only; host-to-host within a private network.</li>
+      <li><strong>ESP</strong> (IP protocol 50) = encryption + auth; <strong>AH</strong> (IP protocol 51) = auth/integrity only, no encryption; <strong>IKE</strong> <span class="pill port">UDP 500</span> negotiates the keys.</li>
+      <li><strong>L2TP</strong> <span class="pill port">UDP 1701</span> — tunneling with <strong>no encryption of its own</strong> → always paired as L2TP/IPsec.</li>
+      <li><strong>SSTP</strong> <span class="pill port">TCP 443</span> — TLS-based VPN; rides HTTPS so it traverses restrictive firewalls.</li>
+    </ul>
+    <div class="tip"><b>Scenario cue:</b> "remote workers' personal browsing is consuming corporate bandwidth" → switch to <strong>split tunnel</strong>. "Security needs to inspect all remote traffic" → <strong>full tunnel</strong>.</div>
+  </section>
+
+  <section id="nac">
+    <div class="sec-head"><h2>NAC — Network Access Control</h2><span class="sec-tag">Health-check the device before it joins</span></div>
+    <p>NAC inspects a connecting device's <strong>posture</strong> — patched? AV current? firewall on? — and grants full access, quarantines to a <strong>remediation VLAN</strong>, or blocks. Applies to wired, wireless, and VPN connections.</p>
+    <div class="grid2">
+      <div class="card accent-blue">
+        <h4>Agent-based</h4>
+        <p>Software installed on the device gives deep, continuous inspection. A <em>permanent</em> agent persists; a <em>dissolvable</em> agent runs once for the check and removes itself (good for guest/BYOD).</p>
+      </div>
+      <div class="card accent-teal">
+        <h4>Agentless</h4>
+        <p>No install — scans/queries the device externally. Less depth, but works for devices you can't manage (guests, IoT).</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="authproto">
+    <div class="sec-head"><h2>Central Authentication — RADIUS vs TACACS+ (and friends)</h2><span class="sec-tag">A guaranteed compare-and-contrast question</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th></th><th>RADIUS</th><th>TACACS+</th></tr></thead>
+      <tbody>
+        <tr><td>Transport</td><td><span class="pill port">UDP 1812/1813</span></td><td><span class="pill port">TCP 49</span></td></tr>
+        <tr><td>Encryption</td><td>Encrypts <strong>only the password</strong></td><td>Encrypts the <strong>entire payload</strong></td></tr>
+        <tr><td>AAA handling</td><td>Combines authentication + authorization</td><td><strong>Separates</strong> all three A's — granular per-command authorization</td></tr>
+        <tr><td>Typical use</td><td>Network access: wireless 802.1X, VPN</td><td>Device administration (Cisco gear)</td></tr>
+      </tbody>
+    </table></div>
+    <ul class="plain">
+      <li><strong>Diameter</strong> — RADIUS's heavier successor (telecom/4G/5G); name is a pun: diameter = 2 × radius.</li>
+      <li><strong>PAP</strong> — password sent in <strong>cleartext</strong> over PPP. <span class="pill insecure">never</span></li>
+      <li><strong>CHAP</strong> — challenge/response proves password knowledge <em>without transmitting it</em>; re-challenges periodically against replay.</li>
+    </ul>
+  </section>
+
+  <!-- ══════════════════════ CHAPTER 5 ══════════════════════ -->
+  <section id="ch5" style="margin-bottom:8px">
+    <div class="sec-head"><h2>Chapter 5 — Securing Hosts &amp; Data</h2><span class="sec-tag">From hypervisors to handsets</span></div>
+  </section>
+
+  <section id="virt">
+    <div class="sec-head"><h2>Virtualization</h2><span class="sec-tag">Type I vs II, and the VM-specific risks</span></div>
+    <ul class="plain">
+      <li><strong>Hypervisor</strong> creates/runs VMs. <strong>Type I (bare-metal)</strong> runs directly on hardware (ESXi, Hyper-V server) — production. <strong>Type II (hosted)</strong> runs on top of a host OS (VirtualBox, VMware Workstation) — desktops/labs.</li>
+      <li><strong>Host</strong> = physical machine; <strong>guest</strong> = each VM. <strong>Snapshot</strong> = point-in-time state you can revert to (take one before patching/testing). <strong>Replication</strong> copies VMs elsewhere for recovery.</li>
+      <li><strong>VDI</strong> — desktops run centrally in the data center; users connect from <strong>thin clients</strong> (minimal devices). Data never lives on the endpoint.</li>
+      <li><strong>Containers</strong> — app-level isolation sharing one OS kernel (Docker). Lighter/faster than VMs, but weaker isolation: a kernel compromise touches every container.</li>
+    </ul>
+    <figure class="diagram">
+      <svg width="600" viewBox="0 0 600 250" role="img" aria-label="Type 1 hypervisor runs directly on hardware beneath the virtual machines; Type 2 hypervisor runs as an application on top of a host operating system">
+        <text x="160" y="32" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--bright)">Type I — bare metal</text>
+        <text x="160" y="48" text-anchor="middle" font-size="9.5" fill="var(--dim)">ESXi, Hyper-V Server · production</text>
+        <rect x="60" y="62" width="96" height="44" rx="6" fill="var(--green-dim)" stroke="var(--green)"/>
+        <text x="108" y="89" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--green)">VM 1</text>
+        <rect x="164" y="62" width="96" height="44" rx="6" fill="var(--green-dim)" stroke="var(--green)"/>
+        <text x="212" y="89" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--green)">VM 2</text>
+        <rect x="60" y="146" width="200" height="32" rx="6" fill="var(--blue-dim)" stroke="var(--blue)"/>
+        <text x="160" y="167" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--blue)">Hypervisor</text>
+        <rect x="60" y="184" width="200" height="32" rx="6" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="160" y="205" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--text)">Hardware</text>
+        <line x1="60" y1="126" x2="260" y2="126" stroke="var(--border)" stroke-dasharray="3 4"/>
+
+        <text x="440" y="32" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--bright)">Type II — hosted</text>
+        <text x="440" y="48" text-anchor="middle" font-size="9.5" fill="var(--dim)">VirtualBox, VMware Workstation · labs</text>
+        <rect x="340" y="62" width="96" height="40" rx="6" fill="var(--green-dim)" stroke="var(--green)"/>
+        <text x="388" y="87" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--green)">VM 1</text>
+        <rect x="444" y="62" width="96" height="40" rx="6" fill="var(--green-dim)" stroke="var(--green)"/>
+        <text x="492" y="87" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--green)">VM 2</text>
+        <rect x="340" y="108" width="200" height="32" rx="6" fill="var(--blue-dim)" stroke="var(--blue)"/>
+        <text x="440" y="129" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--blue)">Hypervisor (an app)</text>
+        <rect x="340" y="146" width="200" height="32" rx="6" fill="var(--orange-dim)" stroke="var(--orange)"/>
+        <text x="440" y="167" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--orange)">Host OS — extra attack surface</text>
+        <rect x="340" y="184" width="200" height="32" rx="6" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="440" y="205" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--text)">Hardware</text>
+      </svg>
+      <figcaption><b>Count the layers.</b> Type II adds a whole host OS underneath the hypervisor — more convenient, but a bigger attack surface and slower. Production virtualization is Type I.</figcaption>
+    </figure>
+
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>VM Risk</th><th>Definition / Mitigation</th></tr></thead>
+      <tbody>
+        <tr><td>VM escape</td><td>Attacker breaks out of a guest into the hypervisor/host — the most severe VM attack. Mitigation: patch the hypervisor promptly</td></tr>
+        <tr><td>VM sprawl</td><td>Unmanaged, forgotten VMs accumulating unpatched → inventory + lifecycle policies</td></tr>
+        <tr><td>Resource reuse</td><td>Memory/storage reallocated between VMs without sanitization can leak the previous tenant's data</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="cloud">
+    <div class="sec-head"><h2>Cloud Service &amp; Deployment Models</h2><span class="sec-tag">Who manages what — the responsibility ladder</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Service Model</th><th>Provider Manages</th><th>You Manage</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td>IaaS</td><td>Hardware, network, hypervisor</td><td>OS, patches, apps, data</td><td>EC2, Azure VMs</td></tr>
+        <tr><td>PaaS</td><td>…plus OS + runtime/middleware</td><td>Your code + data</td><td>Heroku, Azure App Service</td></tr>
+        <tr><td>SaaS</td><td>Everything up to the app</td><td>Your data, user access</td><td>Microsoft 365, Gmail</td></tr>
+      </tbody>
+    </table></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Deployment</th><th>Definition</th></tr></thead>
+      <tbody>
+        <tr><td>Public</td><td>Shared CSP infrastructure, multi-tenant (AWS/Azure/GCP)</td></tr>
+        <tr><td>Private</td><td>Cloud infrastructure for one organization (on- or off-premise)</td></tr>
+        <tr><td>Community</td><td>Shared by organizations with common requirements (e.g., agencies with the same compliance regime)</td></tr>
+        <tr><td>Hybrid</td><td>Two or more models connected — e.g., sensitive data private, burst workloads public</td></tr>
+        <tr><td>Multi-cloud</td><td>Multiple CSPs at once — avoids vendor lock-in, multiplies management complexity</td></tr>
+      </tbody>
+    </table></div>
+    <p>Related terms: <strong>CSP</strong> = the cloud provider; <strong>MSSP</strong> = outsourced security operations; <strong>edge/fog computing</strong> = processing data near its source (IoT) instead of round-tripping to the cloud; <strong>microservices/APIs</strong> = apps decomposed into small networked services — every API is attack surface needing authentication and rate limiting.</p>
+    <div class="tip"><b>Shared responsibility:</b> in <em>every</em> model, <strong>your data and your identities remain your responsibility</strong>. The exam loves "who patches the OS in IaaS?" — you do.</div>
+  </section>
+
+  <section id="cloudsec">
+    <div class="sec-head"><h2>Cloud Security Tooling</h2><span class="sec-tag">Acronyms with one-line jobs</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Tool</th><th>Job</th></tr></thead>
+      <tbody>
+        <tr><td>CASB</td><td>Cloud Access Security Broker — policy enforcement point <em>between users and cloud apps</em>: visibility into shadow IT, DLP, access policy</td></tr>
+        <tr><td>Cloud-based DLP</td><td>Stops sensitive data leaving via cloud services (uploads, shares, email)</td></tr>
+        <tr><td>Security groups</td><td>Cloud-native <strong>virtual firewalls at the instance level</strong> — allow rules for ports/sources per VM</td></tr>
+        <tr><td>IaC</td><td>Infrastructure as Code — environments defined in version-controlled templates (Terraform); consistent, auditable, no config drift</td></tr>
+        <tr><td>SDN</td><td>Software-Defined Networking — separates the <strong>control plane from the data plane</strong>; network managed centrally in software</td></tr>
+        <tr><td>SD-WAN</td><td>Software-defined wide-area networking — intelligently routes branch traffic across multiple links; pairs with SASE</td></tr>
+        <tr><td>SWG</td><td>Secure Web Gateway — cloud-delivered forward proxy: URL filtering, malware scanning for users anywhere</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="endpoint">
+    <div class="sec-head"><h2>Endpoint Defense</h2><span class="sec-tag">AV → EDR → XDR is an escalation of scope</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Layer</th><th>Capability</th></tr></thead>
+      <tbody>
+        <tr><td>Antivirus</td><td>Signature (and heuristic) detection of known malware — e.g., catches a <strong>Trojan</strong> (malware disguised as a legitimate program)</td></tr>
+        <tr><td>EDR</td><td>Endpoint Detection &amp; Response — continuous behavioral monitoring on endpoints, threat hunting, <strong>response actions</strong> (isolate host, kill process, roll back)</td></tr>
+        <tr><td>XDR</td><td>Extended Detection &amp; Response — correlates endpoint + network + email + cloud telemetry into one detection/response platform</td></tr>
+        <tr><td>Host-based IPS (HIPS)</td><td>Blocks attacks at the individual host level, inline</td></tr>
+        <tr><td>Application allow / block lists</td><td><strong>Allow list</strong> = only approved apps run (most restrictive, strongest); <strong>block list</strong> = ban known-bad, everything else runs</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>Exam cue:</b> "prevent any unauthorized software from executing" = application <strong>allow list</strong>, not antivirus. "Correlate alerts across endpoints, email, and cloud" = <strong>XDR</strong>.</div>
+  </section>
+
+  <section id="hardening">
+    <div class="sec-head"><h2>Hardening &amp; Boot Integrity</h2><span class="sec-tag">Shrink the attack surface, then verify the boot chain</span></div>
+    <ul class="plain">
+      <li><strong>Hardening</strong> — disable unneeded services/ports/accounts, change defaults, apply secure configuration baselines.</li>
+      <li><strong>Master image (gold image)</strong> — pre-hardened, pre-configured standard image deployed to all machines: consistency + faster, safer provisioning.</li>
+      <li><strong>Configuration management</strong> enforces baselines and detects drift; <strong>change management</strong> ensures modifications are reviewed/approved/documented — preventing outages from ad-hoc changes.</li>
+      <li><strong>Patch management</strong> — test patches first, deploy on schedule, verify installation; the single most effective vulnerability mitigation.</li>
+    </ul>
+    <h3>Firmware &amp; the boot chain</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>BIOS → UEFI</td><td>Legacy firmware vs its modern replacement; UEFI adds Secure Boot support. Updating firmware = <strong>flashing</strong></td></tr>
+        <tr><td>Secure Boot</td><td>UEFI verifies the <strong>digital signature</strong> of bootloader/OS at each step — refuses to run unsigned/tampered code (stops rootkits/bootkits)</td></tr>
+        <tr><td>Measured Boot</td><td>Each boot stage is <strong>measured (hashed) into the TPM</strong>; doesn't block boot, produces evidence</td></tr>
+        <tr><td>Boot attestation</td><td>Those TPM measurements are reported to a remote server which decides if the device is healthy enough to join the network</td></tr>
+      </tbody>
+    </table></div>
+    <figure class="diagram">
+      <svg width="640" viewBox="0 0 640 240" role="img" aria-label="Boot chain: UEFI verifies the bootloader signature, the bootloader verifies the kernel, the kernel loads the OS; each stage is also hashed into the TPM for measured boot">
+        <defs><marker id="m-boot" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--green)"/></marker>
+        <marker id="m-bootp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--purple)"/></marker></defs>
+        <rect x="20" y="40" width="125" height="46" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="82" y="68" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--bright)">UEFI firmware</text>
+        <line x1="147" y1="63" x2="181" y2="63" stroke="var(--green)" stroke-width="1.8" marker-end="url(#m-boot)"/>
+        <rect x="185" y="40" width="125" height="46" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="247" y="68" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--bright)">Bootloader</text>
+        <line x1="312" y1="63" x2="346" y2="63" stroke="var(--green)" stroke-width="1.8" marker-end="url(#m-boot)"/>
+        <rect x="350" y="40" width="125" height="46" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="412" y="68" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--bright)">OS kernel</text>
+        <line x1="477" y1="63" x2="511" y2="63" stroke="var(--green)" stroke-width="1.8" marker-end="url(#m-boot)"/>
+        <rect x="515" y="40" width="105" height="46" rx="8" fill="var(--green-dim)" stroke="var(--green)"/>
+        <text x="567" y="68" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--green)">OS running</text>
+        <text x="320" y="24" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--green)">Secure Boot: each green arrow = "signature verified, OK to run" — unsigned code stops the chain</text>
+        <line x1="82" y1="88" x2="262" y2="148" stroke="var(--purple)" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#m-bootp)"/>
+        <line x1="247" y1="88" x2="290" y2="146" stroke="var(--purple)" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#m-bootp)"/>
+        <line x1="412" y1="88" x2="346" y2="148" stroke="var(--purple)" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#m-bootp)"/>
+        <rect x="245" y="152" width="150" height="48" rx="8" fill="var(--purple-dim)" stroke="var(--purple)"/>
+        <text x="320" y="173" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--purple)">TPM</text>
+        <text x="320" y="190" text-anchor="middle" font-size="9.5" fill="var(--dim)">hash of each stage recorded</text>
+        <text x="320" y="226" text-anchor="middle" font-size="10" fill="var(--dim)">Measured Boot: records evidence → attestation server decides if the device is healthy</text>
+      </svg>
+      <figcaption><b>Two protections, one boot.</b> Secure Boot <em>blocks</em> (green chain) — tampered code never runs. Measured Boot <em>records</em> (purple hashes into the TPM) — and attestation reports those measurements to a server.</figcaption>
+    </figure>
+
+    <div class="tip"><b>Distinction:</b> Secure Boot <em>blocks</em> tampered code; Measured Boot <em>records and reports</em> it. Attestation = a third party verifying the measurements.</div>
+  </section>
+
+  <section id="encryption">
+    <div class="sec-head"><h2>TPM, HSM, Disk Encryption &amp; DLP</h2><span class="sec-tag">Protecting data at rest and stopping it from leaking</span></div>
+    <div class="grid2">
+      <div class="card accent-purple">
+        <h4>TPM — Trusted Platform Module</h4>
+        <p>Chip <strong>on the motherboard</strong>: hardware root of trust, stores keys (e.g., BitLocker's), supports measured boot. Burned-in <strong>endorsement key</strong> uniquely identifies it. Scope: <strong>one device</strong>.</p>
+      </div>
+      <div class="card accent-purple">
+        <h4>HSM — Hardware Security Module</h4>
+        <p>Dedicated <strong>removable/network appliance</strong> for generating, storing, and using crypto keys at scale — tamper-resistant, used by CAs and banks. (MicroSD HSM = portable form factor.) Scope: <strong>enterprise/server</strong>.</p>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card accent-blue">
+        <h4>Disk encryption</h4>
+        <p><strong>FDE</strong> — full disk encryption in software (BitLocker, FileVault); keys often TPM-protected.</p>
+        <p><strong>SED</strong> — self-encrypting drive: encryption done in the drive hardware itself, transparent and fast. Database/file-level encryption protects specific data even from OS-level access.</p>
+      </div>
+      <div class="card accent-teal">
+        <h4>Data in use</h4>
+        <p>Data being processed in RAM/CPU. Protected by a <strong>secure enclave / TEE</strong> (Trusted Execution Environment) — isolated processor region even the OS can't read. Regulated data like <strong>PHI</strong> (health information, HIPAA) demands protection in all three states.</p>
+      </div>
+    </div>
+    <h3>DLP — Data Loss Prevention</h3>
+    <ul class="plain">
+      <li><strong>Network-based DLP</strong> — inspects outbound traffic (email, uploads) at the boundary and blocks sensitive content (SSNs, card numbers) from leaving.</li>
+      <li><strong>Endpoint DLP</strong> — agent on the host controls copy/paste, printing, and <strong>removable media</strong> (block USB mass storage or allow only encrypted drives).</li>
+      <li>Identification methods: pattern matching, keywords, file fingerprints, classification labels.</li>
+    </ul>
+  </section>
+
+  <section id="mobile">
+    <div class="sec-head"><h2>Mobile Devices — MDM &amp; Deployment Models</h2><span class="sec-tag">Ownership models + the MDM control list</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Model</th><th>Owns It</th><th>Trade-off</th></tr></thead>
+      <tbody>
+        <tr><td>Corporate-owned</td><td>Company, business-only</td><td>Maximum control, highest cost</td></tr>
+        <tr><td>COPE</td><td>Company owns, personal use <strong>enabled</strong></td><td>Control + employee convenience</td></tr>
+        <tr><td>CYOD</td><td>Employee picks from an <strong>approved list</strong></td><td>Choice within a supportable set</td></tr>
+        <tr><td>BYOD</td><td>Employee's personal device</td><td>Cheapest, hardest to secure — solve with MDM + storage segmentation</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>MDM</strong> (Mobile Device Management; <strong>UEM</strong> extends it to laptops/desktops/IoT) enforces: screen lock &amp; encryption, <strong>remote wipe</strong> for lost/stolen devices, <strong>geofencing</strong> (policy by location — e.g., camera disabled inside the facility) vs <strong>GPS tagging</strong> (location embedded in file/photo metadata — an OPSEC leak), <strong>storage segmentation/containerization</strong> (work container separate and wipeable without touching personal data), app management via allow lists, and <strong>context-aware authentication</strong> (requirements adapt to location/network/time).</p>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Mobile Risk</th><th>Why It Matters</th></tr></thead>
+      <tbody>
+        <tr><td>Jailbreaking / rooting</td><td>Removing iOS / Android OS restrictions — disables the security model; MDM should detect and quarantine</td></tr>
+        <tr><td>Sideloading &amp; third-party stores</td><td>Installing apps outside the official store — bypasses vetting, prime malware vector</td></tr>
+        <tr><td>Custom firmware / OTA</td><td>Unofficial firmware breaks the trust chain; OTA updates must come from trusted sources</td></tr>
+        <tr><td>Tethering / hotspot / Wi-Fi Direct</td><td>The phone becomes a network path that bypasses corporate perimeter controls</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="embedded">
+    <div class="sec-head"><h2>Embedded Systems, IoT &amp; ICS</h2><span class="sec-tag">Constrained devices you can't just patch</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+      <tbody>
+        <tr><td>Embedded system</td><td>Computer built into a device for a dedicated function (medical devices, vehicles, printers)</td></tr>
+        <tr><td>IoT</td><td>Network-connected consumer/office devices (cameras, thermostats, TVs) — notorious for default passwords and no updates → segment onto their own VLAN</td></tr>
+        <tr><td>ICS / SCADA</td><td>Industrial control systems for plants/utilities — availability is paramount; isolate from IT networks entirely</td></tr>
+        <tr><td>SoC</td><td>System on a Chip — CPU, memory, radios on one chip (Raspberry Pi, phones)</td></tr>
+        <tr><td>RTOS</td><td>Real-Time Operating System — guarantees deterministic timing for control systems; not patchable like a desktop OS</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>Constraints to cite on the exam:</strong> low compute power (can't run strong crypto or agents), inability to patch, default credentials, long deployed lifespans. Compensating controls: network segmentation, firewalls in front, monitoring.</p>
+    <ul class="plain">
+      <li><strong>EOL / legacy hardware</strong> — end-of-life means <strong>no more security patches</strong>: replace, or isolate + compensating controls. Legacy systems persist because critical software depends on them.</li>
+      <li><strong>Decommissioning</strong> — before disposal: <strong>sanitize media</strong> (cryptographic erase, wipe, or physical destruction), remove from inventory, revoke its certificates/credentials. Data left on retired drives is a classic breach source.</li>
+    </ul>
+  </section>
+
+  <footer class="site-footer">
+    <a href="chapter3.html">← Chapter 3</a> &nbsp;·&nbsp; Chapters 4–5 &nbsp;·&nbsp; <a href="index.html">Back to Hub</a>
+  </footer>
+
+</main>
+<script src="guide.js"></script>
+</body>
+</html>

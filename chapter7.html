@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch 7 · Protecting Against Advanced Attacks — Security+ SY0-701</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+<nav class="topnav">
+  <a class="brand" href="index.html">Security<span>+</span> SY0-701</a>
+  <a class="navlink" href="index.html">Home</a>
+  <a class="navlink" href="chapters1-2.html">Ch 1–2 · Basics &amp; IAM</a>
+  <a class="navlink" href="chapter3.html">Ch 3 · Networks</a>
+  <a class="navlink" href="chapters4-5.html">Ch 4–5 · Net Defense &amp; Hosts</a>
+  <a class="navlink" href="chapter6.html">Ch 6 · Threats</a>
+  <a class="navlink active" href="chapter7.html">Ch 7 · Advanced Attacks</a>
+  <a class="navlink" href="practice.html">Practice</a>
+  <a class="navlink" href="glossary.html">Glossary</a>
+</nav>
+
+<main class="page" id="main">
+
+  <header class="page-header">
+    <div class="badge">Chapter 7</div>
+    <h1>Protecting Against <span>Advanced Attacks</span></h1>
+    <p class="subtitle">Denial of service, spoofing and on-path attacks, the DNS attack-and-defense toolkit, secure coding and injection flaws, and the automation/SOAR that scales your defenses.</p>
+  </header>
+
+  <div class="toc">
+    <a href="#dos">Denial of Service</a>
+    <a href="#onpath">Spoofing &amp; On-Path</a>
+    <a href="#dns">DNS Attacks</a>
+    <a href="#dnsdefense">DNS &amp; URL Defenses</a>
+    <a href="#coding">Secure Coding</a>
+    <a href="#web">Web App Security</a>
+    <a href="#analysis">Code Analysis &amp; Secure Dev</a>
+    <a href="#injection">Injection &amp; Memory Attacks</a>
+    <a href="#automation">Automation &amp; SOAR</a>
+    <a href="#autotradeoffs">Automation Trade-offs</a>
+  </div>
+
+  <!-- ════════ DENIAL OF SERVICE ════════ -->
+  <section id="dos">
+    <div class="sec-head"><h2>Denial of Service</h2><span class="sec-tag">Overwhelm a resource until it can't serve anyone</span></div>
+    <p>A <strong>Denial of Service (DoS)</strong> attack makes a system or service unavailable to legitimate users — almost always through <strong>resource exhaustion</strong>, consuming bandwidth, memory, CPU, or connection tables until nothing is left for real requests. A <strong>Distributed DoS (DDoS)</strong> uses many machines at once — typically a <strong>botnet</strong> of compromised hosts — so the flood is far larger and can't be stopped by blocking one IP.</p>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Attack</th><th>How It Works</th><th>Identify It By</th></tr></thead>
+      <tbody>
+        <tr><td>DoS</td><td>A <strong>single</strong> source exhausts a target's resources</td><td>One attacking host overwhelms a service</td></tr>
+        <tr><td>DDoS</td><td><strong>Many</strong> sources (a botnet) flood the target at once</td><td>"Traffic from thousands of IPs worldwide"</td></tr>
+        <tr><td>SYN flood</td><td>Sends a storm of TCP SYN packets but never completes the handshake, filling the <strong>connection table</strong> with half-open connections</td><td>Resource exhaustion of TCP state; mitigated by SYN cookies</td></tr>
+        <tr><td>Reflected DDoS</td><td>Attacker <strong>spoofs the victim's IP</strong> and sends requests to third-party servers, which reply <em>to the victim</em></td><td>Victim is buried by responses it never asked for</td></tr>
+        <tr><td>Amplified DDoS</td><td>A reflected attack using protocols where a <strong>tiny request triggers a huge reply</strong> (DNS, NTP, memcached)</td><td>Small spoofed query → massive response multiplies the flood</td></tr>
+      </tbody>
+    </table></div>
+
+    <figure class="diagram">
+      <svg width="640" viewBox="0 0 640 250" role="img" aria-label="Reflected and amplified DDoS: the attacker sends small DNS queries with the victim's spoofed source IP to open resolvers, which send much larger responses to the victim, overwhelming it">
+        <defs><marker id="m-amp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--red)"/></marker>
+        <marker id="m-amp2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--orange)"/></marker></defs>
+        <rect x="20" y="98" width="130" height="54" rx="8" fill="var(--red-dim)" stroke="var(--red)"/>
+        <text x="85" y="120" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--red)">Attacker</text>
+        <text x="85" y="138" text-anchor="middle" font-size="9" fill="var(--dim)">spoofs victim's IP</text>
+        <rect x="255" y="30" width="130" height="44" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="320" y="48" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--bright)">Open resolver</text>
+        <text x="320" y="63" text-anchor="middle" font-size="9" fill="var(--dim)">DNS / NTP server</text>
+        <rect x="255" y="100" width="130" height="44" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="320" y="118" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--bright)">Open resolver</text>
+        <text x="320" y="133" text-anchor="middle" font-size="9" fill="var(--dim)">DNS / NTP server</text>
+        <rect x="255" y="170" width="130" height="44" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="320" y="188" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--bright)">Open resolver</text>
+        <text x="320" y="203" text-anchor="middle" font-size="9" fill="var(--dim)">DNS / NTP server</text>
+        <rect x="490" y="98" width="130" height="54" rx="8" fill="var(--orange-dim)" stroke="var(--orange)"/>
+        <text x="555" y="120" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--orange)">Victim</text>
+        <text x="555" y="138" text-anchor="middle" font-size="9" fill="var(--dim)">buried in replies</text>
+        <line x1="152" y1="118" x2="251" y2="58" stroke="var(--red)" stroke-width="1.4" marker-end="url(#m-amp)"/>
+        <line x1="152" y1="123" x2="251" y2="122" stroke="var(--red)" stroke-width="1.4" marker-end="url(#m-amp)"/>
+        <line x1="152" y1="128" x2="251" y2="188" stroke="var(--red)" stroke-width="1.4" marker-end="url(#m-amp)"/>
+        <text x="180" y="100" font-size="9" font-weight="600" fill="var(--red)">1 · small spoofed queries</text>
+        <line x1="387" y1="56" x2="488" y2="112" stroke="var(--orange)" stroke-width="3" marker-end="url(#m-amp2)"/>
+        <line x1="387" y1="122" x2="488" y2="124" stroke="var(--orange)" stroke-width="3" marker-end="url(#m-amp2)"/>
+        <line x1="387" y1="188" x2="488" y2="138" stroke="var(--orange)" stroke-width="3" marker-end="url(#m-amp2)"/>
+        <text x="396" y="172" font-size="9" font-weight="600" fill="var(--orange)">2 · huge replies</text>
+      </svg>
+      <figcaption><b>Reflection + amplification.</b> The attacker never touches the victim directly — innocent servers do the flooding. Spoofing the source IP makes the responses land on the victim; amplification (small query → big reply) multiplies the volume.</figcaption>
+    </figure>
+    <div class="tip"><b>Indicator vs attack:</b> an <strong>indicator</strong> is the observable sign of an attack — a traffic spike, a flood of half-open connections, a service timing out. The exam often gives you the indicator and asks you to name the attack behind it.</div>
+  </section>
+
+  <!-- ════════ SPOOFING & ON-PATH ════════ -->
+  <section id="onpath">
+    <div class="sec-head"><h2>Spoofing &amp; On-Path Attacks</h2><span class="sec-tag">Faking identity and sitting in the middle of a conversation</span></div>
+    <p><strong>Spoofing</strong> is falsifying an identifier — a source IP, MAC, email address, or caller ID — to impersonate a trusted source. <strong>Forgery</strong> is the broader act of creating fraudulent data (a forged request, token, or certificate) so a system treats it as genuine. Both set up the bigger attacks below.</p>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Attack</th><th>What Happens</th><th>Defense</th></tr></thead>
+      <tbody>
+        <tr><td>On-path attack (MITM)</td><td>Attacker secretly relays or alters traffic between two parties who think they're talking directly — the modern name for <strong>man-in-the-middle</strong></td><td>End-to-end encryption (TLS), mutual authentication</td></tr>
+        <tr><td>Attacker-in-the-browser <span class="pill insecure">a.k.a. man-in-the-browser</span></td><td>Malware/extension inside the browser alters pages and transactions <em>after</em> TLS decrypts them — encryption can't help</td><td>Endpoint anti-malware, extension control, transaction verification</td></tr>
+        <tr><td>SSL stripping</td><td>An on-path attacker downgrades a victim's HTTPS connection to plain <strong>HTTP</strong>, then reads everything in cleartext</td><td><strong>HSTS</strong>, redirect-to-HTTPS, certificate checks</td></tr>
+        <tr><td>Replay attack</td><td>Captures valid traffic and <strong>re-sends</strong> it to repeat an action or impersonate a user</td><td>Nonces, timestamps, session tokens</td></tr>
+        <tr><td>Credential replay</td><td>A replay attack that reuses captured <strong>authentication data</strong> (a hash, ticket, or token) to log in without knowing the password</td><td>One-time tokens, MFA, short-lived tickets</td></tr>
+      </tbody>
+    </table></div>
+    <div class="warn"><b>Encryption isn't always the answer.</b> Against an <strong>on-path</strong> attack, TLS works. Against <strong>attacker-in-the-browser</strong>, it doesn't — the malware operates after decryption, on the endpoint. Against <strong>SSL stripping</strong>, the fix is forcing HTTPS (HSTS) so there's no plaintext to strip.</div>
+  </section>
+
+  <!-- ════════ DNS ATTACKS ════════ -->
+  <section id="dns">
+    <div class="sec-head"><h2>DNS Attacks</h2><span class="sec-tag">Poison the lookup, steal the destination</span></div>
+    <p>DNS turns names into IP addresses, and a <strong>URL</strong> (Uniform Resource Locator) is the full web address a user types. Because users trust the name and rarely check the resolved IP, DNS is a prime target for sending victims somewhere malicious.</p>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Attack</th><th>What Happens</th></tr></thead>
+      <tbody>
+        <tr><td>DNS poisoning (cache poisoning)</td><td>Corrupting a DNS resolver's cache so a legitimate name resolves to the <strong>attacker's IP</strong></td></tr>
+        <tr><td>Pharming</td><td>The <em>result</em> of poisoning at scale: silently redirecting users from a legitimate site to a fake one — <strong>no click required</strong></td></tr>
+        <tr><td>URL redirection</td><td>Sending a user to a different destination than expected — via a malicious link, a compromised page, or an open redirect on a trusted site</td></tr>
+        <tr><td>Domain hijacking</td><td>Taking control of a domain's <strong>registration</strong> (stolen registrar credentials, social engineering) to reroute all of its traffic</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>Phishing vs pharming:</b> phishing <em>lures</em> you to click a bad link; <strong>pharming</strong> redirects you automatically through poisoned DNS even when you type the correct address. Pharming needs no user mistake.</div>
+  </section>
+
+  <!-- ════════ DNS & URL DEFENSES ════════ -->
+  <section id="dnsdefense">
+    <div class="sec-head"><h2>DNS &amp; URL Defenses</h2><span class="sec-tag">Authenticate lookups, filter destinations, keep the logs</span></div>
+    <div class="grid2">
+      <div class="card accent-green">
+        <h4>DNSSEC <span class="pill secure">DNS Security Extensions</span></h4>
+        <p>Adds <strong>digital signatures</strong> to DNS records so resolvers can verify a response is authentic and unaltered. It defeats poisoning by proving <em>origin and integrity</em> — note it <strong>authenticates, it does not encrypt</strong>.</p>
+      </div>
+      <div class="card accent-blue">
+        <h4>DNS filtering</h4>
+        <p>A <strong>DNS filter</strong> blocks resolution of known-malicious or policy-violating domains — users simply can't reach them. A common first line of web/content filtering.</p>
+      </div>
+      <div class="card accent-purple">
+        <h4>DNS sinkhole</h4>
+        <p>Returns a <strong>false (controlled) answer</strong> for malicious domains — pointing malware's callbacks to a dead end or a monitoring host instead of the real C2 server.</p>
+      </div>
+      <div class="card accent-orange">
+        <h4>DNS log files</h4>
+        <p>Records every query a network makes. Invaluable for detection: <strong>beaconing to suspicious domains</strong>, data exfiltration over DNS, and tracing which host is infected.</p>
+      </div>
+    </div>
+
+    <figure class="diagram">
+      <svg width="620" viewBox="0 0 620 200" role="img" aria-label="DNS poisoning versus DNSSEC: without DNSSEC a poisoned cache returns the attacker's IP; with DNSSEC the resolver verifies the record's signature and rejects the forged answer">
+        <defs><marker id="m-dns" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--dim)"/></marker></defs>
+        <text x="160" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="var(--red)">Without DNSSEC</text>
+        <rect x="30" y="40" width="110" height="44" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="85" y="66" text-anchor="middle" font-size="10" font-weight="600" fill="var(--text)">User asks<tspan x="85" dy="13" font-size="8.5" fill="var(--dim)">bank.com?</tspan></text>
+        <rect x="200" y="40" width="110" height="44" rx="8" fill="var(--red-dim)" stroke="var(--red)"/>
+        <text x="255" y="62" text-anchor="middle" font-size="10" font-weight="700" fill="var(--red)">Poisoned cache</text>
+        <text x="255" y="76" text-anchor="middle" font-size="8.5" fill="var(--dim)">→ attacker's IP</text>
+        <line x1="142" y1="62" x2="196" y2="62" stroke="var(--dim)" stroke-width="1.4" marker-end="url(#m-dns)"/>
+        <text x="160" y="125" text-anchor="middle" font-size="11" font-weight="700" fill="var(--green)">With DNSSEC</text>
+        <rect x="30" y="140" width="110" height="44" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="85" y="166" text-anchor="middle" font-size="10" font-weight="600" fill="var(--text)">User asks<tspan x="85" dy="13" font-size="8.5" fill="var(--dim)">bank.com?</tspan></text>
+        <rect x="200" y="140" width="130" height="44" rx="8" fill="var(--green-dim)" stroke="var(--green)"/>
+        <text x="265" y="162" text-anchor="middle" font-size="10" font-weight="700" fill="var(--green)">Signature checked</text>
+        <text x="265" y="176" text-anchor="middle" font-size="8.5" fill="var(--dim)">forged answer rejected</text>
+        <line x1="142" y1="162" x2="196" y2="162" stroke="var(--dim)" stroke-width="1.4" marker-end="url(#m-dns)"/>
+        <text x="470" y="92" text-anchor="middle" font-size="9.5" fill="var(--dim)">DNSSEC proves the record</text>
+        <text x="470" y="106" text-anchor="middle" font-size="9.5" fill="var(--dim)">came from the real zone —</text>
+        <text x="470" y="120" text-anchor="middle" font-size="9.5" fill="var(--dim)">integrity, not encryption.</text>
+      </svg>
+      <figcaption><b>DNSSEC stops the lie.</b> A poisoned resolver happily hands back the attacker's IP. DNSSEC makes the resolver verify a cryptographic signature first, so a forged record is thrown away.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ════════ SECURE CODING ════════ -->
+  <section id="coding">
+    <div class="sec-head"><h2>Secure Coding &amp; Input Handling</h2><span class="sec-tag">Most app attacks start with untrusted input</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Practice</th><th>What It Is</th><th>Why It Matters</th></tr></thead>
+      <tbody>
+        <tr><td>Input validation</td><td>Checking that input matches expected type, length, format, and range before use</td><td>The single most important defense against injection attacks</td></tr>
+        <tr><td>Client-side validation</td><td>Validation in the browser (fast feedback for users)</td><td>Convenience only — <strong>trivially bypassed</strong>, never trust it for security</td></tr>
+        <tr><td>Server-side validation</td><td>Validation on the server, where the attacker can't tamper with it</td><td><strong>The authoritative check</strong> — always validate server-side</td></tr>
+        <tr><td>HTML escaping / encoding</td><td>Converting special characters (<code>&lt; &gt; &amp; "</code>) into safe entities so input renders as text, not code</td><td>Stops cross-site scripting (XSS) at output</td></tr>
+        <tr><td>Error handling</td><td>Catching errors and returning <strong>generic</strong> messages</td><td>Verbose errors leak stack traces, paths, and DB structure to attackers</td></tr>
+        <tr><td>Code obfuscation</td><td>Deliberately making code hard to read/reverse-engineer</td><td>Raises the bar for attackers; not a substitute for real controls</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="grid2">
+      <div class="card accent-red">
+        <h4>Race condition (TOCTOU)</h4>
+        <p>A flaw where the outcome depends on timing between events. The classic form is <strong>Time-of-Check to Time-of-Use (TOCTOU)</strong>: a resource is validated, then changed in the gap before it's used. Fixed with locking and atomic operations.</p>
+      </div>
+      <div class="card accent-orange">
+        <h4>Compiler &amp; outsourced code</h4>
+        <p>A <strong>compiler</strong> translates source code into executable machine code. <strong>Outsourced code vulnerabilities</strong> arise when third-party, contracted, or library code you didn't write introduces flaws or backdoors — review and monitor it like your own.</p>
+      </div>
+    </div>
+    <div class="tip"><b>Client-side is never security:</b> if a question pits client-side against server-side validation, the secure answer is <strong>server-side</strong> (or "both, but enforce on the server"). An attacker controls the browser.</div>
+  </section>
+
+  <!-- ════════ WEB APP SECURITY ════════ -->
+  <section id="web">
+    <div class="sec-head"><h2>Web Application Security</h2><span class="sec-tag">Headers, cookies, signing, and the OWASP backbone</span></div>
+    <div class="grid3">
+      <div class="card accent-blue">
+        <h4>HTTP headers</h4>
+        <p>Metadata sent with every request/response. <strong>General headers</strong> apply to both, <strong>request headers</strong> carry client info, and <strong>entity headers</strong> describe the body (content type, length). Security headers (HSTS, CSP) harden the app.</p>
+      </div>
+      <div class="card accent-purple">
+        <h4>Cookies &amp; secure cookies</h4>
+        <p>A <strong>cookie</strong> stores session state in the browser. A <strong>secure cookie</strong> sets the <code>Secure</code> flag (sent only over HTTPS) and usually <code>HttpOnly</code> (hidden from JavaScript) to resist theft via XSS.</p>
+      </div>
+      <div class="card accent-green">
+        <h4>Code signing</h4>
+        <p>Digitally signing software with the publisher's private key so users can verify <strong>authenticity and integrity</strong> — the code came from the stated author and wasn't tampered with.</p>
+      </div>
+    </div>
+    <div class="card accent-orange">
+      <h4>OWASP — Open Worldwide Application Security Project</h4>
+      <p>A nonprofit community behind the well-known <strong>OWASP Top 10</strong> list of the most critical web application risks (injection, broken access control, XSS, and more). The go-to reference for secure web development and testing.</p>
+    </div>
+  </section>
+
+  <!-- ════════ CODE ANALYSIS & SECURE DEV ════════ -->
+  <section id="analysis">
+    <div class="sec-head"><h2>Code Analysis &amp; Secure Development</h2><span class="sec-tag">How you test code — and where it travels before release</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Method</th><th>What It Does</th><th>Key Trait</th></tr></thead>
+      <tbody>
+        <tr><td>Static code analysis (SAST)</td><td>Inspects source code <strong>without running it</strong></td><td>"Analyzing code" — finds flaws early, before execution</td></tr>
+        <tr><td>Manual code review</td><td>Humans read the code line by line</td><td>Catches logic and design flaws tools miss</td></tr>
+        <tr><td>Dynamic code analysis (DAST)</td><td>Tests the application <strong>while it runs</strong></td><td>"Receiving/observing behavior" — finds runtime flaws</td></tr>
+        <tr><td>Fuzzing</td><td>Feeds <strong>massive random/malformed input</strong> to find crashes and unhandled cases</td><td>A form of dynamic analysis great at surfacing input bugs</td></tr>
+        <tr><td>Sandboxing</td><td>Runs untrusted code in an <strong>isolated environment</strong> to observe it safely</td><td>Contains anything malicious; used in dynamic analysis &amp; malware study</td></tr>
+        <tr><td>Package monitoring</td><td>Watching third-party dependencies for <strong>known vulnerabilities</strong> and tampering</td><td>Defends the software supply chain</td></tr>
+      </tbody>
+    </table></div>
+
+    <figure class="diagram">
+      <svg width="660" viewBox="0 0 660 150" role="img" aria-label="Secure development environment stages flow left to right: development, then testing and quality assurance, then staging, then production">
+        <defs><marker id="m-sdlc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--dim)"/></marker></defs>
+        <rect x="14" y="50" width="120" height="50" rx="8" fill="var(--blue-dim)" stroke="var(--blue)"/>
+        <text x="74" y="72" text-anchor="middle" font-size="11" font-weight="700" fill="var(--blue)">Development</text>
+        <text x="74" y="88" text-anchor="middle" font-size="8.5" fill="var(--dim)">write the code</text>
+        <line x1="136" y1="75" x2="160" y2="75" stroke="var(--dim)" stroke-width="1.5" marker-end="url(#m-sdlc)"/>
+        <rect x="164" y="50" width="150" height="50" rx="8" fill="var(--purple-dim)" stroke="var(--purple)"/>
+        <text x="239" y="70" text-anchor="middle" font-size="11" font-weight="700" fill="var(--purple)">Testing / QA</text>
+        <text x="239" y="86" text-anchor="middle" font-size="8.5" fill="var(--dim)">quality assurance, find bugs</text>
+        <line x1="316" y1="75" x2="340" y2="75" stroke="var(--dim)" stroke-width="1.5" marker-end="url(#m-sdlc)"/>
+        <rect x="344" y="50" width="130" height="50" rx="8" fill="var(--orange-dim)" stroke="var(--orange)"/>
+        <text x="409" y="72" text-anchor="middle" font-size="11" font-weight="700" fill="var(--orange)">Staging</text>
+        <text x="409" y="88" text-anchor="middle" font-size="8.5" fill="var(--dim)">prod-like dry run</text>
+        <line x1="476" y1="75" x2="500" y2="75" stroke="var(--dim)" stroke-width="1.5" marker-end="url(#m-sdlc)"/>
+        <rect x="504" y="50" width="140" height="50" rx="8" fill="var(--green-dim)" stroke="var(--green)"/>
+        <text x="574" y="72" text-anchor="middle" font-size="11" font-weight="700" fill="var(--green)">Production</text>
+        <text x="574" y="88" text-anchor="middle" font-size="8.5" fill="var(--dim)">live to real users</text>
+        <text x="330" y="128" text-anchor="middle" font-size="9.5" fill="var(--dim)">code is promoted forward only after it passes each gate — never edit directly in production</text>
+      </svg>
+      <figcaption><b>The secure dev pipeline.</b> Code moves <em>development → testing/QA → staging → production</em>. Separating these environments keeps unfinished or untested code away from real users and real data.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ════════ INJECTION & MEMORY ════════ -->
+  <section id="injection">
+    <div class="sec-head"><h2>Injection &amp; Memory Attacks</h2><span class="sec-tag">When untrusted input becomes code or corrupts memory</span></div>
+    <p>A <strong>database</strong> stores data in records and <strong>fields</strong> (columns), queried with <strong>SQL</strong> (Structured Query Language). When an app builds a <strong>SQL query</strong> by gluing user input directly into the statement, an attacker can inject their own SQL — a <strong>SQLi (SQL injection)</strong> attack — to read, alter, or destroy data.</p>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Attack</th><th>What It Targets</th><th>Defense</th></tr></thead>
+      <tbody>
+        <tr><td>SQL injection (SQLi)</td><td>Injects SQL through unsanitized input to manipulate the database</td><td><strong>Parameterized queries / stored procedures</strong> + input validation</td></tr>
+        <tr><td>LDAP injection</td><td>Injects into <strong>LDAP</strong> directory queries to bypass auth or read the directory</td><td>Input validation, escaping LDAP metacharacters</td></tr>
+        <tr><td>XML injection</td><td>Injects malicious content into <strong>XML</strong> input/documents (incl. XXE)</td><td>Validate/disable external entities, sanitize input</td></tr>
+        <tr><td>Directory traversal</td><td>Uses <code>../</code> sequences to escape the web root and read arbitrary files</td><td>Canonicalize paths, validate file names, least privilege</td></tr>
+        <tr><td>Reflected XSS</td><td>Malicious script in a request is <strong>reflected</strong> back and runs in the victim's browser (via a crafted link)</td><td>Output encoding, input validation, CSP</td></tr>
+        <tr><td>Stored XSS</td><td>Script is <strong>saved on the server</strong> (a comment, profile) and runs for every visitor</td><td>Output encoding, input validation, CSP</td></tr>
+        <tr><td>DLL injection</td><td>Forces a process to load a malicious <strong>Dynamic Link Library</strong> to run code in its context</td><td>Code signing, app allow-listing, EDR</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="grid3">
+      <div class="card accent-green">
+        <h4>Parameterized queries</h4>
+        <p>A <strong>stored procedure</strong> is reusable SQL stored in the database. A <strong>parameterized stored procedure</strong> binds user input as <em>data</em>, never as executable SQL — the definitive fix for SQLi.</p>
+      </div>
+      <div class="card accent-red">
+        <h4>Memory flaws</h4>
+        <p><strong>Buffer overflow</strong>: writing past a buffer's bounds to corrupt memory/hijack execution. <strong>Integer overflow</strong>: a value exceeds its type's max and wraps around. <strong>Memory leak</strong>: failing to free memory until the app exhausts it.</p>
+      </div>
+      <div class="card accent-blue">
+        <h4>Web server logs</h4>
+        <p>Record every request to the server. After an injection or traversal attempt, the logs show the malicious payloads, source IPs, and which URLs were targeted — key evidence for detection and IR.</p>
+      </div>
+    </div>
+
+    <figure class="diagram">
+      <svg width="640" viewBox="0 0 640 180" role="img" aria-label="SQL injection versus parameterized query: concatenated input lets injected SQL run, while a parameterized query binds the same input as harmless data">
+        <rect x="20" y="30" width="280" height="120" rx="8" fill="var(--red-dim)" stroke="var(--red)"/>
+        <text x="160" y="52" text-anchor="middle" font-size="11" font-weight="700" fill="var(--red)">Concatenated (vulnerable)</text>
+        <text x="36" y="78" font-size="9.5" font-family="var(--font-mono)" fill="var(--text)">"SELECT * WHERE u='" + input</text>
+        <text x="36" y="100" font-size="9.5" font-family="var(--font-mono)" fill="var(--red)">input = ' OR '1'='1</text>
+        <text x="36" y="128" font-size="9" fill="var(--dim)">→ input becomes part of the SQL</text>
+        <text x="36" y="142" font-size="9" fill="var(--dim)">→ logic is rewritten by the attacker</text>
+        <rect x="340" y="30" width="280" height="120" rx="8" fill="var(--green-dim)" stroke="var(--green)"/>
+        <text x="480" y="52" text-anchor="middle" font-size="11" font-weight="700" fill="var(--green)">Parameterized (safe)</text>
+        <text x="356" y="78" font-size="9.5" font-family="var(--font-mono)" fill="var(--text)">"SELECT * WHERE u = ?"</text>
+        <text x="356" y="100" font-size="9.5" font-family="var(--font-mono)" fill="var(--green)">bind(input)</text>
+        <text x="356" y="128" font-size="9" fill="var(--dim)">→ input is always treated as data</text>
+        <text x="356" y="142" font-size="9" fill="var(--dim)">→ injected SQL can never execute</text>
+      </svg>
+      <figcaption><b>Why parameterization wins.</b> Concatenation lets input <em>become</em> the query. Binding parameters keeps input as inert data, so <code>' OR '1'='1</code> is just a literal string that matches nothing.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ════════ AUTOMATION & SOAR ════════ -->
+  <section id="automation">
+    <div class="sec-head"><h2>Automation &amp; SOAR</h2><span class="sec-tag">Scaling security operations with scripts and playbooks</span></div>
+    <p><strong>SOAR (Security Orchestration, Automation, and Response)</strong> connects your security tools and runs <strong>playbooks</strong> — automated, repeatable response steps — so routine actions happen instantly and consistently without an analyst doing them by hand.</p>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Use case</th><th>What Gets Automated</th></tr></thead>
+      <tbody>
+        <tr><td>User provisioning</td><td>Creating, modifying, and disabling user accounts as people join, move, or leave</td></tr>
+        <tr><td>Resource provisioning</td><td>Spinning up servers, storage, and services on demand (often via Infrastructure as Code)</td></tr>
+        <tr><td>Guardrails</td><td>Automated policy limits that <strong>prevent unsafe actions</strong> (e.g., block creating a public storage bucket)</td></tr>
+        <tr><td>Security groups</td><td>Programmatically managing firewall/access rules around resources</td></tr>
+        <tr><td>Ticket creation</td><td>Auto-generating incident/help-desk tickets when an alert fires</td></tr>
+        <tr><td>Escalation</td><td>Routing an unhandled or high-severity issue to the right team automatically</td></tr>
+        <tr><td>Enabling / disabling services &amp; access</td><td>Turning accounts, ports, or services on or off in response to events</td></tr>
+        <tr><td>Continuous integration / testing (CI/CD)</td><td>Automatically building, testing, and deploying code on every change</td></tr>
+        <tr><td>Integrations &amp; APIs</td><td>The <strong>APIs</strong> that let tools talk to each other — the glue that makes orchestration possible</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ════════ AUTOMATION TRADE-OFFS ════════ -->
+  <section id="autotradeoffs">
+    <div class="sec-head"><h2>Automation &amp; Scripting Trade-offs</h2><span class="sec-tag">The benefits the exam loves — and the real costs</span></div>
+    <div class="grid2">
+      <div class="card accent-green">
+        <h4>Benefits</h4>
+        <ul>
+          <li><strong>Efficiency / time savings</strong> — machines do repetitive work instantly</li>
+          <li><strong>Enforcing baselines</strong> — every system configured the same way</li>
+          <li><strong>Standard infrastructure configurations</strong> — repeatable, predictable builds</li>
+          <li><strong>Secure scaling</strong> — grow without growing mistakes</li>
+          <li><strong>Employee retention</strong> — less tedious manual toil</li>
+          <li><strong>Faster reaction to incidents</strong> — automated response in seconds</li>
+          <li><strong>Workforce multiplier</strong> — a small team does the work of many</li>
+        </ul>
+      </div>
+      <div class="card accent-red">
+        <h4>Drawbacks</h4>
+        <ul>
+          <li><strong>Increased initial costs</strong> — tooling and setup investment up front</li>
+          <li><strong>Complexity</strong> — automated systems are harder to understand</li>
+          <li><strong>Single point of failure</strong> — one broken script can break everything</li>
+          <li><strong>Technical debt</strong> — quick scripts accumulate and rot over time</li>
+          <li><strong>Ongoing supportability</strong> — automation must be maintained as systems change</li>
+        </ul>
+      </div>
+    </div>
+    <div class="tip"><b>Exam framing:</b> automation's headline wins are <strong>efficiency, consistency (baselines), and acting as a force multiplier</strong>. Its headline risks are <strong>complexity, single points of failure, and technical debt</strong>. Match the scenario to the right column.</div>
+  </section>
+
+  <div style="margin:30px 0 8px;text-align:center">
+    <a href="diagrams/Security_Plus_Chapter7_Diagram.html" class="btn btn-primary">Open the interactive Chapter 7 diagram →</a>
+  </div>
+
+  <footer class="site-footer">
+    <a href="chapter6.html">← Chapter 6</a> &nbsp;·&nbsp; Chapter 7 &nbsp;·&nbsp; <a href="index.html">Back to Hub</a>
+  </footer>
+
+</main>
+<script src="guide.js"></script>
+<script src="glossary.js"></script>
+<script src="assistant.js"></script>
+</body>
+</html>

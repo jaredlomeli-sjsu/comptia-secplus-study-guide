@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch 3 · Network Technologies &amp; Tools — Security+ SY0-701</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+<nav class="topnav">
+  <a class="brand" href="index.html">Security<span>+</span> SY0-701</a>
+  <a class="navlink" href="index.html">Home</a>
+  <a class="navlink" href="chapters1-2.html">Ch 1–2 · Basics &amp; IAM</a>
+  <a class="navlink active" href="chapter3.html">Ch 3 · Networks</a>
+  <a class="navlink" href="chapters4-5.html">Ch 4–5 · Net Defense &amp; Hosts</a>
+  <a class="navlink" href="chapter6.html">Ch 6 · Threats</a>
+</nav>
+
+<main class="page" id="main">
+
+  <header class="page-header">
+    <div class="badge">Chapter 3</div>
+    <h1>Network Technologies <span>&amp; Tools</span></h1>
+    <p class="subtitle">The OSI model, every protocol with its port and secure replacement, network devices, security zones, NAT, proxies, and Zero Trust architecture.</p>
+  </header>
+
+  <div class="toc">
+    <a href="#osi">OSI Model</a>
+    <a href="#core">Core Protocols</a>
+    <a href="#infra">DNS · DHCP · NTP</a>
+    <a href="#addressing">IPv4 / IPv6</a>
+    <a href="#email">Email Stack</a>
+    <a href="#web">Web · TLS · IPsec</a>
+    <a href="#files">File Transfer</a>
+    <a href="#remote">Remote Access</a>
+    <a href="#voip">VoIP &amp; Directory</a>
+    <a href="#upgrade">Insecure → Secure Map</a>
+    <a href="#switch">Switches</a>
+    <a href="#router">Routers &amp; SNMP</a>
+    <a href="#firewalls">Firewalls</a>
+    <a href="#zones">Network Zones</a>
+    <a href="#nat">NAT &amp; PAT</a>
+    <a href="#isolation">SCADA &amp; Air Gaps</a>
+    <a href="#proxy">Proxies</a>
+    <a href="#zerotrust">Zero Trust</a>
+  </div>
+
+  <!-- ════════ OSI ════════ -->
+  <section id="osi">
+    <div class="sec-head"><h2>The OSI Model</h2><span class="sec-tag">7 layers — anchor every protocol to one</span></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>#</th><th>Layer</th><th>Responsibility</th><th>Protocols / Devices</th></tr></thead>
+      <tbody>
+        <tr><td>7</td><td>Application</td><td>Network services to apps</td><td>HTTP(S), FTP, SSH, DNS, SMTP, LDAP, SNMP</td></tr>
+        <tr><td>6</td><td>Presentation</td><td>Encryption, formatting, compression</td><td>TLS (commonly placed here), JPEG, ASCII</td></tr>
+        <tr><td>5</td><td>Session</td><td>Session setup, maintenance, teardown</td><td>SIP, RTP control</td></tr>
+        <tr><td>4</td><td>Transport</td><td>Ports, reliability, flow control</td><td><strong>TCP, UDP</strong></td></tr>
+        <tr><td>3</td><td>Network</td><td>Logical addressing, routing between networks</td><td><strong>IP, ICMP</strong> · routers, L3 switches</td></tr>
+        <tr><td>2</td><td>Data Link</td><td>MAC addressing, frames, local delivery</td><td>Ethernet, ARP*, VLANs, STP · switches</td></tr>
+        <tr><td>1</td><td>Physical</td><td>Bits on the wire</td><td>Cables, hubs, radio, air gap</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>Exam trick:</b> *ARP spans Layers 2–3 — it maps L3 IP addresses to L2 MAC addresses. Mnemonic bottom-up: <em>"Please Do Not Throw Sausage Pizza Away."</em></div>
+  </section>
+
+  <!-- ════════ CORE PROTOCOLS ════════ -->
+  <section id="core">
+    <div class="sec-head"><h2>Core Protocols — TCP, UDP, IP, ICMP, ARP</h2><span class="sec-tag">The plumbing everything else rides on</span></div>
+
+    <h3>TCP vs UDP <span class="pill layer">Layer 4</span></h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th></th><th>TCP</th><th>UDP</th></tr></thead>
+      <tbody>
+        <tr><td>Connection</td><td>Connection-oriented — <strong>3-way handshake: SYN → SYN/ACK → ACK</strong></td><td>Connectionless — fire and forget</td></tr>
+        <tr><td>Delivery</td><td>Guaranteed, ordered, error-checked</td><td>Best-effort, no guarantee</td></tr>
+        <tr><td>Speed</td><td>Slower (overhead)</td><td>Faster, lower latency</td></tr>
+        <tr><td>Used by</td><td>HTTP/HTTPS, FTP, SMTP, SSH, RDP</td><td>DNS queries, DHCP, TFTP, VoIP/RTP, SNMP, streaming</td></tr>
+      </tbody>
+    </table></div>
+
+    <figure class="diagram">
+      <svg width="520" viewBox="0 0 520 250" role="img" aria-label="TCP three-way handshake: client sends SYN, server replies SYN/ACK, client sends ACK, connection established">
+        <defs><marker id="m-tcp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--blue)"/></marker></defs>
+        <rect x="60" y="14" width="120" height="34" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="120" y="36" text-anchor="middle" font-size="12" font-weight="600" fill="var(--bright)">Client</text>
+        <rect x="340" y="14" width="120" height="34" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="400" y="36" text-anchor="middle" font-size="12" font-weight="600" fill="var(--bright)">Server</text>
+        <line x1="120" y1="48" x2="120" y2="200" stroke="var(--border)" stroke-dasharray="4 4"/>
+        <line x1="400" y1="48" x2="400" y2="200" stroke="var(--border)" stroke-dasharray="4 4"/>
+        <line x1="126" y1="86" x2="390" y2="86" stroke="var(--blue)" stroke-width="1.6" marker-end="url(#m-tcp)"/>
+        <text x="260" y="78" text-anchor="middle" font-size="11" font-weight="600" fill="var(--blue)">1 · SYN</text>
+        <line x1="394" y1="130" x2="130" y2="130" stroke="var(--blue)" stroke-width="1.6" marker-end="url(#m-tcp)"/>
+        <text x="260" y="122" text-anchor="middle" font-size="11" font-weight="600" fill="var(--blue)">2 · SYN / ACK</text>
+        <line x1="126" y1="174" x2="390" y2="174" stroke="var(--blue)" stroke-width="1.6" marker-end="url(#m-tcp)"/>
+        <text x="260" y="166" text-anchor="middle" font-size="11" font-weight="600" fill="var(--blue)">3 · ACK</text>
+        <text x="260" y="232" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--green)">Connection established — data can flow</text>
+      </svg>
+      <figcaption><b>The TCP 3-way handshake.</b> No data moves until all three steps complete — this is what "connection-oriented" means. UDP skips all of this, which is why it's faster but unreliable.</figcaption>
+    </figure>
+
+    <div class="grid3">
+      <div class="card accent-blue">
+        <h4>IP <span class="pill layer">L3</span></h4>
+        <p>Addressing + routing of packets. Connectionless — no delivery guarantee (that's TCP's job). IPv4 = 32-bit, IPv6 = 128-bit addresses.</p>
+      </div>
+      <div class="card accent-orange">
+        <h4>ICMP <span class="pill layer">L3</span></h4>
+        <p>Diagnostics &amp; error reporting — never carries app data. Tools: <code>ping</code>, <code>tracert</code>/<code>traceroute</code>.</p>
+        <p><span class="pill insecure">abuse</span> ICMP/ping floods (DoS) — perimeter firewalls often block ICMP.</p>
+      </div>
+      <div class="card accent-red">
+        <h4>ARP <span class="pill layer">L2–3</span></h4>
+        <p>Broadcasts "who has IP x?" → owner replies with MAC. <strong>No authentication.</strong></p>
+        <p><span class="pill insecure">attack</span> <strong>ARP poisoning</strong>: forged replies bind attacker's MAC to a victim IP → on-path (MITM) attacks on the LAN.</p>
+      </div>
+    </div>
+    <p><strong>Data in transit</strong> is one of the three data states (in transit / at rest / in use). Unencrypted transit traffic is readable by anyone with a sniffer — the recurring theme of this chapter is replacing cleartext protocols with encrypted ones.</p>
+  </section>
+
+  <!-- ════════ INFRA PROTOCOLS ════════ -->
+  <section id="infra">
+    <div class="sec-head"><h2>Infrastructure Protocols — DNS, DHCP, NTP</h2><span class="sec-tag">Quiet services everything depends on</span></div>
+    <div class="grid3">
+      <div class="card accent-teal">
+        <h4>DNS <span class="pill port">UDP 53</span> <span class="pill port">TCP 53</span></h4>
+        <p>Resolves names → IPs. <strong>UDP for queries, TCP for zone transfers</strong> (and large responses).</p>
+        <p><span class="pill insecure">attacks</span> DNS poisoning/spoofing of cached records.</p>
+        <p><span class="pill secure">fix</span> <strong>DNSSEC</strong> — digitally signs records (authenticity/integrity; it does <em>not</em> encrypt).</p>
+      </div>
+      <div class="card accent-teal">
+        <h4>DHCP <span class="pill port">UDP 67/68</span></h4>
+        <p>Auto-assigns IP, subnet mask, gateway, DNS. DORA: Discover → Offer → Request → Acknowledge.</p>
+        <p><span class="pill insecure">attack</span> rogue DHCP server hands out malicious gateway/DNS.</p>
+        <p><span class="pill secure">fix</span> DHCP snooping on switches.</p>
+      </div>
+      <div class="card accent-teal">
+        <h4>NTP <span class="pill port">UDP 123</span></h4>
+        <p>Synchronizes clocks. Critical for security: <strong>Kerberos breaks beyond ~5 min skew</strong>, and log correlation in a SIEM is meaningless without a common timeline.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ ADDRESSING ════════ -->
+  <section id="addressing">
+    <div class="sec-head"><h2>IP Addressing</h2><span class="sec-tag">RFC 1918 ranges are pure memorization points</span></div>
+    <h3>RFC 1918 — Private (non-routable) IPv4 ranges</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Range</th><th>CIDR</th><th>Class</th></tr></thead>
+      <tbody>
+        <tr><td>10.0.0.0 – 10.255.255.255</td><td>10.0.0.0/8</td><td>A</td></tr>
+        <tr><td>172.16.0.0 – 172.31.255.255</td><td>172.16.0.0/12</td><td>B</td></tr>
+        <tr><td>192.168.0.0 – 192.168.255.255</td><td>192.168.0.0/16</td><td>C</td></tr>
+      </tbody>
+    </table></div>
+    <p>Private addresses never route on the public internet — they require <a href="#nat">NAT</a> to get out. Loopback: <code>127.0.0.1</code> (IPv4), <code>::1</code> (IPv6). APIPA self-assigned: <code>169.254.x.x</code> = "I couldn't reach DHCP."</p>
+    <div class="grid2">
+      <div class="card accent-blue">
+        <h4>IPv4 vs IPv6</h4>
+        <p>IPv4: 32-bit dotted decimal (<code>192.168.1.5</code>) — exhausted, hence NAT.</p>
+        <p>IPv6: 128-bit hex (<code>2001:0db8::1</code>) — vast space, <strong>IPsec support built into the design</strong>, no NAT needed.</p>
+      </div>
+      <div class="card accent-purple">
+        <h4>Delivery methods</h4>
+        <p><strong>Unicast</strong> — one-to-one (normal traffic).</p>
+        <p><strong>Broadcast</strong> — one-to-all on the local segment (IPv4 only; ARP/DHCP discovery use it). IPv6 replaces broadcast with multicast.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ EMAIL ════════ -->
+  <section id="email">
+    <div class="sec-head"><h2>The Email Stack</h2><span class="sec-tag">Transport protocols + the three anti-spoofing records</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Protocol</th><th>Role</th><th>Cleartext Port</th><th>Secure Port</th></tr></thead>
+      <tbody>
+        <tr><td>SMTP</td><td><strong>Sending</strong> + server-to-server relay</td><td><span class="pill port">25</span></td><td><span class="pill port">587</span> STARTTLS submission · <span class="pill port">465</span> implicit TLS</td></tr>
+        <tr><td>POP3</td><td>Retrieval — <strong>downloads then (typically) deletes</strong> from server; single device</td><td><span class="pill port">110</span></td><td><span class="pill port">995</span> POP3S</td></tr>
+        <tr><td>IMAP</td><td>Retrieval — mail <strong>stays on server</strong>, syncs across devices/folders</td><td><span class="pill port">143</span></td><td><span class="pill port">993</span> IMAPS</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Email authentication — stopping spoofing &amp; phishing</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Record</th><th>What It Proves</th><th>How</th></tr></thead>
+      <tbody>
+        <tr><td>SPF</td><td>The sending <strong>server</strong> is authorized for the domain</td><td>DNS TXT record listing permitted sender IPs; receiver checks the connecting IP against it</td></tr>
+        <tr><td>DKIM</td><td>The <strong>message</strong> wasn't altered and really came from the domain</td><td>Sending server signs headers with a private key; receiver verifies via public key in DNS</td></tr>
+        <tr><td>DMARC</td><td>What to <strong>do</strong> when SPF/DKIM fail</td><td>DNS policy: <code>none</code> / <code>quarantine</code> / <code>reject</code>, plus aggregate reporting to the domain owner</td></tr>
+      </tbody>
+    </table></div>
+    <p>An <strong>email gateway</strong> sits at the boundary and applies all of this plus spam filtering, malware scanning, and DLP to mail entering/leaving the organization.</p>
+    <div class="tip"><b>Memory hook:</b> SPF = <em>who may send</em>, DKIM = <em>signature on the message</em>, DMARC = <em>policy + reports tying both together</em>. DMARC depends on SPF/DKIM — it never works alone.</div>
+  </section>
+
+  <!-- ════════ WEB / CRYPTO TRANSPORT ════════ -->
+  <section id="web">
+    <div class="sec-head"><h2>Web Traffic — HTTP, TLS &amp; IPsec</h2><span class="sec-tag">How traffic gets encrypted, at two different layers</span></div>
+    <div class="grid2">
+      <div class="card accent-red">
+        <h4>HTTP <span class="pill port">80</span> &amp; SSL <span class="pill insecure">both deprecated for secure use</span></h4>
+        <p>HTTP sends everything cleartext — credentials and session cookies are sniffable.</p>
+        <p><strong>SSL (all versions ≤ 3.0) is broken and deprecated.</strong> If an exam answer says "use SSL," it's the wrong answer — the term survives only in marketing.</p>
+      </div>
+      <div class="card accent-green">
+        <h4>HTTPS = HTTP over TLS <span class="pill port">443</span></h4>
+        <p><strong>TLS</strong> (current: 1.2 / 1.3) provides encryption, integrity, and server authentication via <strong>certificates issued by a Certificate Authority (CA)</strong> the browser trusts.</p>
+        <p>TLS 1.3 requires forward secrecy (ephemeral keys) and removed legacy ciphers.</p>
+      </div>
+    </div>
+    <h3>IPsec — encryption at Layer 3</h3>
+    <p>Secures <em>any</em> IP traffic (not just web). Two components, two modes — know all four:</p>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Piece</th><th>Provides</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>AH — Authentication Header</td><td>Authentication + integrity, <strong>no encryption</strong></td><td>IP <strong>protocol number 51</strong> (not a port)</td></tr>
+        <tr><td>ESP — Encapsulating Security Payload</td><td>Encryption <strong>+</strong> authentication + integrity</td><td>IP <strong>protocol number 50</strong> — the one actually used for confidentiality</td></tr>
+        <tr><td>IKE — Internet Key Exchange</td><td>Negotiates keys / security associations</td><td><span class="pill port">UDP 500</span> (+ <span class="pill port">UDP 4500</span> NAT-traversal)</td></tr>
+        <tr><td>Tunnel vs Transport mode</td><td>Tunnel encrypts <strong>entire packet incl. header</strong> (site-to-site VPNs); Transport encrypts <strong>payload only</strong> (host-to-host inside a network)</td><td>Detailed with VPNs in <a href="chapters4-5.html#vpn" style="color:var(--blue)">Ch 4</a></td></tr>
+      </tbody>
+    </table></div>
+    <figure class="diagram">
+      <svg width="620" viewBox="0 0 620 240" role="img" aria-label="IPsec transport mode encrypts only the payload; tunnel mode encrypts the original IP header and payload behind a new IP header">
+        <text x="30" y="38" font-size="12" font-weight="700" fill="var(--bright)">Transport mode</text>
+        <text x="240" y="38" font-size="10.5" fill="var(--dim)">host-to-host inside a network</text>
+        <rect x="30" y="48" width="120" height="36" rx="6" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="90" y="71" text-anchor="middle" font-size="11" font-weight="600" fill="var(--text)">Orig IP header</text>
+        <rect x="150" y="48" width="90" height="36" rx="6" fill="var(--blue-dim)" stroke="var(--blue)"/>
+        <text x="195" y="71" text-anchor="middle" font-size="11" font-weight="600" fill="var(--blue)">ESP</text>
+        <rect x="240" y="48" width="280" height="36" rx="6" fill="var(--green-dim)" stroke="var(--green)"/>
+        <text x="380" y="71" text-anchor="middle" font-size="11" font-weight="600" fill="var(--green)">Payload — encrypted</text>
+        <line x1="240" y1="96" x2="520" y2="96" stroke="var(--green)" stroke-width="2"/>
+        <text x="380" y="112" text-anchor="middle" font-size="10" fill="var(--green)">only the payload is protected</text>
+
+        <text x="30" y="152" font-size="12" font-weight="700" fill="var(--bright)">Tunnel mode</text>
+        <text x="220" y="152" font-size="10.5" fill="var(--dim)">site-to-site VPN across the internet</text>
+        <rect x="30" y="162" width="120" height="36" rx="6" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="90" y="185" text-anchor="middle" font-size="11" font-weight="600" fill="var(--text)">New IP header</text>
+        <rect x="150" y="162" width="90" height="36" rx="6" fill="var(--blue-dim)" stroke="var(--blue)"/>
+        <text x="195" y="185" text-anchor="middle" font-size="11" font-weight="600" fill="var(--blue)">ESP</text>
+        <rect x="240" y="162" width="140" height="36" rx="6" fill="var(--green-dim)" stroke="var(--green)"/>
+        <text x="310" y="185" text-anchor="middle" font-size="11" font-weight="600" fill="var(--green)">Orig IP header</text>
+        <rect x="380" y="162" width="140" height="36" rx="6" fill="var(--green-dim)" stroke="var(--green)"/>
+        <text x="450" y="185" text-anchor="middle" font-size="11" font-weight="600" fill="var(--green)">Payload</text>
+        <line x1="240" y1="210" x2="520" y2="210" stroke="var(--green)" stroke-width="2"/>
+        <text x="380" y="226" text-anchor="middle" font-size="10" fill="var(--green)">entire original packet encrypted — internal addresses hidden</text>
+      </svg>
+      <figcaption><b>IPsec modes.</b> Tunnel mode wraps and encrypts the whole original packet (headers included) — that's why site-to-site VPNs use it. Transport mode protects only the payload.</figcaption>
+    </figure>
+
+    <div class="tip"><b>Precision point:</b> 50 and 51 are IP <em>protocol numbers</em>, not ports — a favorite trick distinction. TLS encrypts a specific application session; IPsec encrypts at the network layer regardless of application.</div>
+  </section>
+
+  <!-- ════════ FILE TRANSFER ════════ -->
+  <section id="files">
+    <div class="sec-head"><h2>File Transfer Protocols</h2><span class="sec-tag">Four variants — don't mix up SFTP and FTPS</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Protocol</th><th>Port(s)</th><th>Security</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>FTP</td><td><span class="pill port">TCP 20</span> data · <span class="pill port">TCP 21</span> control</td><td><span class="pill insecure">cleartext</span></td><td>Credentials and files sniffable in transit</td></tr>
+        <tr><td>TFTP</td><td><span class="pill port">UDP 69</span></td><td><span class="pill insecure">no authentication at all</span></td><td>Trivial = no login; used for device config/PXE on trusted LANs only — disable otherwise</td></tr>
+        <tr><td>SFTP</td><td><span class="pill port">TCP 22</span></td><td><span class="pill secure">secure</span></td><td>File transfer <strong>over SSH</strong> — one port, firewall-friendly</td></tr>
+        <tr><td>FTPS</td><td><span class="pill port">TCP 989/990</span> (implicit) or 21 + <code>AUTH TLS</code> (explicit)</td><td><span class="pill secure">secure</span></td><td>FTP <strong>over TLS</strong> — certificates involved</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>SFTP vs FTPS:</b> SFTP = SSH (port 22, no certificates). FTPS = TLS (certificates, FTP ports). The exam <em>will</em> test this pair.</div>
+  </section>
+
+  <!-- ════════ REMOTE ACCESS ════════ -->
+  <section id="remote">
+    <div class="sec-head"><h2>Remote Access — SSH, RDP, VPN, Jump Server</h2><span class="sec-tag">Administering things you can't touch</span></div>
+    <div class="grid2">
+      <div class="card accent-green">
+        <h4>SSH <span class="pill port">TCP 22</span></h4>
+        <p>Encrypted command-line access; replaces Telnet <span class="pill port">23</span>. Also tunnels SFTP and SCP. <strong>OpenSSH</strong> is the standard implementation — supports key-based auth (<code>ssh-keygen</code>, public key in <code>authorized_keys</code>), stronger than passwords.</p>
+      </div>
+      <div class="card accent-orange">
+        <h4>RDP <span class="pill port">TCP 3389</span></h4>
+        <p>Full Windows desktop remotely. Constant brute-force/credential-stuffing target when internet-exposed.</p>
+        <p><strong>Hardening:</strong> never expose 3389 directly — require VPN or a jump server, enable Network Level Authentication, enforce MFA and lockout.</p>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card accent-blue">
+        <h4>VPN</h4>
+        <p>Encrypted tunnel over an untrusted network so remote traffic is unreadable in transit. Built on IPsec or TLS. Full taxonomy (split/full tunnel, site-to-site, always-on) in <a href="chapters4-5.html#vpn" style="color:var(--blue)">Chapter 4</a>.</p>
+      </div>
+      <div class="card accent-purple">
+        <h4>Jump Server (Jump Box)</h4>
+        <p>A single hardened, heavily-logged host that admins connect to <em>first</em>, then hop into a protected segment (DMZ, server VLAN). Centralizes the choke point: one place for MFA, session recording, and auditing of all administrative access.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ VOIP / DIRECTORY ════════ -->
+  <section id="voip">
+    <div class="sec-head"><h2>VoIP &amp; Directory Services</h2><span class="sec-tag">Two smaller protocol families</span></div>
+    <div class="grid2">
+      <div class="card accent-teal">
+        <h4>VoIP — voice over the network</h4>
+        <p><strong>SIP</strong> <span class="pill port">5060</span> / <span class="pill port">5061 TLS</span> — sets up and tears down the call (signaling, Layer 5).</p>
+        <p><strong>RTP</strong> — carries the actual audio/video stream over UDP.</p>
+        <p><strong>SRTP</strong> <span class="pill secure">secure</span> — encrypted RTP; prevents eavesdropping on calls.</p>
+        <p>Memory hook: SIP dials, RTP talks, SRTP whispers.</p>
+      </div>
+      <div class="card accent-teal">
+        <h4>Directory services</h4>
+        <p>Central database of users, computers, and groups — Microsoft <strong>Active Directory</strong> is the canonical example.</p>
+        <p><strong>LDAP</strong> <span class="pill port">389</span> <span class="pill insecure">cleartext</span> — query/modify the directory.</p>
+        <p><strong>LDAPS</strong> <span class="pill port">636</span> <span class="pill secure">LDAP over TLS</span> — required whenever directory traffic crosses untrusted segments. (LDAP injection = manipulating directory queries via unsanitized input.)</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ UPGRADE MAP ════════ -->
+  <section id="upgrade">
+    <div class="sec-head"><h2>Insecure → Secure Protocol Map</h2><span class="sec-tag">The single highest-yield list in this chapter</span></div>
+    <div class="upgrade"><div class="from">Telnet <small>TCP 23 — cleartext shell</small></div><div class="arrow">→</div><div class="to">SSH <small>TCP 22</small></div></div>
+    <div class="upgrade"><div class="from">FTP <small>TCP 20/21 — cleartext files</small></div><div class="arrow">→</div><div class="to">SFTP <small>TCP 22 (SSH)</small> / FTPS <small>TLS, 989/990</small></div></div>
+    <div class="upgrade"><div class="from">HTTP <small>TCP 80</small></div><div class="arrow">→</div><div class="to">HTTPS <small>TCP 443 (TLS)</small></div></div>
+    <div class="upgrade"><div class="from">SSL <small>all versions — broken</small></div><div class="arrow">→</div><div class="to">TLS <small>1.2 / 1.3</small></div></div>
+    <div class="upgrade"><div class="from">SMTP <small>TCP 25</small></div><div class="arrow">→</div><div class="to">SMTP w/ TLS <small>587 STARTTLS · 465 implicit</small></div></div>
+    <div class="upgrade"><div class="from">POP3 <small>TCP 110</small></div><div class="arrow">→</div><div class="to">POP3S <small>TCP 995</small></div></div>
+    <div class="upgrade"><div class="from">IMAP <small>TCP 143</small></div><div class="arrow">→</div><div class="to">IMAPS <small>TCP 993</small></div></div>
+    <div class="upgrade"><div class="from">LDAP <small>389</small></div><div class="arrow">→</div><div class="to">LDAPS <small>TCP 636</small></div></div>
+    <div class="upgrade"><div class="from">SNMP v1/v2 <small>UDP 161/162 — community strings in cleartext</small></div><div class="arrow">→</div><div class="to">SNMPv3 <small>same ports, adds auth + encryption</small></div></div>
+    <div class="upgrade"><div class="from">RTP <small>cleartext voice</small></div><div class="arrow">→</div><div class="to">SRTP <small>encrypted media</small></div></div>
+    <div class="upgrade"><div class="from">DNS <small>unauthenticated answers</small></div><div class="arrow">→</div><div class="to">DNSSEC <small>signed records (integrity, not encryption)</small></div></div>
+    <div class="upgrade"><div class="from">TFTP <small>UDP 69 — no auth</small></div><div class="arrow">→</div><div class="to">SFTP <small>TCP 22 — or just disable TFTP</small></div></div>
+  </section>
+
+  <!-- ════════ SWITCH ════════ -->
+  <section id="switch">
+    <div class="sec-head"><h2>Switches <span class="pill layer">Layer 2</span></h2><span class="sec-tag">Forwarding by MAC — and the controls that harden it</span></div>
+    <p>A switch learns which MAC address lives on which port and forwards frames only where they need to go (unlike a hub, which repeats everything to everyone — which is why hubs enable easy sniffing).</p>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Feature</th><th>What It Does</th><th>Security Angle</th></tr></thead>
+      <tbody>
+        <tr><td>VLAN</td><td>Logically segments one physical switch into isolated broadcast domains (Sales / Engineering / VoIP)</td><td>Segmentation limits lateral movement; traffic between VLANs must pass a router/L3 switch where ACLs apply</td></tr>
+        <tr><td>Port security</td><td>Limits which/how many MAC addresses may use a switch port; violation → shut the port</td><td>Stops rogue devices plugged into wall jacks</td></tr>
+        <tr><td>MAC filtering</td><td>Allow/deny list of MAC addresses</td><td><span class="pill insecure">weak alone</span> — MACs are trivially spoofed; defense-in-depth only</td></tr>
+        <tr><td>STP / RSTP</td><td>Spanning Tree Protocol detects and blocks switching <strong>loops</strong> (which cause broadcast storms)</td><td>Loop prevention = availability protection; RSTP converges faster</td></tr>
+        <tr><td>BPDU Guard</td><td>Disables a port if STP control frames (BPDUs) arrive on an access port where none belong</td><td>Blocks an attacker plugging in a rogue switch to manipulate the topology</td></tr>
+      </tbody>
+    </table></div>
+
+    <figure class="diagram">
+      <svg width="520" viewBox="0 0 520 290" role="img" aria-label="Three switches connected in a triangle; STP keeps two links forwarding and blocks the third to prevent a loop">
+        <line x1="215" y1="72" x2="135" y2="198" stroke="var(--green)" stroke-width="2.5"/>
+        <text x="130" y="130" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--green)">forwarding</text>
+        <line x1="305" y1="72" x2="385" y2="198" stroke="var(--green)" stroke-width="2.5"/>
+        <text x="392" y="130" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--green)">forwarding</text>
+        <line x1="200" y1="220" x2="320" y2="220" stroke="var(--red)" stroke-width="2.5" stroke-dasharray="6 5"/>
+        <line x1="251" y1="211" x2="269" y2="229" stroke="var(--red)" stroke-width="3"/>
+        <line x1="269" y1="211" x2="251" y2="229" stroke="var(--red)" stroke-width="3"/>
+        <text x="260" y="252" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--red)">blocked by STP — loop prevented</text>
+        <rect x="190" y="30" width="140" height="42" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="260" y="49" text-anchor="middle" font-size="12" font-weight="600" fill="var(--bright)">Switch 1</text>
+        <text x="260" y="64" text-anchor="middle" font-size="10" font-weight="600" fill="var(--blue)">root bridge</text>
+        <rect x="60" y="198" width="140" height="42" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="130" y="224" text-anchor="middle" font-size="12" font-weight="600" fill="var(--bright)">Switch 2</text>
+        <rect x="320" y="198" width="140" height="42" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="390" y="224" text-anchor="middle" font-size="12" font-weight="600" fill="var(--bright)">Switch 3</text>
+        <text x="260" y="280" text-anchor="middle" font-size="10.5" fill="var(--dim)">If a forwarding link fails, STP unblocks the spare link automatically — redundancy without loops</text>
+      </svg>
+      <figcaption><b>STP loop prevention.</b> Redundant links between switches would forward broadcast frames forever (a broadcast storm). STP elects a root bridge and blocks the redundant path; BPDU Guard stops rogue switches from joining this election.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ════════ ROUTER / SNMP ════════ -->
+  <section id="router">
+    <div class="sec-head"><h2>Routers, ACLs &amp; SNMP <span class="pill layer">Layer 3</span></h2><span class="sec-tag">Routing between networks, filtering as it goes</span></div>
+    <ul class="plain">
+      <li><strong>Router</strong> — connects networks and routes packets by IP; each interface is a separate broadcast domain.</li>
+      <li><strong>ACL (Access Control List)</strong> — ordered allow/deny rules evaluated top-down against source/destination IP, port, and protocol. <strong>First match wins.</strong></li>
+      <li><strong>Implicit deny</strong> — anything not explicitly permitted is silently dropped by the invisible rule at the end of every ACL/firewall ruleset. The bedrock principle of rule-based filtering.</li>
+    </ul>
+    <h3>Managing network devices — SNMP</h3>
+    <div class="grid2">
+      <div class="card accent-red">
+        <h4>SNMP v1 / v2 <span class="pill port">UDP 161</span> agents · <span class="pill port">UDP 162</span> traps</h4>
+        <p>Monitors and configures devices using "community strings" (<code>public</code>/<code>private</code> defaults) sent in <strong>cleartext</strong>. <span class="pill insecure">do not use</span></p>
+      </div>
+      <div class="card accent-green">
+        <h4>SNMPv3 <span class="pill secure">use this</span></h4>
+        <p>Same ports, adds <strong>authentication, encryption, and message integrity</strong>. The only acceptable version on the exam and in production.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ FIREWALLS ════════ -->
+  <section id="firewalls">
+    <div class="sec-head"><h2>Firewalls</h2><span class="sec-tag">Know which type a scenario describes</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Type</th><th>Inspects</th><th>Identify It By</th></tr></thead>
+      <tbody>
+        <tr><td>Packet-filtering (stateless)</td><td>Each packet in isolation — IP/port/protocol vs ACL</td><td>Simple, fast, no connection awareness</td></tr>
+        <tr><td>Stateful</td><td>Tracks connection state — return traffic of an established session is allowed automatically</td><td>"Tracks active sessions," blocks unsolicited inbound</td></tr>
+        <tr><td>WAF — Web Application Firewall</td><td>HTTP/HTTPS content at Layer 7, in front of <strong>web apps</strong></td><td>Blocks <strong>SQL injection, XSS</strong>; deployed before a web server</td></tr>
+        <tr><td>NGFW — Next-Generation</td><td>Deep packet inspection, application/user awareness, integrated IPS, TLS inspection</td><td>"Identifies the application regardless of port"</td></tr>
+        <tr><td>UTM — Unified Threat Management</td><td>All-in-one box: firewall + IPS + AV + content/URL filtering + spam filtering</td><td>"Single appliance providing multiple protections" — SMB-friendly, single point of failure</td></tr>
+      </tbody>
+    </table></div>
+    <figure class="diagram">
+      <svg width="640" viewBox="0 0 640 240" role="img" aria-label="An NGFW sits at the network perimeter filtering all traffic; a WAF sits directly in front of web applications filtering HTTP">
+        <defs><marker id="m-fw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--dim)"/></marker></defs>
+        <rect x="20" y="40" width="120" height="44" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="80" y="67" text-anchor="middle" font-size="12" font-weight="600" fill="var(--bright)">Internet</text>
+        <line x1="142" y1="62" x2="248" y2="62" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-fw)"/>
+        <rect x="252" y="40" width="140" height="44" rx="8" fill="var(--red-dim)" stroke="var(--red)"/>
+        <text x="322" y="67" text-anchor="middle" font-size="12" font-weight="700" fill="var(--red)">NGFW</text>
+        <line x1="394" y1="62" x2="496" y2="62" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-fw)"/>
+        <rect x="500" y="40" width="125" height="44" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="562" y="67" text-anchor="middle" font-size="12" font-weight="600" fill="var(--bright)">Internal LAN</text>
+        <text x="322" y="104" text-anchor="middle" font-size="10.5" fill="var(--dim)">perimeter — every protocol · app/user aware · integrated IPS</text>
+
+        <rect x="20" y="140" width="120" height="44" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="80" y="167" text-anchor="middle" font-size="12" font-weight="600" fill="var(--bright)">Internet</text>
+        <line x1="142" y1="162" x2="248" y2="162" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-fw)"/>
+        <rect x="252" y="140" width="140" height="44" rx="8" fill="var(--purple-dim)" stroke="var(--purple)"/>
+        <text x="322" y="167" text-anchor="middle" font-size="12" font-weight="700" fill="var(--purple)">WAF</text>
+        <line x1="394" y1="162" x2="496" y2="162" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-fw)"/>
+        <rect x="500" y="140" width="125" height="44" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="562" y="167" text-anchor="middle" font-size="12" font-weight="600" fill="var(--bright)">Web server</text>
+        <text x="322" y="204" text-anchor="middle" font-size="10.5" fill="var(--dim)">Layer 7 HTTP/HTTPS only — blocks SQL injection &amp; XSS before they reach the app</text>
+      </svg>
+      <figcaption><b>Where each firewall lives.</b> The NGFW guards the whole network edge; the WAF guards one thing — the web application. A scenario about SQLi/XSS always points at the WAF, no matter how fancy the NGFW sounds.</figcaption>
+    </figure>
+
+    <h3>Failure modes</h3>
+    <div class="grid2">
+      <div class="card accent-red">
+        <h4>Fail-open</h4>
+        <p>Device fails → traffic <strong>flows uninspected</strong>. Chooses <em>availability</em> over security.</p>
+      </div>
+      <div class="card accent-green">
+        <h4>Fail-closed</h4>
+        <p>Device fails → traffic is <strong>blocked</strong>. Chooses <em>security</em> over availability. High-security environments fail closed.</p>
+      </div>
+    </div>
+    <div class="tip"><b>Scenario cue:</b> "attacks against the company web application (SQLi/XSS)" → <strong>WAF</strong>, not NGFW. "One appliance for a small office combining firewall, AV, and filtering" → <strong>UTM</strong>.</div>
+  </section>
+
+  <!-- ════════ ZONES ════════ -->
+  <section id="zones">
+    <div class="sec-head"><h2>Network Zones &amp; Attack Surface</h2><span class="sec-tag">Where things live determines how exposed they are</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Zone / Term</th><th>Definition</th></tr></thead>
+      <tbody>
+        <tr><td>Screened subnet (DMZ)</td><td>Buffer zone between the internet and the internal LAN, typically between two firewalls. Hosts public-facing services — web, mail gateway, VPN concentrator — so a compromise there doesn't directly expose the LAN. SY0-701 prefers the term <strong>screened subnet</strong>.</td></tr>
+        <tr><td>Intranet</td><td>Internal private network — employees only.</td></tr>
+        <tr><td>Extranet</td><td>A controlled slice of your network shared with <strong>trusted third parties</strong> (partners, suppliers) — more open than intranet, more restricted than public.</td></tr>
+        <tr><td>East-west traffic</td><td>Server-to-server traffic <em>inside</em> the data center (vs. north-south = in/out). Once attackers land, they move east-west — segmentation and Zero Trust exist to stop exactly this.</td></tr>
+        <tr><td>Attack surface</td><td>The sum of all points where an attacker could try to get in: open ports, running services, exposed APIs, user accounts. Hardening = shrinking it (disable services, close ports, remove accounts).</td></tr>
+      </tbody>
+    </table></div>
+
+    <figure class="diagram">
+      <svg width="660" viewBox="0 0 660 230" role="img" aria-label="Screened subnet: internet traffic passes an outer firewall into the DMZ holding the web server and mail gateway; a second inner firewall protects the internal LAN">
+        <defs><marker id="m-dmz" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--dim)"/></marker></defs>
+        <rect x="232" y="32" width="216" height="170" rx="10" fill="none" stroke="var(--orange)" stroke-dasharray="7 5"/>
+        <text x="340" y="54" text-anchor="middle" font-size="11" font-weight="700" fill="var(--orange)">Screened subnet (DMZ)</text>
+        <rect x="15" y="92" width="100" height="48" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="65" y="121" text-anchor="middle" font-size="12" font-weight="600" fill="var(--bright)">Internet</text>
+        <line x1="117" y1="116" x2="146" y2="116" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-dmz)"/>
+        <rect x="150" y="92" width="62" height="48" rx="8" fill="var(--red-dim)" stroke="var(--red)"/>
+        <text x="181" y="113" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--red)">FW 1</text>
+        <text x="181" y="128" text-anchor="middle" font-size="9.5" fill="var(--dim)">outer</text>
+        <line x1="214" y1="116" x2="248" y2="116" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-dmz)"/>
+        <rect x="252" y="70" width="176" height="38" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="340" y="94" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--bright)">Web server</text>
+        <rect x="252" y="126" width="176" height="38" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="340" y="150" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--bright)">Mail gateway</text>
+        <line x1="432" y1="116" x2="464" y2="116" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-dmz)"/>
+        <rect x="468" y="92" width="62" height="48" rx="8" fill="var(--red-dim)" stroke="var(--red)"/>
+        <text x="499" y="113" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--red)">FW 2</text>
+        <text x="499" y="128" text-anchor="middle" font-size="9.5" fill="var(--dim)">inner</text>
+        <line x1="532" y1="116" x2="560" y2="116" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-dmz)"/>
+        <rect x="564" y="92" width="84" height="48" rx="8" fill="var(--green-dim)" stroke="var(--green)"/>
+        <text x="606" y="116" text-anchor="middle" font-size="11" font-weight="700" fill="var(--green)">Internal</text>
+        <text x="606" y="130" text-anchor="middle" font-size="11" font-weight="700" fill="var(--green)">LAN</text>
+      </svg>
+      <figcaption><b>The screened subnet.</b> Public-facing servers live between two firewalls. If the web server is compromised, the attacker is still outside FW 2 — the internal LAN never talks to the internet directly.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ════════ NAT ════════ -->
+  <section id="nat">
+    <div class="sec-head"><h2>NAT &amp; PAT</h2><span class="sec-tag">Private inside, public outside</span></div>
+    <p><strong>NAT</strong> translates private RFC 1918 addresses to public ones at the network edge. Side benefit: internal addressing is hidden from the internet (but NAT is <em>not</em> a firewall).</p>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Variant</th><th>Mapping</th><th>Use Case</th></tr></thead>
+      <tbody>
+        <tr><td>Static NAT</td><td>One private ↔ one public, permanent</td><td>An internal server that must be reachable from outside at a fixed address</td></tr>
+        <tr><td>Dynamic NAT</td><td>Private addresses ↔ a <em>pool</em> of public addresses, first-come-first-served</td><td>Legacy; limited by pool size</td></tr>
+        <tr><td>PAT (NAT overload)</td><td><strong>Many private → one public</strong>, distinguished by source port numbers</td><td>What your home router does — the dominant form</td></tr>
+        <tr><td>NAT gateway</td><td>Managed NAT device/service (common cloud term)</td><td>Lets private subnets reach out without being reachable inbound</td></tr>
+      </tbody>
+    </table></div>
+
+    <figure class="diagram">
+      <svg width="640" viewBox="0 0 640 250" role="img" aria-label="Three internal hosts with private RFC 1918 addresses share one public IP through a PAT router, distinguished by source port">
+        <defs><marker id="m-nat" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--dim)"/></marker></defs>
+        <rect x="20" y="22" width="170" height="40" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="105" y="47" text-anchor="middle" font-size="11" font-weight="600" fill="var(--text)" font-family="JetBrains Mono, monospace">PC-A · 192.168.1.10</text>
+        <rect x="20" y="98" width="170" height="40" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="105" y="123" text-anchor="middle" font-size="11" font-weight="600" fill="var(--text)" font-family="JetBrains Mono, monospace">PC-B · 192.168.1.11</text>
+        <rect x="20" y="174" width="170" height="40" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="105" y="199" text-anchor="middle" font-size="11" font-weight="600" fill="var(--text)" font-family="JetBrains Mono, monospace">PC-C · 192.168.1.12</text>
+        <line x1="192" y1="42" x2="266" y2="100" stroke="var(--dim)" stroke-width="1.5" marker-end="url(#m-nat)"/>
+        <line x1="192" y1="118" x2="266" y2="118" stroke="var(--dim)" stroke-width="1.5" marker-end="url(#m-nat)"/>
+        <line x1="192" y1="194" x2="266" y2="136" stroke="var(--dim)" stroke-width="1.5" marker-end="url(#m-nat)"/>
+        <rect x="270" y="88" width="150" height="62" rx="8" fill="var(--blue-dim)" stroke="var(--blue)"/>
+        <text x="345" y="113" text-anchor="middle" font-size="12" font-weight="700" fill="var(--blue)">PAT router</text>
+        <text x="345" y="132" text-anchor="middle" font-size="9.5" fill="var(--dim)">maps each session to a port</text>
+        <line x1="422" y1="118" x2="506" y2="118" stroke="var(--green)" stroke-width="2" marker-end="url(#m-nat)"/>
+        <text x="464" y="105" text-anchor="middle" font-size="10" font-weight="600" fill="var(--green)" font-family="JetBrains Mono, monospace">203.0.113.5</text>
+        <text x="464" y="136" text-anchor="middle" font-size="9.5" fill="var(--dim)">one public IP</text>
+        <rect x="510" y="88" width="110" height="62" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="565" y="125" text-anchor="middle" font-size="12" font-weight="600" fill="var(--bright)">Internet</text>
+      </svg>
+      <figcaption><b>PAT (NAT overload).</b> Many private hosts share a single public address; the router tells return traffic apart by the source <em>port</em> it assigned each session. This is what home routers do — and why IPv4 survived address exhaustion.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ════════ SCADA / AIR GAP ════════ -->
+  <section id="isolation">
+    <div class="sec-head"><h2>SCADA &amp; Physical Isolation</h2><span class="sec-tag">When the answer is "don't connect it at all"</span></div>
+    <div class="grid2">
+      <div class="card accent-orange">
+        <h4>SCADA / ICS</h4>
+        <p><strong>Supervisory Control and Data Acquisition</strong> — systems controlling industrial processes: power plants, water treatment, manufacturing lines.</p>
+        <p>Often runs legacy, unpatchable software → must be <strong>isolated in its own network/VLAN</strong>, never internet-reachable.</p>
+      </div>
+      <div class="card accent-blue">
+        <h4>Air gap</h4>
+        <p><strong>Physical</strong> isolation — no network connection whatsoever to other networks. The strongest segmentation possible.</p>
+        <p>Remaining attack vector: removable media (Stuxnet jumped an air gap via USB) → strict USB/media policies still required.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ PROXIES ════════ -->
+  <section id="proxy">
+    <div class="sec-head"><h2>Proxy Servers</h2><span class="sec-tag">Direction is everything: who is being protected?</span></div>
+    <div class="grid2">
+      <div class="card accent-blue">
+        <h4>Forward proxy — protects/controls <strong>clients</strong></h4>
+        <p>Sits between internal users and the internet. Provides <strong>URL/content filtering</strong>, caching, and logging of user browsing. The server sees the proxy's IP, not the user's.</p>
+      </div>
+      <div class="card accent-purple">
+        <h4>Reverse proxy — protects <strong>servers</strong></h4>
+        <p>Sits in front of web servers; clients connect to it, never directly to the server. Provides TLS termination, load balancing, and hiding of the backend. WAFs commonly deploy as reverse proxies.</p>
+      </div>
+    </div>
+    <figure class="diagram">
+      <svg width="640" viewBox="0 0 640 240" role="img" aria-label="A forward proxy sits between internal clients and the internet; a reverse proxy sits between the internet and web servers">
+        <defs><marker id="m-px" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--dim)"/></marker></defs>
+        <rect x="20" y="36" width="150" height="44" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="95" y="63" text-anchor="middle" font-size="12" font-weight="600" fill="var(--bright)">Internal clients</text>
+        <line x1="172" y1="58" x2="256" y2="58" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-px)"/>
+        <rect x="260" y="36" width="150" height="44" rx="8" fill="var(--blue-dim)" stroke="var(--blue)"/>
+        <text x="335" y="63" text-anchor="middle" font-size="12" font-weight="700" fill="var(--blue)">Forward proxy</text>
+        <line x1="412" y1="58" x2="486" y2="58" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-px)"/>
+        <rect x="490" y="36" width="130" height="44" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="555" y="63" text-anchor="middle" font-size="12" font-weight="600" fill="var(--bright)">Internet</text>
+        <text x="335" y="100" text-anchor="middle" font-size="10.5" fill="var(--dim)">protects clients — URL filtering · caching · logging of user browsing</text>
+
+        <rect x="20" y="140" width="150" height="44" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="95" y="167" text-anchor="middle" font-size="12" font-weight="600" fill="var(--bright)">Internet</text>
+        <line x1="172" y1="162" x2="256" y2="162" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-px)"/>
+        <rect x="260" y="140" width="150" height="44" rx="8" fill="var(--purple-dim)" stroke="var(--purple)"/>
+        <text x="335" y="167" text-anchor="middle" font-size="12" font-weight="700" fill="var(--purple)">Reverse proxy</text>
+        <line x1="412" y1="162" x2="486" y2="162" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-px)"/>
+        <rect x="490" y="140" width="130" height="44" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="555" y="167" text-anchor="middle" font-size="12" font-weight="600" fill="var(--bright)">Web servers</text>
+        <text x="335" y="204" text-anchor="middle" font-size="10.5" fill="var(--dim)">protects servers — TLS termination · load balancing · hides the backend</text>
+      </svg>
+      <figcaption><b>Direction decides the name.</b> Same idea, opposite orientation: forward proxy faces <em>out</em> on behalf of your users; reverse proxy faces <em>in</em> on behalf of your servers.</figcaption>
+    </figure>
+
+    <div class="tip"><b>Exam cue:</b> "filter which websites employees visit" = forward proxy. "Distribute requests across web servers / shield the web farm" = reverse proxy.</div>
+  </section>
+
+  <!-- ════════ ZERO TRUST ════════ -->
+  <section id="zerotrust">
+    <div class="sec-head"><h2>Zero Trust Architecture</h2><span class="sec-tag">New in SY0-701 — learn the component names exactly</span></div>
+    <div class="grid2">
+      <div class="card accent-red">
+        <h4>Legacy: implicit trust</h4>
+        <p>"Hard shell, soft center" — once you're past the perimeter (on the LAN or VPN), you're trusted everywhere. One phished laptop → free east-west movement.</p>
+      </div>
+      <div class="card accent-green">
+        <h4>Zero Trust: never trust, always verify</h4>
+        <p>No location-based trust. <strong>Every request</strong> is authenticated, authorized, and encrypted — per session, regardless of where it originates.</p>
+      </div>
+    </div>
+
+    <h3>The two planes &amp; their components</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Component</th><th>Plane</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td>Subject</td><td>—</td><td>The user/device/service requesting access</td></tr>
+        <tr><td>Policy Engine (PE)</td><td>Control plane</td><td><strong>Makes</strong> the access decision — evaluates identity, device health, behavior, threat intel against policy</td></tr>
+        <tr><td>Policy Administrator (PA)</td><td>Control plane</td><td><strong>Communicates</strong> the decision — tells the PEP to open or close the session (PE + PA together = the Policy Decision Point)</td></tr>
+        <tr><td>Policy Enforcement Point (PEP)</td><td>Data plane</td><td><strong>Enforces</strong> it — the gate that actually allows/blocks the traffic between subject and resource</td></tr>
+        <tr><td>Enterprise resource</td><td>Data plane</td><td>The app/data being protected</td></tr>
+      </tbody>
+    </table></div>
+    <figure class="diagram">
+      <svg width="640" viewBox="0 0 640 290" role="img" aria-label="Zero Trust: the Policy Engine and Policy Administrator in the control plane decide; the Policy Enforcement Point in the data plane allows or blocks the subject's access to the resource">
+        <defs><marker id="m-zt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--dim)"/></marker>
+        <marker id="m-ztg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--green)"/></marker></defs>
+        <rect x="40" y="18" width="560" height="106" rx="10" fill="none" stroke="var(--purple)" stroke-dasharray="7 5"/>
+        <text x="56" y="40" font-size="11" font-weight="700" fill="var(--purple)">CONTROL PLANE — decisions</text>
+        <rect x="110" y="56" width="180" height="48" rx="8" fill="var(--purple-dim)" stroke="var(--purple)"/>
+        <text x="200" y="77" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--bright)">Policy Engine (PE)</text>
+        <text x="200" y="94" text-anchor="middle" font-size="9.5" fill="var(--dim)">decides allow / deny</text>
+        <line x1="292" y1="80" x2="356" y2="80" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-zt)"/>
+        <rect x="360" y="56" width="190" height="48" rx="8" fill="var(--purple-dim)" stroke="var(--purple)"/>
+        <text x="455" y="77" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--bright)">Policy Administrator (PA)</text>
+        <text x="455" y="94" text-anchor="middle" font-size="9.5" fill="var(--dim)">relays the decision</text>
+        <line x1="455" y1="106" x2="365" y2="186" stroke="var(--green)" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#m-ztg)"/>
+        <text x="452" y="150" font-size="10" font-weight="600" fill="var(--green)">open / close session</text>
+        <rect x="40" y="158" width="560" height="106" rx="10" fill="none" stroke="var(--teal)" stroke-dasharray="7 5"/>
+        <text x="56" y="180" font-size="11" font-weight="700" fill="var(--teal)">DATA PLANE — traffic</text>
+        <rect x="70" y="196" width="130" height="48" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="135" y="217" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--bright)">Subject</text>
+        <text x="135" y="234" text-anchor="middle" font-size="9.5" fill="var(--dim)">user / device</text>
+        <line x1="202" y1="220" x2="296" y2="220" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-zt)"/>
+        <rect x="300" y="196" width="120" height="48" rx="8" fill="var(--green-dim)" stroke="var(--green)"/>
+        <text x="360" y="217" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--green)">PEP</text>
+        <text x="360" y="234" text-anchor="middle" font-size="9.5" fill="var(--dim)">enforces — the gate</text>
+        <line x1="422" y1="220" x2="496" y2="220" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-zt)"/>
+        <rect x="500" y="196" width="120" height="48" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="560" y="217" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--bright)">Resource</text>
+        <text x="560" y="234" text-anchor="middle" font-size="9.5" fill="var(--dim)">app / data</text>
+      </svg>
+      <figcaption><b>Zero Trust in one picture.</b> Every request from the subject hits the PEP, which can't decide anything itself — it asks the control plane. PE decides, PA relays, PEP enforces.</figcaption>
+    </figure>
+
+    <ul class="plain">
+      <li><strong>Control plane</strong> = where decisions are made (PE + PA). <strong>Data plane</strong> = where traffic flows and gets enforced (PEP ↔ resource).</li>
+      <li><strong>Adaptive identity</strong> — authentication requirements adjust to risk in real time: new device + odd hour + unusual country → step-up MFA or deny.</li>
+      <li><strong>ZTNA</strong> — Zero Trust Network Access: per-application access based on identity + posture, replacing broad-network VPN access. Apps stay invisible to unauthorized users.</li>
+      <li><strong>SASE</strong> — Secure Access Service Edge: cloud-delivered bundle of SD-WAN + ZTNA + SWG + CASB + firewall-as-a-service, securing users wherever they are instead of backhauling to HQ.</li>
+    </ul>
+    <div class="tip"><b>Memory hook:</b> PE decides, PA relays, PEP enforces. Decisions in the control plane, enforcement in the data plane. If the question says "component that allows or blocks the actual connection," it's the <strong>PEP</strong>.</div>
+  </section>
+
+  <footer class="site-footer">
+    <a href="chapters1-2.html">← Chapters 1–2</a> &nbsp;·&nbsp; Chapter 3 &nbsp;·&nbsp; Next: <a href="chapters4-5.html">Chapters 4–5 — Securing Networks &amp; Hosts →</a>
+  </footer>
+
+</main>
+<script src="guide.js"></script>
+</body>
+</html>

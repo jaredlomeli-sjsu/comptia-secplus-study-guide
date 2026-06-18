@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch 1–2 · Security Basics &amp; IAM — Security+ SY0-701</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+<nav class="topnav">
+  <a class="brand" href="index.html">Security<span>+</span> SY0-701</a>
+  <a class="navlink" href="index.html">Home</a>
+  <a class="navlink active" href="chapters1-2.html">Ch 1–2 · Basics &amp; IAM</a>
+  <a class="navlink" href="chapter3.html">Ch 3 · Networks</a>
+  <a class="navlink" href="chapters4-5.html">Ch 4–5 · Net Defense &amp; Hosts</a>
+  <a class="navlink" href="chapter6.html">Ch 6 · Threats</a>
+  <a class="navlink" href="chapter7.html">Ch 7 · Advanced Attacks</a>
+  <a class="navlink" href="practice.html">Practice</a>
+  <a class="navlink" href="glossary.html">Glossary</a>
+</nav>
+
+<main class="page" id="main">
+
+  <header class="page-header">
+    <div class="badge">Chapters 1–2</div>
+    <h1>Security Basics &amp; <span>Identity Management</span></h1>
+    <p class="subtitle">CIA triad, security controls, data protection, logging — then the full identity lifecycle: factors, biometrics, PAM, SSO, and access control models.</p>
+  </header>
+
+  <div class="toc">
+    <a href="#cia">CIA Triad</a>
+    <a href="#controls">Security Controls</a>
+    <a href="#data">Data Protection</a>
+    <a href="#crypto-basics">Key Stretching &amp; PFS</a>
+    <a href="#logs">Logs &amp; SIEM</a>
+    <a href="#resilience">Resilience Terms</a>
+    <a href="#aaa">AAA</a>
+    <a href="#factors">Auth Factors &amp; MFA</a>
+    <a href="#otp">HOTP vs TOTP</a>
+    <a href="#biometrics">Biometrics</a>
+    <a href="#lifecycle">Account Lifecycle</a>
+    <a href="#pam">PAM &amp; Least Privilege</a>
+    <a href="#sso">SSO &amp; Federation</a>
+    <a href="#models">Access Control Models</a>
+    <a href="#anomalies">Anomaly Indicators</a>
+  </div>
+
+  <!-- ══════════════════════ CHAPTER 1 ══════════════════════ -->
+  <section id="ch1" style="margin-bottom:8px">
+    <div class="sec-head"><h2>Chapter 1 — Mastering Security Basics</h2><span class="sec-tag">Domain 1 foundation</span></div>
+  </section>
+
+  <section id="cia">
+    <div class="sec-head"><h2>The CIA Triad</h2><span class="sec-tag">Every exam question maps back to one of these</span></div>
+    <div class="grid3">
+      <div class="card accent-blue">
+        <h4>Confidentiality</h4>
+        <p>Only authorized parties can view data.</p>
+        <p><strong>Enforced by:</strong> encryption, access controls, steganography.</p>
+        <p><strong>Violated by:</strong> data breach, sniffing, shoulder surfing.</p>
+      </div>
+      <div class="card accent-green">
+        <h4>Integrity</h4>
+        <p>Data hasn't been modified or corrupted.</p>
+        <p><strong>Enforced by:</strong> hashing (SHA-256), digital signatures, version control.</p>
+        <p><strong>Violated by:</strong> unauthorized change, MITM tampering.</p>
+      </div>
+      <div class="card accent-orange">
+        <h4>Availability</h4>
+        <p>Systems and data are up when needed.</p>
+        <p><strong>Enforced by:</strong> redundancy, backups, patching, HVAC, generators.</p>
+        <p><strong>Violated by:</strong> DoS/DDoS, ransomware, hardware failure.</p>
+      </div>
+    </div>
+    <figure class="diagram">
+      <svg width="440" viewBox="0 0 440 300" role="img" aria-label="The CIA triad triangle: Confidentiality, Integrity and Availability as three corners of one balanced model">
+        <path d="M220 64 L88 244 L352 244 Z" fill="none" stroke="var(--border-strong)" stroke-width="2"/>
+        <text x="220" y="166" text-anchor="middle" font-size="14" font-weight="800" fill="var(--bright)">CIA</text>
+        <text x="220" y="184" text-anchor="middle" font-size="9.5" fill="var(--dim)">all three, in balance</text>
+        <rect x="135" y="18" width="170" height="42" rx="8" fill="var(--blue-dim)" stroke="var(--blue)"/>
+        <text x="220" y="36" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--blue)">Confidentiality</text>
+        <text x="220" y="52" text-anchor="middle" font-size="9.5" fill="var(--dim)">encryption · access controls</text>
+        <rect x="8" y="248" width="170" height="42" rx="8" fill="var(--green-dim)" stroke="var(--green)"/>
+        <text x="93" y="266" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--green)">Integrity</text>
+        <text x="93" y="282" text-anchor="middle" font-size="9.5" fill="var(--dim)">hashing · signatures</text>
+        <rect x="262" y="248" width="170" height="42" rx="8" fill="var(--orange-dim)" stroke="var(--orange)"/>
+        <text x="347" y="266" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--orange)">Availability</text>
+        <text x="347" y="282" text-anchor="middle" font-size="9.5" fill="var(--dim)">redundancy · backups</text>
+      </svg>
+      <figcaption><b>The triad is a trade-off.</b> Pushing one corner affects the others — maximum confidentiality (heavy encryption, strict access) can hurt availability. Exam scenarios ask which corner a control serves.</figcaption>
+    </figure>
+
+    <div class="tip"><b>Exam cue:</b> "Verify the file wasn't altered" = <strong>integrity → hashing</strong>. "Ensure only HR can read it" = <strong>confidentiality → encryption/ACL</strong>. "Keep the site online during attack" = <strong>availability → redundancy</strong>. Match the verb to the leg of the triad.</div>
+
+    <h3>Core risk vocabulary</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Term</th><th>Precise Definition</th></tr></thead>
+      <tbody>
+        <tr><td>Risk</td><td>The <em>likelihood</em> that a threat will exploit a vulnerability, resulting in a loss.</td></tr>
+        <tr><td>Vulnerability</td><td>A weakness — in software, configuration, or process — that <em>could</em> be exploited.</td></tr>
+        <tr><td>Threat</td><td>Any circumstance or event with the potential to compromise CIA.</td></tr>
+        <tr><td>Security incident</td><td>An adverse event that <em>has actually occurred</em> — attack, breach, misuse, data loss.</td></tr>
+        <tr><td>Risk mitigation</td><td>Reducing risk by implementing controls that lower either the likelihood or the impact.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="controls">
+    <div class="sec-head"><h2>Security Controls</h2><span class="sec-tag">4 categories × 6 types — classify any control two ways</span></div>
+
+    <h3>Categories — <em>how</em> the control is implemented</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Category</th><th>What It Is</th><th>Examples</th></tr></thead>
+      <tbody>
+        <tr><td>Technical</td><td>Implemented by technology/systems</td><td>Firewalls, encryption, IDS, antivirus, least-privilege enforcement</td></tr>
+        <tr><td>Managerial</td><td>Administrative, documented in policy — focused on risk decisions</td><td>Risk assessments, vulnerability assessments, security policies</td></tr>
+        <tr><td>Operational</td><td>Implemented by <em>people</em> in day-to-day work</td><td>Awareness training, configuration management, media protection</td></tr>
+        <tr><td>Physical</td><td>You can physically touch it</td><td>Locks, fences, guards, bollards, cameras, mantraps/access vestibules</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Types — <em>when/what</em> the control does</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Type</th><th>Goal</th><th>Examples</th></tr></thead>
+      <tbody>
+        <tr><td>Preventive</td><td>Stop the incident <em>before</em> it happens</td><td>Hardening, account disablement policy, firewall rules</td></tr>
+        <tr><td>Deterrent</td><td>Discourage the attempt</td><td>Warning signs, visible cameras, security guards</td></tr>
+        <tr><td>Detective</td><td>Discover the incident <em>after/while</em> it happens</td><td>Log monitoring, SIEM alerts, IDS, motion detectors</td></tr>
+        <tr><td>Corrective</td><td>Restore/reverse after an incident</td><td>Backups, patching after exploit, IPS blocking an active attack</td></tr>
+        <tr><td>Compensating</td><td>Alternate control when the primary isn't feasible</td><td>TOTP app when smart cards can't be deployed yet</td></tr>
+        <tr><td>Directive</td><td>Direct/mandate behavior</td><td>Policies, standards, AUP, "authorized personnel only" procedures</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>Classic trap:</b> the same item can land in different types depending on phrasing. A camera <em>recording</em> is detective; a visible camera <em>sign</em> is deterrent. A backup is corrective; the backup <em>policy</em> is directive/managerial. Read which function the question emphasizes.</div>
+    <p>Control guidance largely comes from <strong>NIST SP 800-series</strong> documents (e.g., SP 800-53 catalogs security and privacy controls for federal systems).</p>
+  </section>
+
+  <section id="data">
+    <div class="sec-head"><h2>Protecting Data — PII &amp; Obfuscation Methods</h2><span class="sec-tag">Know the difference between these five</span></div>
+    <p><strong>PII</strong> (Personally Identifiable Information) = any data that can identify an individual: name + SSN, passport number, biometric records. Drives breach-notification obligations.</p>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Method</th><th>How It Works</th><th>Reversible?</th><th>Typical Use</th></tr></thead>
+      <tbody>
+        <tr><td>Tokenization</td><td>Replace sensitive value with a non-sensitive <em>token</em>; real value stored in a secure token vault</td><td>Yes, via the vault</td><td>Credit-card processing (PCI DSS scope reduction)</td></tr>
+        <tr><td>Data masking</td><td>Replace characters so only part is visible (<code>****-****-****-4321</code>)</td><td>No (display layer)</td><td>Showing partial card/SSN in UIs, test data</td></tr>
+        <tr><td>Obfuscation</td><td>Make data unclear/ambiguous on purpose (umbrella term)</td><td>Sometimes</td><td>Hiding code logic, generic data hiding</td></tr>
+        <tr><td>Steganography</td><td>Hide data <em>inside another file</em> (image, audio) — hidden, not encrypted</td><td>Yes, if you know it's there</td><td>Covert channels; "security by obscurity"</td></tr>
+        <tr><td>Hashing</td><td>One-way function producing fixed-length digest</td><td><strong>Never</strong></td><td>Integrity checks, password storage</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>Exam cue:</b> "embedded a message in an image file" = <strong>steganography</strong>. "Replaced card numbers with substitute values for processing" = <strong>tokenization</strong>. "Only last 4 digits visible" = <strong>masking</strong>.</div>
+  </section>
+
+  <section id="crypto-basics">
+    <div class="sec-head"><h2>Key Stretching &amp; Perfect Forward Secrecy</h2><span class="sec-tag">Two crypto concepts Ch 1 plants early</span></div>
+    <div class="grid2">
+      <div class="card accent-purple">
+        <h4>Key Stretching</h4>
+        <p>Runs a password through thousands of hash iterations + salt so brute-force attacks become computationally expensive.</p>
+        <p><strong>Algorithms to know:</strong> <code>bcrypt</code>, <code>PBKDF2</code>, <code>Argon2</code>.</p>
+        <p>A <strong>salt</strong> (random value added before hashing) defeats rainbow-table attacks.</p>
+      </div>
+      <div class="card accent-teal">
+        <h4>Perfect Forward Secrecy (PFS)</h4>
+        <p>Each session uses a unique <em>ephemeral</em> key (Diffie-Hellman Ephemeral — DHE/ECDHE). Compromising the server's long-term private key <strong>cannot decrypt past recorded sessions</strong>.</p>
+        <p>Required by TLS 1.3 — all its cipher suites are ephemeral.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="logs">
+    <div class="sec-head"><h2>Logging &amp; SIEM</h2><span class="sec-tag">Where evidence lives</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Log Source</th><th>What It Records</th></tr></thead>
+      <tbody>
+        <tr><td>Security log</td><td>Auditable events: logon success/failure, privilege use, object access (Windows Security log)</td></tr>
+        <tr><td>System log</td><td>OS events: service start/stop, driver failures, reboots</td></tr>
+        <tr><td>Application log</td><td>Events written by individual applications</td></tr>
+        <tr><td>Linux logs</td><td><code>/var/log/syslog</code> or <code>/var/log/messages</code> (general), <code>/var/log/auth.log</code> or <code>/var/log/secure</code> (authentication)</td></tr>
+        <tr><td>Firewall logs</td><td>Allowed/blocked connections — source/destination IP, port, protocol</td></tr>
+        <tr><td>Packet captures</td><td>Full traffic content via protocol analyzer (Wireshark, <code>tcpdump</code>); includes payloads + <strong>metadata</strong> (headers: who, when, where)</td></tr>
+      </tbody>
+    </table></div>
+    <h3>Syslog &amp; SIEM</h3>
+    <ul class="plain">
+      <li><strong>Syslog</strong> <span class="pill port">UDP 514</span> — standard protocol for shipping log entries to a central collector. Format: facility, severity (0 = Emergency → 7 = Debug), message.</li>
+      <li><strong>SIEM</strong> (Security Information and Event Management) — <em>aggregates</em> logs from many sources, <em>correlates</em> events across them, normalizes time (NTP-synced), alerts in near-real-time, and presents <strong>dashboards</strong>. Long-term archival supports investigations.</li>
+      <li>A SIEM is <strong>detective</strong>, not preventive — it surfaces what happened; an analyst or automation responds.</li>
+    </ul>
+    <div class="tip"><b>Exam cue:</b> "correlate events from multiple servers/devices in one place" = <strong>SIEM</strong>. "Capture and inspect packet contents" = <strong>protocol analyzer / packet capture</strong>.</div>
+  </section>
+
+  <section id="resilience">
+    <div class="sec-head"><h2>Resilience &amp; Scaling Vocabulary</h2><span class="sec-tag">Precise definitions — these get confused</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Term</th><th>Definition</th><th>Distinguish From</th></tr></thead>
+      <tbody>
+        <tr><td>Redundancy</td><td>Duplicate components (RAID, failover cluster, dual PSU) so a single failure doesn't take you down</td><td>Resiliency (broader goal)</td></tr>
+        <tr><td>Resiliency</td><td>The system's ability to <em>recover and keep operating</em> after a fault</td><td>Built <em>using</em> redundancy</td></tr>
+        <tr><td>Vertical scaling</td><td>Add resources <em>to one node</em> — more CPU/RAM</td><td>"Scale up"</td></tr>
+        <tr><td>Horizontal scaling</td><td>Add <em>more nodes</em> behind a load balancer</td><td>"Scale out"</td></tr>
+        <tr><td>Scalability</td><td><em>Manual</em> ability to grow to meet demand</td><td>Elasticity is automatic</td></tr>
+        <tr><td>Elasticity</td><td><em>Automatic</em> scale up <strong>and back down</strong> with demand (cloud hallmark)</td><td>Saves cost vs. static provisioning</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ══════════════════════ CHAPTER 2 ══════════════════════ -->
+  <section id="ch2" style="margin-bottom:8px">
+    <div class="sec-head"><h2>Chapter 2 — Identity &amp; Access Management</h2><span class="sec-tag">Who are you, and what can you touch</span></div>
+  </section>
+
+  <section id="aaa">
+    <div class="sec-head"><h2>The AAA Framework (+ Identification)</h2><span class="sec-tag">Four distinct steps — keep them separate</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Step</th><th>Question Answered</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td>Identification</td><td>"Who do you <em>claim</em> to be?"</td><td>Typing a username</td></tr>
+        <tr><td>Authentication</td><td>"<em>Prove</em> it."</td><td>Password + TOTP code</td></tr>
+        <tr><td>Authorization</td><td>"What are you <em>allowed</em> to do?"</td><td>ACL grants read on the share</td></tr>
+        <tr><td>Accounting</td><td>"What did you <em>actually do</em>?"</td><td>Authentication logs, audit trail of access</td></tr>
+      </tbody>
+    </table></div>
+    <figure class="diagram">
+      <svg width="660" viewBox="0 0 660 140" role="img" aria-label="AAA pipeline: identification, then authentication, then authorization, then accounting">
+        <defs><marker id="m-aaa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--dim)"/></marker></defs>
+        <rect x="12" y="34" width="140" height="62" rx="8" fill="var(--surface2)" stroke="var(--blue)"/>
+        <text x="82" y="60" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--bright)">Identification</text>
+        <text x="82" y="78" text-anchor="middle" font-size="9.5" fill="var(--dim)">"I'm jared" — username</text>
+        <line x1="154" y1="65" x2="172" y2="65" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-aaa)"/>
+        <rect x="176" y="34" width="140" height="62" rx="8" fill="var(--surface2)" stroke="var(--green)"/>
+        <text x="246" y="60" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--bright)">Authentication</text>
+        <text x="246" y="78" text-anchor="middle" font-size="9.5" fill="var(--dim)">prove it — password + TOTP</text>
+        <line x1="318" y1="65" x2="336" y2="65" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-aaa)"/>
+        <rect x="340" y="34" width="140" height="62" rx="8" fill="var(--surface2)" stroke="var(--orange)"/>
+        <text x="410" y="60" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--bright)">Authorization</text>
+        <text x="410" y="78" text-anchor="middle" font-size="9.5" fill="var(--dim)">what's allowed — ACL check</text>
+        <line x1="482" y1="65" x2="500" y2="65" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-aaa)"/>
+        <rect x="504" y="34" width="140" height="62" rx="8" fill="var(--surface2)" stroke="var(--purple)"/>
+        <text x="574" y="60" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--bright)">Accounting</text>
+        <text x="574" y="78" text-anchor="middle" font-size="9.5" fill="var(--dim)">what happened — audit log</text>
+      </svg>
+      <figcaption><b>Strictly in this order.</b> Each step depends on the previous one — you can't authorize someone who hasn't proven who they are.</figcaption>
+    </figure>
+
+    <div class="tip"><b>Trap:</b> a username alone never authenticates — it only identifies. Authorization happens <em>after</em> successful authentication, never before.</div>
+  </section>
+
+  <section id="factors">
+    <div class="sec-head"><h2>Authentication Factors &amp; MFA</h2><span class="sec-tag">Different factors, not two of the same kind</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Factor</th><th>"Something you…"</th><th>Examples</th></tr></thead>
+      <tbody>
+        <tr><td>Knowledge</td><td>know</td><td>Password, PIN, KBA security questions (weakest factor — answers are researchable)</td></tr>
+        <tr><td>Possession</td><td>have</td><td>Smart card, security key (FIDO2/passkey), hard token, soft token / authenticator app</td></tr>
+        <tr><td>Inherence</td><td>are</td><td>Fingerprint, face, iris, vein, gait — biometrics</td></tr>
+        <tr><td>Location</td><td>are <em>somewhere</em></td><td>Geolocation/geofencing as an additional signal</td></tr>
+      </tbody>
+    </table></div>
+    <div class="warn"><b>MFA rule:</b> two factors must come from <strong>different categories</strong>. Password + PIN = still single-factor (both knowledge). Password + authenticator code = true 2FA (know + have).</div>
+
+    <h3>Password policy mechanics</h3>
+    <ul class="plain">
+      <li><strong>Password expiration</strong> — forces periodic change; modern guidance (NIST 800-63B) de-emphasizes routine expiration in favor of length + breach screening.</li>
+      <li><strong>Password history</strong> — remembers previous N passwords so users can't recycle them (pair with minimum age, or users cycle through instantly).</li>
+      <li><strong>Account lockout policy</strong> — <em>threshold</em> (e.g., 5 wrong attempts) triggers lock for a <em>duration</em> (e.g., 30 min). Defeats online brute-force; doesn't help against offline cracking of stolen hashes.</li>
+      <li><strong>Password manager / vault</strong> — enables long unique passwords per site; the practical fix for password reuse.</li>
+    </ul>
+  </section>
+
+  <section id="otp">
+    <div class="sec-head"><h2>HOTP vs TOTP</h2><span class="sec-tag">One letter, one key difference</span></div>
+    <div class="grid2">
+      <div class="card accent-orange">
+        <h4>HOTP — HMAC-based One-Time Password</h4>
+        <p>Counter-based. Code stays valid <strong>until used</strong> — no expiration. Counter increments on each use.</p>
+        <p>Risk: an unused code can be phished and replayed later.</p>
+      </div>
+      <div class="card accent-green">
+        <h4>TOTP — Time-based One-Time Password</h4>
+        <p>Time-based. Code expires automatically, typically every <strong>30 seconds</strong>. What Google Authenticator / Microsoft Authenticator use.</p>
+        <p>Requires reasonably synced clocks.</p>
+      </div>
+    </div>
+    <div class="tip"><b>Exam cue:</b> "the code expired before the user typed it" = <strong>TOTP</strong>. "code remains valid until used" = <strong>HOTP</strong>. Hard token = dedicated device; soft token = app on your phone.</div>
+  </section>
+
+  <section id="biometrics">
+    <div class="sec-head"><h2>Biometric Error Rates</h2><span class="sec-tag">FAR vs FRR vs CER — guaranteed exam fodder</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Metric</th><th>Meaning</th><th>Security Impact</th></tr></thead>
+      <tbody>
+        <tr><td>FAR — False Acceptance Rate</td><td>System accepts an <strong>impostor</strong></td><td>Security failure — unauthorized person gets in</td></tr>
+        <tr><td>FRR — False Rejection Rate</td><td>System rejects a <strong>legitimate</strong> user</td><td>Usability failure — locked-out employees, helpdesk load</td></tr>
+        <tr><td>True acceptance / true rejection</td><td>Correct accept of legit user / correct reject of impostor</td><td>The desired outcomes</td></tr>
+        <tr><td>CER — Crossover Error Rate</td><td>The point where FAR = FRR</td><td><strong>Lower CER = more accurate system.</strong> Use CER to compare biometric products.</td></tr>
+      </tbody>
+    </table></div>
+    <figure class="diagram">
+      <svg width="520" viewBox="0 0 520 280" role="img" aria-label="Graph of biometric error rates: FAR falls and FRR rises as sensitivity increases; the curves cross at the Crossover Error Rate">
+        <line x1="60" y1="226" x2="486" y2="226" stroke="var(--border-strong)" stroke-width="1.5"/>
+        <line x1="60" y1="226" x2="60" y2="36" stroke="var(--border-strong)" stroke-width="1.5"/>
+        <text x="273" y="256" text-anchor="middle" font-size="10.5" fill="var(--dim)">sensitivity / threshold →</text>
+        <text x="34" y="131" text-anchor="middle" font-size="10.5" fill="var(--dim)" transform="rotate(-90 34 131)">error rate →</text>
+        <path d="M74 66 C 190 92, 330 160, 470 198" fill="none" stroke="var(--red)" stroke-width="2.5"/>
+        <path d="M74 198 C 190 172, 330 104, 470 66" fill="none" stroke="var(--orange)" stroke-width="2.5"/>
+        <line x1="272" y1="226" x2="272" y2="132" stroke="var(--yellow)" stroke-width="1.2" stroke-dasharray="4 4"/>
+        <circle cx="272" cy="132" r="6" fill="var(--yellow)"/>
+        <text x="272" y="116" text-anchor="middle" font-size="11" font-weight="700" fill="var(--yellow)">CER — where FAR = FRR</text>
+        <rect x="330" y="40" width="156" height="44" rx="6" fill="var(--surface2)" stroke="var(--border)"/>
+        <line x1="340" y1="54" x2="362" y2="54" stroke="var(--red)" stroke-width="2.5"/>
+        <text x="368" y="58" font-size="10" fill="var(--text)">FAR — impostors accepted</text>
+        <line x1="340" y1="72" x2="362" y2="72" stroke="var(--orange)" stroke-width="2.5"/>
+        <text x="368" y="76" font-size="10" fill="var(--text)">FRR — legit users rejected</text>
+        <text x="120" y="50" font-size="9.5" fill="var(--dim)">low sensitivity: easy to fool</text>
+        <text x="350" y="214" font-size="9.5" fill="var(--dim)">high sensitivity: locks people out</text>
+      </svg>
+      <figcaption><b>The crossover point.</b> Tightening the system slides you right (FAR drops, FRR climbs); loosening slides left. A <b>lower CER</b> means the whole system is more accurate — that's the number to compare between products.</figcaption>
+    </figure>
+
+    <div class="tip"><b>Tuning trade-off:</b> increase sensitivity → FRR rises, FAR falls (more secure, more annoying). Decrease sensitivity → FAR rises (less secure). The exam loves asking which direction to tune for a "high-security facility" (accept higher FRR).</div>
+  </section>
+
+  <section id="lifecycle">
+    <div class="sec-head"><h2>Account Lifecycle</h2><span class="sec-tag">Provision → audit → deprovision</span></div>
+    <ul class="plain">
+      <li><strong>Identity proofing</strong> — verifying a person is who they claim <em>before</em> issuing credentials (e.g., ID documents at onboarding, verified questions before a password reset).</li>
+      <li><strong>Provisioning</strong> — creating the account and granting the access the role needs (and nothing more).</li>
+      <li><strong>Account types</strong> — user, privileged/admin (separate from daily-driver account), service accounts (no interactive login), guest, shared (avoid — destroys accountability).</li>
+      <li><strong>Account audits / attestation</strong> — periodic review where a manager formally confirms each user still needs their access. Primary tool for catching <strong>privilege creep</strong>.</li>
+      <li><strong>Deprovisioning / offboarding</strong> — <em>disable</em> the account at termination (don't delete immediately — preserves encrypted data access and audit trail), revoke tokens/keys, recover assets.</li>
+      <li><strong>Time-based logins</strong> — restrict login hours (e.g., no 3 a.m. logins for day-shift staff). <strong>Concurrent session limits</strong> — flag the same account logged in from two places.</li>
+    </ul>
+    <div class="warn"><b>Terminated-employee question:</b> the BEST first step is <strong>disable the account</strong> (and do it during the exit interview for involuntary terminations) — not delete, not "change the password."</div>
+  </section>
+
+  <section id="pam">
+    <div class="sec-head"><h2>Privileged Access Management &amp; Least Privilege</h2><span class="sec-tag">Admin rights are the crown jewels</span></div>
+    <div class="grid2">
+      <div class="card accent-purple">
+        <h4>PAM — Privileged Access Management</h4>
+        <p>Vaulting, monitoring, and controlling admin credentials. Features: credential check-out, session recording, automatic password rotation.</p>
+        <p><strong>Just-in-Time (JIT) permissions:</strong> admin rights granted only when needed, for a limited window, then automatically revoked. No standing privileges.</p>
+      </div>
+      <div class="card accent-blue">
+        <h4>Least Privilege &amp; Privilege Creep</h4>
+        <p><strong>Least privilege:</strong> grant only the access required to do the job — applies to users, processes, and service accounts.</p>
+        <p><strong>Privilege creep:</strong> access accumulating as people change roles without old rights being removed. Detected by account audits/attestation; prevented by role-based provisioning.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="sso">
+    <div class="sec-head"><h2>SSO, Federation &amp; the Protocols</h2><span class="sec-tag">Who vouches for you, and how</span></div>
+    <p><strong>SSO</strong> — authenticate once, access many systems. Fewer passwords, but the account becomes a single point of compromise → protect it with MFA.</p>
+    <p><strong>Federation</strong> — SSO <em>across organizations</em> that trust each other. Three parties:</p>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Role</th><th>Function</th></tr></thead>
+      <tbody>
+        <tr><td>Principal</td><td>The user trying to access a resource</td></tr>
+        <tr><td>Identity Provider (IdP)</td><td>Authenticates the user and issues assertions (e.g., your company's Entra ID/Okta)</td></tr>
+        <tr><td>Service Provider (SP)</td><td>The app/resource that trusts the IdP's assertion instead of doing its own login</td></tr>
+      </tbody>
+    </table></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Protocol</th><th>Purpose</th><th>Key Detail</th></tr></thead>
+      <tbody>
+        <tr><td>SAML</td><td><strong>Authentication</strong> (and authorization data) for web SSO</td><td>XML-based assertions between IdP and SP</td></tr>
+        <tr><td>OAuth 2.0</td><td><strong>Authorization</strong> — delegated access</td><td>"Let app A read my data in app B" without sharing the password; issues access tokens</td></tr>
+        <tr><td>LDAP <span class="pill port">389</span> / LDAPS <span class="pill port">636</span></td><td>Directory protocol — query/modify directory services (Active Directory)</td><td>X.500-style distinguished names: <code>CN=Jared,OU=Students,DC=sjsu,DC=edu</code></td></tr>
+      </tbody>
+    </table></div>
+    <figure class="diagram">
+      <svg width="580" viewBox="0 0 580 260" role="img" aria-label="Federation flow: user requests the app, the service provider redirects to the identity provider, the IdP authenticates and issues a SAML assertion, the user presents it to the SP for access">
+        <defs><marker id="m-fed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--blue)"/></marker></defs>
+        <rect x="35" y="14" width="130" height="34" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="100" y="36" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--bright)">User (principal)</text>
+        <rect x="235" y="14" width="130" height="34" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="300" y="36" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--bright)">SP — the app</text>
+        <rect x="435" y="14" width="130" height="34" rx="8" fill="var(--purple-dim)" stroke="var(--purple)"/>
+        <text x="500" y="36" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--purple)">IdP — Okta etc.</text>
+        <line x1="100" y1="48" x2="100" y2="232" stroke="var(--border)" stroke-dasharray="4 4"/>
+        <line x1="300" y1="48" x2="300" y2="232" stroke="var(--border)" stroke-dasharray="4 4"/>
+        <line x1="500" y1="48" x2="500" y2="232" stroke="var(--border)" stroke-dasharray="4 4"/>
+        <line x1="106" y1="84" x2="292" y2="84" stroke="var(--blue)" stroke-width="1.6" marker-end="url(#m-fed)"/>
+        <text x="200" y="76" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--text)">1 · request the app</text>
+        <line x1="306" y1="124" x2="492" y2="124" stroke="var(--blue)" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#m-fed)"/>
+        <text x="400" y="116" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--text)">2 · redirect for login</text>
+        <line x1="494" y1="164" x2="108" y2="164" stroke="var(--purple)" stroke-width="1.6" marker-end="url(#m-fed)"/>
+        <text x="300" y="156" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--purple)">3 · authenticate → SAML assertion issued</text>
+        <line x1="106" y1="204" x2="292" y2="204" stroke="var(--green)" stroke-width="1.6" marker-end="url(#m-fed)"/>
+        <text x="200" y="196" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--green)">4 · present assertion → access</text>
+      </svg>
+      <figcaption><b>Why the SP never sees your password.</b> The app (SP) trusts the IdP's signed assertion instead of running its own login — that trust relationship <em>is</em> federation.</figcaption>
+    </figure>
+
+    <div class="tip"><b>Memory hook:</b> SAML = authentication ("who you are"), OAuth = authorization ("what an app may do on your behalf"). "Log in with Google" on a third-party site = federation in action.</div>
+  </section>
+
+  <section id="models">
+    <div class="sec-head"><h2>The Five Access Control Models</h2><span class="sec-tag">Identify the model from one sentence of scenario</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Model</th><th>Access Decided By</th><th>Telltale Exam Phrase</th></tr></thead>
+      <tbody>
+        <tr><td>RBAC — Role-Based</td><td>Job role / group membership (often hierarchy-based: senior roles inherit junior permissions)</td><td>"Permissions assigned to the Sales group," roles &amp; permissions matrix</td></tr>
+        <tr><td>Rule-Based</td><td>System-wide rules applied to everyone</td><td>Firewall ACL rules, time-of-day restrictions, "triggered rule changes the setting"</td></tr>
+        <tr><td>DAC — Discretionary</td><td>The resource <strong>owner</strong> decides</td><td>NTFS permissions — every object has an owner; owner edits the ACL (made of ACEs); Windows tracks identity via SIDs</td></tr>
+        <tr><td>MAC — Mandatory</td><td>System-enforced <strong>labels</strong> + clearances; neither owner nor user can override</td><td>Top Secret / Secret labels, military, <strong>SELinux</strong></td></tr>
+        <tr><td>ABAC — Attribute-Based</td><td>Policies evaluating <strong>attributes</strong> of subject, object, action, environment</td><td>"Allow managers in Finance to access payroll from corporate devices during business hours" — many <em>if</em> conditions</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>Disambiguation:</b> RBAC = <em>role</em>; rule-based = <em>same rules for all</em>; DAC = <em>owner's discretion</em>; MAC = <em>labels, no discretion</em>; ABAC = <em>multiple attributes/conditions</em>. SELinux is the canonical MAC example on the exam.</div>
+  </section>
+
+  <section id="anomalies">
+    <div class="sec-head"><h2>Indicators of Anomalous Account Activity</h2><span class="sec-tag">SY0-701 loves these detection scenarios</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Indicator</th><th>What It Looks Like / Means</th></tr></thead>
+      <tbody>
+        <tr><td>Impossible travel</td><td>Login from New York at 9:00, from Moscow at 9:30 — physically impossible → credential compromise. Detected by geolocation correlation.</td></tr>
+        <tr><td>Account lockout spikes</td><td>Many failed attempts across accounts → password spraying or brute force.</td></tr>
+        <tr><td>Blocked content attempts</td><td>User/process repeatedly hitting blocked sites or denied resources → policy violation or malware beaconing.</td></tr>
+        <tr><td>Resource consumption anomaly</td><td>Sudden CPU/RAM/disk/bandwidth spike → cryptomining, exfiltration, or compromise.</td></tr>
+        <tr><td>Resource inaccessibility</td><td>Files suddenly unreadable → possible ransomware encryption in progress.</td></tr>
+        <tr><td>Log anomalies</td><td>Gaps in logs, cleared event logs, or out-of-pattern entries → attacker covering tracks.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <footer class="site-footer">
+    <a href="index.html">← Hub</a> &nbsp;·&nbsp; Chapters 1–2 &nbsp;·&nbsp; Next: <a href="chapter3.html">Chapter 3 — Network Technologies →</a>
+  </footer>
+
+</main>
+<script src="guide.js"></script>
+<script src="glossary.js"></script>
+<script src="assistant.js"></script>
+</body>
+</html>

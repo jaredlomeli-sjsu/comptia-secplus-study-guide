@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch 6 · Threats, Attacks &amp; Threat Intelligence — Security+ SY0-701</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+<nav class="topnav">
+  <a class="brand" href="index.html">Security<span>+</span> SY0-701</a>
+  <a class="navlink" href="index.html">Home</a>
+  <a class="navlink" href="chapters1-2.html">Ch 1–2 · Basics &amp; IAM</a>
+  <a class="navlink" href="chapter3.html">Ch 3 · Networks</a>
+  <a class="navlink" href="chapters4-5.html">Ch 4–5 · Net Defense &amp; Hosts</a>
+  <a class="navlink active" href="chapter6.html">Ch 6 · Threats</a>
+</nav>
+
+<main class="page" id="main">
+
+  <header class="page-header">
+    <div class="badge">Chapter 6</div>
+    <h1>Threats, Attacks <span>&amp; Threat Intelligence</span></h1>
+    <p class="subtitle">Who attacks you and why, every malware family, the full social-engineering playbook, how to block it — and where defenders get their intelligence.</p>
+  </header>
+
+  <div class="toc">
+    <a href="#actors">Threat Actors</a>
+    <a href="#attributes">Attacker Attributes</a>
+    <a href="#motivations">Motivations</a>
+    <a href="#vectors">Threat Vectors</a>
+    <a href="#surface">Attack Surface &amp; Shadow IT</a>
+    <a href="#malware">Malware Types</a>
+    <a href="#indicators">Malware Indicators</a>
+    <a href="#human">Human Vectors</a>
+    <a href="#phishing">Phishing Family</a>
+    <a href="#principles">SE Principles</a>
+    <a href="#blocking">Blocking Malware</a>
+    <a href="#intel">Threat Intelligence</a>
+    <a href="#research">Research Sources</a>
+  </div>
+
+  <!-- ════════ THREAT ACTORS ════════ -->
+  <section id="actors">
+    <div class="sec-head"><h2>Threat Actor Types</h2><span class="sec-tag">Identify the actor from funding + motivation</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Actor</th><th>Sophistication / Funding</th><th>Typical Motivation</th><th>Exam Cue</th></tr></thead>
+      <tbody>
+        <tr><td>Nation-state</td><td>Highest — government-backed, custom tooling, zero-days</td><td>Espionage, cyberwar, data exfiltration</td><td>"Sponsored by a foreign government," patient and stealthy</td></tr>
+        <tr><td>APT — Advanced Persistent Threat</td><td>The <em>campaign style</em> of nation-state actors: long-dwell, persistent access</td><td>Stay hidden for months, exfiltrate continuously</td><td>"Maintained access for months undetected"</td></tr>
+        <tr><td>Organized crime</td><td>High — profit-funded, professional division of labor</td><td><strong>Financial gain</strong>, blackmail, ransomware</td><td>"Profit motive" — if money is the goal, it's crime</td></tr>
+        <tr><td>Hacktivist</td><td>Moderate — ideology-driven groups</td><td>Philosophical/political beliefs, chaos, service disruption against opposing organizations</td><td>Defacement, DDoS, leaks "to make a statement"</td></tr>
+        <tr><td>Insider threat</td><td>Varies — but already has <strong>legitimate access</strong></td><td>Revenge (disgruntled employee), financial gain, accident</td><td>"Authorized user" doing unauthorized things — hardest to detect</td></tr>
+        <tr><td>Unskilled attacker</td><td>Low — runs premade tools/scripts they don't understand ("script kiddie")</td><td>Chaos, bragging rights, curiosity</td><td>"Downloaded a tool from the internet"</td></tr>
+        <tr><td>Competitor</td><td>Moderate–high, business-funded</td><td>Espionage — steal trade secrets, IP, pricing, customer lists</td><td>"Rival company" + stolen proprietary data</td></tr>
+      </tbody>
+    </table></div>
+
+    <figure class="diagram">
+      <svg width="660" viewBox="0 0 660 280" role="img" aria-label="Threat actors arranged on a rising scale of sophistication and funding: unskilled attacker lowest, then hacktivist, organized crime, and nation-state APT highest; insiders sit apart because access matters more than skill">
+        <defs><marker id="m-act" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--dim)"/></marker></defs>
+        <line x1="30" y1="236" x2="630" y2="236" stroke="var(--border-strong)" stroke-width="1.5" marker-end="url(#m-act)"/>
+        <text x="330" y="262" text-anchor="middle" font-size="10.5" fill="var(--dim)">sophistication &amp; funding →</text>
+        <rect x="30" y="160" width="135" height="56" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="97" y="183" text-anchor="middle" font-size="11" font-weight="700" fill="var(--bright)">Unskilled</text>
+        <text x="97" y="200" text-anchor="middle" font-size="9.5" fill="var(--dim)">premade tools · chaos</text>
+        <rect x="185" y="120" width="135" height="56" rx="8" fill="var(--teal-dim)" stroke="var(--teal)"/>
+        <text x="252" y="143" text-anchor="middle" font-size="11" font-weight="700" fill="var(--teal)">Hacktivist</text>
+        <text x="252" y="160" text-anchor="middle" font-size="9.5" fill="var(--dim)">beliefs · disruption</text>
+        <rect x="340" y="80" width="135" height="56" rx="8" fill="var(--orange-dim)" stroke="var(--orange)"/>
+        <text x="407" y="103" text-anchor="middle" font-size="11" font-weight="700" fill="var(--orange)">Organized crime</text>
+        <text x="407" y="120" text-anchor="middle" font-size="9.5" fill="var(--dim)">financial gain · ransom</text>
+        <rect x="495" y="40" width="135" height="56" rx="8" fill="var(--red-dim)" stroke="var(--red)"/>
+        <text x="562" y="63" text-anchor="middle" font-size="11" font-weight="700" fill="var(--red)">Nation-state / APT</text>
+        <text x="562" y="80" text-anchor="middle" font-size="9.5" fill="var(--dim)">espionage · cyberwar</text>
+        <rect x="30" y="34" width="180" height="62" rx="8" fill="none" stroke="var(--purple)" stroke-dasharray="6 5"/>
+        <text x="120" y="58" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--purple)">Insider — off this scale</text>
+        <text x="120" y="76" text-anchor="middle" font-size="9" fill="var(--dim)">any skill level; their ACCESS</text>
+        <text x="120" y="88" text-anchor="middle" font-size="9" fill="var(--dim)">is what makes them dangerous</text>
+      </svg>
+      <figcaption><b>The capability ladder.</b> Funding buys sophistication: script kiddies reuse tools, nation-states write zero-days. Insiders break the model — a low-skill employee with admin access can outdo an APT.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ════════ ATTRIBUTES ════════ -->
+  <section id="attributes">
+    <div class="sec-head"><h2>Attacker Attributes</h2><span class="sec-tag">The three axes the exam classifies actors by</span></div>
+    <div class="grid3">
+      <div class="card accent-blue">
+        <h4>Internal vs External</h4>
+        <p><strong>Internal</strong> — insiders with legitimate access (employees, contractors). Bypass perimeter defenses entirely.</p>
+        <p><strong>External</strong> — everyone outside; must breach a boundary first.</p>
+      </div>
+      <div class="card accent-orange">
+        <h4>Resources / Funding</h4>
+        <p>Ranges from a free laptop (unskilled) to government budgets (nation-state). Funding determines tooling, persistence, and whether they can buy zero-days or insiders.</p>
+      </div>
+      <div class="card accent-purple">
+        <h4>Level of Sophistication</h4>
+        <p>From running scripts blindly to developing custom malware. High sophistication = stealth, anti-forensics, living-off-the-land techniques.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ MOTIVATIONS ════════ -->
+  <section id="motivations">
+    <div class="sec-head"><h2>Motivations</h2><span class="sec-tag">Match the "why" to the most likely "who"</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Motivation</th><th>What It Looks Like</th><th>Most Likely Actor</th></tr></thead>
+      <tbody>
+        <tr><td>Data exfiltration</td><td>Stealing data out of the organization — the goal behind most breaches</td><td>Nation-state, competitor, organized crime</td></tr>
+        <tr><td>Financial gain</td><td>Ransomware, fraud, selling stolen data/credentials</td><td><strong>Organized crime</strong></td></tr>
+        <tr><td>Blackmail</td><td>"Pay or we leak it" — extortion using stolen data (double-extortion ransomware)</td><td>Organized crime</td></tr>
+        <tr><td>Service disruption</td><td>DDoS, sabotage — take the target offline</td><td>Hacktivist, nation-state</td></tr>
+        <tr><td>Chaos / disruption</td><td>Damage for its own sake, notoriety</td><td>Unskilled attacker, hacktivist</td></tr>
+        <tr><td>Philosophical / political beliefs</td><td>Attacking organizations whose positions they oppose</td><td><strong>Hacktivist</strong></td></tr>
+        <tr><td>Ethical hacking</td><td><em>Authorized</em> testing to find weaknesses before attackers do</td><td>White-hat / pentester — authorization is the dividing line</td></tr>
+        <tr><td>Revenge</td><td>Sabotage, data theft, logic bombs after termination or grievance</td><td><strong>Insider</strong> (disgruntled current/former employee)</td></tr>
+        <tr><td>War (cyberwarfare)</td><td>Attacks on critical infrastructure as statecraft</td><td>Nation-state</td></tr>
+        <tr><td>Espionage</td><td>Long-term covert collection of secrets — corporate or governmental</td><td>Nation-state, competitor</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>Exam cue:</b> the motivation usually names the actor. Money → organized crime. Beliefs → hacktivist. Revenge → insider. Espionage/war → nation-state. "With written permission" → ethical hacker, no matter what they did.</div>
+  </section>
+
+  <!-- ════════ VECTORS ════════ -->
+  <section id="vectors">
+    <div class="sec-head"><h2>Threat Vectors</h2><span class="sec-tag">The paths an attack travels to reach you</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Vector</th><th>How It Works</th><th>Key Defense</th></tr></thead>
+      <tbody>
+        <tr><td>Message-based</td><td>Malicious code or links embedded in <strong>email, SMS, IM, files, images/media</strong> — the #1 initial-access vector</td><td>Spam filters, attachment scanning, user training</td></tr>
+        <tr><td>Voice call</td><td>Phone-based deception — vishing, pretexting ("IT support needs your password")</td><td>Verification procedures, never give credentials by phone</td></tr>
+        <tr><td>Social engineering</td><td>Manipulating <em>people</em> instead of systems — the human vector (full section below)</td><td>Awareness training</td></tr>
+        <tr><td>Removable media</td><td>Infected USB drives — dropped in parking lots or handed out as swag</td><td>Disable autorun, block/control USB via endpoint DLP</td></tr>
+        <tr><td>Vulnerable software / systems / networks</td><td>Exploiting unpatched software, misconfigured systems, open ports, weak wireless</td><td>Patch management, hardening, vulnerability scanning</td></tr>
+        <tr><td>Supply chain</td><td>Compromising a <strong>vendor, MSP, or supplier</strong> the target trusts — one breach cascades to every customer</td><td>Vendor risk assessment, monitoring third-party access</td></tr>
+      </tbody>
+    </table></div>
+    <div class="warn"><b>Supply chain is the trick answer:</b> if the scenario says the attacker got in "through the company that manages our IT" or via a tainted software update, that's the <strong>supply chain vector via an MSP</strong> — not phishing, not an insider.</div>
+  </section>
+
+  <!-- ════════ ATTACK SURFACE / SHADOW IT ════════ -->
+  <section id="surface">
+    <div class="sec-head"><h2>Attack Surface &amp; Shadow IT</h2><span class="sec-tag">What's exposed — including what you don't know about</span></div>
+    <div class="grid2">
+      <div class="card accent-red">
+        <h4>Attack surface</h4>
+        <p>Every point an attacker could touch: open ports, running services, exposed APIs, user accounts, physical access, <em>and people</em>. Every new system, vendor, or app grows it; hardening shrinks it.</p>
+      </div>
+      <div class="card accent-orange">
+        <h4>Shadow IT</h4>
+        <p>Systems, apps, and cloud services employees use <strong>without IT approval</strong> — a personal Dropbox for work files, an unsanctioned SaaS tool. Invisible to security: unpatched, unmonitored, unbacked-up. Detected with CASB and network monitoring.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ MALWARE ════════ -->
+  <section id="malware">
+    <div class="sec-head"><h2>Malware Types</h2><span class="sec-tag">One-line identifiers — the exam tests the distinctions</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Type</th><th>Behavior</th><th>Identify It By</th></tr></thead>
+      <tbody>
+        <tr><td>Virus</td><td>Attaches to a host file/program; replicates when the user <strong>runs it</strong></td><td>Needs user action to spread</td></tr>
+        <tr><td>Worm</td><td><strong>Self-replicates over the network</strong> — no user action, no host file</td><td>"Spread to every machine overnight by itself"</td></tr>
+        <tr><td>Trojan horse</td><td>Malware disguised as legitimate software (cracked games, fake utilities)</td><td>User installed it on purpose, thinking it was something else</td></tr>
+        <tr><td>RAT — Remote Access Trojan</td><td>Trojan that gives the attacker <strong>remote control</strong> — a backdoor</td><td>"Attacker controlled the machine remotely"</td></tr>
+        <tr><td>Logic bomb</td><td>Dormant code that triggers on an <strong>event or date</strong></td><td>"Executed when the admin was removed from payroll" — classic insider revenge</td></tr>
+        <tr><td>Keylogger</td><td>Records keystrokes (software or hardware dongle) to steal credentials</td><td>Captured passwords despite encryption in transit</td></tr>
+        <tr><td>Spyware</td><td>Secretly monitors activity and collects data; <em>privacy-invasive software</em> does this semi-openly via buried consent</td><td>Browser redirects, harvested browsing data</td></tr>
+        <tr><td>Rootkit</td><td>Embeds at <strong>kernel/system level</strong> to hide itself and other malware</td><td>"AV finds nothing but the system acts compromised" — needs boot-time/offline scan</td></tr>
+        <tr><td>Ransomware</td><td>Encrypts your data, demands payment; modern crews also exfiltrate first (double extortion)</td><td>Files inaccessible + ransom note; defense = offline backups</td></tr>
+        <tr><td>Bloatware</td><td>Preinstalled unwanted software — not malicious, but unpatched attack surface</td><td>Remove during hardening / gold-image builds</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>Virus vs worm</b> is the most-tested pair: virus needs a user to run the infected file; a worm spreads itself across the network. <b>Trojan vs RAT:</b> every RAT is a trojan, but the RAT's defining feature is remote control.</div>
+  </section>
+
+  <!-- ════════ INDICATORS ════════ -->
+  <section id="indicators">
+    <div class="sec-head"><h2>Indicators of Malware Infection</h2><span class="sec-tag">What the network tells you when a host is owned</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Indicator</th><th>What It Means</th></tr></thead>
+      <tbody>
+        <tr><td>Extra network traffic</td><td>Unexplained volume from a host — scanning, spreading, or bulk theft in progress</td></tr>
+        <tr><td>Data exfiltration</td><td>Large/unusual outbound transfers, especially off-hours or to unfamiliar destinations</td></tr>
+        <tr><td>Unexpected encrypted traffic</td><td>Malware hides its command channel in encryption a host doesn't normally use</td></tr>
+        <tr><td>Traffic to specific IPs</td><td>Regular "heartbeat" connections to the same address = <strong>C2 (command-and-control) beaconing</strong></td></tr>
+        <tr><td>Outgoing spam</td><td>Your host is sending bulk mail → it's part of a <strong>botnet</strong></td></tr>
+      </tbody>
+    </table></div>
+    <p>These pair with the host-side anomalies from <a href="chapters1-2.html#anomalies">Chapter 2</a> (resource spikes, inaccessible files, log gaps) — the network view and host view of the same compromise.</p>
+  </section>
+
+  <!-- ════════ HUMAN VECTORS ════════ -->
+  <section id="human">
+    <div class="sec-head"><h2>Human Vectors &amp; Social Engineering Attacks</h2><span class="sec-tag">Attacks on people, not systems</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Attack</th><th>What Happens</th><th>Defense</th></tr></thead>
+      <tbody>
+        <tr><td>Shoulder surfing</td><td>Watching your screen/keypad over your shoulder</td><td>Privacy screen filters, positioning</td></tr>
+        <tr><td>Tailgating</td><td>Following an authorized person through a secure door</td><td>Access vestibules (mantraps), "no holding doors" culture</td></tr>
+        <tr><td>Dumpster diving</td><td>Recovering sensitive documents from the trash</td><td>Shredding / burn bins</td></tr>
+        <tr><td>Disinformation</td><td>Deliberately spreading false information to mislead or manipulate opinion</td><td>Verification, media literacy</td></tr>
+        <tr><td>Elicitation</td><td>Casually drawing information out of people through friendly conversation</td><td>Awareness — know what's sensitive</td></tr>
+        <tr><td>Pretexting</td><td>Inventing a scenario/identity ("I'm from the help desk") to justify the request</td><td>Verify identity through known channels</td></tr>
+        <tr><td>Watering hole</td><td>Compromise a website the target group <em>already visits</em>; infect them when they come to drink</td><td>Patching, browser isolation, web filtering</td></tr>
+        <tr><td>BEC — Business Email Compromise</td><td>Attacker uses a compromised or spoofed <strong>executive email</strong> to order wire transfers or data handovers</td><td>Out-of-band verification of payment changes</td></tr>
+        <tr><td>Typosquatting</td><td>Registering look-alike domains (<code>gooogle.com</code>) to catch mistyped URLs</td><td>Defensive domain registration, URL filtering</td></tr>
+        <tr><td>Brand impersonation</td><td>Fake login pages, emails, and ads dressed as a trusted brand</td><td>User training, reporting, DMARC</td></tr>
+      </tbody>
+    </table></div>
+
+    <figure class="diagram">
+      <svg width="640" viewBox="0 0 640 260" role="img" aria-label="Watering hole attack: the attacker compromises an industry website the targets trust; employees visit as usual and are infected by drive-by malware">
+        <defs><marker id="m-wh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--red)"/></marker>
+        <marker id="m-whb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--blue)"/></marker></defs>
+        <rect x="20" y="40" width="150" height="52" rx="8" fill="var(--red-dim)" stroke="var(--red)"/>
+        <text x="95" y="62" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--red)">Attacker</text>
+        <text x="95" y="80" text-anchor="middle" font-size="9.5" fill="var(--dim)">can't phish the target directly</text>
+        <rect x="470" y="40" width="150" height="52" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="545" y="62" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--bright)">Target employees</text>
+        <text x="545" y="80" text-anchor="middle" font-size="9.5" fill="var(--dim)">well-defended organization</text>
+        <rect x="235" y="160" width="170" height="56" rx="8" fill="var(--orange-dim)" stroke="var(--orange)"/>
+        <text x="320" y="183" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--orange)">Industry website</text>
+        <text x="320" y="200" text-anchor="middle" font-size="9.5" fill="var(--dim)">the "watering hole" they trust</text>
+        <line x1="120" y1="96" x2="266" y2="156" stroke="var(--red)" stroke-width="1.8" marker-end="url(#m-wh)"/>
+        <text x="148" y="138" font-size="10" font-weight="600" fill="var(--red)">1 · compromises the site</text>
+        <line x1="522" y1="96" x2="382" y2="156" stroke="var(--blue)" stroke-width="1.8" marker-end="url(#m-whb)"/>
+        <text x="478" y="138" font-size="10" font-weight="600" fill="var(--blue)">2 · visit as usual</text>
+        <line x1="412" y1="178" x2="500" y2="100" stroke="var(--red)" stroke-width="1.8" stroke-dasharray="6 5" marker-end="url(#m-wh)"/>
+        <text x="492" y="180" font-size="10" font-weight="600" fill="var(--red)">3 · drive-by malware</text>
+      </svg>
+      <figcaption><b>The watering hole.</b> When the target is too hardened to attack head-on, poison somewhere they already go. Named after predators waiting where prey drinks.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ════════ PHISHING FAMILY ════════ -->
+  <section id="phishing">
+    <div class="sec-head"><h2>The Phishing Family</h2><span class="sec-tag">Channel + targeting = the name</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Attack</th><th>Channel</th><th>Targeting</th></tr></thead>
+      <tbody>
+        <tr><td>Spam</td><td>Email</td><td>Untargeted bulk — annoying, may carry malware</td></tr>
+        <tr><td>SPIM</td><td>Instant messaging</td><td>Spam over IM (Teams, Slack, WhatsApp)</td></tr>
+        <tr><td>Phishing</td><td>Email</td><td>Broad — generic lure sent to thousands, harvesting credentials/installing malware</td></tr>
+        <tr><td>Spear phishing</td><td>Email</td><td><strong>Targeted</strong> — researched, personalized to a specific person or organization</td></tr>
+        <tr><td>Whaling</td><td>Email</td><td>Spear phishing aimed at <strong>executives</strong> (the "big phish": CEO, CFO)</td></tr>
+        <tr><td>Vishing</td><td><strong>Voice</strong> call</td><td>Phone-based phishing, often spoofed caller ID</td></tr>
+        <tr><td>Smishing</td><td><strong>SMS</strong> text</td><td>"Your package is held — click here" with malicious links</td></tr>
+      </tbody>
+    </table></div>
+
+    <figure class="diagram">
+      <svg width="600" viewBox="0 0 600 270" role="img" aria-label="Phishing targeting pyramid: broad phishing at the base, spear phishing targeted at specific people in the middle, whaling aimed at executives at the top; vishing and smishing are the same attack over voice and SMS channels">
+        <rect x="210" y="30" width="180" height="44" rx="8" fill="var(--red-dim)" stroke="var(--red)"/>
+        <text x="300" y="49" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--red)">Whaling</text>
+        <text x="300" y="65" text-anchor="middle" font-size="9.5" fill="var(--dim)">executives only — CEO, CFO</text>
+        <rect x="140" y="84" width="320" height="44" rx="8" fill="var(--orange-dim)" stroke="var(--orange)"/>
+        <text x="300" y="103" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--orange)">Spear phishing</text>
+        <text x="300" y="119" text-anchor="middle" font-size="9.5" fill="var(--dim)">researched · personalized · specific person or org</text>
+        <rect x="70" y="138" width="460" height="44" rx="8" fill="var(--blue-dim)" stroke="var(--blue)"/>
+        <text x="300" y="157" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--blue)">Phishing</text>
+        <text x="300" y="173" text-anchor="middle" font-size="9.5" fill="var(--dim)">broad — thousands of generic lures</text>
+        <text x="60" y="106" text-anchor="end" font-size="10" fill="var(--dim)" transform="rotate(-90 56 106)">↑ more targeted</text>
+        <rect x="70" y="206" width="140" height="36" rx="999" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="140" y="229" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--text)">Voice → vishing</text>
+        <rect x="230" y="206" width="140" height="36" rx="999" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="300" y="229" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--text)">SMS → smishing</text>
+        <rect x="390" y="206" width="140" height="36" rx="999" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="460" y="229" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--text)">IM → SPIM</text>
+        <text x="300" y="262" text-anchor="middle" font-size="9.5" fill="var(--dim)">same con, different channel — the channel changes the name</text>
+      </svg>
+      <figcaption><b>Two dimensions, one family.</b> Vertical = how targeted (phishing → spear → whaling). Horizontal = the channel (voice = vishing, SMS = smishing, IM = SPIM). The exam names the attack from those two facts.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ════════ SE PRINCIPLES ════════ -->
+  <section id="principles">
+    <div class="sec-head"><h2>Social Engineering Principles</h2><span class="sec-tag">Why the cons work — name the lever being pulled</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Principle</th><th>The Lever</th><th>Sounds Like</th></tr></thead>
+      <tbody>
+        <tr><td>Authority</td><td>People obey perceived power</td><td>"This is the CEO — wire it now."</td></tr>
+        <tr><td>Intimidation</td><td>Fear of consequences</td><td>"Do it or you're fired / your account is deleted."</td></tr>
+        <tr><td>Consensus</td><td>Everyone else is doing it (social proof)</td><td>"The rest of your team already submitted theirs."</td></tr>
+        <tr><td>Scarcity</td><td>Limited supply forces fast action</td><td>"Only 2 licenses left at this price."</td></tr>
+        <tr><td>Familiarity</td><td>We comply with people we like or recognize</td><td>Friendly rapport built first, request second</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>Related levers</b> the exam also uses: <strong>urgency</strong> ("in the next 10 minutes!") — scarcity's twin pressuring <em>time</em> instead of supply — and <strong>trust</strong>, the foundation all of these exploit. Identify the principle from the emotional pressure in the quote.</div>
+  </section>
+
+  <!-- ════════ BLOCKING ════════ -->
+  <section id="blocking">
+    <div class="sec-head"><h2>Blocking Malware</h2><span class="sec-tag">Layered defenses — and how detection actually works</span></div>
+    <div class="grid3">
+      <div class="card accent-blue">
+        <h4>Spam filter</h4>
+        <p>At the <strong>email gateway</strong> — strips the #1 delivery vehicle before users ever see it. Pairs with SPF/DKIM/DMARC from <a href="chapter3.html#email">Chapter 3</a>.</p>
+      </div>
+      <div class="card accent-green">
+        <h4>Anti-malware</h4>
+        <p>On every host and at the gateway. Detection methods below — signature for the known, heuristic for the new.</p>
+      </div>
+      <div class="card accent-orange">
+        <h4>UTM</h4>
+        <p>All-in-one network appliance: firewall + IPS + anti-malware + content filtering in one box at the boundary.</p>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card accent-green">
+        <h4>Signature-based detection</h4>
+        <p>Matches files against a database of <strong>known malware fingerprints</strong>. Accurate, low false positives — but <strong>blind to brand-new malware</strong> until signatures update. Why definitions must auto-update.</p>
+      </div>
+      <div class="card accent-purple">
+        <h4>Heuristic / behavior-based detection</h4>
+        <p>Runs suspicious code (often in a sandbox) and flags <strong>malicious behavior</strong> — even with no signature. Catches zero-day malware; pays for it with more false positives.</p>
+      </div>
+    </div>
+
+    <p><strong>File Integrity Monitoring (FIM)</strong> — baselines hashes of critical system files and alerts on <em>any</em> change. Catches what scanners miss: if a rootkit alters a system binary, the hash no longer matches. (Tripwire is the classic example.)</p>
+
+    <figure class="diagram">
+      <svg width="660" viewBox="0 0 660 170" role="img" aria-label="Layered malware defense: inbound mail passes the spam filter at the gateway, then the UTM inspects network traffic, then host anti-malware scans by signature and heuristics, and file integrity monitoring watches for changes on the endpoint">
+        <defs><marker id="m-blk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--dim)"/></marker></defs>
+        <rect x="12" y="44" width="120" height="60" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="72" y="70" text-anchor="middle" font-size="11" font-weight="700" fill="var(--bright)">Inbound mail</text>
+        <text x="72" y="88" text-anchor="middle" font-size="9.5" fill="var(--dim)">+ web traffic</text>
+        <line x1="134" y1="74" x2="166" y2="74" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-blk)"/>
+        <rect x="170" y="44" width="120" height="60" rx="8" fill="var(--blue-dim)" stroke="var(--blue)"/>
+        <text x="230" y="70" text-anchor="middle" font-size="11" font-weight="700" fill="var(--blue)">Spam filter</text>
+        <text x="230" y="88" text-anchor="middle" font-size="9.5" fill="var(--dim)">email gateway</text>
+        <line x1="292" y1="74" x2="324" y2="74" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-blk)"/>
+        <rect x="328" y="44" width="120" height="60" rx="8" fill="var(--orange-dim)" stroke="var(--orange)"/>
+        <text x="388" y="70" text-anchor="middle" font-size="11" font-weight="700" fill="var(--orange)">UTM</text>
+        <text x="388" y="88" text-anchor="middle" font-size="9.5" fill="var(--dim)">network boundary</text>
+        <line x1="450" y1="74" x2="482" y2="74" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-blk)"/>
+        <rect x="486" y="44" width="160" height="60" rx="8" fill="var(--green-dim)" stroke="var(--green)"/>
+        <text x="566" y="64" text-anchor="middle" font-size="11" font-weight="700" fill="var(--green)">Host anti-malware</text>
+        <text x="566" y="80" text-anchor="middle" font-size="9.5" fill="var(--dim)">signature + heuristic</text>
+        <text x="566" y="94" text-anchor="middle" font-size="9.5" fill="var(--dim)">+ FIM watching files</text>
+        <text x="330" y="140" text-anchor="middle" font-size="10" fill="var(--dim)">each layer catches what the previous one missed — defense in depth</text>
+      </svg>
+      <figcaption><b>Layered blocking.</b> No single control stops everything: the spam filter kills the bulk, the UTM inspects what gets through, host AV catches execution, and FIM notices when something still slips past and modifies a file.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ════════ THREAT INTEL ════════ -->
+  <section id="intel">
+    <div class="sec-head"><h2>Threat Intelligence Sources</h2><span class="sec-tag">Where defenders learn what attackers are doing</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Source</th><th>What It Is</th></tr></thead>
+      <tbody>
+        <tr><td>OSINT — Open Source Intelligence</td><td>Anything publicly available: websites, news, social media, DNS records, public breach data. Free — and attackers use it for recon too.</td></tr>
+        <tr><td>Closed / proprietary intelligence</td><td>Paid commercial feeds and private research — a vendor's <strong>trade secret / intellectual property</strong>, which is why it costs money.</td></tr>
+        <tr><td>Vulnerability databases</td><td><strong>CVE</strong> (MITRE's catalog of known vulnerabilities) and <strong>NVD</strong> (NIST's database adding CVSS severity scores).</td></tr>
+        <tr><td>STIX — Structured Threat Information eXpression</td><td>The standardized <strong>language/format</strong> for describing threat data (IoCs, TTPs, actors).</td></tr>
+        <tr><td>TAXII — Trusted Automated eXchange of Intelligence Information</td><td>The <strong>transport protocol</strong> that moves STIX data between organizations automatically.</td></tr>
+        <tr><td>AIS — Automated Indicator Sharing</td><td>CISA's program using STIX/TAXII to share indicators between the US government and private sector in near-real-time.</td></tr>
+        <tr><td>Dark web</td><td>Monitoring criminal markets/forums for your stolen credentials, data, or planned attacks.</td></tr>
+        <tr><td>Information-sharing organizations</td><td>Public/private groups (ISACs/ISAOs) where industry peers share threat data — e.g., FS-ISAC for financial services.</td></tr>
+        <tr><td>IoC — Indicators of Compromise</td><td>The atoms of threat intel: malicious IPs, file hashes, domains, registry keys that signal a known attack.</td></tr>
+        <tr><td>Predictive analysis</td><td>Using current intel + trends to anticipate <em>future</em> attacks rather than react.</td></tr>
+        <tr><td>Threat maps</td><td>Real-time visualizations of global attack traffic — broad awareness more than actionable detail.</td></tr>
+        <tr><td>File / code repositories</td><td>VirusTotal (check files/hashes against dozens of engines), GitHub (where leaked exploits — and your accidentally-committed secrets — live).</td></tr>
+      </tbody>
+    </table></div>
+
+    <figure class="diagram">
+      <svg width="580" viewBox="0 0 580 180" role="img" aria-label="STIX is the format describing the threat data and TAXII is the transport protocol carrying it between organizations">
+        <defs><marker id="m-stx" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--teal)"/></marker></defs>
+        <rect x="20" y="56" width="140" height="56" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="90" y="80" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--bright)">Organization A</text>
+        <text x="90" y="98" text-anchor="middle" font-size="9.5" fill="var(--dim)">spots a new attack</text>
+        <line x1="162" y1="84" x2="416" y2="84" stroke="var(--teal)" stroke-width="2.5" marker-end="url(#m-stx)"/>
+        <text x="290" y="68" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--teal)">TAXII — the transport ("how it travels")</text>
+        <rect x="234" y="94" width="112" height="34" rx="6" fill="var(--purple-dim)" stroke="var(--purple)"/>
+        <text x="290" y="109" text-anchor="middle" font-size="10" font-weight="700" fill="var(--purple)">STIX payload</text>
+        <text x="290" y="122" text-anchor="middle" font-size="8.5" fill="var(--dim)">IoCs · TTPs · actors</text>
+        <rect x="420" y="56" width="140" height="56" rx="8" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="490" y="80" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--bright)">Organization B</text>
+        <text x="490" y="98" text-anchor="middle" font-size="9.5" fill="var(--dim)">blocks it automatically</text>
+        <text x="290" y="160" text-anchor="middle" font-size="10" fill="var(--dim)">AIS = CISA's program running exactly this exchange between government and industry</text>
+      </svg>
+      <figcaption><b>STIX describes, TAXII delivers.</b> Memory hook: STIX is the <em>letter</em>, TAXII is the <em>mail truck</em>. The exam tests that you know which is the format and which is the protocol.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ════════ RESEARCH ════════ -->
+  <section id="research">
+    <div class="sec-head"><h2>Threat Research Sources</h2><span class="sec-tag">Where to keep learning after the feeds</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Source</th><th>What You Get</th></tr></thead>
+      <tbody>
+        <tr><td>Vendor websites</td><td>Advisories, patch notes, and threat write-ups from Microsoft, Cisco, CrowdStrike, etc. — first place to check for product-specific threats</td></tr>
+        <tr><td>Conferences</td><td>New research and attack techniques debut at DEF CON, Black Hat, RSA</td></tr>
+        <tr><td>Local industry groups</td><td>Regional peer networking and shared experience (ISSA chapters, BSides)</td></tr>
+        <tr><td>Information-sharing centers</td><td>The ISACs/ISAOs again — structured public/private exchange by sector</td></tr>
+        <tr><td>Academic journals</td><td>Peer-reviewed, rigorous — slower, but authoritative on fundamentals</td></tr>
+        <tr><td>RFCs — Requests for Comments</td><td>The actual specifications of internet protocols (IETF) — how things are <em>supposed</em> to work, which defines what abuse looks like</td></tr>
+        <tr><td>Social media</td><td>Fastest signal anywhere — security researchers break news on X/Mastodon hours before advisories — but verify before acting</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <footer class="site-footer">
+    <a href="chapters4-5.html">← Chapters 4–5</a> &nbsp;·&nbsp; Chapter 6 &nbsp;·&nbsp; <a href="index.html">Back to Hub</a>
+  </footer>
+
+</main>
+<script src="guide.js"></script>
+</body>
+</html>

@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CompTIA Security+ SY0-701 — Chapter 5: Securing Hosts and Data</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07090f;--surface:#0e1422;--surface2:#172033;--border:#222c44;--text:#dbe4f1;--text-dim:#8b98ad;--text-bright:#ffffff;--red:#e74c3c;--green:#2ecc71;--blue:#3498db;--orange:#e67e22;--purple:#9b59b6;--teal:#1abc9c;--gray:#95a5a6;--yellow:#f1c40f;--red-dim:rgba(231,76,60,.15);--green-dim:rgba(46,204,113,.12);--blue-dim:rgba(52,152,219,.12);--teal-dim:rgba(26,188,156,.12);--sidebar-w:140px;--detail-w:300px;--header-h:52px;--footer-h:40px;--radius:6px;--tr:.25s ease}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',system-ui,sans-serif;font-size:13px;overflow:hidden}
+#app{display:grid;grid-template-rows:var(--header-h) 1fr var(--footer-h);grid-template-columns:var(--sidebar-w) 1fr 0px;grid-template-areas:"header header header""sidebar canvas detail""footer footer footer";width:100vw;height:100vh;transition:grid-template-columns var(--tr)}
+body.detail-open #app{grid-template-columns:var(--sidebar-w) 1fr var(--detail-w)}
+#header{grid-area:header;display:flex;align-items:center;gap:8px;padding:0 14px;background:var(--surface);border-bottom:1px solid var(--border);z-index:100}
+#btn-toc{display:inline-flex;align-items:center;padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:11px;font-weight:600;text-decoration:none;white-space:nowrap;flex-shrink:0;transition:background var(--tr),color var(--tr),border-color var(--tr)}
+#btn-toc:hover{background:var(--blue-dim);border-color:var(--blue);color:var(--blue)}
+#header h1{font-size:13px;font-weight:700;color:var(--text-bright);white-space:nowrap;margin-right:6px}
+#header h1 span{color:var(--blue)}
+.hdr-sep{width:1px;height:20px;background:var(--border);flex-shrink:0}
+.hdr-spacer{flex:1}
+.hdr-btn{padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background var(--tr),color var(--tr),border-color var(--tr)}
+.hdr-btn:hover{background:var(--border);color:var(--text-bright)}
+#sidebar{grid-area:sidebar;display:flex;flex-direction:column;border-right:1px solid var(--border);overflow:hidden;z-index:50;background:var(--surface)}
+#sidebar-title{font-size:9px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-dim);padding:10px 8px 6px;border-bottom:1px solid var(--border);flex-shrink:0}
+#cat-list{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+#cat-list::-webkit-scrollbar{width:3px}
+#cat-list::-webkit-scrollbar-thumb{background:var(--border)}
+.cat-btn{display:flex;align-items:center;gap:6px;padding:8px 8px;border:none;border-bottom:1px solid rgba(255,255,255,.04);background:transparent;color:var(--text-dim);font-size:9.5px;font-weight:600;text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;line-height:1.3;width:100%;transition:background var(--tr),color var(--tr)}
+.cat-btn:hover{background:var(--surface2);color:var(--text-bright)}
+.cat-btn.active{color:var(--text-bright);background:var(--surface2)}
+.cat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+#clear-btn{margin:8px;padding:5px 0;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-size:10px;font-weight:600;cursor:pointer;transition:background var(--tr),color var(--tr)}
+#clear-btn:hover{background:var(--surface2);color:var(--text-bright)}
+.filter-banner{margin:6px;padding:6px 8px;border-radius:4px;font-size:9px;font-weight:700;text-align:center;line-height:1.4;border:1px solid currentColor;cursor:pointer;display:none}
+#canvas{grid-area:canvas;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:14px;background:var(--bg)}
+#canvas::-webkit-scrollbar{width:6px;height:6px}
+#canvas::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.zone{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+.zone-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.zone-icon{font-size:14px}
+.zone-title{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--text-bright)}
+.zone-sub{font-size:10px;color:var(--text-dim);margin-left:auto}
+.zone-nodes{display:flex;flex-wrap:wrap;gap:7px}
+.zone-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.zone-full{width:100%}
+.node{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 10px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface2);cursor:pointer;text-align:center;transition:opacity var(--tr),transform var(--tr),box-shadow var(--tr),filter var(--tr);min-width:70px}
+.node:hover{filter:brightness(1.2)}
+.node.selected{box-shadow:0 0 0 2px var(--blue),0 0 10px rgba(52,152,219,.25)}
+.node-label{font-size:10px;font-weight:700;color:var(--text-bright);line-height:1.3}
+.node-sub{font-size:8.5px;color:var(--text-dim);margin-top:1px;line-height:1.2}
+.node.teal{border-color:rgba(26,188,156,.4);background:rgba(26,188,156,.08)}
+.node.green{border-color:rgba(46,204,113,.4);background:rgba(46,204,113,.08)}
+.node.blue{border-color:rgba(52,152,219,.4);background:rgba(52,152,219,.08)}
+.node.orange{border-color:rgba(230,126,34,.4);background:rgba(230,126,34,.08)}
+.node.red{border-color:rgba(231,76,60,.4);background:rgba(231,76,60,.08)}
+.node.purple{border-color:rgba(155,89,182,.4);background:rgba(155,89,182,.08)}
+.node.yellow{border-color:rgba(241,196,15,.4);background:rgba(241,196,15,.08)}
+.node.gray{border-color:rgba(149,165,166,.4);background:rgba(149,165,166,.08)}
+body.cat-filtered .node.cat-dim{opacity:.07;transform:scale(.93);pointer-events:none;filter:grayscale(90%)}
+body.cat-filtered .node.cat-match{opacity:1;box-shadow:0 0 0 2px currentColor,0 0 10px rgba(255,255,255,.1)}
+body.cat-filtered .zone.zone-all-dim{opacity:.15}
+#detail-panel{grid-area:detail;background:var(--surface);border-left:1px solid var(--border);overflow:hidden;display:flex;flex-direction:column;z-index:60;transition:opacity var(--tr)}
+#detail-panel.collapsed{opacity:0;pointer-events:none}
+body.detail-open #detail-panel{opacity:1;pointer-events:auto}
+#detail-close{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);color:var(--text-dim);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5}
+#detail-close:hover{color:var(--text-bright);background:var(--border)}
+#detail-scroll{flex:1;overflow-y:auto;padding:14px 14px 20px}
+#detail-scroll::-webkit-scrollbar{width:4px}
+#detail-scroll::-webkit-scrollbar-thumb{background:var(--border)}
+#detail-title{font-size:14px;font-weight:800;color:var(--text-bright);margin-bottom:4px;padding-right:28px;line-height:1.3}
+#detail-category{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px}
+#detail-body{font-size:12px;line-height:1.65;color:var(--text)}
+#detail-body h4{font-size:10px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--text-dim);margin:12px 0 5px}
+#detail-body p{margin-bottom:8px}
+#detail-body ul{padding-left:16px;margin-bottom:8px}
+#detail-body li{margin-bottom:3px}
+#detail-body .exam-tip{background:rgba(26,188,156,.1);border:1px solid rgba(26,188,156,.3);border-radius:4px;padding:8px 10px;margin-top:10px;font-size:11px;color:var(--teal)}
+#detail-body .exam-tip::before{content:'★ EXAM TIP  ';font-weight:800}
+#detail-body code{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-family:monospace;font-size:11px;color:var(--green)}
+#graph-view{grid-area:canvas;display:none;flex-direction:column;background:var(--bg);position:relative;overflow:hidden}
+#graph-view.visible{display:flex}
+#graph-svg{flex:1;width:100%;cursor:grab}
+#graph-svg:active{cursor:grabbing}
+#graph-toolbar{position:absolute;top:10px;right:12px;display:flex;gap:6px;z-index:10}
+#graph-toolbar button{padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);font-size:10px;font-weight:600;cursor:pointer;transition:background var(--tr),color var(--tr)}
+#graph-toolbar button:hover{background:var(--surface2);color:var(--text-bright)}
+#graph-hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(15,23,42,.85);border:1px solid var(--border);border-radius:4px;padding:5px 12px;font-size:10px;color:var(--text-dim);pointer-events:none;white-space:nowrap}
+#footer{grid-area:footer;display:flex;align-items:center;gap:6px;padding:0 14px;background:var(--surface);border-top:1px solid var(--border);overflow:hidden;font-size:10px;color:var(--text-dim)}
+.foot-label{font-weight:700;letter-spacing:.5px;margin-right:4px;white-space:nowrap}
+.foot-pill{padding:2px 8px;border-radius:10px;border:1px solid var(--border);font-size:9px;font-weight:600;white-space:nowrap;background:var(--surface2)}
+.foot-pill.green{border-color:rgba(46,204,113,.4);color:var(--green)}
+.foot-pill.blue{border-color:rgba(52,152,219,.4);color:var(--blue)}
+.foot-pill.teal{border-color:rgba(26,188,156,.4);color:var(--teal)}
+.foot-pill.red{border-color:rgba(231,76,60,.4);color:var(--red)}
+.foot-pill.orange{border-color:rgba(230,126,34,.4);color:var(--orange)}
+.foot-pill.purple{border-color:rgba(155,89,182,.4);color:var(--purple)}
+.foot-pill.yellow{border-color:rgba(241,196,15,.4);color:var(--yellow)}
+.foot-sep{width:1px;height:14px;background:var(--border);flex-shrink:0;margin:0 4px}
+</style>
+</head>
+<body>
+<div id="app">
+
+<header id="header">
+  <a href="file:///C:/Users/jared/OneDrive/Desktop/Claude_General/SecurityPlus_StudyGuide/index.html" id="btn-toc">&#8592; Contents</a>
+  <h1>Security<span>+</span> SY0-701 &nbsp;·&nbsp; Chapter 5</h1>
+  <div class="hdr-sep"></div>
+  <button class="hdr-btn" id="btn-study" onclick="toggleStudyMode()">👁 Study Mode</button>
+  <div class="hdr-sep"></div>
+  <button class="hdr-btn" id="btn-graph" onclick="toggleGraphView()">🗺 Graph View</button>
+  <button class="hdr-btn" id="btn-illustrated" onclick="toggleIllustrated()">🖼 Illustrated</button>
+  <div class="hdr-spacer"></div>
+  <span style="font-size:11px;color:var(--text-dim)">Click any concept to explore</span>
+</header>
+
+<aside id="sidebar">
+  <div id="sidebar-title">Filter by Topic</div>
+  <div id="cat-list"></div>
+  <button id="clear-btn" onclick="clearFilter()" style="display:none">✕ Clear Filter</button>
+  <div class="filter-banner" id="filter-banner"></div>
+</aside>
+
+<main id="canvas">
+
+  <!-- Row 1: Virtualization + VM Threats -->
+  <div class="zone-row">
+    <div class="zone">
+      <div class="zone-header"><span class="zone-icon">💻</span><span class="zone-title">Virtualization</span><span class="zone-sub">Hypervisors & virtual machines</span></div>
+      <div class="zone-nodes">
+        <div class="node teal" data-node-id="virtualization" onclick="openDetail('virtualization')"><span class="node-label">Virtualization</span><span class="node-sub">abstract hardware</span></div>
+        <div class="node teal" data-node-id="hypervisor" onclick="openDetail('hypervisor')"><span class="node-label">Hypervisor</span><span class="node-sub">manages VMs</span></div>
+        <div class="node teal" data-node-id="type2-hv" onclick="openDetail('type2-hv')"><span class="node-label">Type II Hypervisor</span><span class="node-sub">runs on host OS</span></div>
+        <div class="node blue" data-node-id="vm-host" onclick="openDetail('vm-host')"><span class="node-label">Host</span><span class="node-sub">physical machine</span></div>
+        <div class="node blue" data-node-id="vm-guest" onclick="openDetail('vm-guest')"><span class="node-label">Guest</span><span class="node-sub">virtual machine</span></div>
+        <div class="node green" data-node-id="snapshot" onclick="openDetail('snapshot')"><span class="node-label">Snapshot</span><span class="node-sub">point-in-time save</span></div>
+        <div class="node green" data-node-id="replication" onclick="openDetail('replication')"><span class="node-label">Replication</span><span class="node-sub">copy VMs for HA</span></div>
+        <div class="node blue" data-node-id="vdi" onclick="openDetail('vdi')"><span class="node-label">VDI</span><span class="node-sub">virtual desktop infra.</span></div>
+        <div class="node blue" data-node-id="thin-client" onclick="openDetail('thin-client')"><span class="node-label">Thin Client</span><span class="node-sub">minimal local compute</span></div>
+        <div class="node teal" data-node-id="containerization" onclick="openDetail('containerization')"><span class="node-label">Containerization</span><span class="node-sub">isolated app env.</span></div>
+      </div>
+    </div>
+    <div class="zone">
+      <div class="zone-header"><span class="zone-icon">⚠</span><span class="zone-title">VM Security Threats</span><span class="zone-sub">Attacks targeting virtual environments</span></div>
+      <div class="zone-nodes">
+        <div class="node red" data-node-id="vm-attack" onclick="openDetail('vm-attack')"><span class="node-label">VM Attack</span><span class="node-sub">escape · hopping · hijack</span></div>
+        <div class="node red" data-node-id="vm-sprawl" onclick="openDetail('vm-sprawl')"><span class="node-label">VM Sprawl</span><span class="node-sub">unmanaged VM growth</span></div>
+        <div class="node orange" data-node-id="resource-reuse" onclick="openDetail('resource-reuse')"><span class="node-label">Resource Reuse</span><span class="node-sub">data remnants in memory</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: Cloud Basics + Cloud Delivery/Deployment -->
+  <div class="zone-row">
+    <div class="zone">
+      <div class="zone-header"><span class="zone-icon">☁</span><span class="zone-title">Cloud Computing</span><span class="zone-sub">Scalable off-premise resources</span></div>
+      <div class="zone-nodes">
+        <div class="node blue" data-node-id="cloud" onclick="openDetail('cloud')"><span class="node-label">Cloud Computing</span><span class="node-sub">on-demand resources</span></div>
+        <div class="node green" data-node-id="cloud-scale" onclick="openDetail('cloud-scale')"><span class="node-label">Cloud Scalability</span><span class="node-sub">grow as needed</span></div>
+        <div class="node green" data-node-id="cloud-elastic" onclick="openDetail('cloud-elastic')"><span class="node-label">Cloud Elasticity</span><span class="node-sub">auto scale up/down</span></div>
+        <div class="node blue" data-node-id="cloud-storage" onclick="openDetail('cloud-storage')"><span class="node-label">Cloud Storage</span><span class="node-sub">remote data store</span></div>
+        <div class="node blue" data-node-id="on-prem" onclick="openDetail('on-prem')"><span class="node-label">On-Premise</span><span class="node-sub">own hardware/facility</span></div>
+        <div class="node blue" data-node-id="off-prem" onclick="openDetail('off-prem')"><span class="node-label">Off-Premise</span><span class="node-sub">provider-hosted</span></div>
+        <div class="node gray" data-node-id="central-decent" onclick="openDetail('central-decent')"><span class="node-label">Centralized vs\nDecentralized</span><span class="node-sub">management model</span></div>
+        <div class="node blue" data-node-id="multi-cloud" onclick="openDetail('multi-cloud')"><span class="node-label">Multi-Cloud</span><span class="node-sub">multiple CSPs</span></div>
+      </div>
+    </div>
+    <div class="zone">
+      <div class="zone-header"><span class="zone-icon">📦</span><span class="zone-title">Cloud Delivery & Deployment</span><span class="zone-sub">How cloud is served and owned</span></div>
+      <div class="zone-nodes">
+        <div class="node teal" data-node-id="saas" onclick="openDetail('saas')"><span class="node-label">SaaS</span><span class="node-sub">software as a service</span></div>
+        <div class="node teal" data-node-id="paas" onclick="openDetail('paas')"><span class="node-label">PaaS</span><span class="node-sub">platform as a service</span></div>
+        <div class="node teal" data-node-id="iaas" onclick="openDetail('iaas')"><span class="node-label">IaaS</span><span class="node-sub">infrastructure as a service</span></div>
+        <div class="node green" data-node-id="cloud-public" onclick="openDetail('cloud-public')"><span class="node-label">Public Cloud</span><span class="node-sub">shared, CSP-owned</span></div>
+        <div class="node blue" data-node-id="cloud-private" onclick="openDetail('cloud-private')"><span class="node-label">Private Cloud</span><span class="node-sub">single-org, dedicated</span></div>
+        <div class="node purple" data-node-id="cloud-community" onclick="openDetail('cloud-community')"><span class="node-label">Community Cloud</span><span class="node-sub">shared by like orgs</span></div>
+        <div class="node orange" data-node-id="cloud-hybrid" onclick="openDetail('cloud-hybrid')"><span class="node-label">Hybrid Cloud</span><span class="node-sub">public + private mix</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3: Cloud Architecture + Cloud Security -->
+  <div class="zone-row">
+    <div class="zone">
+      <div class="zone-header"><span class="zone-icon">🏗</span><span class="zone-title">Cloud Architecture</span><span class="zone-sub">How cloud services are built</span></div>
+      <div class="zone-nodes">
+        <div class="node blue" data-node-id="csp" onclick="openDetail('csp')"><span class="node-label">CSP</span><span class="node-sub">cloud service provider</span></div>
+        <div class="node blue" data-node-id="mssp" onclick="openDetail('mssp')"><span class="node-label">MSSP</span><span class="node-sub">managed security svc provider</span></div>
+        <div class="node gray" data-node-id="middleware" onclick="openDetail('middleware')"><span class="node-label">Middleware</span><span class="node-sub">glue between apps</span></div>
+        <div class="node gray" data-node-id="runtime" onclick="openDetail('runtime')"><span class="node-label">Runtime Environment</span><span class="node-sub">code execution context</span></div>
+        <div class="node teal" data-node-id="api" onclick="openDetail('api')"><span class="node-label">API</span><span class="node-sub">app programming interface</span></div>
+        <div class="node teal" data-node-id="microservices" onclick="openDetail('microservices')"><span class="node-label">Microservices</span><span class="node-sub">independent service units</span></div>
+        <div class="node blue" data-node-id="edge-compute" onclick="openDetail('edge-compute')"><span class="node-label">Edge Computing</span><span class="node-sub">process near the source</span></div>
+        <div class="node blue" data-node-id="fog-compute" onclick="openDetail('fog-compute')"><span class="node-label">Fog Computing</span><span class="node-sub">edge-to-cloud layer</span></div>
+      </div>
+    </div>
+    <div class="zone">
+      <div class="zone-header"><span class="zone-icon">🛡</span><span class="zone-title">Cloud Security Controls</span><span class="zone-sub">Protect cloud environments</span></div>
+      <div class="zone-nodes">
+        <div class="node green" data-node-id="cloud-harden" onclick="openDetail('cloud-harden')"><span class="node-label">Cloud Hardening</span><span class="node-sub">reduce attack surface</span></div>
+        <div class="node teal" data-node-id="casb" onclick="openDetail('casb')"><span class="node-label">CASB</span><span class="node-sub">cloud access security broker</span></div>
+        <div class="node green" data-node-id="cloud-dlp" onclick="openDetail('cloud-dlp')"><span class="node-label">Cloud-Based DLP</span><span class="node-sub">prevent cloud data leaks</span></div>
+        <div class="node blue" data-node-id="security-groups" onclick="openDetail('security-groups')"><span class="node-label">Security Groups</span><span class="node-sub">virtual firewall rules</span></div>
+        <div class="node teal" data-node-id="iac" onclick="openDetail('iac')"><span class="node-label">IaC</span><span class="node-sub">infrastructure as code</span></div>
+        <div class="node blue" data-node-id="sdn" onclick="openDetail('sdn')"><span class="node-label">SDN</span><span class="node-sub">software-defined networking</span></div>
+        <div class="node blue" data-node-id="sdwan" onclick="openDetail('sdwan')"><span class="node-label">SD-WAN</span><span class="node-sub">software-defined WAN</span></div>
+        <div class="node teal" data-node-id="swg" onclick="openDetail('swg')"><span class="node-label">Next-Gen SWG</span><span class="node-sub">secure web gateway</span></div>
+        <div class="node gray" data-node-id="csa" onclick="openDetail('csa')"><span class="node-label">CSA</span><span class="node-sub">cloud security alliance</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 4: Endpoint Security + Patching & Config -->
+  <div class="zone-row">
+    <div class="zone">
+      <div class="zone-header"><span class="zone-icon">🖥</span><span class="zone-title">Endpoint Security</span><span class="zone-sub">Protect every device</span></div>
+      <div class="zone-nodes">
+        <div class="node blue" data-node-id="endpoints" onclick="openDetail('endpoints')"><span class="node-label">Endpoints</span><span class="node-sub">user-facing devices</span></div>
+        <div class="node green" data-node-id="antivirus" onclick="openDetail('antivirus')"><span class="node-label">Antivirus</span><span class="node-sub">signature detection</span></div>
+        <div class="node red" data-node-id="trojan" onclick="openDetail('trojan')"><span class="node-label">Trojan Horse</span><span class="node-sub">disguised malware</span></div>
+        <div class="node teal" data-node-id="edr" onclick="openDetail('edr')"><span class="node-label">EDR</span><span class="node-sub">endpoint detection & response</span></div>
+        <div class="node teal" data-node-id="xdr" onclick="openDetail('xdr')"><span class="node-label">XDR</span><span class="node-sub">extended detection & response</span></div>
+        <div class="node orange" data-node-id="hips" onclick="openDetail('hips')"><span class="node-label">Host IPS</span><span class="node-sub">host-based intrusion prevention</span></div>
+        <div class="node green" data-node-id="allow-block" onclick="openDetail('allow-block')"><span class="node-label">Allow / Block Lists</span><span class="node-sub">app allowlisting</span></div>
+      </div>
+    </div>
+    <div class="zone">
+      <div class="zone-header"><span class="zone-icon">⚙</span><span class="zone-title">Hardening & Config</span><span class="zone-sub">Reduce attack surface</span></div>
+      <div class="zone-nodes">
+        <div class="node green" data-node-id="hardening" onclick="openDetail('hardening')"><span class="node-label">Hardening</span><span class="node-sub">reduce attack surface</span></div>
+        <div class="node blue" data-node-id="config-mgmt" onclick="openDetail('config-mgmt')"><span class="node-label">Config Management</span><span class="node-sub">baseline + drift detection</span></div>
+        <div class="node blue" data-node-id="change-mgmt" onclick="openDetail('change-mgmt')"><span class="node-label">Change Management</span><span class="node-sub">control system changes</span></div>
+        <div class="node teal" data-node-id="master-image" onclick="openDetail('master-image')"><span class="node-label">Master Image</span><span class="node-sub">gold standard build</span></div>
+        <div class="node green" data-node-id="patch-mgmt" onclick="openDetail('patch-mgmt')"><span class="node-label">Patch Management</span><span class="node-sub">test · deploy · verify</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 5: Hardware & Boot Security + Data Protection -->
+  <div class="zone-row">
+    <div class="zone">
+      <div class="zone-header"><span class="zone-icon">🔒</span><span class="zone-title">Hardware & Boot Security</span><span class="zone-sub">Trust starts at power-on</span></div>
+      <div class="zone-nodes">
+        <div class="node yellow" data-node-id="bios" onclick="openDetail('bios')"><span class="node-label">BIOS</span><span class="node-sub">basic input/output system</span></div>
+        <div class="node green" data-node-id="uefi" onclick="openDetail('uefi')"><span class="node-label">UEFI</span><span class="node-sub">modern firmware standard</span></div>
+        <div class="node orange" data-node-id="flashing" onclick="openDetail('flashing')"><span class="node-label">Flashing</span><span class="node-sub">update firmware</span></div>
+        <div class="node green" data-node-id="measured-boot" onclick="openDetail('measured-boot')"><span class="node-label">Measured Boot</span><span class="node-sub">hash each boot stage</span></div>
+        <div class="node green" data-node-id="secure-boot" onclick="openDetail('secure-boot')"><span class="node-label">Secure Boot</span><span class="node-sub">verify boot signatures</span></div>
+        <div class="node teal" data-node-id="tpm" onclick="openDetail('tpm')"><span class="node-label">TPM</span><span class="node-sub">trusted platform module</span></div>
+        <div class="node teal" data-node-id="hw-root-trust" onclick="openDetail('hw-root-trust')"><span class="node-label">Hardware Root of Trust</span><span class="node-sub">immutable trust anchor</span></div>
+        <div class="node teal" data-node-id="endorsement-key" onclick="openDetail('endorsement-key')"><span class="node-label">Endorsement Key</span><span class="node-sub">unique TPM identity key</span></div>
+        <div class="node teal" data-node-id="hsm" onclick="openDetail('hsm')"><span class="node-label">HSM</span><span class="node-sub">hardware security module</span></div>
+        <div class="node teal" data-node-id="microsd-hsm" onclick="openDetail('microsd-hsm')"><span class="node-label">MicroSD HSM</span><span class="node-sub">portable HSM on microSD</span></div>
+        <div class="node green" data-node-id="fde" onclick="openDetail('fde')"><span class="node-label">Full Disk Encryption</span><span class="node-sub">encrypt entire drive</span></div>
+        <div class="node green" data-node-id="sed" onclick="openDetail('sed')"><span class="node-label">Self-Encrypting Drive</span><span class="node-sub">hardware-based FDE</span></div>
+      </div>
+    </div>
+    <div class="zone">
+      <div class="zone-header"><span class="zone-icon">🗄</span><span class="zone-title">Data Protection & DLP</span><span class="zone-sub">Prevent data loss and exposure</span></div>
+      <div class="zone-nodes">
+        <div class="node teal" data-node-id="dlp" onclick="openDetail('dlp')"><span class="node-label">DLP</span><span class="node-sub">data loss prevention</span></div>
+        <div class="node blue" data-node-id="network-dlp" onclick="openDetail('network-dlp')"><span class="node-label">Network DLP</span><span class="node-sub">monitor network traffic</span></div>
+        <div class="node blue" data-node-id="software-dlp" onclick="openDetail('software-dlp')"><span class="node-label">Software DLP</span><span class="node-sub">endpoint-based agent</span></div>
+        <div class="node orange" data-node-id="removable-media" onclick="openDetail('removable-media')"><span class="node-label">Removable Media</span><span class="node-sub">USB · optical · SD</span></div>
+        <div class="node green" data-node-id="db-encrypt" onclick="openDetail('db-encrypt')"><span class="node-label">Database Encryption</span><span class="node-sub">encrypt DB files</span></div>
+        <div class="node purple" data-node-id="data-in-use" onclick="openDetail('data-in-use')"><span class="node-label">Data in Use</span><span class="node-sub">data being processed</span></div>
+        <div class="node green" data-node-id="secure-enclave" onclick="openDetail('secure-enclave')"><span class="node-label">Secure Enclave</span><span class="node-sub">isolated CPU region</span></div>
+        <div class="node green" data-node-id="tee" onclick="openDetail('tee')"><span class="node-label">TEE</span><span class="node-sub">trusted execution env.</span></div>
+        <div class="node red" data-node-id="phi" onclick="openDetail('phi')"><span class="node-label">PHI</span><span class="node-sub">protected health info</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 6: Mobile Devices + Mobile Threats -->
+  <div class="zone-row">
+    <div class="zone">
+      <div class="zone-header"><span class="zone-icon">📱</span><span class="zone-title">Mobile Device Management</span><span class="zone-sub">Control and secure mobile devices</span></div>
+      <div class="zone-nodes">
+        <div class="node blue" data-node-id="mdm" onclick="openDetail('mdm')"><span class="node-label">MDM</span><span class="node-sub">mobile device management</span></div>
+        <div class="node teal" data-node-id="uem" onclick="openDetail('uem')"><span class="node-label">UEM</span><span class="node-sub">unified endpoint management</span></div>
+        <div class="node blue" data-node-id="corp-owned" onclick="openDetail('corp-owned')"><span class="node-label">Corporate Owned</span><span class="node-sub">org owns, manages device</span></div>
+        <div class="node blue" data-node-id="cope" onclick="openDetail('cope')"><span class="node-label">COPE</span><span class="node-sub">corp. owned, personally enabled</span></div>
+        <div class="node orange" data-node-id="byod" onclick="openDetail('byod')"><span class="node-label">BYOD</span><span class="node-sub">bring your own device</span></div>
+        <div class="node purple" data-node-id="cyod" onclick="openDetail('cyod')"><span class="node-label">CYOD</span><span class="node-sub">choose your own device</span></div>
+        <div class="node green" data-node-id="screen-lock" onclick="openDetail('screen-lock')"><span class="node-label">Screen Lock</span><span class="node-sub">PIN · biometric lock</span></div>
+        <div class="node green" data-node-id="remote-wipe" onclick="openDetail('remote-wipe')"><span class="node-label">Remote Wipe</span><span class="node-sub">erase lost devices</span></div>
+        <div class="node teal" data-node-id="geofencing" onclick="openDetail('geofencing')"><span class="node-label">Geofencing</span><span class="node-sub">location-based policy</span></div>
+        <div class="node teal" data-node-id="gps-tag" onclick="openDetail('gps-tag')"><span class="node-label">GPS Tagging</span><span class="node-sub">track device location</span></div>
+        <div class="node blue" data-node-id="storage-seg" onclick="openDetail('storage-seg')"><span class="node-label">Storage Segmentation</span><span class="node-sub">separate work/personal data</span></div>
+        <div class="node blue" data-node-id="content-mgmt" onclick="openDetail('content-mgmt')"><span class="node-label">Content Management</span><span class="node-sub">control app content</span></div>
+        <div class="node blue" data-node-id="app-mgmt" onclick="openDetail('app-mgmt')"><span class="node-label">App Management</span><span class="node-sub">approve/block apps</span></div>
+        <div class="node teal" data-node-id="context-auth" onclick="openDetail('context-auth')"><span class="node-label">Context-Aware Auth</span><span class="node-sub">location · time · device</span></div>
+      </div>
+    </div>
+    <div class="zone">
+      <div class="zone-header"><span class="zone-icon">⚔</span><span class="zone-title">Mobile Threats & Risks</span><span class="zone-sub">Mobile-specific attack vectors</span></div>
+      <div class="zone-nodes">
+        <div class="node red" data-node-id="jailbreak" onclick="openDetail('jailbreak')"><span class="node-label">Jailbreaking</span><span class="node-sub">bypass iOS restrictions</span></div>
+        <div class="node red" data-node-id="rooting" onclick="openDetail('rooting')"><span class="node-label">Rooting</span><span class="node-sub">bypass Android restrictions</span></div>
+        <div class="node red" data-node-id="third-party-app" onclick="openDetail('third-party-app')"><span class="node-label">Third-Party App Stores</span><span class="node-sub">unvetted apps</span></div>
+        <div class="node orange" data-node-id="ota-update" onclick="openDetail('ota-update')"><span class="node-label">OTA Updates</span><span class="node-sub">over-the-air firmware</span></div>
+        <div class="node red" data-node-id="custom-firmware" onclick="openDetail('custom-firmware')"><span class="node-label">Custom Firmware</span><span class="node-sub">modified OS</span></div>
+        <div class="node orange" data-node-id="sideloading" onclick="openDetail('sideloading')"><span class="node-label">Sideloading</span><span class="node-sub">install outside app store</span></div>
+        <div class="node blue" data-node-id="tethering" onclick="openDetail('tethering')"><span class="node-label">Tethering</span><span class="node-sub">share mobile data</span></div>
+        <div class="node blue" data-node-id="hotspot" onclick="openDetail('hotspot')"><span class="node-label">Mobile Hotspot</span><span class="node-sub">WiFi from cell data</span></div>
+        <div class="node blue" data-node-id="wifi-direct" onclick="openDetail('wifi-direct')"><span class="node-label">WiFi Direct</span><span class="node-sub">peer-to-peer WiFi</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 7: Embedded & IoT + Hardware Decommissioning -->
+  <div class="zone-row">
+    <div class="zone">
+      <div class="zone-header"><span class="zone-icon">🔌</span><span class="zone-title">Embedded Systems & IoT</span><span class="zone-sub">Specialized computing environments</span></div>
+      <div class="zone-nodes">
+        <div class="node gray" data-node-id="embedded" onclick="openDetail('embedded')"><span class="node-label">Embedded System</span><span class="node-sub">purpose-built computer</span></div>
+        <div class="node blue" data-node-id="iot" onclick="openDetail('iot')"><span class="node-label">IoT</span><span class="node-sub">internet of things</span></div>
+        <div class="node orange" data-node-id="ics" onclick="openDetail('ics')"><span class="node-label">ICS</span><span class="node-sub">industrial control system</span></div>
+        <div class="node orange" data-node-id="scada-ref" onclick="openDetail('scada-ref')"><span class="node-label">SCADA</span><span class="node-sub">supervisory ctrl & data acq.</span></div>
+        <div class="node teal" data-node-id="soc" onclick="openDetail('soc')"><span class="node-label">SoC</span><span class="node-sub">system on a chip</span></div>
+        <div class="node purple" data-node-id="rtos" onclick="openDetail('rtos')"><span class="node-label">RTOS</span><span class="node-sub">real-time OS</span></div>
+        <div class="node red" data-node-id="embedded-harden" onclick="openDetail('embedded-harden')"><span class="node-label">Hardening Constraints</span><span class="node-sub">limited patching ability</span></div>
+      </div>
+    </div>
+    <div class="zone">
+      <div class="zone-header"><span class="zone-icon">🗑</span><span class="zone-title">Hardware Decommissioning</span><span class="zone-sub">Safely retire hardware</span></div>
+      <div class="zone-nodes">
+        <div class="node orange" data-node-id="decommission" onclick="openDetail('decommission')"><span class="node-label">Decommissioning</span><span class="node-sub">retire hardware securely</span></div>
+        <div class="node red" data-node-id="legacy-hw" onclick="openDetail('legacy-hw')"><span class="node-label">Legacy Hardware</span><span class="node-sub">outdated, unsupported</span></div>
+        <div class="node red" data-node-id="eol-hw" onclick="openDetail('eol-hw')"><span class="node-label">End-of-Life Hardware</span><span class="node-sub">vendor support ended</span></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Graph View -->
+<div id="graph-view">
+  <div id="graph-toolbar">
+    <button onclick="runGraphLayout(200)">↺ Re-layout</button>
+    <button onclick="fitGraph()">⊡ Fit</button>
+  </div>
+  <svg id="graph-svg" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="ga-gray"  markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#475569"/></marker>
+      <marker id="ga-green" markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#2ecc71"/></marker>
+      <marker id="ga-blue"  markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#3498db"/></marker>
+      <marker id="ga-teal"  markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#1abc9c"/></marker>
+      <marker id="ga-red"   markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#e74c3c"/></marker>
+    </defs>
+    <g id="graph-root"><g id="ge"></g><g id="gn"></g></g>
+  </svg>
+  <div id="graph-hint">Scroll to zoom · Drag nodes · Click to inspect</div>
+</div>
+
+<!-- Detail Panel -->
+<aside id="detail-panel" class="collapsed">
+  <div style="position:relative;flex-shrink:0;padding:14px 14px 0">
+    <button id="detail-close" onclick="closeDetail()">✕</button>
+    <div id="detail-title">—</div>
+    <div id="detail-category">—</div>
+  </div>
+  <div id="detail-scroll"><div id="detail-body"></div></div>
+</aside>
+
+<footer id="footer">
+  <span class="foot-label">Key Concepts:</span>
+  <span class="foot-pill teal">Type I HV = bare metal · Type II = hosted</span>
+  <span class="foot-pill green">TPM stores keys · HSM processes them</span>
+  <span class="foot-pill blue">CASB = cloud access visibility</span>
+  <span class="foot-sep"></span>
+  <span class="foot-pill red">Jailbreak=iOS · Root=Android</span>
+  <span class="foot-pill yellow">UEFI replaces BIOS</span>
+  <span class="foot-pill orange">EDR > AV · XDR > EDR</span>
+</footer>
+</div>
+<script>
+const NODE_DATA={
+'virtualization':{title:'Virtualization',cat:'Virtualization',html:`<p>The process of creating a <strong>software-based (virtual) version</strong> of hardware, OS, storage, or network resources.</p><h4>Benefits</h4><ul><li>Server consolidation — fewer physical machines</li><li>Isolation — VMs are sandboxed from each other</li><li>Snapshots and rapid recovery</li><li>Portability — move VMs between hosts</li></ul><div class="exam-tip">Virtualization improves availability and reduces cost. The hypervisor is the core component that makes it possible.</div>`},
+'hypervisor':{title:'Hypervisor',cat:'Virtualization',html:`<p>Software that <strong>creates and manages virtual machines</strong> by abstracting physical hardware.</p><h4>Type I vs Type II</h4><ul><li><strong>Type I (Bare-metal)</strong>: runs directly on hardware (VMware ESXi, Hyper-V, KVM) — more secure, more efficient</li><li><strong>Type II (Hosted)</strong>: runs on top of a host OS (VMware Workstation, VirtualBox) — easier to install, less secure</li></ul><div class="exam-tip">Type I = no host OS, better security. Type II = runs on OS, more attack surface. Enterprise uses Type I.</div>`},
+'type2-hv':{title:'Type II Hypervisor',cat:'Virtualization',html:`<p>A hypervisor that <strong>runs as an application on top of a host operating system</strong>.</p><h4>Examples</h4><ul><li>VMware Workstation, Oracle VirtualBox, Parallels</li></ul><h4>Security Risk</h4><ul><li>Host OS vulnerabilities affect all VMs</li><li>Larger attack surface than Type I</li><li>VM escape could reach host OS</li></ul><div class="exam-tip">Type II is used for development/testing, not production. Type I (bare-metal) is the secure enterprise choice.</div>`},
+'vm-host':{title:'Host (Virtualization)',cat:'Virtualization',html:`<p>The <strong>physical machine</strong> that runs the hypervisor and provides resources to virtual machines.</p><div class="exam-tip">If the host is compromised, all guest VMs on it are at risk. Hardening the hypervisor host is critical.</div>`},
+'vm-guest':{title:'Guest (Virtualization)',cat:'Virtualization',html:`<p>A <strong>virtual machine</strong> running on a hypervisor — from the guest's perspective it appears to be a physical machine.</p><div class="exam-tip">Guests are isolated from each other by the hypervisor. A compromised guest should not be able to affect other guests (unless a VM escape attack succeeds).</div>`},
+'snapshot':{title:'Snapshot',cat:'Virtualization',html:`<p>A <strong>point-in-time copy of a VM's state</strong> — disk, memory, and configuration — allowing rollback.</p><h4>Uses</h4><ul><li>Before applying patches or changes</li><li>Rapid recovery from ransomware or failed updates</li><li>Malware analysis (restore after detonation)</li></ul><h4>Security Risk</h4><ul><li>Old snapshots contain old vulnerabilities</li><li>Snapshot sprawl wastes storage</li></ul><div class="exam-tip">Snapshots are NOT backups — they live on the same storage as the VM. For true DR, replicate off-site.</div>`},
+'replication':{title:'Replication',cat:'Virtualization',html:`<p><strong>Continuous or scheduled copying of a VM</strong> to another location for high availability and disaster recovery.</p><div class="exam-tip">Replication keeps a near-live copy. Snapshot = restore point. Replication = live copy elsewhere. Both support availability.</div>`},
+'vdi':{title:'VDI — Virtual Desktop Infrastructure',cat:'Virtualization',html:`<p>A system where <strong>desktop environments run as VMs on centralized servers</strong> — users access via thin clients or browsers.</p><h4>Benefits</h4><ul><li>Centralized management and patching</li><li>Data stays on server, not endpoint</li><li>BYOD-friendly — any device, full corporate desktop</li></ul><div class="exam-tip">VDI reduces endpoint risk — if a thin client is stolen, no data is on it. All data lives centrally.</div>`},
+'thin-client':{title:'Thin Client',cat:'Virtualization',html:`<p>A minimal endpoint device with <strong>little local processing power</strong> — relies on a server (VDI) for computing.</p><div class="exam-tip">Thin clients have minimal attack surface — no local data, minimal OS. Lost thin client = lost hardware only, no data.</div>`},
+'containerization':{title:'Containerization',cat:'Virtualization',html:`<p>A lightweight virtualization method where applications run in <strong>isolated user-space instances (containers)</strong> sharing the host OS kernel.</p><h4>vs VMs</h4><ul><li>Containers share host kernel — lighter, faster</li><li>VMs have full guest OS — heavier, more isolated</li><li>Docker, Kubernetes, LXC</li></ul><div class="exam-tip">Containers are less isolated than VMs (shared kernel). A kernel exploit could escape a container. Use seccomp and namespaces for hardening.</div>`},
+'vm-attack':{title:'VM Attacks',cat:'VM Security Threats',html:`<p>Attacks targeting the virtual machine layer — exploiting the hypervisor or VM isolation.</p><h4>Types</h4><ul><li><strong>VM Escape</strong>: breaking out of the VM to access the hypervisor or other VMs — most severe</li><li><strong>VM Hopping</strong>: pivoting between VMs on the same host</li><li><strong>Hyperjacking</strong>: installing a rogue hypervisor below the real one</li><li><strong>VM Sprawl Attack</strong>: exploit unmanaged/forgotten VMs</li></ul><div class="exam-tip">VM escape is the most dangerous VM attack — it breaks the core isolation guarantee of virtualization. Patch hypervisors promptly.</div>`},
+'vm-sprawl':{title:'VM Sprawl',cat:'VM Security Threats',html:`<p>The <strong>uncontrolled proliferation of VMs</strong> that are no longer tracked, managed, or patched.</p><h4>Risks</h4><ul><li>Unpatched VMs become easy targets</li><li>Orphaned VMs may contain sensitive data</li><li>Resource waste on the host</li></ul><h4>Prevention</h4><ul><li>VM lifecycle management policy</li><li>Automated discovery and decommissioning</li></ul><div class="exam-tip">VM sprawl is an availability and security risk. Organizations must track all VMs like physical assets.</div>`},
+'resource-reuse':{title:'Resource Reuse',cat:'VM Security Threats',html:`<p>When a hypervisor <strong>reallocates memory or storage to a new VM without completely zeroing it</strong> — previous VM's data may be readable.</p><div class="exam-tip">Resource reuse is a confidentiality risk in virtualized and cloud environments. Secure memory zeroing before reallocation prevents data leakage between tenants.</div>`},
+'cloud':{title:'Cloud Computing',cat:'Cloud Computing',html:`<p>The delivery of <strong>computing services — servers, storage, networking, software — over the internet</strong> on a pay-per-use model.</p><h4>Key Characteristics (NIST)</h4><ul><li>On-demand self-service</li><li>Broad network access</li><li>Resource pooling (multi-tenancy)</li><li>Rapid elasticity</li><li>Measured service</li></ul><div class="exam-tip">Know NIST's 5 essential cloud characteristics. Multi-tenancy means your data shares infrastructure with other customers — isolation is the provider's responsibility.</div>`},
+'cloud-scale':{title:'Cloud Scalability',cat:'Cloud Computing',html:`<p>The ability to <strong>increase or decrease resources to meet demand</strong> — can be horizontal (more instances) or vertical (bigger instance).</p><div class="exam-tip">Scalability = ability to grow. Elasticity = automatic bidirectional scaling. Cloud supports both; traditional on-prem supports neither easily.</div>`},
+'cloud-elastic':{title:'Cloud Elasticity',cat:'Cloud Computing',html:`<p>The ability to <strong>automatically scale resources up and down</strong> in response to real-time demand — resources adjust without human intervention.</p><div class="exam-tip">Elasticity supports availability. Over-provisioning wastes money; under-provisioning causes outages. Elasticity solves both automatically.</div>`},
+'cloud-storage':{title:'Cloud Storage',cat:'Cloud Computing',html:`<p>Remote data storage hosted by a cloud provider — <strong>accessible over the internet</strong>, scalable on demand.</p><h4>Types</h4><ul><li>Object storage (S3, Azure Blob) — files/images</li><li>Block storage — virtual disks for VMs</li><li>File storage — shared network file systems</li></ul><div class="exam-tip">Cloud storage requires encryption at rest and in transit. You own your data but the provider owns the hardware — understand the shared responsibility model.</div>`},
+'on-prem':{title:'On-Premise Resources',cat:'Cloud Computing',html:`<p>Infrastructure <strong>owned, operated, and maintained by the organization</strong> in its own facilities.</p><h4>Tradeoffs vs Cloud</h4><ul><li>Full control over data and hardware</li><li>Higher capital cost, slower to scale</li><li>Organization responsible for all security</li></ul><div class="exam-tip">On-prem = organization is responsible for everything. Cloud = shared responsibility model. Regulated industries may require on-prem for compliance.</div>`},
+'off-prem':{title:'Off-Premise Resources',cat:'Cloud Computing',html:`<p>Infrastructure <strong>hosted outside the organization's facilities</strong> — cloud, co-location, or managed hosting.</p><div class="exam-tip">Off-prem shifts physical security, power, and cooling responsibility to the provider. The organization retains data ownership and application security responsibility.</div>`},
+'central-decent':{title:'Centralized vs Decentralized',cat:'Cloud Computing',html:`<p>Two models for managing cloud and IT resources:</p><h4>Centralized</h4><ul><li>Single team controls all cloud resources</li><li>Consistent policy enforcement</li><li>Potential bottleneck</li></ul><h4>Decentralized</h4><ul><li>Business units manage own resources</li><li>Faster, more flexible</li><li>Risk of shadow IT and inconsistent security</li></ul><div class="exam-tip">Decentralized cloud leads to shadow IT and ungoverned resources. CASB and cloud security policies help enforce governance in decentralized models.</div>`},
+'multi-cloud':{title:'Multi-Cloud',cat:'Cloud Computing',html:`<p>Using <strong>two or more cloud providers</strong> simultaneously to avoid vendor lock-in and improve resilience.</p><div class="exam-tip">Multi-cloud improves availability (no single provider outage takes you down) but increases complexity — more attack surfaces, more IAM systems to manage.</div>`},
+'saas':{title:'SaaS — Software as a Service',cat:'Cloud Delivery Models',html:`<p>The cloud provider delivers a <strong>complete application</strong> — the customer only manages data and user access.</p><h4>Examples</h4><ul><li>Microsoft 365, Google Workspace, Salesforce, Dropbox</li></ul><h4>Shared Responsibility</h4><ul><li>Provider manages: OS, runtime, middleware, app</li><li>Customer manages: data, access/identity</li></ul><div class="exam-tip">SaaS = most responsibility on provider. IaaS = most responsibility on customer. Know the responsibility stack for each delivery model.</div>`},
+'paas':{title:'PaaS — Platform as a Service',cat:'Cloud Delivery Models',html:`<p>The cloud provider delivers <strong>OS, runtime, and middleware</strong> — the customer manages applications and data.</p><h4>Examples</h4><ul><li>Azure App Service, AWS Elastic Beanstalk, Heroku</li></ul><h4>Shared Responsibility</h4><ul><li>Provider: physical, network, OS, runtime, middleware</li><li>Customer: application code, data</li></ul><div class="exam-tip">PaaS is for developers — deploy code without managing infrastructure. Security focus is on application code and data.</div>`},
+'iaas':{title:'IaaS — Infrastructure as a Service',cat:'Cloud Delivery Models',html:`<p>The cloud provider delivers <strong>raw compute, storage, and networking</strong> — the customer manages OS up through applications.</p><h4>Examples</h4><ul><li>AWS EC2, Azure VMs, Google Compute Engine</li></ul><h4>Shared Responsibility</h4><ul><li>Provider: physical, network, hypervisor</li><li>Customer: OS, runtime, middleware, app, data</li></ul><div class="exam-tip">IaaS = most customer responsibility. You're renting the hardware — you own everything above it. OS patching, hardening, and security are all your job.</div>`},
+'cloud-public':{title:'Public Cloud',cat:'Cloud Deployment Models',html:`<p>Cloud infrastructure <strong>owned and operated by a CSP, shared among multiple tenants</strong>.</p><ul><li>AWS, Azure, GCP</li><li>Lowest cost, most flexible</li><li>Multi-tenancy: data isolation is provider's responsibility</li></ul><div class="exam-tip">Public cloud has the broadest attack surface due to multi-tenancy. Encryption, IAM, and network security groups are critical controls.</div>`},
+'cloud-private':{title:'Private Cloud',cat:'Cloud Deployment Models',html:`<p>Cloud infrastructure <strong>dedicated to a single organization</strong> — may be on-prem or CSP-hosted but exclusively for one customer.</p><div class="exam-tip">Private cloud = highest control and security, highest cost. Used by regulated industries (healthcare, finance, government).</div>`},
+'cloud-community':{title:'Community Cloud',cat:'Cloud Deployment Models',html:`<p>Cloud infrastructure <strong>shared by organizations with common interests</strong> — same industry, compliance requirements, or mission.</p><h4>Examples</h4><ul><li>Government cloud (FedRAMP), healthcare cloud (HIPAA-covered)</li></ul><div class="exam-tip">Community cloud balances cost-sharing with compliance needs. Less common than public or private — but used in government and healthcare.</div>`},
+'cloud-hybrid':{title:'Hybrid Cloud',cat:'Cloud Deployment Models',html:`<p>A <strong>combination of public and private cloud</strong> (and/or on-prem) connected by technology enabling data and app portability.</p><h4>Use Cases</h4><ul><li>Burst to public cloud during peak demand</li><li>Keep sensitive data on private, less-sensitive on public</li><li>Gradual migration to cloud</li></ul><div class="exam-tip">Hybrid cloud is the most common enterprise model. Security teams must manage consistent policies across both environments — use CASB for visibility.</div>`},
+'csp':{title:'CSP — Cloud Service Provider',cat:'Cloud Architecture',html:`<p>A company that <strong>offers cloud computing services</strong> — compute, storage, networking, and managed services.</p><h4>Major CSPs</h4><ul><li>Amazon Web Services (AWS), Microsoft Azure, Google Cloud Platform (GCP)</li></ul><div class="exam-tip">In the shared responsibility model, you must understand what your CSP is responsible for vs. what you are. This varies by delivery model (SaaS/PaaS/IaaS).</div>`},
+'mssp':{title:'MSSP — Managed Security Service Provider',cat:'Cloud Architecture',html:`<p>A third-party company that <strong>manages security services on behalf of an organization</strong> — monitoring, response, compliance.</p><h4>Services</h4><ul><li>SOC-as-a-service, managed SIEM, managed firewall</li><li>Vulnerability management, incident response</li></ul><div class="exam-tip">MSSPs provide 24/7 security coverage organizations can't afford in-house. Vet them carefully — they have access to your most sensitive data.</div>`},
+'middleware':{title:'Middleware',cat:'Cloud Architecture',html:`<p>Software that <strong>connects different applications or services</strong> — acts as a translation layer between systems.</p><h4>Examples</h4><ul><li>Message queues (RabbitMQ, Kafka), API gateways, ESB</li></ul><div class="exam-tip">Middleware vulnerabilities can expose multiple connected systems. Secure and patch middleware like any other application.</div>`},
+'runtime':{title:'Runtime Environment',cat:'Cloud Architecture',html:`<p>The <strong>environment in which code executes</strong> — provides libraries, interpreters, and OS services needed to run an application.</p><h4>Examples</h4><ul><li>Java JRE, Node.js, Python runtime, .NET CLR</li></ul><div class="exam-tip">Runtime vulnerabilities (e.g., Log4Shell in Java) affect every application using that runtime. Keep runtimes patched.</div>`},
+'api':{title:'API — Application Programming Interface',cat:'Cloud Architecture',html:`<p>A defined interface allowing <strong>software components to communicate</strong> — the connective tissue of cloud services.</p><h4>Security Risks</h4><ul><li>Broken authentication — no or weak API keys</li><li>Excessive data exposure — returning too much data</li><li>Injection attacks via API parameters</li><li>OWASP API Security Top 10</li></ul><div class="exam-tip">APIs are a major attack surface in cloud environments. Require authentication (OAuth/API keys), rate limiting, and input validation on all API endpoints.</div>`},
+'microservices':{title:'Microservices',cat:'Cloud Architecture',html:`<p>An architectural approach where applications are built as <strong>small, independent services</strong> that communicate via APIs.</p><h4>Security Implications</h4><ul><li>Each service is an independent attack surface</li><li>Service-to-service communication must be authenticated</li><li>Containers and orchestration (Kubernetes) add complexity</li></ul><div class="exam-tip">Microservices increase agility but complicate security — many more network endpoints to protect. Use service meshes and mTLS for service-to-service security.</div>`},
+'edge-compute':{title:'Edge Computing',cat:'Cloud Architecture',html:`<p>Processing data <strong>near the source</strong> (device or local node) rather than sending it to a central cloud.</p><h4>Use Cases</h4><ul><li>IoT sensors processing locally, CDN edge nodes, autonomous vehicles</li></ul><div class="exam-tip">Edge computing reduces latency and bandwidth but pushes security complexity to distributed locations that may be physically accessible to attackers.</div>`},
+'fog-compute':{title:'Fog Computing',cat:'Cloud Architecture',html:`<p>A <strong>distributed computing layer between edge devices and the central cloud</strong> — extends cloud capabilities closer to the edge.</p><div class="exam-tip">Fog = intermediate layer between edge and cloud. Edge processes at the device; fog aggregates and filters before sending to cloud.</div>`},
+'cloud-harden':{title:'Cloud Hardening',cat:'Cloud Security',html:`<p>Applying security configurations to <strong>reduce the attack surface of cloud infrastructure</strong>.</p><h4>Key Practices</h4><ul><li>Disable unused services and ports</li><li>Enable MFA on all cloud accounts</li><li>Enforce least privilege IAM roles</li><li>Enable logging and monitoring (CloudTrail, CloudWatch)</li><li>Encrypt data at rest and in transit</li><li>Use security groups as virtual firewalls</li></ul><div class="exam-tip">Cloud misconfiguration is the #1 cause of cloud breaches. IaC templates should enforce hardening standards by default.</div>`},
+'casb':{title:'CASB — Cloud Access Security Broker',cat:'Cloud Security',html:`<p>A security control point that <strong>sits between users and cloud services</strong> — enforcing security policies, visibility, and compliance.</p><h4>Functions</h4><ul><li>Visibility — discover shadow IT (unsanctioned cloud apps)</li><li>Compliance — enforce DLP and regulatory policies</li><li>Threat protection — detect anomalous cloud activity</li><li>Data security — encrypt sensitive data in cloud apps</li></ul><h4>Modes</h4><ul><li>API mode — integrates with cloud app APIs</li><li>Proxy mode — inline interception of traffic</li></ul><div class="exam-tip">CASB is the key control for cloud visibility. It's especially important in decentralized orgs with shadow IT risks. Think: firewall for cloud apps.</div>`},
+'cloud-dlp':{title:'Cloud-Based DLP',cat:'Cloud Security',html:`<p>Data Loss Prevention deployed <strong>as a cloud service</strong> — inspects data moving to/from cloud applications.</p><div class="exam-tip">Cloud DLP often integrates with CASB. It scans cloud storage (e.g., Google Drive, OneDrive) for sensitive data like SSNs, PHI, and PCI data.</div>`},
+'security-groups':{title:'Security Groups',cat:'Cloud Security',html:`<p>Virtual firewall rules in cloud environments that <strong>control inbound and outbound traffic</strong> to cloud resources.</p><h4>AWS Example</h4><ul><li>Stateful — return traffic automatically allowed</li><li>Applied to instances, not subnets (vs NACLs)</li><li>Default: deny all inbound, allow all outbound</li></ul><div class="exam-tip">Security groups are stateful; NACLs are stateless. Security groups = instance-level firewall. Misconfigured security groups (0.0.0.0/0 on port 22/3389) are a common cloud breach cause.</div>`},
+'iac':{title:'IaC — Infrastructure as Code',cat:'Cloud Security',html:`<p>Managing and provisioning infrastructure through <strong>machine-readable configuration files</strong> rather than manual processes.</p><h4>Tools</h4><ul><li>Terraform, AWS CloudFormation, Ansible, Pulumi</li></ul><h4>Security Benefits</h4><ul><li>Consistent, repeatable deployments</li><li>Security policies enforced in templates</li><li>Version-controlled — audit trail for changes</li></ul><div class="exam-tip">IaC enables "security as code" — embed security controls in templates so every deployment is hardened by default. Scan IaC templates for misconfigurations before deploy.</div>`},
+'sdn':{title:'SDN — Software-Defined Networking',cat:'Cloud Security',html:`<p>Network architecture that <strong>separates the control plane from the data plane</strong> — network behavior programmed via software.</p><h4>Control vs Data Plane</h4><ul><li><strong>Control plane</strong>: makes routing decisions (software controller)</li><li><strong>Data plane</strong>: forwards packets (hardware switches)</li></ul><div class="exam-tip">SDN centralizes network control — compromise of the controller compromises the entire network. Secure the SDN controller like a critical server.</div>`},
+'sdwan':{title:'SD-WAN — Software-Defined WAN',cat:'Cloud Security',html:`<p>Applies SDN principles to wide-area networks — <strong>intelligently routes traffic across multiple WAN links</strong>.</p><h4>Benefits</h4><ul><li>Route traffic over MPLS, broadband, or LTE dynamically</li><li>Centralized policy management for all sites</li><li>Built-in encryption between sites</li></ul><div class="exam-tip">SD-WAN replaces traditional MPLS with more flexible, cheaper connectivity. Security policies are applied centrally and enforced at all branch locations.</div>`},
+'swg':{title:'Next-Gen Secure Web Gateway (SWG)',cat:'Cloud Security',html:`<p>A cloud-delivered security service that <strong>inspects and controls web traffic</strong> — filtering malware, enforcing policy, and decrypting TLS.</p><h4>Capabilities</h4><ul><li>URL filtering and category blocking</li><li>TLS/SSL inspection (decrypt, inspect, re-encrypt)</li><li>Malware detection on web content</li><li>CASB integration for cloud app visibility</li></ul><div class="exam-tip">SWG is the modern replacement for on-prem web proxy. It's often delivered as part of SASE (Secure Access Service Edge).</div>`},
+'csa':{title:'CSA — Cloud Security Alliance',cat:'Cloud Security',html:`<p>A non-profit organization that <strong>defines best practices for securing cloud environments</strong>.</p><h4>Key Publications</h4><ul><li>Cloud Controls Matrix (CCM)</li><li>"Treacherous 12" — top cloud threats</li><li>STAR certification program</li></ul><div class="exam-tip">CSA publishes the Cloud Controls Matrix — a framework for cloud security controls mapped to standards like ISO 27001, NIST, and PCI DSS.</div>`},
+'endpoints':{title:'Endpoints',cat:'Endpoint Security',html:`<p>Any device that <strong>connects to a network</strong> and can be a point of entry for attackers — desktops, laptops, phones, servers, IoT devices.</p><div class="exam-tip">Endpoints are the #1 entry point for attackers (phishing, malware). Endpoint security must include AV, EDR, patching, hardening, and access controls.</div>`},
+'antivirus':{title:'Antivirus Software',cat:'Endpoint Security',html:`<p>Software that <strong>detects and removes malware</strong> using signature-based detection and heuristics.</p><h4>Limitations</h4><ul><li>Signatures must be updated — misses new/zero-day malware</li><li>Polymorphic malware evades signatures</li><li>Does not detect sophisticated threats like APTs</li></ul><div class="exam-tip">AV is necessary but insufficient. EDR adds behavior-based detection on top of AV. Modern endpoint protection combines both.</div>`},
+'trojan':{title:'Trojan Horse',cat:'Endpoint Security',html:`<p>Malware disguised as <strong>legitimate software</strong> — the user installs it willingly, not knowing it contains malicious code.</p><h4>Types</h4><ul><li>Remote Access Trojan (RAT) — backdoor access</li><li>Banking Trojan — steal financial credentials</li><li>Dropper — downloads additional malware</li></ul><div class="exam-tip">Trojans rely on social engineering — users must be tricked into installing them. Application allowlisting prevents unauthorized software from running.</div>`},
+'edr':{title:'EDR — Endpoint Detection and Response',cat:'Endpoint Security',html:`<p>A solution that <strong>continuously monitors endpoints, detects threats, and enables response</strong> — goes beyond signature-based AV.</p><h4>Capabilities</h4><ul><li>Behavioral analysis — detects anomalous activity</li><li>Threat hunting — proactively search for indicators</li><li>Automated response — isolate, kill process</li><li>Forensic investigation — timeline of events</li></ul><div class="exam-tip">EDR = AV++ with behavior detection and response. XDR extends EDR across network and cloud. CrowdStrike, SentinelOne, and Microsoft Defender are EDR examples.</div>`},
+'xdr':{title:'XDR — Extended Detection and Response',cat:'Endpoint Security',html:`<p>Extends EDR to <strong>correlate data across endpoints, network, cloud, and email</strong> — unified visibility and response.</p><h4>vs EDR</h4><ul><li>EDR = endpoint only</li><li>XDR = endpoint + network + cloud + email</li><li>Better correlation = fewer false positives</li></ul><div class="exam-tip">XDR is the evolution of EDR. It ingests data from multiple sources to provide a complete attack picture. Think of it as SIEM + EDR combined.</div>`},
+'hips':{title:'Host IPS — Host-Based Intrusion Prevention',cat:'Endpoint Security',html:`<p>Software on an endpoint that <strong>monitors and blocks malicious activity</strong> on that specific host.</p><div class="exam-tip">HIPS actively blocks vs HIDS which only detects. HIPS can stop attacks that bypass network IPS (encrypted traffic, local attacks). Modern EDR tools often include HIPS functionality.</div>`},
+'allow-block':{title:'App Allow / Block Lists',cat:'Endpoint Security',html:`<p><strong>Allowlisting</strong>: only pre-approved applications can run — everything else is blocked by default.<br><strong>Blocklisting</strong>: known-bad applications are blocked — everything else is allowed.</p><div class="exam-tip">Allowlisting is far more secure than blocklisting. It prevents unknown malware by default. Drawback: high administrative overhead to maintain the approved list.</div>`},
+'hardening':{title:'Hardening',cat:'Hardening & Config',html:`<p>The process of <strong>reducing the attack surface</strong> of a system by removing unnecessary features, services, and access.</p><h4>Key Steps</h4><ul><li>Remove unused software and services</li><li>Change default passwords</li><li>Apply security benchmarks (CIS Benchmarks)</li><li>Disable unnecessary ports</li><li>Enable host firewall and logging</li></ul><div class="exam-tip">CIS Benchmarks provide hardening guidance for every major OS and application. Hardening is a preventive control.</div>`},
+'config-mgmt':{title:'Configuration Management',cat:'Hardening & Config',html:`<p>The process of <strong>maintaining system configurations in a known, secure state</strong> — and detecting drift from that baseline.</p><h4>Tools</h4><ul><li>Ansible, Puppet, Chef, SCCM</li><li>Security baselines: DISA STIGs, CIS Benchmarks</li></ul><div class="exam-tip">Configuration drift — systems deviating from baseline — creates vulnerabilities. Automated config management detects and remediates drift continuously.</div>`},
+'change-mgmt':{title:'Change Management',cat:'Hardening & Config',html:`<p>A formal process for <strong>requesting, reviewing, approving, and documenting changes</strong> to IT systems.</p><h4>Process</h4><ul><li>Change request submitted</li><li>Risk assessment performed</li><li>Change Advisory Board (CAB) approves</li><li>Change implemented in maintenance window</li><li>Tested and documented</li></ul><div class="exam-tip">Change management prevents unauthorized modifications and ensures rollback plans exist. Unauthorized changes = security risk and compliance violation.</div>`},
+'master-image':{title:'Master Image (Gold Image)',cat:'Hardening & Config',html:`<p>A <strong>pre-hardened, approved OS/application image</strong> used as the template for deploying new systems.</p><h4>Benefits</h4><ul><li>Consistent security baseline across all deployments</li><li>Known-good state for rapid redeployment</li><li>Reduces configuration drift from day one</li></ul><div class="exam-tip">Master images must be updated regularly with patches. A gold image that's 6 months old ships with 6 months of vulnerabilities.</div>`},
+'patch-mgmt':{title:'Patch Management',cat:'Hardening & Config',html:`<p>The systematic process of <strong>identifying, testing, and deploying patches</strong> to fix vulnerabilities.</p><h4>Process</h4><ul><li>Identify missing patches (vulnerability scan)</li><li>Test in non-production environment</li><li>Deploy within SLA (critical = 24-72 hrs)</li><li>Verify and document</li></ul><div class="exam-tip">Unpatched systems are the most common vulnerability exploited. Know that patch management is corrective and preventive. WSUS, SCCM, and Intune are enterprise patch tools.</div>`},
+'bios':{title:'BIOS — Basic Input/Output System',cat:'Hardware & Boot',html:`<p>Legacy firmware that <strong>initializes hardware at boot</strong> and provides a runtime environment for the OS to load.</p><h4>Security Weaknesses</h4><ul><li>No Secure Boot capability</li><li>Limited protection against rootkits</li><li>No cryptographic verification of boot process</li><li>Replaced by UEFI</li></ul><div class="exam-tip">BIOS is legacy. UEFI replaced it. BIOS has no secure boot — if you see BIOS on an exam, think "older, less secure." UEFI enables Secure Boot and TPM integration.</div>`},
+'uefi':{title:'UEFI — Unified Extensible Firmware Interface',cat:'Hardware & Boot',html:`<p>The modern replacement for BIOS — <strong>provides a secure, flexible pre-boot environment</strong> with cryptographic verification.</p><h4>Advantages over BIOS</h4><ul><li>Supports Secure Boot — verifies boot loader signatures</li><li>Integrates with TPM for measured boot</li><li>Supports drives larger than 2TB (GPT vs MBR)</li><li>Faster boot times</li><li>Network boot capabilities</li></ul><div class="exam-tip">UEFI + Secure Boot + TPM = hardware-level trust chain. Together they prevent rootkits and bootkit attacks. All modern enterprise systems use UEFI.</div>`},
+'flashing':{title:'Flashing',cat:'Hardware & Boot',html:`<p>The process of <strong>updating firmware</strong> on hardware devices — replaces the current firmware image.</p><h4>Security Risks</h4><ul><li>Malicious firmware can be flashed (supply chain attack)</li><li>Bricking risk if flashing fails</li><li>Firmware must be cryptographically signed and verified</li></ul><div class="exam-tip">Firmware flashing is used for both legitimate updates and attacks. UEFI Secure Boot validates firmware signatures to prevent malicious flashing.</div>`},
+'measured-boot':{title:'Measured Boot',cat:'Hardware & Boot',html:`<p>A boot process that <strong>cryptographically hashes each boot component</strong> and stores those hashes in the TPM for verification.</p><h4>How It Works</h4><ul><li>UEFI hashes itself → stores in TPM PCR 0</li><li>Boot loader hashed → stored in PCR 4</li><li>OS kernel hashed → stored in PCR 8</li><li>Remote attestation server verifies hash chain</li></ul><div class="exam-tip">Measured boot detects tampering — if any component is modified, its hash changes and won't match the expected value. Used in Windows Secure Boot attestation.</div>`},
+'secure-boot':{title:'Secure Boot & Boot Attestation',cat:'Hardware & Boot',html:`<p>UEFI feature that <strong>verifies cryptographic signatures of boot components</strong> before allowing them to execute.</p><h4>How It Works</h4><ul><li>UEFI contains approved CA certificates</li><li>Boot loader must be signed by trusted CA</li><li>Unsigned or tampered boot loaders are rejected</li></ul><h4>Attestation</h4><ul><li>TPM provides evidence (measurements) to a remote verifier that boot was clean</li></ul><div class="exam-tip">Secure Boot prevents bootkits and rootkits. Boot attestation (via TPM) proves to a remote server that the system booted securely before granting network access.</div>`},
+'tpm':{title:'TPM — Trusted Platform Module',cat:'Hardware & Boot',html:`<p>A dedicated <strong>hardware chip that provides cryptographic functions</strong> and securely stores keys, certificates, and measurements.</p><h4>Functions</h4><ul><li>Stores BitLocker encryption keys</li><li>Stores measured boot hashes (PCRs)</li><li>Generates and protects private keys</li><li>Provides hardware-backed RNG</li></ul><h4>Versions</h4><ul><li>TPM 1.2 — older, limited algorithms</li><li>TPM 2.0 — current standard, required for Windows 11</li></ul><div class="exam-tip">TPM stores keys — it doesn't process bulk encryption (that's HSM). BitLocker requires TPM for full-disk encryption key protection.</div>`},
+'hw-root-trust':{title:'Hardware Root of Trust',cat:'Hardware & Boot',html:`<p>An <strong>implicitly trusted hardware component</strong> that forms the foundation of the security chain — everything else is trusted because the root is trusted.</p><h4>Implementations</h4><ul><li>TPM chip</li><li>Secure enclave (Apple T2/T3, ARM TrustZone)</li><li>Hardware Security Module (HSM)</li></ul><div class="exam-tip">The root of trust must be immutable — it can't be updated by software (only by physical hardware replacement). All cryptographic trust chains start here.</div>`},
+'endorsement-key':{title:'Endorsement Key (EK)',cat:'Hardware & Boot',html:`<p>A <strong>unique, permanent key pair burned into the TPM at manufacture</strong> — identifies the specific TPM and proves it is genuine.</p><h4>Properties</h4><ul><li>Private key never leaves the TPM</li><li>EK certificate issued by TPM manufacturer</li><li>Used to prove TPM identity during attestation</li></ul><div class="exam-tip">The Endorsement Key is the TPM's identity — it proves "this is a real TPM." Used in remote attestation to validate that a device has a genuine hardware TPM.</div>`},
+'hsm':{title:'HSM — Hardware Security Module',cat:'Hardware & Boot',html:`<p>A dedicated hardware device that <strong>generates, stores, and protects cryptographic keys</strong> and performs crypto operations.</p><h4>vs TPM</h4><ul><li>TPM: embedded chip, stores keys for single device</li><li>HSM: standalone device or PCI card, serves many apps</li><li>HSM performs bulk crypto; TPM is lightweight</li></ul><h4>Examples</h4><ul><li>Thales Luna, nCipher, AWS CloudHSM</li></ul><div class="exam-tip">HSMs are used for CA root keys, code signing, and payment processing. They are FIPS 140-2/3 validated. "Tamper-evident" and "tamper-resistant" are key HSM properties.</div>`},
+'microsd-hsm':{title:'MicroSD HSM',cat:'Hardware & Boot',html:`<p>A hardware security module in a <strong>MicroSD form factor</strong> — provides portable, removable cryptographic hardware security.</p><div class="exam-tip">MicroSD HSMs make HSM-grade security portable — useful for field devices, IoT, and mobile platforms that need hardware key protection without a full HSM.</div>`},
+'fde':{title:'Full Disk Encryption (FDE)',cat:'Hardware & Boot',html:`<p>Encrypting <strong>all data on a storage device</strong> — the entire volume, including OS and user files.</p><h4>Implementations</h4><ul><li>BitLocker (Windows) — uses TPM + PIN</li><li>FileVault (macOS)</li><li>LUKS (Linux)</li><li>Self-Encrypting Drives (SED)</li></ul><h4>Protection</h4><ul><li>Protects data if device is stolen</li><li>Does NOT protect against live OS attacks</li></ul><div class="exam-tip">FDE protects data at rest — once the OS is running and decrypted, FDE provides no protection. Combine with access controls for running systems.</div>`},
+'sed':{title:'SED — Self-Encrypting Drive',cat:'Hardware & Boot',html:`<p>A storage drive with <strong>encryption hardware built into the drive controller</strong> — encryption happens automatically, transparent to the OS.</p><h4>Advantages</h4><ul><li>No CPU overhead for encryption</li><li>Key stored in drive, not OS</li><li>Cryptographic erase: change key = instant wipe</li></ul><div class="exam-tip">SEDs use TCG Opal or Enterprise specifications. Cryptographic erase (change the MEK) makes decommissioning instant and secure — no need to overwrite all sectors.</div>`},
+'dlp':{title:'DLP — Data Loss Prevention',cat:'Data Protection',html:`<p>Technology that <strong>detects and prevents unauthorized transmission of sensitive data</strong> outside the organization.</p><h4>What DLP Protects</h4><ul><li>PII, PHI, PCI data, IP, financial data</li><li>Detects policy violations in email, web, USB, cloud</li></ul><h4>How It Works</h4><ul><li>Content inspection — scan for patterns (SSN, CC#)</li><li>Contextual analysis — who, where, how</li><li>Policy enforcement — block, quarantine, alert</li></ul><div class="exam-tip">DLP has three modes: Network DLP (monitor traffic), Endpoint DLP (monitor devices), and Cloud DLP (monitor cloud apps via CASB).</div>`},
+'network-dlp':{title:'Network-Based DLP',cat:'Data Protection',html:`<p>DLP deployed at <strong>network chokepoints</strong> — monitors and controls data leaving the network perimeter.</p><h4>Deployment</h4><ul><li>Inline at email gateway, web proxy, firewall</li><li>Inspects SMTP, HTTP/S, FTP traffic</li><li>Can decrypt TLS to inspect encrypted traffic</li></ul><div class="exam-tip">Network DLP catches data exfiltration over network channels but can't see removable media or local actions — combine with endpoint DLP for complete coverage.</div>`},
+'software-dlp':{title:'Software-Based (Endpoint) DLP',cat:'Data Protection',html:`<p>A DLP agent installed <strong>on endpoints</strong> that monitors and controls data operations on the device.</p><h4>Controls</h4><ul><li>Block copy to USB/removable media</li><li>Prevent screenshots of sensitive data</li><li>Block printing of classified documents</li><li>Monitor clipboard operations</li></ul><div class="exam-tip">Endpoint DLP catches threats that network DLP misses — local actions, encrypted channels, removable media. Required for insider threat programs.</div>`},
+'removable-media':{title:'Removable Media',cat:'Data Protection',html:`<p>Portable storage devices — USB drives, optical discs, SD cards — that can be used to <strong>exfiltrate data or introduce malware</strong>.</p><h4>Controls</h4><ul><li>DLP — block unauthorized copy to USB</li><li>Group Policy — disable USB storage ports</li><li>Encryption — require BitLocker To Go on USB</li><li>Allow-listing — only approved USB devices</li></ul><div class="exam-tip">Removable media is the classic insider threat vector. Endpoint DLP or USB port control prevents data exfiltration via physical media.</div>`},
+'db-encrypt':{title:'Database File Encryption',cat:'Data Protection',html:`<p><strong>Encrypting database files</strong> at the file or column level to protect sensitive data at rest.</p><h4>Methods</h4><ul><li>Transparent Data Encryption (TDE) — full database file</li><li>Column-level encryption — only sensitive fields</li><li>Application-level encryption — app encrypts before storing</li></ul><div class="exam-tip">TDE encrypts the database file — protects against physical theft of the database file but NOT against queries through the legitimate DB connection (data is decrypted in memory).</div>`},
+'data-in-use':{title:'Data in Use',cat:'Data Protection',html:`<p>Data that is <strong>actively being processed in memory</strong> — the most difficult state to protect.</p><h4>Threats</h4><ul><li>Memory scraping (RAM dump)</li><li>Cold boot attacks</li><li>DMA attacks via peripherals</li></ul><h4>Protection</h4><ul><li>Secure enclaves, TEE</li><li>Memory encryption (AMD SEV, Intel TME)</li></ul><div class="exam-tip">Data in use = data in RAM/CPU. FDE doesn't protect it. Secure enclaves protect processing in isolated CPU memory that even the OS can't access.</div>`},
+'secure-enclave':{title:'Secure Enclave',cat:'Data Protection',html:`<p>An <strong>isolated, hardware-protected region of the CPU</strong> where code and data are processed without exposure to the main OS.</p><h4>Implementations</h4><ul><li>Apple Secure Enclave (T2/M-series chips) — stores Face ID/Touch ID keys</li><li>Intel SGX (Software Guard Extensions)</li><li>ARM TrustZone</li></ul><div class="exam-tip">Secure enclaves protect data even if the OS is compromised. The operating system cannot access enclave memory — only the enclave code itself can.</div>`},
+'tee':{title:'TEE — Trusted Execution Environment',cat:'Data Protection',html:`<p>A <strong>secure, isolated area of a processor</strong> that runs trusted applications with higher security guarantees than the regular OS.</p><h4>vs Secure Enclave</h4><ul><li>TEE is a broader concept; secure enclave is a specific implementation</li><li>ARM TrustZone = TEE on mobile processors</li><li>Used for mobile payments, DRM, biometric processing</li></ul><div class="exam-tip">TEE = "trusted world" runs alongside the "normal world" OS. Used for Apple Pay, Android Pay, and secure biometric matching.</div>`},
+'phi':{title:'PHI — Protected Health Information',cat:'Data Protection',html:`<p>Individually identifiable health information protected by <strong>HIPAA regulations</strong>.</p><h4>What Qualifies as PHI</h4><ul><li>Name, address, birthdate + health condition</li><li>Medical record numbers, insurance IDs</li><li>Diagnoses, treatment records, lab results</li></ul><h4>HIPAA Requirements</h4><ul><li>Encryption at rest and in transit</li><li>Access controls and audit logs</li><li>Breach notification within 60 days</li></ul><div class="exam-tip">PHI is health-specific PII. HIPAA governs it. Any system processing PHI must be HIPAA-compliant — including cloud storage and email.</div>`},
+'mdm':{title:'MDM — Mobile Device Management',cat:'Mobile Devices',html:`<p>A platform that <strong>remotely manages, monitors, and secures mobile devices</strong> — enforce policies, deploy apps, wipe devices.</p><h4>Capabilities</h4><ul><li>Remote wipe and lock</li><li>Enforce screen lock, encryption, PIN requirements</li><li>App deployment and management</li><li>Geofencing and location tracking</li><li>Certificate deployment</li></ul><div class="exam-tip">MDM is the foundation of mobile security. Without MDM, you have no visibility or control over mobile devices accessing corporate data.</div>`},
+'uem':{title:'UEM — Unified Endpoint Management',cat:'Mobile Devices',html:`<p>Extends MDM to manage <strong>all endpoints</strong> — mobile devices, desktops, laptops, IoT — from a single console.</p><h4>vs MDM</h4><ul><li>MDM = mobile only</li><li>UEM = mobile + desktop + IoT</li><li>Examples: Microsoft Intune, VMware Workspace ONE</li></ul><div class="exam-tip">UEM is the modern evolution of MDM + traditional endpoint management. One platform for phones, tablets, laptops, and IoT devices.</div>`},
+'corp-owned':{title:'Corporate Owned',cat:'Mobile Devices',html:`<p>The organization <strong>owns the device and maintains full control</strong> — maximum security, minimum privacy concern.</p><div class="exam-tip">Corporate owned = most control, least privacy. Employee owns no personal data expectation. Easiest to enforce security policies.</div>`},
+'cope':{title:'COPE — Corporate Owned, Personally Enabled',cat:'Mobile Devices',html:`<p>Company owns the device but <strong>allows personal use</strong> alongside corporate use.</p><h4>Security Approach</h4><ul><li>Containerization — separate work and personal</li><li>MDM manages corporate container</li><li>Personal apps isolated from corporate data</li></ul><div class="exam-tip">COPE balances control with employee satisfaction. Containers prevent personal app access to corporate data. More secure than BYOD, less restrictive than purely corporate.</div>`},
+'byod':{title:'BYOD — Bring Your Own Device',cat:'Mobile Devices',html:`<p>Employees use their <strong>personal devices for work</strong> — the organization has limited control.</p><h4>Security Challenges</h4><ul><li>Organization cannot enforce full MDM without consent</li><li>Personal apps may leak corporate data</li><li>Device may be jailbroken/rooted</li><li>Remote wipe may erase personal data</li></ul><div class="exam-tip">BYOD = least control, most privacy. Use MAM (Mobile App Management) instead of full MDM to manage only corporate apps, not the entire device.</div>`},
+'cyod':{title:'CYOD — Choose Your Own Device',cat:'Mobile Devices',html:`<p>Employee selects from a <strong>pre-approved list of devices</strong> — organization maintains more control than BYOD.</p><div class="exam-tip">CYOD gives employees choice while maintaining corporate control — approved devices have known security characteristics and MDM is required before use.</div>`},
+'screen-lock':{title:'Screen Lock',cat:'Mobile Devices',html:`<p>Requires authentication <strong>to unlock a device</strong> after a timeout period — PIN, password, biometric.</p><div class="exam-tip">Screen lock is the first line of defense if a device is lost. NIST recommends 6+ digit PIN or biometric. Enforce minimum complexity via MDM.</div>`},
+'remote-wipe':{title:'Remote Wipe',cat:'Mobile Devices',html:`<p>Remotely <strong>erasing all data on a device</strong> when it is reported lost or stolen.</p><h4>Types</h4><ul><li><strong>Full wipe</strong>: factory reset — erases everything</li><li><strong>Selective wipe</strong>: removes only corporate data</li></ul><div class="exam-tip">Selective wipe is preferred for BYOD — employees keep personal data. Full wipe for corporate-owned devices. MDM must be enrolled before loss occurs.</div>`},
+'geofencing':{title:'Geofencing',cat:'Mobile Devices',html:`<p>Using GPS or WiFi location to <strong>trigger policy changes based on device location</strong>.</p><h4>Examples</h4><ul><li>Disable camera when device enters secure facility</li><li>Lock device when it leaves corporate campus</li><li>Alert when device goes outside expected region</li></ul><div class="exam-tip">Geofencing is both a security and a compliance control. Combine with GPS tagging for full location-based policy enforcement.</div>`},
+'gps-tag':{title:'GPS Tagging',cat:'Mobile Devices',html:`<p>Embedding <strong>GPS coordinates into device data and photos</strong> — and tracking device location.</p><div class="exam-tip">GPS tagging enables location tracking and geofencing. It also means photos taken on mobile devices contain location metadata — a privacy risk for sensitive photos.</div>`},
+'storage-seg':{title:'Storage Segmentation',cat:'Mobile Devices',html:`<p><strong>Separating corporate and personal data</strong> into isolated storage containers on the device.</p><div class="exam-tip">Storage segmentation is the technical implementation of COPE and BYOD security — corporate data is encrypted in a separate container the personal side cannot access.</div>`},
+'content-mgmt':{title:'Content Management',cat:'Mobile Devices',html:`<p>Controlling what <strong>corporate content</strong> mobile users can access, store, and share.</p><div class="exam-tip">Content management via MDM prevents copying corporate documents to personal apps (e.g., can't open corporate email attachments in personal Dropbox).</div>`},
+'app-mgmt':{title:'App Management',cat:'Mobile Devices',html:`<p>Controlling which <strong>applications can be installed and run</strong> on managed devices — approve, deploy, or remove apps remotely.</p><div class="exam-tip">App management = mobile allowlisting. Enterprise app stores provide approved apps. MDM can remotely install or remove apps without user action.</div>`},
+'context-auth':{title:'Context-Aware Authentication',cat:'Mobile Devices',html:`<p>Authentication that considers <strong>contextual factors — location, time, device, behavior</strong> — to assess risk and adjust requirements.</p><h4>Examples</h4><ul><li>Require MFA only from unrecognized location</li><li>Block access outside business hours</li><li>Step-up auth for sensitive resources</li></ul><div class="exam-tip">Context-aware auth is a zero-trust principle — trust is never implicit, always verified with context. Reduces friction for trusted patterns, increases friction for suspicious ones.</div>`},
+'jailbreak':{title:'Jailbreaking',cat:'Mobile Threats',html:`<p>Removing <strong>Apple iOS software restrictions</strong> to gain root access — allows installing unsigned apps, bypassing MDM.</p><h4>Security Risks</h4><ul><li>Disables code-signing enforcement</li><li>Can bypass MDM and corporate security policies</li><li>No longer receives OS security updates</li><li>Exposes device to untrusted apps</li></ul><div class="exam-tip">Jailbroken devices should not be allowed on corporate networks. MDM can detect jailbroken devices and block or wipe them.</div>`},
+'rooting':{title:'Rooting',cat:'Mobile Threats',html:`<p>Gaining <strong>root (administrator) access to Android</strong> — bypasses Android's security model.</p><h4>vs Jailbreaking</h4><ul><li>Rooting = Android root access</li><li>Jailbreaking = iOS bypass</li><li>Both defeat the platform's security model</li></ul><div class="exam-tip">Rooted devices can bypass SEAndroid, MDM controls, and app sandboxing. MDM should detect and quarantine rooted devices.</div>`},
+'third-party-app':{title:'Third-Party App Stores',cat:'Mobile Threats',html:`<p>App distribution outside official stores (App Store, Google Play) — <strong>no vetting for malware or policy compliance</strong>.</p><div class="exam-tip">Third-party app stores are the primary source of mobile malware. MDM policy should prevent installation from unknown sources on managed devices.</div>`},
+'ota-update':{title:'OTA Updates — Over-the-Air',cat:'Mobile Threats',html:`<p>Delivering firmware or app updates <strong>wirelessly without physical connection</strong>.</p><h4>Security Risk</h4><ul><li>Malicious OTA updates could install backdoors</li><li>Updates must be cryptographically signed and verified</li><li>MITM attack on update channel could deliver malicious firmware</li></ul><div class="exam-tip">Legitimate OTA updates are cryptographically signed. Verify update authenticity. Custom/unsigned firmware delivered via OTA is a major threat.</div>`},
+'custom-firmware':{title:'Custom Firmware',cat:'Mobile Threats',html:`<p>Replacing a device's <strong>official OS with a modified version</strong> — may remove security features or add backdoors.</p><div class="exam-tip">Custom firmware defeats all software-based security controls. Physical hardware controls (secure boot, ARM TrustZone) can prevent unauthorized firmware installation.</div>`},
+'sideloading':{title:'Sideloading',cat:'Mobile Threats',html:`<p>Installing applications <strong>outside the official app store</strong> — directly from APK files (Android) or using developer tools (iOS).</p><div class="exam-tip">Sideloading bypasses the app store's malware screening. MDM can enforce "unknown sources" policy to prevent sideloading on corporate devices.</div>`},
+'tethering':{title:'Tethering',cat:'Mobile Threats',html:`<p>Using a mobile device's cellular data to provide <strong>internet access to other devices</strong> via USB, Bluetooth, or WiFi.</p><div class="exam-tip">Tethering can bypass corporate network security controls — a laptop tethered to cellular bypasses the corporate firewall and proxy. Some MDM policies prohibit tethering.</div>`},
+'hotspot':{title:'Mobile Hotspot',cat:'Mobile Threats',html:`<p>A mobile device creating a <strong>WiFi access point</strong> using its cellular data connection — allows multiple devices to connect.</p><div class="exam-tip">Personal hotspots bypass corporate network security. An employee using a personal hotspot avoids corporate proxy, firewall, and DLP controls.</div>`},
+'wifi-direct':{title:'WiFi Direct',cat:'Mobile Threats',html:`<p>A WiFi standard allowing two devices to <strong>connect directly peer-to-peer without an access point</strong>.</p><div class="exam-tip">WiFi Direct can be used for data exfiltration — bypass network security controls by transferring data directly between devices. MDM can disable WiFi Direct on managed devices.</div>`},
+'embedded':{title:'Embedded System',cat:'Embedded & IoT',html:`<p>A <strong>purpose-built computing system</strong> integrated into a larger device — performs a specific, dedicated function.</p><h4>Examples</h4><ul><li>Car engine control units, medical devices, ATMs, industrial controllers, network switches</li></ul><h4>Security Characteristics</h4><ul><li>Limited resources — CPU, memory, power</li><li>Long lifespans — rarely updated</li><li>Physical exposure</li></ul><div class="exam-tip">Embedded systems often run outdated software with no patch mechanism. Security must be built in at design time — "security by design."</div>`},
+'iot':{title:'IoT — Internet of Things',cat:'Embedded & IoT',html:`<p>A network of <strong>internet-connected physical devices</strong> that collect and exchange data — embedded systems with network connectivity.</p><h4>Security Challenges</h4><ul><li>Default credentials (admin/admin)</li><li>No patch mechanism</li><li>Rarely monitored</li><li>Become botnets (Mirai)</li></ul><div class="exam-tip">IoT devices are the weakest link in most networks. Segment IoT onto a separate VLAN, change default credentials, and monitor for anomalous traffic.</div>`},
+'ics':{title:'ICS — Industrial Control System',cat:'Embedded & IoT',html:`<p>Systems that <strong>monitor and control industrial processes</strong> — manufacturing, utilities, pipelines.</p><h4>Components</h4><ul><li>PLC (Programmable Logic Controllers)</li><li>RTU (Remote Terminal Units)</li><li>HMI (Human Machine Interface)</li><li>SCADA (supervisory layer)</li></ul><div class="exam-tip">ICS attacks (like Stuxnet, Colonial Pipeline) can cause physical damage. Air-gapping ICS networks from corporate IT is the gold standard.</div>`},
+'scada-ref':{title:'SCADA',cat:'Embedded & IoT',html:`<p><strong>Supervisory Control and Data Acquisition</strong> — a system for monitoring and controlling ICS components remotely.</p><div class="exam-tip">Covered in detail in Chapter 3 and 4. In Chapter 5 context: SCADA systems have hardening constraints — long lifecycles, no patching, physical safety systems that can't be disrupted.</div>`},
+'soc':{title:'SoC — System on a Chip',cat:'Embedded & IoT',html:`<p>An integrated circuit that contains <strong>all components of a computer on a single chip</strong> — CPU, GPU, memory, radio, etc.</p><h4>Examples</h4><ul><li>Apple M-series, Qualcomm Snapdragon, Raspberry Pi BCM</li></ul><div class="exam-tip">SoCs power mobile devices and IoT. Security features (secure enclave, TrustZone) are baked into the SoC — this is why hardware root of trust is possible on mobile.</div>`},
+'rtos':{title:'RTOS — Real-Time Operating System',cat:'Embedded & IoT',html:`<p>An OS designed for <strong>deterministic, time-critical processing</strong> — guarantees response within defined time constraints.</p><h4>Examples</h4><ul><li>FreeRTOS, VxWorks, QNX, Zephyr</li><li>Used in: medical devices, automotive, avionics, industrial</li></ul><h4>Security Risks</h4><ul><li>Limited security features by design</li><li>Rarely patched</li><li>Often lack authentication</li></ul><div class="exam-tip">RTOS prioritizes timing over security. Security must be added in layers around the RTOS. Many have no user accounts, no encryption, no authentication by default.</div>`},
+'embedded-harden':{title:'Embedded System Hardening Constraints',cat:'Embedded & IoT',html:`<p>The <strong>practical limitations</strong> that prevent applying standard security hardening to embedded and IoT systems.</p><h4>Constraints</h4><ul><li><strong>No patching mechanism</strong> — firmware update requires physical access or special tools</li><li><strong>Limited CPU/RAM</strong> — can't run full security stack (AV, agents)</li><li><strong>Long operational life</strong> — 10-25 year lifecycles</li><li><strong>Safety-critical</strong> — can't disrupt for maintenance windows</li><li><strong>Proprietary OS</strong> — vendor-controlled updates</li></ul><div class="exam-tip">When standard controls can't be applied to embedded systems, use compensating controls: network segmentation, monitoring, air-gapping, and physical security.</div>`},
+'decommission':{title:'Decommissioning Hardware',cat:'Hardware Decommissioning',html:`<p>The process of <strong>safely retiring hardware</strong> to prevent data exposure from disposed equipment.</p><h4>Steps</h4><ul><li>Data destruction — overwrite, degauss, or physically destroy storage</li><li>Cryptographic erase (SEDs) — change encryption key</li><li>Inventory update — remove from asset tracking</li><li>Physical destruction for highly sensitive data</li><li>Certificate of destruction from vendor</li></ul><div class="exam-tip">NIST SP 800-88 covers media sanitization. For HDDs: overwrite or degauss. For SSDs: cryptographic erase or physical destruction. For SEDs: change MEK (instant crypto-erase).</div>`},
+'legacy-hw':{title:'Legacy Hardware',cat:'Hardware Decommissioning',html:`<p>Hardware that is <strong>outdated and no longer aligned with current needs</strong> but may still be in use due to cost or compatibility.</p><h4>Security Risks</h4><ul><li>Outdated firmware with known vulnerabilities</li><li>May not support current security standards</li><li>Vendor may still provide patches (unlike EOL)</li></ul><div class="exam-tip">Legacy hardware is a risk but not necessarily EOL — check if vendor support exists. Network segment it, monitor it, and plan migration.</div>`},
+'eol-hw':{title:'End-of-Life (EOL) Hardware',cat:'Hardware Decommissioning',html:`<p>Hardware for which the <strong>vendor has stopped providing patches, updates, and support</strong>.</p><h4>Risks</h4><ul><li>No security patches — vulnerabilities never fixed</li><li>Compliance violations (PCI, HIPAA may prohibit EOL)</li><li>No technical support</li></ul><h4>Options</h4><ul><li>Replace — preferred</li><li>Compensating controls — segment, monitor, air-gap</li></ul><div class="exam-tip">EOL ≠ legacy. EOL = vendor support ended, patches will never come. This is a critical risk — prioritize replacement. Document as accepted risk if replacement is delayed.</div>`},
+};
+
+const CATEGORIES=[
+  {id:'virt',    label:'Virtualization',         color:'#1abc9c', nodes:['virtualization','hypervisor','type2-hv','vm-host','vm-guest','snapshot','replication','vdi','thin-client','containerization']},
+  {id:'vmthreat',label:'VM Threats',             color:'#e74c3c', nodes:['vm-attack','vm-sprawl','resource-reuse']},
+  {id:'cloud',   label:'Cloud Computing',        color:'#3498db', nodes:['cloud','cloud-scale','cloud-elastic','cloud-storage','on-prem','off-prem','central-decent','multi-cloud','saas','paas','iaas','cloud-public','cloud-private','cloud-community','cloud-hybrid']},
+  {id:'cloudarch',label:'Cloud Architecture',   color:'#06b6d4', nodes:['csp','mssp','middleware','runtime','api','microservices','edge-compute','fog-compute']},
+  {id:'cloudsec',label:'Cloud Security',         color:'#2ecc71', nodes:['cloud-harden','casb','cloud-dlp','security-groups','iac','sdn','sdwan','swg','csa']},
+  {id:'endpoint',label:'Endpoint Security',      color:'#e67e22', nodes:['endpoints','antivirus','trojan','edr','xdr','hips','allow-block']},
+  {id:'harden',  label:'Hardening & Config',     color:'#f97316', nodes:['hardening','config-mgmt','change-mgmt','master-image','patch-mgmt']},
+  {id:'hwboot',  label:'Hardware & Boot',        color:'#f1c40f', nodes:['bios','uefi','flashing','measured-boot','secure-boot','tpm','hw-root-trust','endorsement-key','hsm','microsd-hsm','fde','sed']},
+  {id:'dlp',     label:'Data Protection & DLP',  color:'#06b6d4', nodes:['dlp','network-dlp','software-dlp','removable-media','db-encrypt','data-in-use','secure-enclave','tee','phi']},
+  {id:'mobile',  label:'Mobile Devices',         color:'#9b59b6', nodes:['mdm','uem','corp-owned','cope','byod','cyod','screen-lock','remote-wipe','geofencing','gps-tag','storage-seg','content-mgmt','app-mgmt','context-auth']},
+  {id:'mobilatk',label:'Mobile Threats',         color:'#ef4444', nodes:['jailbreak','rooting','third-party-app','ota-update','custom-firmware','sideloading','tethering','hotspot','wifi-direct']},
+  {id:'iot',     label:'Embedded & IoT',         color:'#78716c', nodes:['embedded','iot','ics','scada-ref','soc','rtos','embedded-harden']},
+  {id:'decom',   label:'Decommissioning',        color:'#95a5a6', nodes:['decommission','legacy-hw','eol-hw']},
+];
+
+const NODE_CAT_MAP={};
+CATEGORIES.forEach(c=>c.nodes.forEach(n=>{if(!NODE_CAT_MAP[n])NODE_CAT_MAP[n]=[];NODE_CAT_MAP[n].push(c.id);}));
+
+(function buildSidebar(){
+  const list=document.getElementById('cat-list');
+  CATEGORIES.forEach(c=>{
+    const btn=document.createElement('button');btn.className='cat-btn';btn.dataset.catId=c.id;
+    btn.innerHTML=`<span class="cat-dot" style="background:${c.color}"></span><span>${c.label}</span>`;
+    btn.addEventListener('click',()=>activeCat===c.id?clearFilter():applyFilter(c.id));
+    list.appendChild(btn);
+  });
+})();
+
+let activeCat=null;
+function applyFilter(catId){
+  activeCat=catId;const cat=CATEGORIES.find(c=>c.id===catId);const matchSet=new Set(cat.nodes);
+  document.querySelectorAll('.node[data-node-id]').forEach(n=>{n.classList.remove('cat-match','cat-dim');n.classList.add(matchSet.has(n.dataset.nodeId)?'cat-match':'cat-dim');});
+  document.querySelectorAll('.zone').forEach(z=>{const ns=z.querySelectorAll('.node[data-node-id]');z.classList.toggle('zone-all-dim',[...ns].every(n=>n.classList.contains('cat-dim'))&&ns.length>0);});
+  document.body.classList.add('cat-filtered');
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.toggle('active',b.dataset.catId===catId));
+  const banner=document.getElementById('filter-banner');banner.style.display='block';banner.style.color=cat.color;banner.style.borderColor=cat.color;
+  banner.innerHTML=`${cat.label}<br><span style="opacity:.55;font-size:8px">click to clear</span>`;banner.onclick=clearFilter;
+  document.getElementById('clear-btn').style.display='block';
+  if(gGraphActive&&gGraphInited)applyGraphFilter(catId);
+}
+function clearFilter(){
+  activeCat=null;document.body.classList.remove('cat-filtered');
+  document.querySelectorAll('.node').forEach(n=>n.classList.remove('cat-match','cat-dim'));
+  document.querySelectorAll('.zone').forEach(z=>z.classList.remove('zone-all-dim'));
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('filter-banner').style.display='none';document.getElementById('clear-btn').style.display='none';
+  if(gGraphActive&&gGraphInited)clearGraphFilter();
+}
+let selectedNode=null;
+function openDetail(id){
+  const d=NODE_DATA[id];if(!d)return;
+  if(selectedNode)selectedNode.classList.remove('selected');
+  const el=document.querySelector(`.node[data-node-id="${id}"]`);
+  if(el){el.classList.add('selected');selectedNode=el;}
+  document.getElementById('detail-title').textContent=d.title;
+  document.getElementById('detail-category').textContent=d.cat;
+  document.getElementById('detail-body').innerHTML=d.html;
+  document.getElementById('detail-panel').classList.remove('collapsed');
+  document.body.classList.add('detail-open');
+}
+function closeDetail(){
+  document.getElementById('detail-panel').classList.add('collapsed');document.body.classList.remove('detail-open');
+  if(selectedNode){selectedNode.classList.remove('selected');selectedNode=null;}
+}
+/* ═══ GRAPH ═══ */
+function gn(id,label,color,nodeId,x,y){return{id,label,color,nodeId:nodeId||null,x,y,vx:0,vy:0,r:20,pinned:false}}
+function ge(s,t,type,label){return{s,t,type:type||'relates',label:label||null}}
+const GNODES=[
+  gn('cat-virt',    'Virtualization',     '#1abc9c',null,    0,    0),
+  gn('cat-vmthreat','VM Threats',         '#e74c3c',null,  200,    0),
+  gn('cat-cloud',   'Cloud Computing',   '#3498db',null,    0, -320),
+  gn('cat-cloudarch','Cloud Arch.',       '#06b6d4',null,  320, -280),
+  gn('cat-cloudsec','Cloud Security',    '#2ecc71',null,  460, -100),
+  gn('cat-endpoint','Endpoint Security', '#e67e22',null, -360,  -80),
+  gn('cat-harden',  'Hardening\n& Config','#f97316',null,-360,  120),
+  gn('cat-hwboot',  'Hardware\n& Boot',   '#f1c40f',null, -200,  380),
+  gn('cat-dlp',     'Data Protection',   '#06b6d4',null,  200,  380),
+  gn('cat-mobile',  'Mobile Devices',    '#9b59b6',null,    0, -560),
+  gn('cat-mobilatk','Mobile Threats',    '#ef4444',null,  300, -520),
+  gn('cat-iot',     'Embedded\n& IoT',   '#78716c',null, -400,  380),
+  gn('cat-decom',   'Decommission',      '#95a5a6',null,  400,  300),
+
+  gn('virtualization','Virtualiz.',  '#1abc9c','virtualization',  -140,  -60),
+  gn('hypervisor',    'Hypervisor',  '#1abc9c','hypervisor',       -80,   80),
+  gn('type2-hv',      'Type II HV',  '#1abc9c','type2-hv',         80,   80),
+  gn('vm-host',       'Host',        '#3498db','vm-host',         -100,  140),
+  gn('vm-guest',      'Guest',       '#3498db','vm-guest',          80,  160),
+  gn('snapshot',      'Snapshot',    '#2ecc71','snapshot',         -60,  200),
+  gn('replication',   'Replication', '#2ecc71','replication',       60,  240),
+  gn('vdi',           'VDI',         '#3498db','vdi',             -180,  160),
+  gn('thin-client',   'Thin Client', '#3498db','thin-client',     -220,  240),
+  gn('containerization','Container', '#1abc9c','containerization',  160,  120),
+  gn('vm-attack',     'VM Attack',   '#e74c3c','vm-attack',        300,  -60),
+  gn('vm-sprawl',     'VM Sprawl',   '#e74c3c','vm-sprawl',        380,   60),
+  gn('resource-reuse','Resource\nReuse','#e67e22','resource-reuse',340,  140),
+  gn('cloud',         'Cloud',       '#3498db','cloud',           -140, -320),
+  gn('cloud-scale',   'Scalability', '#2ecc71','cloud-scale',       80, -360),
+  gn('cloud-elastic', 'Elasticity',  '#2ecc71','cloud-elastic',    200, -400),
+  gn('cloud-storage', 'Cloud\nStorage','#3498db','cloud-storage', -240,-380),
+  gn('on-prem',       'On-Prem',     '#3498db','on-prem',         -300,-280),
+  gn('off-prem',      'Off-Prem',    '#3498db','off-prem',        -280,-200),
+  gn('multi-cloud',   'Multi-Cloud', '#3498db','multi-cloud',      120,-240),
+  gn('saas',          'SaaS',        '#1abc9c','saas',             -60,-460),
+  gn('paas',          'PaaS',        '#1abc9c','paas',              60,-480),
+  gn('iaas',          'IaaS',        '#1abc9c','iaas',             180,-480),
+  gn('cloud-public',  'Public',      '#2ecc71','cloud-public',    -200,-480),
+  gn('cloud-private', 'Private',     '#3498db','cloud-private',    -80,-520),
+  gn('cloud-community','Community',  '#9b59b6','cloud-community',   60,-540),
+  gn('cloud-hybrid',  'Hybrid',      '#e67e22','cloud-hybrid',    200,-540),
+  gn('csp',           'CSP',         '#3498db','csp',              420,-300),
+  gn('mssp',          'MSSP',        '#3498db','mssp',             520,-200),
+  gn('middleware',    'Middleware',  '#95a5a6','middleware',        440,-200),
+  gn('runtime',       'Runtime',    '#95a5a6','runtime',           500,-120),
+  gn('api',           'API',         '#1abc9c','api',              360,-180),
+  gn('microservices', 'Micro\nservices','#1abc9c','microservices', 480,-320),
+  gn('edge-compute',  'Edge\nCompute','#3498db','edge-compute',    600,-260),
+  gn('fog-compute',   'Fog\nCompute','#3498db','fog-compute',      600,-160),
+  gn('cloud-harden',  'Cloud\nHarden','#2ecc71','cloud-harden',    540,  -60),
+  gn('casb',          'CASB',        '#1abc9c','casb',             620,   20),
+  gn('cloud-dlp',     'Cloud DLP',   '#2ecc71','cloud-dlp',        600,  100),
+  gn('security-groups','Sec Groups', '#3498db','security-groups',  540,  180),
+  gn('iac',           'IaC',         '#1abc9c','iac',              460,   60),
+  gn('sdn',           'SDN',         '#3498db','sdn',              460,  160),
+  gn('sdwan',         'SD-WAN',      '#3498db','sdwan',            460,  260),
+  gn('swg',           'SWG',         '#1abc9c','swg',              580,  220),
+  gn('endpoints',     'Endpoints',   '#3498db','endpoints',       -500, -100),
+  gn('antivirus',     'Antivirus',   '#2ecc71','antivirus',       -500,  -20),
+  gn('trojan',        'Trojan',      '#e74c3c','trojan',          -560,   80),
+  gn('edr',           'EDR',         '#1abc9c','edr',             -480,   80),
+  gn('xdr',           'XDR',         '#1abc9c','xdr',             -420,  -80),
+  gn('hips',          'Host IPS',    '#e67e22','hips',            -440,   20),
+  gn('allow-block',   'Allow/Block\nList','#2ecc71','allow-block',-520, -160),
+  gn('hardening',     'Hardening',   '#f97316','hardening',       -480,  140),
+  gn('config-mgmt',   'Config Mgmt', '#3498db','config-mgmt',     -520,  220),
+  gn('change-mgmt',   'Change Mgmt', '#3498db','change-mgmt',     -440,  280),
+  gn('master-image',  'Master\nImage','#1abc9c','master-image',   -380,  200),
+  gn('patch-mgmt',    'Patch Mgmt',  '#2ecc71','patch-mgmt',      -340,  280),
+  gn('bios',          'BIOS',        '#f1c40f','bios',            -380,  440),
+  gn('uefi',          'UEFI',        '#2ecc71','uefi',            -280,  480),
+  gn('flashing',      'Flashing',    '#e67e22','flashing',        -300,  380),
+  gn('measured-boot', 'Measured\nBoot','#2ecc71','measured-boot', -160,  500),
+  gn('secure-boot',   'Secure Boot', '#2ecc71','secure-boot',     -100,  440),
+  gn('tpm',           'TPM',         '#1abc9c','tpm',              -60,  520),
+  gn('hw-root-trust', 'HW Root\nTrust','#1abc9c','hw-root-trust',  60,  500),
+  gn('endorsement-key','EK',         '#1abc9c','endorsement-key',  140,  460),
+  gn('hsm',           'HSM',         '#1abc9c','hsm',             -200,  560),
+  gn('microsd-hsm',   'MicroSD\nHSM','#1abc9c','microsd-hsm',    -100,  580),
+  gn('fde',           'FDE',         '#2ecc71','fde',             -340,  540),
+  gn('sed',           'SED',         '#2ecc71','sed',             -440,  500),
+  gn('dlp',           'DLP',         '#06b6d4','dlp',              280,  360),
+  gn('network-dlp',   'Network DLP', '#3498db','network-dlp',     380,  420),
+  gn('software-dlp',  'Endpoint\nDLP','#3498db','software-dlp',   340,  500),
+  gn('removable-media','Removable\nMedia','#e67e22','removable-media',200,480),
+  gn('db-encrypt',    'DB Encrypt',  '#2ecc71','db-encrypt',       480,  400),
+  gn('data-in-use',   'Data\nin Use','#9b59b6','data-in-use',      420,  500),
+  gn('secure-enclave','Secure\nEnclave','#2ecc71','secure-enclave',520,  500),
+  gn('tee',           'TEE',         '#2ecc71','tee',              600,  440),
+  gn('phi',           'PHI',         '#e74c3c','phi',              480,  560),
+  gn('mdm',           'MDM',         '#9b59b6','mdm',              -80, -560),
+  gn('uem',           'UEM',         '#1abc9c','uem',               80, -580),
+  gn('corp-owned',    'Corp\nOwned', '#3498db','corp-owned',      -240, -620),
+  gn('cope',          'COPE',        '#3498db','cope',            -140, -640),
+  gn('byod',          'BYOD',        '#e67e22','byod',              20, -640),
+  gn('cyod',          'CYOD',        '#9b59b6','cyod',             140, -640),
+  gn('screen-lock',   'Screen Lock', '#2ecc71','screen-lock',     -300, -540),
+  gn('remote-wipe',   'Remote\nWipe','#e74c3c','remote-wipe',    -200, -580),
+  gn('geofencing',    'Geofencing',  '#1abc9c','geofencing',       220, -580),
+  gn('gps-tag',       'GPS Tag',     '#1abc9c','gps-tag',          320, -560),
+  gn('storage-seg',   'Storage\nSeg','#3498db','storage-seg',      40, -500),
+  gn('context-auth',  'Context\nAuth','#1abc9c','context-auth',   -40, -480),
+  gn('jailbreak',     'Jailbreak',   '#e74c3c','jailbreak',        380, -600),
+  gn('rooting',       'Rooting',     '#e74c3c','rooting',          460, -540),
+  gn('third-party-app','3rd Party\nApps','#e74c3c','third-party-app',500,-440),
+  gn('ota-update',    'OTA Update',  '#e67e22','ota-update',       440, -460),
+  gn('custom-firmware','Custom\nFirmware','#e74c3c','custom-firmware',540,-560),
+  gn('sideloading',   'Sideload',    '#e67e22','sideloading',      580, -480),
+  gn('tethering',     'Tethering',   '#3498db','tethering',        540, -380),
+  gn('hotspot',       'Hotspot',     '#3498db','hotspot',          620, -320),
+  gn('wifi-direct',   'WiFi\nDirect','#3498db','wifi-direct',      620, -460),
+  gn('embedded',      'Embedded\nSystem','#95a5a6','embedded',    -560,  300),
+  gn('iot',           'IoT',         '#3498db','iot',             -580,  400),
+  gn('ics',           'ICS',         '#e67e22','ics',             -540,  480),
+  gn('scada-ref',     'SCADA',       '#e67e22','scada-ref',       -480,  540),
+  gn('soc',           'SoC',         '#1abc9c','soc',             -620,  460),
+  gn('rtos',          'RTOS',        '#9b59b6','rtos',            -640,  360),
+  gn('embedded-harden','Hardening\nConstraints','#e74c3c','embedded-harden',-620,280),
+  gn('decommission',  'Decommission','#e67e22','decommission',     480,  340),
+  gn('legacy-hw',     'Legacy HW',   '#e74c3c','legacy-hw',       560,  400),
+  gn('eol-hw',        'EOL HW',      '#e74c3c','eol-hw',          540,  480),
+];
+const GEDGES=[
+  ge('cat-virt','virtualization','member'),ge('cat-virt','hypervisor','member'),ge('cat-virt','type2-hv','member'),ge('cat-virt','vm-host','member'),ge('cat-virt','vm-guest','member'),ge('cat-virt','snapshot','member'),ge('cat-virt','replication','member'),ge('cat-virt','vdi','member'),ge('cat-virt','thin-client','member'),ge('cat-virt','containerization','member'),
+  ge('cat-vmthreat','vm-attack','member'),ge('cat-vmthreat','vm-sprawl','member'),ge('cat-vmthreat','resource-reuse','member'),
+  ge('cat-cloud','cloud','member'),ge('cat-cloud','cloud-scale','member'),ge('cat-cloud','cloud-elastic','member'),ge('cat-cloud','cloud-storage','member'),ge('cat-cloud','on-prem','member'),ge('cat-cloud','off-prem','member'),ge('cat-cloud','multi-cloud','member'),ge('cat-cloud','saas','member'),ge('cat-cloud','paas','member'),ge('cat-cloud','iaas','member'),ge('cat-cloud','cloud-public','member'),ge('cat-cloud','cloud-private','member'),ge('cat-cloud','cloud-community','member'),ge('cat-cloud','cloud-hybrid','member'),
+  ge('cat-cloudarch','csp','member'),ge('cat-cloudarch','mssp','member'),ge('cat-cloudarch','middleware','member'),ge('cat-cloudarch','runtime','member'),ge('cat-cloudarch','api','member'),ge('cat-cloudarch','microservices','member'),ge('cat-cloudarch','edge-compute','member'),ge('cat-cloudarch','fog-compute','member'),
+  ge('cat-cloudsec','cloud-harden','member'),ge('cat-cloudsec','casb','member'),ge('cat-cloudsec','cloud-dlp','member'),ge('cat-cloudsec','security-groups','member'),ge('cat-cloudsec','iac','member'),ge('cat-cloudsec','sdn','member'),ge('cat-cloudsec','sdwan','member'),ge('cat-cloudsec','swg','member'),
+  ge('cat-endpoint','endpoints','member'),ge('cat-endpoint','antivirus','member'),ge('cat-endpoint','trojan','member'),ge('cat-endpoint','edr','member'),ge('cat-endpoint','xdr','member'),ge('cat-endpoint','hips','member'),ge('cat-endpoint','allow-block','member'),
+  ge('cat-harden','hardening','member'),ge('cat-harden','config-mgmt','member'),ge('cat-harden','change-mgmt','member'),ge('cat-harden','master-image','member'),ge('cat-harden','patch-mgmt','member'),
+  ge('cat-hwboot','bios','member'),ge('cat-hwboot','uefi','member'),ge('cat-hwboot','flashing','member'),ge('cat-hwboot','measured-boot','member'),ge('cat-hwboot','secure-boot','member'),ge('cat-hwboot','tpm','member'),ge('cat-hwboot','hw-root-trust','member'),ge('cat-hwboot','endorsement-key','member'),ge('cat-hwboot','hsm','member'),ge('cat-hwboot','microsd-hsm','member'),ge('cat-hwboot','fde','member'),ge('cat-hwboot','sed','member'),
+  ge('cat-dlp','dlp','member'),ge('cat-dlp','network-dlp','member'),ge('cat-dlp','software-dlp','member'),ge('cat-dlp','removable-media','member'),ge('cat-dlp','db-encrypt','member'),ge('cat-dlp','data-in-use','member'),ge('cat-dlp','secure-enclave','member'),ge('cat-dlp','tee','member'),ge('cat-dlp','phi','member'),
+  ge('cat-mobile','mdm','member'),ge('cat-mobile','uem','member'),ge('cat-mobile','corp-owned','member'),ge('cat-mobile','cope','member'),ge('cat-mobile','byod','member'),ge('cat-mobile','cyod','member'),ge('cat-mobile','screen-lock','member'),ge('cat-mobile','remote-wipe','member'),ge('cat-mobile','geofencing','member'),ge('cat-mobile','gps-tag','member'),ge('cat-mobile','storage-seg','member'),ge('cat-mobile','context-auth','member'),
+  ge('cat-mobilatk','jailbreak','member'),ge('cat-mobilatk','rooting','member'),ge('cat-mobilatk','third-party-app','member'),ge('cat-mobilatk','ota-update','member'),ge('cat-mobilatk','custom-firmware','member'),ge('cat-mobilatk','sideloading','member'),ge('cat-mobilatk','tethering','member'),ge('cat-mobilatk','hotspot','member'),ge('cat-mobilatk','wifi-direct','member'),
+  ge('cat-iot','embedded','member'),ge('cat-iot','iot','member'),ge('cat-iot','ics','member'),ge('cat-iot','scada-ref','member'),ge('cat-iot','soc','member'),ge('cat-iot','rtos','member'),ge('cat-iot','embedded-harden','member'),
+  ge('cat-decom','decommission','member'),ge('cat-decom','legacy-hw','member'),ge('cat-decom','eol-hw','member'),
+  // Semantic
+  ge('hypervisor','vm-host','manages','host machine'),ge('hypervisor','vm-guest','creates','virtual machine'),
+  ge('type2-hv','hypervisor','type-of','hosted HV'),
+  ge('vm-attack','hypervisor','attacks','HV layer'),ge('vm-sprawl','vm-guest','risk-of','unmanaged VMs'),
+  ge('vdi','thin-client','served-by','remote desktop'),
+  ge('snapshot','fde','restored-with','integrity check'),
+  ge('saas','paas','more-abstracted','less customer control'),ge('paas','iaas','more-abstracted','less customer control'),
+  ge('cloud-public','cloud-hybrid','part-of','hybrid mix'),ge('cloud-private','cloud-hybrid','part-of','hybrid mix'),
+  ge('casb','cloud-dlp','includes','DLP capability'),ge('casb','swg','integrates','web filtering'),
+  ge('iac','cloud-harden','enforces','security by default'),
+  ge('sdn','sdwan','extends-to','wide area'),
+  ge('api','microservices','connects','service endpoints'),
+  ge('edge-compute','fog-compute','feeds-into','aggregation layer'),
+  ge('antivirus','edr','extended-by','behavior detection'),ge('edr','xdr','extended-by','cross-domain'),
+  ge('trojan','antivirus','detected-by','signatures'),ge('hips','edr','similar-to','host protection'),
+  ge('hardening','config-mgmt','maintained-by','baseline check'),ge('patch-mgmt','hardening','supports','fixes vulns'),
+  ge('master-image','config-mgmt','basis-for','baseline'),
+  ge('bios','uefi','replaced-by','modern firmware'),ge('uefi','secure-boot','enables','boot verification'),
+  ge('uefi','measured-boot','enables','hash chain'),ge('measured-boot','tpm','stores-in','PCR values'),
+  ge('tpm','fde','protects-key-for','BitLocker'),ge('tpm','hw-root-trust','is','root anchor'),
+  ge('tpm','endorsement-key','contains','unique identity'),ge('hw-root-trust','hsm','similar-to','dedicated crypto HW'),
+  ge('secure-enclave','tee','type-of','trusted CPU zone'),ge('data-in-use','secure-enclave','protected-by','CPU isolation'),
+  ge('fde','sed','hardware-version','no CPU overhead'),
+  ge('dlp','network-dlp','type-of','at perimeter'),ge('dlp','software-dlp','type-of','on endpoint'),
+  ge('removable-media','software-dlp','controlled-by','endpoint agent'),
+  ge('jailbreak','third-party-app','enables','unsigned apps'),ge('rooting','third-party-app','enables','unsigned apps'),
+  ge('jailbreak','mdm','defeats','policy enforcement'),ge('rooting','mdm','defeats','policy enforcement'),
+  ge('byod','mdm','managed-by','partial control'),ge('cope','mdm','managed-by','full control'),
+  ge('mdm','uem','subset-of','unified platform'),ge('geofencing','gps-tag','uses','location data'),
+  ge('iot','ics','type-of','industrial IoT'),ge('ics','scada-ref','monitored-by','supervisory'),
+  ge('soc','embedded','powers','compact devices'),ge('rtos','embedded','runs-on','real-time OS'),
+  ge('embedded-harden','patch-mgmt','complicates','no easy patch'),
+  ge('legacy-hw','eol-hw','becomes','after EOL'),ge('decommission','sed','uses','crypto erase'),
+];
+const G_REPEL=15000,G_SPRING=0.025,G_IDEAL=115,G_GRAVITY=0.0025,G_DAMPING=0.80;
+let gNodes=[],gNodeMap={},gGraphInited=false,gGraphActive=false;
+let gDragNode=null,gDragOff={},gPanning=false,gPanStart={},gTx={x:0,y:0,k:1};
+function gTick(){const ns=gNodes;for(let i=0;i<ns.length;i++){const a=ns[i];if(a.pinned)continue;for(let j=i+1;j<ns.length;j++){const b=ns[j];let dx=b.x-a.x,dy=b.y-a.y;const d2=dx*dx+dy*dy+1,d=Math.sqrt(d2);const f=G_REPEL/d2,fx=f*dx/d,fy=f*dy/d;a.vx-=fx;a.vy-=fy;if(!b.pinned){b.vx+=fx;b.vy+=fy;}}}for(const e of GEDGES){const a=gNodeMap[e.s],b=gNodeMap[e.t];if(!a||!b)continue;const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)+0.001;const f=G_SPRING*(d-G_IDEAL),fx=f*dx/d,fy=f*dy/d;if(!a.pinned){a.vx+=fx;a.vy+=fy;}if(!b.pinned){b.vx-=fx;b.vy-=fy;}}for(const n of ns){if(n.pinned)continue;n.vx+=-n.x*G_GRAVITY;n.vy+=-n.y*G_GRAVITY;n.vx*=G_DAMPING;n.vy*=G_DAMPING;n.x+=n.vx;n.y+=n.vy;}}
+function runGraphLayout(steps){gNodes.forEach(n=>{n.pinned=false;n.vx=0;n.vy=0;});for(let i=0;i<steps;i++)gTick();gRender();}
+const GESTYLE={member:{color:'#1e3a5f',w:1,dash:'3,7',mk:null},'manages':{color:'#1abc9c',w:1.5,dash:'',mk:'ga-teal'},'creates':{color:'#2ecc71',w:1.5,dash:'',mk:'ga-green'},'type-of':{color:'#222c44',w:1,dash:'',mk:'ga-gray'},'attacks':{color:'#e74c3c',w:1.5,dash:'5,3',mk:'ga-red'},'risk-of':{color:'#e67e22',w:1,dash:'4,4',mk:null},'served-by':{color:'#3498db',w:1.5,dash:'',mk:'ga-blue'},'more-abstracted':{color:'#9b59b6',w:1,dash:'4,4',mk:null},'part-of':{color:'#222c44',w:1,dash:'',mk:'ga-gray'},'includes':{color:'#1abc9c',w:1,dash:'',mk:'ga-teal'},'integrates':{color:'#06b6d4',w:1,dash:'',mk:'ga-teal'},'enforces':{color:'#2ecc71',w:1.5,dash:'',mk:'ga-green'},'extends-to':{color:'#3498db',w:1,dash:'',mk:'ga-blue'},'connects':{color:'#1abc9c',w:1,dash:'',mk:'ga-teal'},'feeds-into':{color:'#06b6d4',w:1,dash:'',mk:'ga-teal'},'extended-by':{color:'#1abc9c',w:1.5,dash:'',mk:'ga-teal'},'detected-by':{color:'#2ecc71',w:1.5,dash:'',mk:'ga-green'},'similar-to':{color:'#475569',w:1,dash:'4,4',mk:null},'maintained-by':{color:'#3498db',w:1,dash:'',mk:'ga-blue'},'supports':{color:'#2ecc71',w:1,dash:'',mk:'ga-green'},'basis-for':{color:'#f97316',w:1,dash:'',mk:'ga-gray'},'replaced-by':{color:'#3498db',w:1.5,dash:'',mk:'ga-blue'},'enables':{color:'#2ecc71',w:1.5,dash:'',mk:'ga-green'},'stores-in':{color:'#f1c40f',w:1.5,dash:'',mk:'ga-teal'},'protects-key-for':{color:'#2ecc71',w:1.5,dash:'',mk:'ga-green'},'is':{color:'#1abc9c',w:1,dash:'',mk:'ga-teal'},'contains':{color:'#1abc9c',w:1,dash:'',mk:'ga-gray'},'hardware-version':{color:'#2ecc71',w:1,dash:'4,4',mk:null},'protected-by':{color:'#2ecc71',w:1.5,dash:'',mk:'ga-green'},'controlled-by':{color:'#06b6d4',w:1.5,dash:'',mk:'ga-teal'},'defeats':{color:'#e74c3c',w:1.5,dash:'5,3',mk:'ga-red'},'managed-by':{color:'#9b59b6',w:1.5,dash:'',mk:'ga-blue'},'subset-of':{color:'#1abc9c',w:1,dash:'',mk:'ga-teal'},'uses':{color:'#222c44',w:1,dash:'',mk:'ga-gray'},'powers':{color:'#95a5a6',w:1,dash:'',mk:'ga-gray'},'runs-on':{color:'#9b59b6',w:1,dash:'',mk:'ga-blue'},'complicates':{color:'#e74c3c',w:1,dash:'4,4',mk:null},'becomes':{color:'#e67e22',w:1,dash:'',mk:'ga-gray'},'monitored-by':{color:'#e67e22',w:1,dash:'',mk:'ga-gray'},'industrial-iot':{color:'#78716c',w:1,dash:'',mk:'ga-gray'},};
+function gRender(){const svgGe=document.getElementById('ge'),svgGn=document.getElementById('gn');svgGe.innerHTML='';svgGn.innerHTML='';function el(tag,attrs){const e=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);return e;}
+for(const e of GEDGES){const a=gNodeMap[e.s],b=gNodeMap[e.t];if(!a||!b)continue;const st=GESTYLE[e.type]||GESTYLE.member;const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)+0.001;const sr=a.r+2,er=b.r+(st.mk?9:2);const x1=a.x+dx/d*sr,y1=a.y+dy/d*sr,x2=b.x-dx/d*er,y2=b.y-dy/d*er;const line=el('line',{x1,y1,x2,y2,stroke:st.color,'stroke-width':st.w,opacity:e.type==='member'?'0.25':'0.65','data-gs':e.s,'data-gt':e.t});if(st.dash)line.setAttribute('stroke-dasharray',st.dash);if(st.mk)line.setAttribute('marker-end',`url(#${st.mk})`);svgGe.appendChild(line);}
+for(const n of gNodes){const isCat=n.id.startsWith('cat-');const g=el('g',{transform:`translate(${n.x.toFixed(1)},${n.y.toFixed(1)})`,cursor:'pointer','data-g-node-id':n.id});const circle=el('circle',{r:n.r,fill:n.color+'22',stroke:n.color,'stroke-width':isCat?'2.5':'1.5'});g.appendChild(circle);const lines=n.label.split('\n');const lh=11,sy=-(lines.length-1)*lh/2;lines.forEach((lbl,i)=>{const t=el('text',{'text-anchor':'middle','dominant-baseline':'middle',y:sy+i*lh,'font-size':n.r>28?'10':'9','font-family':'Segoe UI,system-ui,sans-serif','font-weight':'700',fill:n.color,'pointer-events':'none'});t.textContent=lbl;g.appendChild(t);});g.addEventListener('mouseenter',()=>{circle.setAttribute('fill',n.color+'44');circle.setAttribute('stroke-width','2.5');});g.addEventListener('mouseleave',()=>{if(gDragNode!==n){circle.setAttribute('fill',n.color+'22');circle.setAttribute('stroke-width',isCat?'2.5':'1.5');}});g.addEventListener('mousedown',ev=>{ev.stopPropagation();gDragNode=n;n.pinned=true;const pt=gSvgPt(ev);gDragOff={x:pt.x-n.x,y:pt.y-n.y};});g.addEventListener('click',ev=>{ev.stopPropagation();if(n.nodeId&&NODE_DATA[n.nodeId])openDetail(n.nodeId);});svgGn.appendChild(g);}gApplyTx();if(activeCat)applyGraphFilter(activeCat);}
+function gSvgPt(e){const r=document.getElementById('graph-svg').getBoundingClientRect();return{x:(e.clientX-r.left-gTx.x)/gTx.k,y:(e.clientY-r.top-gTx.y)/gTx.k};}
+function gApplyTx(){document.getElementById('graph-root').setAttribute('transform',`translate(${gTx.x.toFixed(1)},${gTx.y.toFixed(1)}) scale(${gTx.k.toFixed(4)})`);}
+function fitGraph(){if(!gNodes.length)return;const svg=document.getElementById('graph-svg');const{width:W,height:H}=svg.getBoundingClientRect();let mnx=1e9,mxx=-1e9,mny=1e9,mxy=-1e9;gNodes.forEach(n=>{mnx=Math.min(mnx,n.x-n.r);mxx=Math.max(mxx,n.x+n.r);mny=Math.min(mny,n.y-n.r);mxy=Math.max(mxy,n.y+n.r);});const pad=50,k=Math.min((W-pad*2)/(mxx-mnx),(H-pad*2)/(mxy-mny),1.8);gTx.k=k;gTx.x=W/2-(mnx+mxx)/2*k;gTx.y=H/2-(mny+mxy)/2*k;gApplyTx();}
+function gSetupInteraction(){const svg=document.getElementById('graph-svg');svg.addEventListener('wheel',e=>{e.preventDefault();const r=svg.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;const f=e.deltaY<0?1.12:0.89;gTx.x=mx-(mx-gTx.x)*f;gTx.y=my-(my-gTx.y)*f;gTx.k=Math.max(0.12,Math.min(4,gTx.k*f));gApplyTx();},{passive:false});svg.addEventListener('mousedown',e=>{const tgt=e.target;if(tgt===svg||tgt.id==='graph-root'||tgt.id==='ge'||tgt.id==='gn'){gPanning=true;gPanStart={x:e.clientX-gTx.x,y:e.clientY-gTx.y};}});window.addEventListener('mousemove',e=>{if(gDragNode){const pt=gSvgPt(e);gDragNode.x=pt.x-gDragOff.x;gDragNode.y=pt.y-gDragOff.y;gRender();}else if(gPanning){gTx.x=e.clientX-gPanStart.x;gTx.y=e.clientY-gPanStart.y;gApplyTx();}});window.addEventListener('mouseup',()=>{gDragNode=null;gPanning=false;});}
+function applyGraphFilter(catId){const cat=CATEGORIES.find(c=>c.id===catId);if(!cat)return;const matchSet=new Set(cat.nodes);document.querySelectorAll('#gn > g[data-g-node-id]').forEach(g=>{const nid=g.dataset.gNodeId,isCat=nid.startsWith('cat-');const nodeId=GNODES.find(n=>n.id===nid)?.nodeId;const vis=isCat||(nodeId&&matchSet.has(nodeId));g.style.opacity=vis?'1':'0.05';g.style.pointerEvents=vis?'auto':'none';});document.querySelectorAll('#ge > line[data-gs][data-gt]').forEach(line=>{const sN=GNODES.find(n=>n.id===line.dataset.gs),tN=GNODES.find(n=>n.id===line.dataset.gt);const sv=!sN||sN.id.startsWith('cat-')||(sN.nodeId&&matchSet.has(sN.nodeId));const tv=!tN||tN.id.startsWith('cat-')||(tN.nodeId&&matchSet.has(tN.nodeId));line.style.opacity=(sv&&tv)?'0.6':'0.04';});}
+function clearGraphFilter(){document.querySelectorAll('#gn > g[data-g-node-id]').forEach(g=>{g.style.opacity='';g.style.pointerEvents='';});document.querySelectorAll('#ge > line').forEach(l=>l.style.opacity='');}
+function toggleGraphView(){gGraphActive=!gGraphActive;const btn=document.getElementById('btn-graph'),gview=document.getElementById('graph-view'),canvas=document.getElementById('canvas');if(gGraphActive){btn.style.cssText='border-color:var(--teal);color:var(--teal);background:rgba(26,188,156,.1)';gview.classList.add('visible');canvas.style.display='none';if(!gGraphInited){gNodes=GNODES.map(n=>({...n}));gNodeMap={};gNodes.forEach(n=>gNodeMap[n.id]=n);const deg={};gNodes.forEach(n=>deg[n.id]=0);GEDGES.forEach(e=>{if(deg[e.s]!==undefined)deg[e.s]++;if(deg[e.t]!==undefined)deg[e.t]++;});gNodes.forEach(n=>{n.r=n.id.startsWith('cat-')?36:Math.max(18,Math.min(34,18+(deg[n.id]||0)*1.4));});runGraphLayout(300);gSetupInteraction();gGraphInited=true;}setTimeout(fitGraph,60);if(activeCat)applyGraphFilter(activeCat);}else{btn.style.cssText='';gview.classList.remove('visible');canvas.style.display='';}}
+
+/* ═══ ILLUSTRATED MODE ═══ */
+let illustratedMode=false;
+const GICONS={'cat-virt':'💻','cat-vmthreat':'⚠','cat-cloud':'☁','cat-cloudarch':'🏗','cat-cloudsec':'🛡','cat-endpoint':'🖥','cat-harden':'⚙','cat-hwboot':'🔒','cat-dlp':'🗄','cat-mobile':'📱','cat-mobilatk':'⚔','cat-iot':'🔌','cat-decom':'🗑','virtualization':'💻','hypervisor':'🧩','type2-hv':'📦','vm-host':'🖥','vm-guest':'👻','snapshot':'📸','replication':'♻','vdi':'🖼','thin-client':'📺','containerization':'🐳','vm-attack':'⚔','vm-sprawl':'🌊','resource-reuse':'♻','cloud':'☁','cloud-scale':'📈','cloud-elastic':'🌊','cloud-storage':'🗄','on-prem':'🏢','off-prem':'🌐','central-decent':'⚖','multi-cloud':'🌐','saas':'📱','paas':'🔧','iaas':'🖥','cloud-public':'🌍','cloud-private':'🔒','cloud-community':'🏘','cloud-hybrid':'🔀','csp':'☁','mssp':'🛡','middleware':'🔗','runtime':'⚙','api':'🔌','microservices':'🧩','edge-compute':'📡','fog-compute':'🌫','cloud-harden':'🔒','casb':'🚦','cloud-dlp':'🚫','security-groups':'🛡','iac':'📋','sdn':'🌐','sdwan':'🗺','swg':'🔰','csa':'📜','endpoints':'🖥','antivirus':'🦠','trojan':'🐴','edr':'🔍','xdr':'🔭','hips':'🚫','allow-block':'📋','hardening':'🔨','config-mgmt':'⚙','change-mgmt':'📝','master-image':'🖼','patch-mgmt':'🩹','bios':'📟','uefi':'💾','flashing':'⚡','measured-boot':'📏','secure-boot':'✅','tpm':'🔐','hw-root-trust':'⚓','endorsement-key':'🔑','hsm':'🏛','microsd-hsm':'💳','fde':'💿','sed':'💾','dlp':'🚫','network-dlp':'🌐','software-dlp':'💻','removable-media':'💾','db-encrypt':'🗄','data-in-use':'🔄','secure-enclave':'🔒','tee':'🛡','phi':'🏥','mdm':'📱','uem':'🖥','corp-owned':'🏢','cope':'📱','byod':'👤','cyod':'📋','screen-lock':'🔒','remote-wipe':'🗑','geofencing':'📍','gps-tag':'🛰','storage-seg':'📦','context-auth':'🎛','jailbreak':'🔓','rooting':'🔓','third-party-app':'⚠','ota-update':'📡','custom-firmware':'⚙','sideloading':'📲','tethering':'🔗','hotspot':'📶','wifi-direct':'📡','embedded':'🔌','iot':'🌐','ics':'🏭','scada-ref':'🖥','soc':'💡','rtos':'⏱','embedded-harden':'🔒','decommission':'🗑','legacy-hw':'⏳','eol-hw':'☠',};
+const GEDGE_DESC={'hypervisor->vm-host':'Hypervisor runs on\nthe physical host','hypervisor->vm-guest':'Hypervisor creates\nand manages guests','type2-hv->hypervisor':'Type II is a\nhosted hypervisor','vm-attack->hypervisor':'VM attacks target\nthe hypervisor layer','vdi->thin-client':'VDI desktops served\nto thin client devices','saas->paas':'PaaS has more\ncustomer responsibility','paas->iaas':'IaaS has most\ncustomer responsibility','cloud-public->cloud-hybrid':'Public cloud is\nhybrid component','cloud-private->cloud-hybrid':'Private cloud is\nhybrid component','casb->cloud-dlp':'CASB includes\ncloud DLP capability','iac->cloud-harden':'IaC enforces\nhardened deployments','sdn->sdwan':'SD-WAN extends SDN\nto wide area networks','api->microservices':'APIs connect\nmicroservice endpoints','antivirus->edr':'EDR extends beyond\nAV signatures','edr->xdr':'XDR extends EDR\nacross all domains','bios->uefi':'UEFI replaced\nlegacy BIOS','uefi->secure-boot':'UEFI enables\nSecure Boot','uefi->measured-boot':'UEFI enables\nMeasured Boot','measured-boot->tpm':'Measurements stored\nin TPM PCRs','tpm->fde':'TPM protects\nBitLocker keys','tpm->hw-root-trust':'TPM is the\nhardware root of trust','tpm->endorsement-key':'TPM contains\nunique EK','fde->sed':'SED is hardware\nFDE implementation','data-in-use->secure-enclave':'Secure enclave\nprotects data in use','dlp->network-dlp':'Network DLP monitors\ntraffic at perimeter','dlp->software-dlp':'Endpoint DLP runs\non the device','jailbreak->third-party-app':'Jailbreak enables\nunsigned app install','rooting->third-party-app':'Rooting enables\napp sideloading','jailbreak->mdm':'Jailbreaking defeats\nMDM enforcement','byod->mdm':'BYOD devices require\nMDM for security','mdm->uem':'UEM is MDM plus\nall endpoint types','geofencing->gps-tag':'Geofencing relies\non GPS location','iot->ics':'ICS is industrial\nIoT application','ics->scada-ref':'SCADA supervises\nICS components','soc->embedded':'SoC powers compact\nembedded systems','legacy-hw->eol-hw':'Legacy hardware\nbecomes EOL','decommission->sed':'SEDs crypto-erased\nduring decommission',};
+function getEdgeDesc(e){return GEDGE_DESC[`${e.s}->${e.t}`]||null;}
+const _origGRender=gRender;
+gRender=function(){if(!illustratedMode){_origGRender();return;}const svgGe=document.getElementById('ge'),svgGn=document.getElementById('gn');svgGe.innerHTML='';svgGn.innerHTML='';function el(tag,attrs){const e=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);return e;}
+for(const e of GEDGES){const a=gNodeMap[e.s],b=gNodeMap[e.t];if(!a||!b)continue;const st=GESTYLE[e.type]||GESTYLE.member;const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)+0.001;const sr=38,er=38+(st.mk?9:2);const x1=a.x+dx/d*sr,y1=a.y+dy/d*sr,x2=b.x-dx/d*er,y2=b.y-dy/d*er;const line=el('line',{x1,y1,x2,y2,stroke:st.color,'stroke-width':st.w,opacity:e.type==='member'?'0.2':'0.7','data-gs':e.s,'data-gt':e.t});if(st.dash)line.setAttribute('stroke-dasharray',st.dash);if(st.mk)line.setAttribute('marker-end',`url(#${st.mk})`);svgGe.appendChild(line);const desc=getEdgeDesc(e);if(desc&&e.type!=='member'){const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;const lines=desc.split('\n');const bw=78,bh=lines.length*10+6;svgGe.appendChild(el('rect',{x:mx-bw/2,y:my-bh/2,width:bw,height:bh,rx:'3',fill:'#07090f',stroke:st.color,'stroke-width':'0.5',opacity:'0.92'}));lines.forEach((ln,i)=>{const t=el('text',{x:mx,y:my-(lines.length-1)*5+i*10,'text-anchor':'middle','dominant-baseline':'middle','font-size':'7.5','font-family':'Segoe UI,system-ui,sans-serif','font-weight':'600',fill:st.color,'pointer-events':'none'});t.textContent=ln;svgGe.appendChild(t);});}}
+const NW=72,NH=58;for(const n of gNodes){const isCat=n.id.startsWith('cat-');const g=el('g',{transform:`translate(${n.x.toFixed(1)},${n.y.toFixed(1)})`,cursor:'pointer','data-g-node-id':n.id});const rect=el('rect',{x:-NW/2,y:-NH/2,width:NW,height:NH,rx:'8',fill:n.color+'18',stroke:n.color,'stroke-width':isCat?'2.5':'1.5'});g.appendChild(rect);const icon=el('text',{y:'-7','text-anchor':'middle','dominant-baseline':'middle','font-size':isCat?'20':'16','pointer-events':'none'});icon.textContent=GICONS[n.id]||'●';g.appendChild(icon);const lbl=el('text',{y:'13','text-anchor':'middle','dominant-baseline':'middle','font-size':'7.5','font-family':'Segoe UI,system-ui,sans-serif','font-weight':'700',fill:n.color,'pointer-events':'none'});lbl.textContent=n.label.replace(/\n/g,' ');g.appendChild(lbl);g.addEventListener('mouseenter',()=>rect.setAttribute('fill',n.color+'35'));g.addEventListener('mouseleave',()=>{if(gDragNode!==n)rect.setAttribute('fill',n.color+'18');});g.addEventListener('mousedown',ev=>{ev.stopPropagation();gDragNode=n;n.pinned=true;const pt=gSvgPt(ev);gDragOff={x:pt.x-n.x,y:pt.y-n.y};});g.addEventListener('click',ev=>{ev.stopPropagation();if(n.nodeId&&NODE_DATA[n.nodeId])openDetail(n.nodeId);});svgGn.appendChild(g);}gApplyTx();if(activeCat)applyGraphFilter(activeCat);};
+function toggleIllustrated(){if(!gGraphActive)toggleGraphView();illustratedMode=!illustratedMode;const btn=document.getElementById('btn-illustrated');btn.style.cssText=illustratedMode?'border-color:var(--purple);color:var(--purple);background:rgba(155,89,182,.12)':'';btn.textContent=illustratedMode?'🖼 Bubble View':'🖼 Illustrated';gRender();}
+
+let studyMode=false;
+function toggleStudyMode(){
+  studyMode=!studyMode;const btn=document.getElementById('btn-study');
+  document.querySelectorAll('.node-label,.node-sub').forEach(el=>el.style.opacity=studyMode?'0':'');
+  btn.style.cssText=studyMode?'border-color:var(--teal);color:var(--teal);background:rgba(26,188,156,.1)':'';
+  btn.textContent=studyMode?'👁 Labels Hidden':'👁 Study Mode';
+}
+</script>
+<style id="declutter-overrides">
+/* Declutter: keep only the bubble chart + Graph/Bubble toggle */
+#sidebar, #footer, #btn-study, #btn-illustrated, #header .hdr-sep { display: none !important; }
+#app { grid-template-columns: 0 1fr 0 !important; grid-template-rows: var(--header-h) 1fr 0 !important; }
+body.detail-open #app { grid-template-columns: 0 1fr var(--detail-w) !important; }
+</style>
+<script>
+/* Declutter: flip the single toggle button label between Graph View / Bubble View */
+document.addEventListener('DOMContentLoaded', function () {
+  var b = document.getElementById('btn-graph');
+  if (!b) return;
+  function upd() {
+    var cv = document.getElementById('canvas'), gv = document.getElementById('graph-view');
+    var active = (cv && cv.style.display === 'none') || (gv && gv.classList.contains('visible'));
+    b.textContent = active ? '🫧 Bubble View' : '🗺 Graph View';
+  }
+  b.addEventListener('click', function () { setTimeout(upd, 0); });
+  upd();
+});
+</script>
+</body>
+</html>

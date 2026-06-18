@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security+ SY0-701 — Enhanced Study Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+<nav class="topnav">
+  <a class="brand" href="index.html">Security<span>+</span> SY0-701</a>
+  <a class="navlink active" href="index.html">Home</a>
+  <a class="navlink" href="chapters1-2.html">Ch 1–2 · Basics &amp; IAM</a>
+  <a class="navlink" href="chapter3.html">Ch 3 · Networks</a>
+  <a class="navlink" href="chapters4-5.html">Ch 4–5 · Net Defense &amp; Hosts</a>
+  <a class="navlink" href="chapter6.html">Ch 6 · Threats</a>
+</nav>
+
+<main class="page" id="main">
+
+  <header class="page-header">
+    <div class="badge">SY0-701</div>
+    <h1>CompTIA <span>Security+</span> — Enhanced Study Guide</h1>
+    <p class="subtitle">Precise, exam-focused reference notes. Every protocol has its port, every concept has its exam angle — no filler.</p>
+  </header>
+
+  <!-- ════════ EXAM FACTS ════════ -->
+  <section id="exam">
+    <div class="sec-head"><h2>The Exam at a Glance</h2><span class="sec-tag">Know what you're walking into</span></div>
+    <div class="grid3">
+      <div class="card accent-blue">
+        <h4>Format</h4>
+        <p>Up to <strong>90 questions</strong> in <strong>90 minutes</strong> — multiple-choice plus <strong>performance-based questions (PBQs)</strong>, which usually appear first.</p>
+      </div>
+      <div class="card accent-green">
+        <h4>Passing Score</h4>
+        <p><strong>750</strong> on a scale of 100–900. PBQs are time sinks — flag them, finish the multiple choice, then come back.</p>
+      </div>
+      <div class="card accent-purple">
+        <h4>Strategy</h4>
+        <p>Most questions hinge on picking the <strong>BEST</strong> answer among several plausible ones. Read for qualifiers: <em>first, best, most, least</em>.</p>
+      </div>
+    </div>
+
+    <h3>Exam Domains &amp; Weighting</h3>
+    <div class="domain-grid">
+      <div class="domain"><div class="pct">12%</div><div class="name">1.0 General Security Concepts</div></div>
+      <div class="domain"><div class="pct">22%</div><div class="name">2.0 Threats, Vulnerabilities &amp; Mitigations</div></div>
+      <div class="domain"><div class="pct">18%</div><div class="name">3.0 Security Architecture</div></div>
+      <div class="domain"><div class="pct">28%</div><div class="name">4.0 Security Operations</div></div>
+      <div class="domain"><div class="pct">20%</div><div class="name">5.0 Security Program Management &amp; Oversight</div></div>
+    </div>
+    <div class="tip"><b>Where the points are:</b> Domains 2 + 4 alone are half the exam. They map heavily to Chapters 3–5 (networks, wireless, hosts) — the material in this guide's deepest pages.</div>
+  </section>
+
+  <!-- ════════ CHAPTERS ════════ -->
+  <section id="chapters">
+    <div class="sec-head"><h2>Study Guide Chapters</h2><span class="sec-tag">Deep-dive pages + original interactive diagrams</span></div>
+
+    <div class="chapter-row">
+      <div class="num">Ch 1</div>
+      <div class="body">
+        <h4>Mastering Security Basics</h4>
+        <p>CIA triad · 4 control categories × 6 control types · PII &amp; data obfuscation (tokenization, masking, steganography) · key stretching &amp; PFS · logs, syslog &amp; SIEM · redundancy, scalability, elasticity</p>
+      </div>
+      <div class="links">
+        <a class="guide" href="chapters1-2.html#ch1">Study Notes</a>
+        <a class="diagram" href="diagrams/Security_Plus_Chapter1_Diagram.html">Interactive Diagram</a>
+      </div>
+    </div>
+
+    <div class="chapter-row">
+      <div class="num">Ch 2</div>
+      <div class="body">
+        <h4>Identity &amp; Access Management</h4>
+        <p>AAA · 4 authentication factors &amp; MFA · HOTP vs TOTP · biometrics (FAR / FRR / CER) · account lifecycle · PAM, JIT &amp; least privilege · SSO, SAML &amp; OAuth · the 5 access control models · anomalous-behavior indicators</p>
+      </div>
+      <div class="links">
+        <a class="guide" href="chapters1-2.html#ch2">Study Notes</a>
+        <a class="diagram" href="diagrams/Security_Plus_Chapter2_Diagram.html">Interactive Diagram</a>
+      </div>
+    </div>
+
+    <div class="chapter-row">
+      <div class="num">Ch 3</div>
+      <div class="body">
+        <h4>Network Technologies &amp; Tools <span class="pill secure">deepest coverage</span></h4>
+        <p>OSI model · TCP/UDP/ICMP/ARP · DNS, DHCP, NTP · RFC 1918 · full email stack + SPF/DKIM/DMARC · TLS &amp; IPsec · every secure/insecure protocol pair with ports · switches, routers, firewalls (WAF/NGFW/UTM) · DMZ &amp; network zones · NAT/PAT · proxies · Zero Trust (PEP/PE/PA, planes, SASE)</p>
+      </div>
+      <div class="links">
+        <a class="guide" href="chapter3.html">Study Notes</a>
+        <a class="diagram" href="diagrams/Security_Plus_Chapter3_Diagram.html">Interactive Diagram</a>
+      </div>
+    </div>
+
+    <div class="chapter-row">
+      <div class="num">Ch 4</div>
+      <div class="body">
+        <h4>Securing Your Network</h4>
+        <p>IDS vs IPS (signature vs anomaly, SPAN/tap) · honeypots → honeytokens · WEP → WPA3 evolution · PSK vs Enterprise vs SAE · EAP family · 802.1X · wireless attacks (evil twin, disassociation, bluesnarfing…) · VPN architectures (split/full tunnel, IPsec modes) · NAC · RADIUS vs TACACS+</p>
+      </div>
+      <div class="links">
+        <a class="guide" href="chapters4-5.html#ch4">Study Notes</a>
+        <a class="diagram" href="diagrams/Security_Plus_Chapter4_Diagram.html">Interactive Diagram</a>
+      </div>
+    </div>
+
+    <div class="chapter-row">
+      <div class="num">Ch 5</div>
+      <div class="body">
+        <h4>Securing Hosts &amp; Data</h4>
+        <p>Type I/II hypervisors · VM escape &amp; sprawl · IaaS/PaaS/SaaS responsibility split · CASB, IaC, SDN · EDR vs XDR · hardening &amp; gold images · UEFI secure/measured boot · TPM vs HSM · FDE &amp; SED · DLP · MDM &amp; BYOD/COPE/CYOD · embedded systems, ICS/SCADA, RTOS · EOL/legacy risk</p>
+      </div>
+      <div class="links">
+        <a class="guide" href="chapters4-5.html#ch5">Study Notes</a>
+        <a class="diagram" href="diagrams/Security_Plus_Chapter5_Diagram.html">Interactive Diagram</a>
+      </div>
+    </div>
+
+    <div class="chapter-row">
+      <div class="num">Ch 6</div>
+      <div class="body">
+        <h4>Threats, Attacks &amp; Threat Intelligence <span class="pill insecure">new</span></h4>
+        <p>Threat actors (nation-state, APT, organized crime, hacktivist, insider) · attributes &amp; motivations · threat vectors &amp; supply chain · attack surface &amp; shadow IT · malware families (virus → worm → RAT → ransomware) · infection indicators · social engineering &amp; the phishing family · SE principles · signature vs heuristic detection &amp; FIM · STIX/TAXII/AIS, OSINT &amp; intel sources</p>
+      </div>
+      <div class="links">
+        <a class="guide" href="chapter6.html">Study Notes</a>
+        <a class="diagram" href="diagrams/Security_Plus_Chapter6_Diagram.html">Interactive Diagram</a>
+      </div>
+    </div>
+    <div class="chapter-row locked">
+      <div class="num">Ch 7</div>
+      <div class="body"><h4>Cryptography &amp; PKI</h4><p>Symmetric · asymmetric · hashing · certificates · key management</p></div>
+      <div class="links"><span class="soon">Coming soon</span></div>
+    </div>
+    <div class="chapter-row locked">
+      <div class="num">Ch 8</div>
+      <div class="body"><h4>Resilience &amp; Physical Security</h4><p>Redundancy · backups · physical controls · site security</p></div>
+      <div class="links"><span class="soon">Coming soon</span></div>
+    </div>
+    <div class="chapter-row locked">
+      <div class="num">Ch 9</div>
+      <div class="body"><h4>Monitoring, Logging &amp; Auditing</h4><p>SIEM · log management · audit trails · anomaly detection</p></div>
+      <div class="links"><span class="soon">Coming soon</span></div>
+    </div>
+    <div class="chapter-row locked">
+      <div class="num">Ch 10</div>
+      <div class="body"><h4>Incident Response</h4><p>IR lifecycle · forensics · chain of custody · playbooks</p></div>
+      <div class="links"><span class="soon">Coming soon</span></div>
+    </div>
+    <div class="chapter-row locked">
+      <div class="num">Ch 11</div>
+      <div class="body"><h4>Governance, Risk &amp; Compliance</h4><p>Policies · risk assessment · regulations · third-party risk</p></div>
+      <div class="links"><span class="soon">Coming soon</span></div>
+    </div>
+  </section>
+
+  <!-- ════════ MASTER PORT TABLE ════════ -->
+  <section id="ports">
+    <div class="sec-head"><h2>Master Port Reference</h2><span class="sec-tag">Memorize this table cold — ports show up everywhere on the exam</span></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Port</th><th>Protocol</th><th>Transport</th><th>Status</th><th>Secure Alternative</th></tr></thead>
+      <tbody>
+        <tr><td>20 / 21</td><td>FTP (data / control)</td><td>TCP</td><td><span class="pill insecure">cleartext</span></td><td>SFTP (22) or FTPS (990)</td></tr>
+        <tr><td>22</td><td>SSH · SFTP · SCP</td><td>TCP</td><td><span class="pill secure">secure</span></td><td>—</td></tr>
+        <tr><td>23</td><td>Telnet</td><td>TCP</td><td><span class="pill insecure">cleartext</span></td><td>SSH (22)</td></tr>
+        <tr><td>25</td><td>SMTP (server-to-server relay)</td><td>TCP</td><td><span class="pill insecure">cleartext</span></td><td>587 (STARTTLS) or 465 (implicit TLS)</td></tr>
+        <tr><td>49</td><td>TACACS+</td><td>TCP</td><td><span class="pill secure">encrypts full payload</span></td><td>—</td></tr>
+        <tr><td>53</td><td>DNS</td><td>UDP queries / TCP zone transfers</td><td><span class="pill insecure">unauthenticated</span></td><td>DNSSEC (adds signing, not encryption)</td></tr>
+        <tr><td>67 / 68</td><td>DHCP (server / client)</td><td>UDP</td><td>—</td><td>—</td></tr>
+        <tr><td>69</td><td>TFTP</td><td>UDP</td><td><span class="pill insecure">no auth at all</span></td><td>SFTP (22)</td></tr>
+        <tr><td>80</td><td>HTTP</td><td>TCP</td><td><span class="pill insecure">cleartext</span></td><td>HTTPS (443)</td></tr>
+        <tr><td>88</td><td>Kerberos</td><td>UDP/TCP</td><td><span class="pill secure">secure</span></td><td>—</td></tr>
+        <tr><td>110</td><td>POP3</td><td>TCP</td><td><span class="pill insecure">cleartext</span></td><td>POP3S (995)</td></tr>
+        <tr><td>123</td><td>NTP</td><td>UDP</td><td>—</td><td>—</td></tr>
+        <tr><td>143</td><td>IMAP</td><td>TCP</td><td><span class="pill insecure">cleartext</span></td><td>IMAPS (993)</td></tr>
+        <tr><td>161 / 162</td><td>SNMP (agent / trap)</td><td>UDP</td><td><span class="pill insecure">v1/v2 cleartext</span></td><td>SNMPv3 (same ports, adds auth + encryption)</td></tr>
+        <tr><td>389</td><td>LDAP</td><td>TCP/UDP</td><td><span class="pill insecure">cleartext</span></td><td>LDAPS (636)</td></tr>
+        <tr><td>443</td><td>HTTPS (TLS) · SSTP VPN</td><td>TCP</td><td><span class="pill secure">secure</span></td><td>—</td></tr>
+        <tr><td>465 / 587</td><td>SMTPS (implicit TLS) / submission (STARTTLS)</td><td>TCP</td><td><span class="pill secure">secure</span></td><td>—</td></tr>
+        <tr><td>500</td><td>IKE (IPsec key exchange) · 4500 for NAT-T</td><td>UDP</td><td><span class="pill secure">secure</span></td><td>—</td></tr>
+        <tr><td>514</td><td>Syslog</td><td>UDP</td><td><span class="pill insecure">cleartext</span></td><td>Syslog-TLS (6514)</td></tr>
+        <tr><td>636</td><td>LDAPS</td><td>TCP</td><td><span class="pill secure">secure</span></td><td>—</td></tr>
+        <tr><td>993</td><td>IMAPS</td><td>TCP</td><td><span class="pill secure">secure</span></td><td>—</td></tr>
+        <tr><td>995</td><td>POP3S</td><td>TCP</td><td><span class="pill secure">secure</span></td><td>—</td></tr>
+        <tr><td>1433</td><td>Microsoft SQL Server</td><td>TCP</td><td>—</td><td>—</td></tr>
+        <tr><td>1701</td><td>L2TP</td><td>UDP</td><td><span class="pill insecure">no encryption alone</span></td><td>Pair with IPsec (L2TP/IPsec)</td></tr>
+        <tr><td>1812 / 1813</td><td>RADIUS (auth / accounting)</td><td>UDP</td><td><span class="pill insecure">only password encrypted</span></td><td>TACACS+ (49) encrypts entire session</td></tr>
+        <tr><td>3306</td><td>MySQL</td><td>TCP</td><td>—</td><td>—</td></tr>
+        <tr><td>3389</td><td>RDP</td><td>TCP</td><td>—</td><td>Gate behind VPN / jump server, enable NLA</td></tr>
+        <tr><td>5060 / 5061</td><td>SIP (cleartext / TLS)</td><td>TCP/UDP</td><td><span class="pill insecure">5060 cleartext</span></td><td>5061 (SIP-TLS) + SRTP for media</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>Exam pattern:</b> Port questions are rarely "what port is X?" — they're scenario-based: <em>"An admin needs to securely transfer files…"</em> → answer is the protocol+port pair (SFTP, 22). Learn each port <strong>with its secure replacement</strong>.</div>
+  </section>
+
+  <footer class="site-footer">
+    CompTIA Security+ SY0-701 · Enhanced personal study reference · Hub + 3 deep-dive pages
+  </footer>
+
+</main>
+<script src="guide.js"></script>
+</body>
+</html>
