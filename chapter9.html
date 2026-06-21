@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch 9 · Implementing Controls to Protect Assets — Security+ SY0-701</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+<nav class="topnav">
+  <a class="brand" href="index.html">Security<span>+</span> SY0-701</a>
+  <a class="navlink" href="index.html">Home</a>
+  <a class="navlink" href="chapters1-2.html">Ch 1–2 · Basics &amp; IAM</a>
+  <a class="navlink" href="chapter3.html">Ch 3 · Networks</a>
+  <a class="navlink" href="chapters4-5.html">Ch 4–5 · Net Defense &amp; Hosts</a>
+  <a class="navlink" href="chapter6.html">Ch 6 · Threats</a>
+  <a class="navlink" href="chapter7.html">Ch 7 · Advanced Attacks</a>
+  <a class="navlink active" href="chapter9.html">Ch 9 · Controls</a>
+  <a class="navlink" href="practice.html">Practice</a>
+  <a class="navlink" href="glossary.html">Glossary</a>
+</nav>
+
+<main class="page" id="main">
+
+  <header class="page-header">
+    <div class="badge">Chapter 9</div>
+    <h1>Implementing Controls to <span>Protect Assets</span></h1>
+    <p class="subtitle">Physical security and sensors · asset management · defense in depth · RAID and storage · high availability · power and backups · business continuity and disaster recovery · capacity planning.</p>
+  </header>
+
+  <div class="toc">
+    <a href="#physical">Physical Security</a>
+    <a href="#assets">Asset Management</a>
+    <a href="#defense">Defense in Depth</a>
+    <a href="#raid">RAID &amp; Storage</a>
+    <a href="#ha">High Availability &amp; Power</a>
+    <a href="#backups">Backups &amp; Data Protection</a>
+    <a href="#bcp">Business Continuity</a>
+    <a href="#recovery">Recovery &amp; DR</a>
+    <a href="#capacity">Capacity Planning</a>
+  </div>
+
+  <!-- ════════ PHYSICAL SECURITY CONTROLS ════════ -->
+  <section id="physical">
+    <div class="sec-head"><h2>Physical Security Controls</h2><span class="sec-tag">If an attacker can touch the hardware, all digital controls can fail</span></div>
+    <p>Physical security is the first and most fundamental layer of protection. No amount of encryption or firewalls prevents an attacker who can walk up to a server, steal a laptop, or cut a power line. Physical controls fall into the same categories as any security control — <strong>preventive, detective, deterrent, and corrective</strong> — but they protect the physical environment rather than digital assets.</p>
+
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Control</th><th>Type</th><th>How It Works</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Access badge</strong></td><td>Preventive / Technical</td><td>RFID or smart-card credential granting entry to secured areas when presented to a reader. Tied to identity management — deactivated instantly when an employee leaves.</td></tr>
+        <tr><td><strong>Security guards</strong></td><td>Preventive / Detective / Deterrent</td><td>Human personnel who deter threats, verify identities, respond to incidents, and make judgment calls. The most flexible physical control — can adapt to novel situations.</td></tr>
+        <tr><td><strong>Video surveillance (CCTV)</strong></td><td>Detective / Deterrent</td><td>Closed-circuit cameras that record and monitor spaces. Acts as a deterrent when visible; provides forensic evidence after an incident.</td></tr>
+        <tr><td><strong>Lighting</strong></td><td>Deterrent / Preventive</td><td>Eliminates dark areas around facilities to deter unauthorized access and improve CCTV effectiveness at night. Well-lit perimeters make concealment difficult.</td></tr>
+        <tr><td><strong>Alarms</strong></td><td>Detective</td><td>Trigger when a sensor detects unauthorized access. Can be <em>audible</em> (deter the intruder directly) or <em>silent</em> (notify security remotely without alerting the attacker).</td></tr>
+        <tr><td><strong>Bollards</strong></td><td>Preventive / Physical</td><td>Short, sturdy posts installed at building entrances to prevent vehicles from ramming into a facility. Used at banks, government buildings, and critical infrastructure.</td></tr>
+        <tr><td><strong>Dual gate</strong></td><td>Preventive / Physical</td><td>A two-gate vehicle entry checkpoint where the second gate cannot open until the first closes and security verifies the vehicle — prevents tailgating at vehicle checkpoints.</td></tr>
+        <tr><td><strong>Access control vestibule</strong></td><td>Preventive / Physical</td><td>Also called a <strong>mantrap</strong>. Two interlocking doors for foot traffic — only one can be open at a time. Eliminates tailgating into secured areas like data centers.</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="sec-head" style="margin-top:28px"><h3 style="font-size:1.1rem">Security Sensors</h3><span class="sec-tag">Detecting intrusion through different physical phenomena</span></div>
+    <p>Sensors monitor the physical environment and trigger alerts or alarms when specific conditions are detected. Different sensor technologies are suited to different environments and threat types.</p>
+
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Sensor Type</th><th>Detection Method</th><th>Best Used For</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Motion detection</strong></td><td>Detects movement in a monitored zone — often combines infrared and microwave techniques</td><td>General-purpose interior and exterior intrusion detection</td></tr>
+        <tr><td><strong>Noise detection</strong></td><td>Triggers when ambient sound exceeds a threshold — tuned for glass breaking, forced entry, gunshots</td><td>Detecting forced entry through windows or walls</td></tr>
+        <tr><td><strong>Infrared detection</strong></td><td>Detects heat signatures (thermal radiation) emitted by people, animals, or warm objects</td><td>After-hours perimeter monitoring; works in complete darkness</td></tr>
+        <tr><td><strong>Pressure detection</strong></td><td>Triggers when weight is applied to an embedded floor or surface sensor</td><td>Detecting movement through a secured room or vault floor</td></tr>
+        <tr><td><strong>Microwave detection</strong></td><td>Emits microwave pulses and measures reflections from moving objects (Doppler effect)</td><td>Large open areas, garages, warehouses; works through walls</td></tr>
+        <tr><td><strong>Ultrasonic detection</strong></td><td>Emits high-frequency sound waves and detects changes in reflection caused by movement</td><td>Indoor spaces; very sensitive but can produce false positives from HVAC air movement</td></tr>
+      </tbody>
+    </table></div>
+
+    <figure class="diagram">
+      <svg width="660" viewBox="0 0 660 200" role="img" aria-label="Physical security layers: outer perimeter with bollards and lighting, middle layer with dual gate and guards, inner layer with access badges and access control vestibule">
+        <defs><marker id="m-phy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--dim)"/></marker></defs>
+        <!-- Outer zone -->
+        <rect x="10" y="10" width="640" height="180" rx="12" fill="none" stroke="var(--red)" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <text x="330" y="28" text-anchor="middle" font-size="10" font-weight="700" fill="var(--red)">PERIMETER — Bollards · Lighting · CCTV · Alarms</text>
+        <!-- Middle zone -->
+        <rect x="80" y="45" width="500" height="130" rx="10" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <text x="330" y="63" text-anchor="middle" font-size="10" font-weight="700" fill="var(--orange)">BUILDING ENTRY — Dual Gate (vehicles) · Guards · Access Badges</text>
+        <!-- Inner zone -->
+        <rect x="190" y="80" width="280" height="80" rx="8" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="330" y="97" text-anchor="middle" font-size="10" font-weight="700" fill="var(--green)">SECURE AREA ENTRY — Access Control Vestibule · Badge Reader</text>
+        <!-- Core -->
+        <rect x="255" y="108" width="150" height="40" rx="6" fill="var(--green-dim)" stroke="var(--green)"/>
+        <text x="330" y="127" text-anchor="middle" font-size="10" font-weight="700" fill="var(--green)">Data Center / Server Room</text>
+        <text x="330" y="141" text-anchor="middle" font-size="8.5" fill="var(--dim)">assets protected inside</text>
+      </svg>
+      <figcaption><b>Layered physical security.</b> Each ring adds another barrier. An attacker must defeat bollards, lighting, guards, badges, and a vestibule to reach the core assets — defense in depth at the physical layer.</figcaption>
+    </figure>
+
+    <div class="sec-head" style="margin-top:28px"><h3 style="font-size:1.1rem">Physical Attacks</h3><span class="sec-tag">Threats targeting the physical layer</span></div>
+    <div class="grid2">
+      <div class="card accent-red">
+        <h4>Credit card skimming</h4>
+        <p>Attaching a hidden device to a legitimate payment terminal (ATM, gas pump, POS) that reads and stores <strong>magnetic stripe data</strong> from cards as they are swiped. The victim and terminal operator usually can't tell the device is present.</p>
+      </div>
+      <div class="card accent-red">
+        <h4>Card cloning</h4>
+        <p>Using data captured by a skimmer to <strong>produce a duplicate card</strong> that behaves like the original. Skimming steals the data; cloning produces the fraudulent physical card used to make purchases.</p>
+      </div>
+      <div class="card accent-orange">
+        <h4>Physical brute force</h4>
+        <p>Using direct physical force to bypass access controls — <strong>breaking locks, ramming doors, smashing windows</strong>, or destroying badge readers. Countered by reinforced doors, deadbolts, security-grade glass, and guards.</p>
+      </div>
+      <div class="card accent-orange">
+        <h4>Environmental attack</h4>
+        <p>Targeting the physical environment that supports IT — <strong>cutting power, triggering fire suppression, flooding a data center</strong>, or disabling HVAC. Takes systems offline without touching the hardware directly.</p>
+      </div>
+    </div>
+    <div class="tip"><b>Exam framing:</b> if a question describes an attacker disrupting power, cooling, or suppression systems to take systems offline, the answer is <strong>environmental attack</strong>. If they force a door or break a lock, it is <strong>physical brute force</strong>.</div>
+  </section>
+
+  <!-- ════════ ASSET MANAGEMENT ════════ -->
+  <section id="assets">
+    <div class="sec-head"><h2>Asset Management</h2><span class="sec-tag">You can't protect what you don't know you have</span></div>
+    <p><strong>Asset management</strong> is the systematic process of tracking, maintaining, and protecting all organizational assets from the moment they are acquired until they are disposed of. Assets include hardware, software, and data — each with its own management requirements. Untracked assets create unmanaged risk.</p>
+
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Lifecycle Phase</th><th>What Happens</th><th>Key Activities</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Acquisition / Procurement</strong></td><td>Assets are purchased and received by the organization</td><td>Vendor vetting, purchase orders, receiving inspection, initial security configuration</td></tr>
+        <tr><td><strong>Assignment / Accounting</strong></td><td>Assets are formally assigned to users or systems and recorded</td><td>Serial number logging, CMDB entry, department assignment, owner accountability</td></tr>
+        <tr><td><strong>Monitoring / Asset tracking</strong></td><td>Assets are tracked throughout their operational life</td><td>RFID tags, inventory audits, patch status tracking, location monitoring, usage reporting</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="grid3">
+      <div class="card accent-blue">
+        <h4>Hardware asset management</h4>
+        <p>Tracking physical devices — servers, laptops, switches, printers — by <strong>serial number, location, owner, and status</strong>. A lost or untracked device is an unmanaged attack surface.</p>
+      </div>
+      <div class="card accent-purple">
+        <h4>Software asset management</h4>
+        <p>Tracking <strong>software licenses, versions, and installation counts</strong> to ensure compliance and identify unauthorized, outdated, or unlicensed software across the environment.</p>
+      </div>
+      <div class="card accent-green">
+        <h4>Data asset management</h4>
+        <p>Managing data through <strong>classification, ownership, retention policies, and secure disposal</strong>. Ensures sensitive data is protected appropriately and deleted securely at end of life.</p>
+      </div>
+    </div>
+
+    <div class="card accent-teal" style="margin-top:14px">
+      <h4>RFID in asset tracking</h4>
+      <p><strong>Radio Frequency Identification (RFID)</strong> tags affixed to assets allow inventory systems to automatically read and log asset locations using radio signals — without requiring line-of-sight scanning. Used in data centers, warehouses, and hospitals to track hardware at scale. RFID tags can be passive (no battery, shorter range) or active (battery-powered, longer range).</p>
+    </div>
+
+    <div class="sec-head" style="margin-top:28px"><h3 style="font-size:1.1rem">Asset Management Vulnerabilities</h3><span class="sec-tag">What happens when asset management fails</span></div>
+    <div class="grid2">
+      <div class="card accent-red">
+        <h4>Architecture and design weaknesses</h4>
+        <p>Security flaws <strong>baked into a system's fundamental design</strong> rather than introduced later. These are the hardest to fix because remediation often requires redesigning or replacing the system entirely, not just patching it.</p>
+      </div>
+      <div class="card accent-orange">
+        <h4>System sprawl</h4>
+        <p>Uncontrolled growth of systems, servers, and VMs <strong>without adequate tracking, documentation, or governance</strong>. Sprawling environments have unpatched machines, unknown services, and expanded attack surfaces that security teams can't keep up with.</p>
+      </div>
+    </div>
+    <div class="warn"><b>Sprawl risk:</b> every untracked or undocumented system is a potential entry point. Asset management isn't just an accounting exercise — it directly determines what you can patch, monitor, and defend.</div>
+  </section>
+
+  <!-- ════════ DEFENSE IN DEPTH ════════ -->
+  <section id="defense">
+    <div class="sec-head"><h2>Defense in Depth</h2><span class="sec-tag">Layer controls so no single failure compromises everything</span></div>
+    <p><strong>Defense in depth</strong> is the strategy of applying multiple, overlapping layers of security controls so that if one layer fails or is bypassed, others remain in place to limit the damage. No single control is assumed to be perfect — the combination is what makes the system resilient.</p>
+
+    <figure class="diagram">
+      <svg width="620" viewBox="0 0 620 220" role="img" aria-label="Defense in depth: three overlapping layers labeled vendor diversity, technology diversity, and control diversity surrounding a protected asset in the center">
+        <!-- Outer ring: Vendor Diversity -->
+        <ellipse cx="310" cy="110" rx="290" ry="98" fill="none" stroke="var(--blue)" stroke-width="2" stroke-dasharray="6,4"/>
+        <text x="310" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="var(--blue)">Vendor Diversity — different vendors at each layer</text>
+        <!-- Middle ring: Technology Diversity -->
+        <ellipse cx="310" cy="110" rx="210" ry="70" fill="none" stroke="var(--purple)" stroke-width="2" stroke-dasharray="5,4"/>
+        <text x="310" y="52" text-anchor="middle" font-size="11" font-weight="700" fill="var(--purple)">Technology Diversity — different tech stacks</text>
+        <!-- Inner ring: Control Diversity -->
+        <ellipse cx="310" cy="110" rx="128" ry="44" fill="none" stroke="var(--green)" stroke-width="2" stroke-dasharray="4,3"/>
+        <text x="310" y="80" text-anchor="middle" font-size="11" font-weight="700" fill="var(--green)">Control Diversity — preventive, detective, corrective</text>
+        <!-- Core -->
+        <rect x="260" y="95" width="100" height="36" rx="6" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="310" y="112" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--bright)">Protected</text>
+        <text x="310" y="126" text-anchor="middle" font-size="9" fill="var(--dim)">Assets</text>
+      </svg>
+      <figcaption><b>Diversity at every layer.</b> A zero-day in one vendor's firewall, a flaw in one type of control, or a gap in one technology still leaves two more rings of defense protecting the asset.</figcaption>
+    </figure>
+
+    <div class="grid3">
+      <div class="card accent-blue">
+        <h4>Vendor diversity</h4>
+        <p>Using products from <strong>multiple vendors</strong> across security layers. A zero-day vulnerability in one vendor's product doesn't compromise every layer simultaneously. If your firewall and endpoint protection come from different vendors, a flaw in one leaves the other intact.</p>
+      </div>
+      <div class="card accent-purple">
+        <h4>Technology diversity</h4>
+        <p>Deploying <strong>different technologies</strong> at different layers. An attacker exploiting a Windows-specific flaw won't automatically own Linux-based systems. Different protocols, platforms, and architectures require different attack techniques.</p>
+      </div>
+      <div class="card accent-green">
+        <h4>Control diversity</h4>
+        <p>Applying a <strong>mix of control types</strong> — preventive (stop the attack), detective (identify it), corrective (fix the damage), and deterrent (discourage attempts). If a preventive control is bypassed, detective controls still catch it.</p>
+      </div>
+    </div>
+    <div class="tip"><b>Exam framing:</b> when a question asks why an organization uses multiple vendors or control types, the answer is <strong>defense in depth</strong>. The sub-strategy being used (vendor vs. technology vs. control diversity) depends on what's being varied.</div>
+  </section>
+
+  <!-- ════════ RAID & STORAGE REDUNDANCY ════════ -->
+  <section id="raid">
+    <div class="sec-head"><h2>RAID &amp; Storage Redundancy</h2><span class="sec-tag">Protect data availability at the disk level</span></div>
+    <p><strong>RAID (Redundant Array of Inexpensive Disks)</strong> combines multiple physical drives into a single logical unit to improve <strong>performance, redundancy, or both</strong>. RAID protects against physical drive failure — it does not protect against deletion, corruption, or ransomware. RAID is not a backup.</p>
+
+    <div class="table-wrap"><table>
+      <thead><tr><th>RAID Level</th><th>Method</th><th>Min Drives</th><th>Drives That Can Fail</th><th>Trade-off</th></tr></thead>
+      <tbody>
+        <tr><td><strong>RAID-0</strong></td><td>Striping — data split across all drives in chunks</td><td>2</td><td><span class="pill insecure">0 — any failure = total data loss</span></td><td>Maximum performance + capacity; zero fault tolerance</td></tr>
+        <tr><td><strong>RAID-1</strong></td><td>Mirroring — identical copy on every drive</td><td>2</td><td>1 (the other drive has a full copy)</td><td>Simple redundancy; uses 50% of total capacity</td></tr>
+        <tr><td><strong>RAID-5</strong></td><td>Striping + distributed parity (1 parity block per stripe)</td><td>3</td><td>1</td><td>Good balance of speed, capacity, and redundancy; rebuild required after failure</td></tr>
+        <tr><td><strong>RAID-6</strong></td><td>Striping + double distributed parity (2 parity blocks per stripe)</td><td>4</td><td>2 simultaneously</td><td>Higher fault tolerance than RAID-5; slower writes due to double parity calculation</td></tr>
+        <tr><td><strong>RAID-10</strong></td><td>Mirror + stripe (RAID 1+0): data mirrored across pairs, then striped across pairs</td><td>4</td><td>1 per mirror pair (potentially multiple)</td><td>High performance AND high redundancy; expensive — 50% capacity usable</td></tr>
+      </tbody>
+    </table></div>
+
+    <figure class="diagram">
+      <svg width="660" viewBox="0 0 660 180" role="img" aria-label="Comparison of RAID-0 striping, RAID-1 mirroring, and RAID-5 striping with parity across drives">
+        <defs><marker id="m-raid" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--dim)"/></marker></defs>
+        <!-- RAID-0 -->
+        <text x="100" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="var(--red)">RAID-0 (Stripe)</text>
+        <rect x="30" y="35" width="60" height="110" rx="5" fill="var(--red-dim)" stroke="var(--red)"/>
+        <text x="60" y="56" text-anchor="middle" font-size="9" fill="var(--dim)">Drive 1</text>
+        <text x="60" y="80" text-anchor="middle" font-size="9" font-weight="600" fill="var(--red)">A1</text>
+        <text x="60" y="100" text-anchor="middle" font-size="9" font-weight="600" fill="var(--red)">A3</text>
+        <text x="60" y="120" text-anchor="middle" font-size="9" font-weight="600" fill="var(--red)">A5</text>
+        <rect x="110" y="35" width="60" height="110" rx="5" fill="var(--red-dim)" stroke="var(--red)"/>
+        <text x="140" y="56" text-anchor="middle" font-size="9" fill="var(--dim)">Drive 2</text>
+        <text x="140" y="80" text-anchor="middle" font-size="9" font-weight="600" fill="var(--red)">A2</text>
+        <text x="140" y="100" text-anchor="middle" font-size="9" font-weight="600" fill="var(--red)">A4</text>
+        <text x="140" y="120" text-anchor="middle" font-size="9" font-weight="600" fill="var(--red)">A6</text>
+        <text x="100" y="162" text-anchor="middle" font-size="8.5" fill="var(--dim)">No redundancy</text>
+        <!-- RAID-1 -->
+        <text x="310" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="var(--green)">RAID-1 (Mirror)</text>
+        <rect x="238" y="35" width="60" height="110" rx="5" fill="var(--green-dim)" stroke="var(--green)"/>
+        <text x="268" y="56" text-anchor="middle" font-size="9" fill="var(--dim)">Drive 1</text>
+        <text x="268" y="80" text-anchor="middle" font-size="9" font-weight="600" fill="var(--green)">A1</text>
+        <text x="268" y="100" text-anchor="middle" font-size="9" font-weight="600" fill="var(--green)">A2</text>
+        <text x="268" y="120" text-anchor="middle" font-size="9" font-weight="600" fill="var(--green)">A3</text>
+        <rect x="322" y="35" width="60" height="110" rx="5" fill="var(--green-dim)" stroke="var(--green)"/>
+        <text x="352" y="56" text-anchor="middle" font-size="9" fill="var(--dim)">Drive 2</text>
+        <text x="352" y="80" text-anchor="middle" font-size="9" font-weight="600" fill="var(--green)">A1</text>
+        <text x="352" y="100" text-anchor="middle" font-size="9" font-weight="600" fill="var(--green)">A2</text>
+        <text x="352" y="120" text-anchor="middle" font-size="9" font-weight="600" fill="var(--green)">A3</text>
+        <text x="310" y="162" text-anchor="middle" font-size="8.5" fill="var(--dim)">Exact copy on each drive</text>
+        <!-- RAID-5 -->
+        <text x="568" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="var(--blue)">RAID-5 (Stripe+Parity)</text>
+        <rect x="480" y="35" width="56" height="110" rx="5" fill="var(--blue-dim)" stroke="var(--blue)"/>
+        <text x="508" y="54" text-anchor="middle" font-size="8.5" fill="var(--dim)">D1</text>
+        <text x="508" y="76" text-anchor="middle" font-size="9" font-weight="600" fill="var(--blue)">A1</text>
+        <text x="508" y="96" text-anchor="middle" font-size="9" font-weight="600" fill="var(--blue)">A2</text>
+        <text x="508" y="116" text-anchor="middle" font-size="9" font-weight="600" fill="var(--orange)">P</text>
+        <rect x="546" y="35" width="56" height="110" rx="5" fill="var(--blue-dim)" stroke="var(--blue)"/>
+        <text x="574" y="54" text-anchor="middle" font-size="8.5" fill="var(--dim)">D2</text>
+        <text x="574" y="76" text-anchor="middle" font-size="9" font-weight="600" fill="var(--blue)">B1</text>
+        <text x="574" y="96" text-anchor="middle" font-size="9" font-weight="600" fill="var(--orange)">P</text>
+        <text x="574" y="116" text-anchor="middle" font-size="9" font-weight="600" fill="var(--blue)">B2</text>
+        <rect x="612" y="35" width="40" height="110" rx="5" fill="var(--blue-dim)" stroke="var(--blue)"/>
+        <text x="632" y="54" text-anchor="middle" font-size="8.5" fill="var(--dim)">D3</text>
+        <text x="632" y="76" text-anchor="middle" font-size="9" font-weight="600" fill="var(--orange)">P</text>
+        <text x="632" y="96" text-anchor="middle" font-size="9" font-weight="600" fill="var(--blue)">C1</text>
+        <text x="632" y="116" text-anchor="middle" font-size="9" font-weight="600" fill="var(--blue)">C2</text>
+        <text x="568" y="162" text-anchor="middle" font-size="8.5" fill="var(--dim)">P=parity · 1 drive loss OK</text>
+      </svg>
+      <figcaption><b>RAID levels compared.</b> RAID-0 stripes for speed but loses everything on a single failure. RAID-1 mirrors for simple redundancy at 50% capacity. RAID-5 distributes parity so any one drive can be lost without data loss.</figcaption>
+    </figure>
+    <div class="warn"><b>RAID ≠ Backup:</b> RAID protects against hardware drive failure only. It does not protect against accidental deletion, ransomware encryption, fire, flood, or software corruption. A deleted file is deleted on all mirror drives instantly. Always back up RAID arrays separately.</div>
+  </section>
+
+  <!-- ════════ HIGH AVAILABILITY & POWER ════════ -->
+  <section id="ha">
+    <div class="sec-head"><h2>High Availability &amp; Power</h2><span class="sec-tag">Eliminate single points of failure at every layer</span></div>
+    <p><strong>High availability (HA)</strong> is the design goal of keeping systems running with minimal downtime by <strong>eliminating single points of failure</strong> through redundancy and automatic failover. HA applies to servers, network connections, applications, and power — any failure point must have a backup ready to take over.</p>
+
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>HA Technique</th><th>How It Works</th><th>Key Distinction</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Active/active load balancing</strong></td><td>All nodes handle live traffic simultaneously — load is distributed across every node</td><td>Maximum throughput; all capacity in use; any node can fail without service interruption</td></tr>
+        <tr><td><strong>Active/passive load balancing</strong></td><td>One or more standby nodes sit idle until an active node fails, then take over</td><td>Lower utilization in normal operation; dedicated failover capacity always available</td></tr>
+        <tr><td><strong>Software load balancer</strong></td><td>Load balancing logic runs as software or a virtual appliance rather than dedicated hardware</td><td>Flexible, cost-effective, easily scaled; examples include HAProxy, NGINX, and cloud-native LBs</td></tr>
+        <tr><td><strong>Clustering</strong></td><td>Multiple servers grouped into a single logical unit — they appear as one system and share workloads and state</td><td>Provides both HA and scale-out; if one node fails, others continue serving the cluster workload</td></tr>
+        <tr><td><strong>NIC teaming</strong></td><td>Two or more physical network interface cards bonded into one logical interface</td><td>If one NIC or cable fails, others maintain connectivity; can also increase aggregate bandwidth</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="sec-head" style="margin-top:28px"><h3 style="font-size:1.1rem">Power Redundancy</h3><span class="sec-tag">Keep the lights on at every tier</span></div>
+    <p>Power failures cascade: no power means no servers, no cooling, no networking. Power redundancy protects at three tiers — the <strong>utility feed, the facility, and the individual server</strong>.</p>
+
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Device</th><th>What It Does</th><th>Duration / Scope</th></tr></thead>
+      <tbody>
+        <tr><td><strong>UPS (Uninterruptible Power Supply)</strong></td><td>Battery-backed device that provides immediate power the moment utility power fails — no gap between outage and power delivery</td><td>Minutes to ~1 hour depending on load; buys time for graceful shutdown or generator start</td></tr>
+        <tr><td><strong>Dual power supply</strong></td><td>Two independent PSUs inside a single server, each connected to a different circuit or UPS</td><td>Server stays on even if one PSU or one power circuit fails</td></tr>
+        <tr><td><strong>Generator</strong></td><td>Fuel-powered device that produces electricity to sustain a facility during extended outages after the UPS battery depletes</td><td>Hours to days depending on fuel supply; starts in seconds to minutes after outage</td></tr>
+        <tr><td><strong>Managed PDU</strong></td><td>Smart power strip that distributes power to rack equipment with remote monitoring, per-outlet switching, and consumption tracking</td><td>Allows remote power cycling of hung servers without physical access to the data center</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="tip"><b>Power protection layers:</b> UPS handles <em>short outages and spikes</em> (seconds to minutes). The generator kicks in for <em>extended outages</em> (hours+). Dual PSU handles <em>component-level</em> power failures inside a server. All three together eliminate power as a single point of failure.</div>
+  </section>
+
+  <!-- ════════ BACKUPS & DATA PROTECTION ════════ -->
+  <section id="backups">
+    <div class="sec-head"><h2>Backups &amp; Data Protection</h2><span class="sec-tag">The last line of defense against data loss</span></div>
+    <p>Backups are copies of data preserved so that original data can be restored after a loss event. Backup strategy involves choosing the right <strong>media, backup type, frequency, and storage location</strong> — balancing storage cost, restore speed, and recovery objectives (RTO and RPO).</p>
+
+    <div class="sec-head" style="margin-top:20px"><h3 style="font-size:1.1rem">Backup Media</h3><span class="sec-tag">Where you store your backups</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Media Type</th><th>Description</th><th>Best For</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Tape</strong></td><td>Sequential magnetic media — high capacity, low cost per GB, long archival life</td><td>Long-term archival, regulatory compliance data retention</td></tr>
+        <tr><td><strong>Disk</strong></td><td>Spinning or solid-state drives — fast random access, immediate restore</td><td>Operational backups requiring fast restore</td></tr>
+        <tr><td><strong>NAS (Network Attached Storage)</strong></td><td>File-level storage device shared over the network — multiple clients write backups to a central NAS</td><td>Centralized backup target for multiple systems</td></tr>
+        <tr><td><strong>SAN (Storage Area Network)</strong></td><td>Block-level storage over a dedicated high-speed network — appears to the OS as a local drive</td><td>Enterprise backup and replication at scale</td></tr>
+        <tr><td><strong>Cloud storage</strong></td><td>Data stored on remote servers managed by a cloud provider — geographically distributed, scalable</td><td>Offsite backup, disaster recovery, geographic redundancy</td></tr>
+        <tr><td><strong>Online backup</strong></td><td>Backup data immediately accessible for restore — connected to the network</td><td>Fast restore; note: connected backups are vulnerable to ransomware</td></tr>
+        <tr><td><strong>Offline backup</strong></td><td>Backup data on physically disconnected media (tape, removable disk, air-gapped vault)</td><td>Ransomware protection; immune to network-based attacks</td></tr>
+        <tr><td><strong>Offsite backup</strong></td><td>Copies stored at a geographically separate location from the primary site</td><td>Protection against site-wide disasters (fire, flood, power failure)</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="card accent-green" style="margin-top:14px">
+      <h4>The 3-2-1 Backup Rule</h4>
+      <p>Keep <strong>3</strong> copies of data, on <strong>2</strong> different media types, with <strong>1</strong> copy stored offsite. This single rule simultaneously protects against media failure (two types), local disasters (offsite copy), and single points of failure (multiple copies). Every enterprise backup strategy should implement at minimum the 3-2-1 rule.</p>
+    </div>
+
+    <div class="sec-head" style="margin-top:28px"><h3 style="font-size:1.1rem">Backup Types</h3><span class="sec-tag">What gets backed up each time</span></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Type</th><th>What Gets Backed Up</th><th>Storage Used</th><th>Restore Requirement</th><th>Restore Speed</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Full backup</strong></td><td>Everything — a complete copy of all selected data</td><td>Highest (entire dataset each time)</td><td>This backup only</td><td><span class="pill secure">Fastest</span></td></tr>
+        <tr><td><strong>Differential backup</strong></td><td>All changes since the <strong>last full backup</strong> (cumulative — grows over time)</td><td>Medium (grows as the week progresses)</td><td>Last full + latest differential</td><td>Fast (2 backup sets)</td></tr>
+        <tr><td><strong>Incremental backup</strong></td><td>Only changes since the <strong>last backup of any type</strong></td><td><span class="pill secure">Lowest</span> (smallest each night)</td><td>Last full + every incremental since</td><td><span class="pill insecure">Slowest</span></td></tr>
+        <tr><td><strong>Snapshot backup</strong></td><td>A point-in-time copy of the system state — often at the hypervisor or storage layer</td><td>Varies (only changed blocks after initial)</td><td>Snapshot image only</td><td>Very fast (near-instant rollback)</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="grid2" style="margin-top:14px">
+      <div class="card accent-blue">
+        <h4>Replication</h4>
+        <p>Continuously or near-continuously copying data to a secondary location so the replica stays synchronized with the source. <strong>Synchronous replication</strong> (zero data loss) and <strong>asynchronous replication</strong> (small delay, less impact on performance). Supports near-zero RPO when done synchronously.</p>
+      </div>
+      <div class="card accent-purple">
+        <h4>Journaling</h4>
+        <p>Recording every change to a database or file system as a sequential <strong>transaction log (journal)</strong>. If a crash occurs, the journal is replayed from the last known good state to restore consistency. Databases use journaling to prevent partial writes from corrupting data.</p>
+      </div>
+    </div>
+
+    <div class="tip"><b>Backup comparison shortcut:</b> Full = most storage, fastest restore. Incremental = least storage, slowest restore. Differential = middle ground (2 backup sets to restore). Snapshot = fastest for rollback, typically short-term only.</div>
+
+    <!-- DATABASE BACKUP TYPES — deliberately separated -->
+    <div class="sec-head" style="margin-top:32px"><h3 style="font-size:1.1rem">Database Backup Context: Hot, Warm, and Cold</h3><span class="sec-tag">These terms describe database state during backup — NOT disaster recovery sites</span></div>
+    <div class="warn"><b>Critical distinction:</b> Hot, warm, and cold are used in <em>two completely different contexts</em> on the Security+ exam — <strong>database backup types</strong> (this section) and <strong>disaster recovery sites</strong> (covered in the Recovery section). Do not confuse them. A "hot backup" is not the same as a "hot site."</div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Database Backup Type</th><th>Database State During Backup</th><th>Trade-off</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Hot backup (database)</strong></td><td>Database is <strong>fully online</strong> and serving transactions — users are unaffected during backup</td><td>Requires special tooling to ensure consistency (since data can change during the backup); no downtime</td></tr>
+        <tr><td><strong>Warm backup (database)</strong></td><td>Database is <strong>partially offline</strong> — some services or connections are paused but a full shutdown is not required</td><td>Balance between consistency and availability; some brief degradation to users</td></tr>
+        <tr><td><strong>Cold backup (database)</strong></td><td>Database is <strong>completely shut down</strong> — no transactions possible during backup</td><td>Most consistent backup (no changes possible during copy) but requires scheduled downtime</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ════════ BUSINESS CONTINUITY PLANNING ════════ -->
+  <section id="bcp">
+    <div class="sec-head"><h2>Business Continuity Planning</h2><span class="sec-tag">Keep the business running when everything goes wrong</span></div>
+    <p>A <strong>Business Continuity Plan (BCP)</strong> is the comprehensive strategy for maintaining or rapidly resuming critical business functions during and after a disruption. While a Disaster Recovery Plan (DRP) focuses on restoring IT systems, a BCP covers the entire organization — people, processes, facilities, and technology.</p>
+
+    <div class="sec-head" style="margin-top:20px"><h3 style="font-size:1.1rem">Types of Disasters</h3><span class="sec-tag">Knowing the threat shapes the plan</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Disaster Type</th><th>Examples</th><th>Planning Focus</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Environmental disasters</strong></td><td>Hurricanes, earthquakes, floods, wildfires, ice storms</td><td>Geographic redundancy, physical hardening, evacuation procedures</td></tr>
+        <tr><td><strong>Human-made disasters</strong></td><td>Cyberattacks, terrorism, sabotage, civil unrest, deliberate data destruction</td><td>Security controls, incident response, insider threat programs</td></tr>
+        <tr><td><strong>Internal disasters</strong></td><td>Hardware failure, software bugs, accidental data deletion, power outages, insider mistakes</td><td>Redundancy, change management, testing, employee training</td></tr>
+        <tr><td><strong>External disasters</strong></td><td>Vendor failure, utility outage, supply chain disruption, regulatory shutdown</td><td>Vendor contracts, SLAs, alternative supplier identification</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="sec-head" style="margin-top:24px"><h3 style="font-size:1.1rem">Business Impact Analysis (BIA)</h3><span class="sec-tag">Identify what matters most before a disaster strikes</span></div>
+    <p>A <strong>Business Impact Analysis (BIA)</strong> is the process of identifying <strong>mission-essential functions</strong> — the critical activities that must continue during a disruption — and quantifying the impact if those functions are disrupted. The BIA drives every other decision in the BCP.</p>
+
+    <div class="card accent-blue">
+      <h4>Mission Essential Functions</h4>
+      <p>The subset of business processes that are <strong>absolutely critical</strong> to the organization's survival or legal obligations. Identified during the BIA, these functions receive the highest priority in recovery plans and determine RTO/RPO targets. For a hospital, this includes patient care systems. For a bank, core transaction processing.</p>
+    </div>
+
+    <div class="sec-head" style="margin-top:20px"><h3 style="font-size:1.1rem">BIA Impact Scenarios</h3><span class="sec-tag">Quantifying what failure actually means</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Impact Category</th><th>What It Measures</th><th>Examples</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Life loss</strong></td><td>Physical danger or fatality risk to personnel, patients, or the public</td><td>Hospital systems down → delayed treatment; industrial control failure → equipment hazard</td></tr>
+        <tr><td><strong>Loss of property</strong></td><td>Damage, destruction, or theft of physical or digital assets</td><td>Server room flooding, ransomware destroying data, theft of equipment</td></tr>
+        <tr><td><strong>Safety reduction</strong></td><td>Degraded safety systems, emergency response capability, or working conditions</td><td>Fire suppression failure, disabled alarm systems, loss of emergency communications</td></tr>
+        <tr><td><strong>Financial losses</strong></td><td>Direct revenue loss, regulatory fines, recovery costs, contract penalties</td><td>E-commerce downtime, GDPR fines, breach notification costs, SLA penalties</td></tr>
+        <tr><td><strong>Reputation losses</strong></td><td>Brand damage, customer trust erosion, media coverage, client attrition</td><td>Public data breach, prolonged service outage, visible security failure</td></tr>
+      </tbody>
+    </table></div>
+
+    <figure class="diagram">
+      <svg width="640" viewBox="0 0 640 130" role="img" aria-label="BIA feeds into BCP which enables COOP and DRP in parallel">
+        <defs><marker id="m-bcp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--dim)"/></marker></defs>
+        <rect x="20" y="40" width="130" height="50" rx="8" fill="var(--blue-dim)" stroke="var(--blue)"/>
+        <text x="85" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="var(--blue)">BIA</text>
+        <text x="85" y="78" text-anchor="middle" font-size="8.5" fill="var(--dim)">identify critical functions</text>
+        <line x1="152" y1="65" x2="176" y2="65" stroke="var(--dim)" stroke-width="1.5" marker-end="url(#m-bcp)"/>
+        <rect x="180" y="40" width="130" height="50" rx="8" fill="var(--green-dim)" stroke="var(--green)"/>
+        <text x="245" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="var(--green)">BCP</text>
+        <text x="245" y="78" text-anchor="middle" font-size="8.5" fill="var(--dim)">strategy to stay running</text>
+        <line x1="312" y1="55" x2="336" y2="35" stroke="var(--dim)" stroke-width="1.5" marker-end="url(#m-bcp)"/>
+        <line x1="312" y1="75" x2="336" y2="95" stroke="var(--dim)" stroke-width="1.5" marker-end="url(#m-bcp)"/>
+        <rect x="340" y="18" width="130" height="44" rx="8" fill="var(--purple-dim)" stroke="var(--purple)"/>
+        <text x="405" y="37" text-anchor="middle" font-size="11" font-weight="700" fill="var(--purple)">COOP</text>
+        <text x="405" y="52" text-anchor="middle" font-size="8.5" fill="var(--dim)">operate from alternate site</text>
+        <rect x="340" y="78" width="130" height="44" rx="8" fill="var(--orange-dim)" stroke="var(--orange)"/>
+        <text x="405" y="97" text-anchor="middle" font-size="11" font-weight="700" fill="var(--orange)">DRP</text>
+        <text x="405" y="112" text-anchor="middle" font-size="8.5" fill="var(--dim)">restore IT systems</text>
+        <line x1="472" y1="40" x2="496" y2="55" stroke="var(--dim)" stroke-width="1.5" marker-end="url(#m-bcp)"/>
+        <line x1="472" y1="100" x2="496" y2="85" stroke="var(--dim)" stroke-width="1.5" marker-end="url(#m-bcp)"/>
+        <rect x="500" y="55" width="130" height="20" rx="5" fill="var(--surface2)" stroke="var(--border-strong)"/>
+        <text x="565" y="69" text-anchor="middle" font-size="9.5" font-weight="700" fill="var(--bright)">Restored Operations</text>
+      </svg>
+      <figcaption><b>BIA drives everything.</b> The BIA identifies what's critical → the BCP provides the strategy → COOP keeps functions running at an alternate site while the DRP restores IT → normal operations resume.</figcaption>
+    </figure>
+
+    <div class="card accent-teal" style="margin-top:14px">
+      <h4>Continuity of Operations Planning (COOP)</h4>
+      <p>A plan that ensures <strong>mission-essential functions continue from an alternate location</strong> or with alternate staff when the primary facility is unavailable. COOP is a specific implementation of BCP concepts — it pre-identifies alternate sites, cross-trained personnel, and the procedures to activate remote operations quickly. Commonly associated with government agencies but applicable to any organization.</p>
+    </div>
+  </section>
+
+  <!-- ════════ RECOVERY METRICS & DISASTER RECOVERY ════════ -->
+  <section id="recovery">
+    <div class="sec-head"><h2>Recovery Metrics &amp; Disaster Recovery</h2><span class="sec-tag">Measure recovery readiness before the disaster, not after</span></div>
+
+    <div class="sec-head" style="margin-top:4px"><h3 style="font-size:1.1rem">Key Recovery Metrics</h3><span class="sec-tag">The numbers that drive your DR design</span></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Metric</th><th>Full Name</th><th>Measures</th><th>Who Sets It</th></tr></thead>
+      <tbody>
+        <tr><td><strong>RTO</strong></td><td>Recovery Time Objective</td><td>Maximum acceptable time a system can be offline — <em>"how long can we be down?"</em></td><td>Business requirement (driven by revenue/safety impact)</td></tr>
+        <tr><td><strong>RPO</strong></td><td>Recovery Point Objective</td><td>Maximum acceptable data loss measured in time — <em>"how far back can we restore?"</em></td><td>Business requirement (driven by data criticality)</td></tr>
+        <tr><td><strong>MTBF</strong></td><td>Mean Time Between Failures</td><td>Average operational time between failures — <em>reliability</em> of a component or system</td><td>Engineering / vendor specification</td></tr>
+        <tr><td><strong>MTTR</strong></td><td>Mean Time To Repair</td><td>Average time to restore a failed system to operation — <em>repair speed</em></td><td>Operations / SLA targets</td></tr>
+      </tbody>
+    </table></div>
+
+    <figure class="diagram">
+      <svg width="640" viewBox="0 0 640 120" role="img" aria-label="Timeline showing RTO as time from failure to recovery and RPO as time backward from failure to last backup, with data loss gap between">
+        <defs><marker id="m-rto" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--dim)"/></marker>
+        <marker id="m-rto2" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M10 0L0 5L10 10z" fill="var(--dim)"/></marker></defs>
+        <!-- Timeline bar -->
+        <line x1="30" y1="60" x2="610" y2="60" stroke="var(--border-strong)" stroke-width="2"/>
+        <!-- Last backup -->
+        <line x1="140" y1="40" x2="140" y2="80" stroke="var(--green)" stroke-width="2"/>
+        <text x="140" y="32" text-anchor="middle" font-size="9" font-weight="700" fill="var(--green)">Last Backup</text>
+        <!-- Failure event -->
+        <line x1="340" y1="36" x2="340" y2="84" stroke="var(--red)" stroke-width="2.5"/>
+        <text x="340" y="28" text-anchor="middle" font-size="9.5" font-weight="700" fill="var(--red)">FAILURE</text>
+        <!-- Recovery point -->
+        <line x1="520" y1="40" x2="520" y2="80" stroke="var(--blue)" stroke-width="2"/>
+        <text x="520" y="32" text-anchor="middle" font-size="9" font-weight="700" fill="var(--blue)">Recovery</text>
+        <!-- RPO bracket (backward from failure to last backup) -->
+        <line x1="140" y1="90" x2="340" y2="90" stroke="var(--orange)" stroke-width="1.5" marker-start="url(#m-rto2)" marker-end="url(#m-rto)"/>
+        <text x="240" y="105" text-anchor="middle" font-size="9.5" font-weight="700" fill="var(--orange)">RPO — max data loss window</text>
+        <!-- RTO bracket (forward from failure to recovery) -->
+        <line x1="340" y1="78" x2="520" y2="78" stroke="var(--blue)" stroke-width="1.5" marker-start="url(#m-rto2)" marker-end="url(#m-rto)"/>
+        <text x="430" y="72" text-anchor="middle" font-size="9.5" font-weight="700" fill="var(--blue)">RTO — max downtime window</text>
+      </svg>
+      <figcaption><b>RTO vs RPO.</b> RPO looks <em>backward</em> — how much data can be lost (time since last backup). RTO looks <em>forward</em> — how long until systems must be restored. Both are set by the business based on impact, not by IT alone.</figcaption>
+    </figure>
+
+    <div class="tip"><b>Memory shortcut:</b> <strong>RPO = data loss tolerance</strong> (measured by how long ago you backed up). <strong>RTO = downtime tolerance</strong> (how long you can be offline). MTBF tells you how often something fails. MTTR tells you how long it takes to fix it.</div>
+
+    <div class="sec-head" style="margin-top:28px"><h3 style="font-size:1.1rem">Disaster Recovery Plan (DRP)</h3><span class="sec-tag">The IT-focused plan for restoring systems after a disaster</span></div>
+    <p>A <strong>Disaster Recovery Plan (DRP)</strong> focuses specifically on restoring IT systems, data, and infrastructure after a disruption. It documents recovery procedures, responsibilities, communication plans, and the recovery sites to which operations will move.</p>
+
+    <div class="sec-head" style="margin-top:20px"><h3 style="font-size:1.1rem">Recovery Sites &amp; Site Resiliency</h3><span class="sec-tag">Where operations go when the primary site fails</span></div>
+    <div class="warn"><b>Context matters:</b> Hot, warm, cold, and mobile site refer to <strong>disaster recovery sites</strong> — not to be confused with hot/warm/cold database backup types covered in the Backups section.</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Site Type</th><th>Readiness</th><th>Recovery Time</th><th>Cost</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Hot site</strong></td><td>Fully operational with live, up-to-date data and hardware mirroring production</td><td>Minutes to hours</td><td>Highest (running full duplicate infrastructure)</td></tr>
+        <tr><td><strong>Warm site</strong></td><td>Hardware in place and configured, but data must be restored from backup before going live</td><td>Hours to days</td><td>Medium</td></tr>
+        <tr><td><strong>Cold site</strong></td><td>Basic utilities only (power, network) — no equipment, no data</td><td>Days to weeks</td><td>Lowest (empty facility)</td></tr>
+        <tr><td><strong>Mobile site</strong></td><td>Portable facility (trailer, container) deployed to any location; pre-loaded or rapidly configured</td><td>Hours to days (deployment dependent)</td><td>Varies; good when fixed sites are impractical</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="card accent-green" style="margin-top:14px">
+      <h4>Site Resiliency</h4>
+      <p>The overall capability of an organization's recovery infrastructure to sustain operations and recover quickly when the primary site fails. High site resiliency means the DR site can handle production load immediately (hot) or with minimal preparation. Low resiliency means long activation times and data gaps (cold).</p>
+    </div>
+    <div class="card accent-blue" style="margin-top:10px">
+      <h4>Restoration</h4>
+      <p>The process of returning systems and data to <strong>normal operation at the primary site</strong> after the disaster has passed and the site is repaired. Restoration follows recovery — recovery gets you operational at the DR site; restoration brings you back home.</p>
+    </div>
+
+    <div class="sec-head" style="margin-top:28px"><h3 style="font-size:1.1rem">DR Testing Methods</h3><span class="sec-tag">Verify the plan works before you need it</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Test Type</th><th>What Happens</th><th>Risk to Production</th><th>Realism</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Tabletop exercise</strong></td><td>Team gathers to verbally discuss how they would respond to a scenario — no systems touched</td><td>None</td><td>Low (discussion only)</td></tr>
+        <tr><td><strong>Simulations</strong></td><td>Team actively responds to a realistic mock scenario — actions taken but production not cut over</td><td>Low</td><td>Medium</td></tr>
+        <tr><td><strong>Parallel processing</strong></td><td>Recovery system runs alongside production simultaneously; outputs compared before cutover</td><td>Low (both systems running)</td><td>High (real workload on recovery system)</td></tr>
+        <tr><td><strong>Failover test</strong></td><td>Production traffic actually switches to the recovery system — a real cutover with real consequences if something fails</td><td>High</td><td>Highest (identical to a real disaster)</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>Test progression:</b> start with tabletop (safest), move to simulations, then parallel processing, then a full failover test (most realistic but most disruptive). Each level reveals gaps the previous one misses.</div>
+  </section>
+
+  <!-- ════════ CAPACITY PLANNING ════════ -->
+  <section id="capacity">
+    <div class="sec-head"><h2>Capacity Planning</h2><span class="sec-tag">Plan for tomorrow's load today</span></div>
+    <p><strong>Capacity planning</strong> is the process of <strong>proactively determining</strong> whether an organization will have sufficient resources to handle current and future workload demands. Unlike BCP (which plans for disruptions), capacity planning addresses normal growth — ensuring you don't run out of servers, staff, or space because the business grew faster than infrastructure.</p>
+
+    <div class="grid3">
+      <div class="card accent-blue">
+        <h4>People capacity</h4>
+        <p>Do you have enough <strong>trained personnel</strong> to handle peak operational loads, support growth, cover absences, and respond to incidents? Understaffed security teams create coverage gaps that attackers exploit. Cross-training and succession planning are key.</p>
+      </div>
+      <div class="card accent-purple">
+        <h4>Technology capacity</h4>
+        <p>Are <strong>systems, compute, storage, and software licenses</strong> scalable to meet projected demand? This includes server CPU/RAM headroom, storage growth rates, network bandwidth, and cloud resource limits. Over-provisioned systems waste money; under-provisioned systems fail under load.</p>
+      </div>
+      <div class="card accent-green">
+        <h4>Infrastructure capacity</h4>
+        <p>Is the <strong>physical and network infrastructure</strong> sufficient for growth? Data center floor space, power capacity, cooling (HVAC) tonnage, and network bandwidth must be planned ahead of demand — adding a rack or cooling unit takes time. Cloud can offload some infrastructure scaling.</p>
+      </div>
+    </div>
+    <div class="tip"><b>Exam framing:</b> capacity planning is <em>proactive growth planning</em>, not incident response. If a question describes analyzing future needs for staff, servers, or infrastructure — the answer is <strong>capacity planning</strong>.</div>
+  </section>
+
+  <div style="margin:30px 0 8px;text-align:center">
+    <a href="diagrams/Security_Plus_Chapter9_Diagram.html" class="btn btn-primary">Open the interactive Chapter 9 diagram →</a>
+  </div>
+
+  <footer class="site-footer">
+    <a href="chapter7.html">← Chapter 7</a> &nbsp;·&nbsp; Chapter 9 &nbsp;·&nbsp; <a href="index.html">Back to Hub</a>
+  </footer>
+
+</main>
+<script src="guide.js"></script>
+<script src="glossary.js"></script>
+<script src="assistant.js"></script>
+</body>
+</html>

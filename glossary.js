@@ -517,6 +517,90 @@ window.GLOSSARY = [
 {t:"Guardrails",f:"",c:"Ops",d:"Automated policy limits that prevent unsafe actions, such as blocking creation of a public storage bucket."},
 {t:"Security groups",f:"",c:"Cloud",d:"Programmatically managed firewall/access rules that control traffic to cloud resources."},
 {t:"CI/CD",f:"Continuous Integration / Continuous Deployment",c:"Ops",d:"Automatically building, testing, and deploying code on every change to catch defects early and ship consistently."},
-{t:"User provisioning",f:"",c:"Ops",d:"Automatically creating, modifying, and disabling user accounts as people join, move, or leave the organization."}
+{t:"User provisioning",f:"",c:"Ops",d:"Automatically creating, modifying, and disabling user accounts as people join, move, or leave the organization."},
+
+/* ── Chapter 9: Controls, Resilience & Physical Security ── */
+/* Physical Security — Ops */
+{t:"Access badge",f:"",c:"Ops",d:"An RFID or smart-card credential worn or carried by personnel that grants access to secured areas when presented to a reader."},
+{t:"Security guards",f:"",c:"Ops",d:"Human security personnel who deter, detect, and respond to physical threats — the most flexible physical security control because they can use judgment."},
+{t:"Video surveillance",f:"CCTV",c:"Ops",d:"Closed-circuit cameras that record and monitor physical areas. Serves as both a deterrent and a detective control; footage provides forensic evidence after an incident."},
+{t:"Motion detection",f:"",c:"Ops",d:"A sensor that triggers an alert when it detects movement in a monitored area, typically using passive infrared, microwave, or ultrasonic technology."},
+{t:"Noise detection",f:"",c:"Ops",d:"A sensor that triggers when ambient sound exceeds a set threshold — used to detect glass breaking, gunshots, or forced entry."},
+{t:"Infrared detection",f:"",c:"Ops",d:"A sensor that detects heat signatures (thermal radiation) emitted by people or objects, used for perimeter security and after-hours monitoring."},
+{t:"Pressure detection",f:"",c:"Ops",d:"A sensor embedded in floors or surfaces that triggers when weight is applied — used to detect unauthorized movement through a secured area."},
+{t:"Microwave detection",f:"",c:"Ops",d:"A sensor that emits microwave pulses and measures reflections to detect movement; can cover large open areas and works in darkness."},
+{t:"Ultrasonic detection",f:"",c:"Ops",d:"A sensor that emits ultrasonic sound waves and detects Doppler shifts caused by movement in the monitored space."},
+{t:"Dual gate",f:"",c:"Ops",d:"A two-gate vehicle entry system where the second gate cannot open until the first is fully closed and the vehicle is verified — prevents tailgating at vehicle checkpoints."},
+{t:"Lighting",f:"",c:"Ops",d:"Security lighting that eliminates dark areas around a facility, deterring unauthorized access and supporting CCTV effectiveness at night."},
+{t:"Alarms",f:"",c:"Ops",d:"Detection systems that alert security personnel when a sensor is triggered — can be silent (notify guards remotely) or audible (deter intruders directly)."},
+{t:"Access control vestibule",f:"Mantrap",c:"Ops",d:"A two-door entry system where the first door must close and lock before the second door can open, preventing tailgating into secured facilities."},
+/* Physical Attacks — Threats */
+{t:"Credit card skimming",f:"",c:"Threats",d:"Attaching a hidden device to a legitimate payment terminal to capture magnetic stripe data from victims' cards without their knowledge."},
+{t:"Card cloning",f:"",c:"Threats",d:"Creating a duplicate payment card using data captured by a skimmer — the physical card produced from stolen skimming data."},
+{t:"Physical brute force",f:"",c:"Threats",d:"Using physical force to bypass access controls — breaking locks, ramming doors, or destroying barriers to gain unauthorized entry."},
+{t:"Environmental attack",f:"",c:"Threats",d:"Targeting the physical environment that supports IT systems — disrupting power, cooling, fire suppression, or flooding to take down systems without touching them directly."},
+/* Asset Management — GRC */
+{t:"Asset management",f:"",c:"GRC",d:"The systematic process of tracking, maintaining, and protecting all organizational assets through their entire lifecycle from acquisition to disposal."},
+{t:"Hardware asset management",f:"",c:"GRC",d:"Tracking physical devices (servers, laptops, switches) by serial number, location, owner, and status throughout their lifecycle."},
+{t:"Software asset management",f:"",c:"GRC",d:"Tracking software licenses, versions, and installation counts to ensure compliance and identify unauthorized or outdated software."},
+{t:"Data asset management",f:"",c:"GRC",d:"Managing data through classification, ownership assignment, retention policies, and secure disposal to protect sensitive information."},
+/* Asset Vulnerabilities — Threats */
+{t:"Architecture and design weaknesses",f:"",c:"Threats",d:"Security flaws baked into a system's fundamental design rather than introduced later — these are harder to fix because remediation often requires redesigning the system."},
+{t:"System sprawl",f:"",c:"Threats",d:"Uncontrolled growth of systems, servers, and VMs without adequate tracking or governance, expanding the attack surface and creating unmanaged risk."},
+/* Defense in Depth — Core */
+{t:"Vendor diversity",f:"",c:"Core",d:"Using products from multiple vendors across security layers so a zero-day or breach in one vendor's product does not compromise all defenses simultaneously."},
+{t:"Technology diversity",f:"",c:"Core",d:"Deploying different technologies at different layers of the security stack so attackers cannot exploit a single technique across all layers."},
+{t:"Control diversity",f:"",c:"Core",d:"Applying a mix of preventive, detective, corrective, and deterrent controls so that if one type of control fails, others still provide protection."},
+{t:"Mission essential functions",f:"",c:"Core",d:"The critical business processes that must continue operating during a disruption — identified during the BIA and prioritized in the BCP."},
+/* RAID Levels — Ops */
+{t:"RAID-0",f:"",c:"Ops",d:"Disk striping across 2+ drives with no redundancy — highest performance and full capacity utilization, but any single drive failure causes total data loss."},
+{t:"RAID-1",f:"",c:"Ops",d:"Disk mirroring across exactly 2 drives — identical data on both, so if one fails the other has a complete copy. Uses 50% of total capacity."},
+{t:"RAID-5",f:"",c:"Ops",d:"Striping with distributed parity across 3+ drives — can survive the loss of any one drive. A good balance of performance, capacity, and redundancy."},
+{t:"RAID-6",f:"",c:"Ops",d:"Striping with double distributed parity across 4+ drives — can survive the simultaneous loss of any two drives. More resilient than RAID-5 at the cost of write performance."},
+{t:"RAID-10",f:"RAID 1+0",c:"Ops",d:"A combination of mirroring and striping across 4+ drives — provides high performance from striping and fault tolerance from mirroring. Can lose one drive per mirror pair."},
+/* HA & Load Balancing — Ops */
+{t:"Active/active load balancing",f:"",c:"Ops",d:"A load balancing configuration where all nodes handle live traffic simultaneously, maximizing throughput and resource utilization."},
+{t:"Active/passive load balancing",f:"",c:"Ops",d:"A load balancing configuration where one or more standby nodes sit idle and only take over traffic if an active node fails."},
+{t:"Software load balancer",f:"",c:"Ops",d:"A load balancing solution that runs as software or a virtual machine rather than dedicated hardware, offering flexibility and lower cost."},
+{t:"Clustering",f:"",c:"Ops",d:"Grouping multiple servers into a single logical unit that appears as one system to users — provides high availability and scalability."},
+{t:"NIC teaming",f:"Link aggregation",c:"Ops",d:"Bonding two or more physical network interface cards into one logical interface for redundancy (failover if one NIC fails) and/or increased bandwidth."},
+/* Power — Ops */
+{t:"UPS",f:"Uninterruptible Power Supply",c:"Ops",d:"A battery-backed device that provides immediate power during a brief outage or fluctuation, giving servers time to stay online or shut down gracefully."},
+{t:"Dual power supply",f:"",c:"Ops",d:"Two separate power supply units inside a single server, each connected to an independent power source — if one fails, the other keeps the server running."},
+{t:"Generator",f:"",c:"Ops",d:"A fuel-powered device that produces electricity to sustain a facility during extended power outages after the UPS battery is depleted."},
+{t:"Managed PDU",f:"Managed Power Distribution Unit",c:"Ops",d:"A smart power strip that distributes electricity to rack equipment with remote monitoring and per-outlet control, enabling administrators to cycle power or track consumption remotely."},
+/* Backup Media — Data */
+{t:"NAS",f:"Network Attached Storage",c:"Data",d:"A file-level storage device connected to a network so multiple clients can read and write files — commonly used as a backup destination."},
+{t:"SAN",f:"Storage Area Network",c:"Data",d:"A dedicated high-speed network providing block-level storage to servers — appears to the OS as a locally attached drive; used in enterprise backup and DR."},
+{t:"Cloud storage",f:"",c:"Data",d:"Storing data on remote servers managed by a cloud provider, offering geographically distributed, scalable backup without on-premises hardware."},
+{t:"Online backup",f:"",c:"Data",d:"Backup data that is immediately accessible for restore — typically on disk, NAS, or cloud storage. Fast restore but potentially vulnerable to ransomware if connected."},
+{t:"Offline backup",f:"",c:"Data",d:"Backup data on disconnected media (tape, removable disk) that is physically isolated from the network — immune to ransomware but slower to restore."},
+{t:"Offsite backup",f:"",c:"Data",d:"Backup copies stored at a geographically separate location to ensure data survives a site-wide disaster like a fire, flood, or power failure."},
+{t:"3-2-1 rule",f:"",c:"Data",d:"The backup best practice: keep 3 copies of data, on 2 different media types, with 1 copy stored offsite — protects against media failure, local disaster, and single points of failure simultaneously."},
+/* Backup Types — Ops */
+{t:"Full backup",f:"",c:"Ops",d:"A complete copy of all selected data. Slowest to create and uses the most storage, but the fastest to restore because only one backup set is needed."},
+{t:"Differential backup",f:"",c:"Ops",d:"Backs up all data changed since the last full backup. Faster to create than a full; restore requires the last full backup plus the most recent differential only."},
+{t:"Incremental backup",f:"",c:"Ops",d:"Backs up only data changed since the last backup of any type. Fastest to create and uses least storage, but restore is slowest — requires the full backup plus every incremental in sequence."},
+{t:"Snapshot backup",f:"",c:"Ops",d:"A point-in-time copy of a system's state, often at the storage or hypervisor layer — very fast to create and can restore nearly instantly, but typically kept short-term."},
+{t:"Replication",f:"",c:"Ops",d:"Continuously or near-continuously copying data to a secondary location so the replica stays in sync — provides near-zero RPO when done synchronously."},
+{t:"Journaling",f:"",c:"Ops",d:"Recording every change made to a database or file system as a sequential log — the journal can be replayed to recover data or verify consistency after a crash."},
+/* Database Backup Context — Ops */
+{t:"Hot backup (database)",f:"",c:"Ops",d:"A backup taken while the database is fully online and serving transactions — users are unaffected. Requires special tooling to ensure consistency. Not the same as a hot DR site."},
+{t:"Warm backup (database)",f:"",c:"Ops",d:"A backup taken while the database is partially offline — some services are paused to ensure consistency, but a full shutdown is not required. Not the same as a warm DR site."},
+{t:"Cold backup (database)",f:"",c:"Ops",d:"A backup taken while the database is completely shut down — the most consistent backup type, but requires downtime. Not the same as a cold DR site."},
+/* Recovery Sites — Ops */
+{t:"Hot site",f:"",c:"Ops",d:"A fully operational DR facility with live, up-to-date data and hardware that can assume production operations within minutes to hours. The most expensive DR option."},
+{t:"Warm site",f:"",c:"Ops",d:"A DR facility with hardware in place but requiring data restoration before going live — recovery takes hours to days. A cost-effective middle ground."},
+{t:"Cold site",f:"",c:"Ops",d:"A DR facility with only basic utilities (power, network) and no equipment or data — the cheapest option but slowest to activate, taking days to weeks."},
+{t:"Mobile site",f:"",c:"Ops",d:"A portable DR facility (trailer, container) that can be deployed to any location — flexible and useful when fixed sites are unavailable or impractical."},
+{t:"Site resiliency",f:"",c:"Ops",d:"The overall capability of an organization's DR sites to sustain operations and recover quickly when the primary site fails."},
+{t:"COOP",f:"Continuity of Operations Planning",c:"Ops",d:"A plan that ensures mission-essential functions continue from an alternate location or with alternate staff during a disruption to the primary facility."},
+/* DR Testing — Ops */
+{t:"Simulations",f:"",c:"Ops",d:"A DR test where the team actively responds to a realistic mock disaster scenario — more hands-on than a tabletop but without cutting over to the actual recovery system."},
+{t:"Parallel processing",f:"",c:"Ops",d:"A DR test where the recovery system runs alongside production simultaneously; outputs are compared to verify the recovery system can handle production load before committing to cutover."},
+{t:"Failover test",f:"",c:"Ops",d:"A DR test where production traffic actually switches to the recovery system — the most realistic and highest-risk test type."},
+{t:"Restoration",f:"",c:"Ops",d:"The process of returning systems and data to normal operation at the primary site after a disruption, following a disaster recovery or backup event."},
+/* Capacity Planning — Ops */
+{t:"Capacity planning",f:"",c:"Ops",d:"Proactively determining whether an organization will have sufficient people, technology, and infrastructure to handle current and future workload demands."}
 ];
 

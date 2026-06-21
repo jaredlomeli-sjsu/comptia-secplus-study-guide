@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CompTIA Security+ SY0-701 — Chapter 9: Controls to Protect Assets</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#07090f; --surface:#0e1422; --surface2:#172033; --border:#222c44;
+  --text:#dbe4f1; --text-dim:#8b98ad; --text-bright:#ffffff;
+  --red:#e74c3c; --green:#2ecc71; --blue:#3498db; --orange:#e67e22;
+  --purple:#9b59b6; --teal:#1abc9c; --gray:#95a5a6; --yellow:#f1c40f;
+  --red-dim:rgba(231,76,60,.15); --green-dim:rgba(46,204,113,.12);
+  --blue-dim:rgba(52,152,219,.12); --orange-dim:rgba(230,126,34,.12);
+  --purple-dim:rgba(155,89,182,.12); --teal-dim:rgba(26,188,156,.12);
+  --sidebar-w:148px; --detail-w:300px; --header-h:52px; --footer-h:40px;
+  --radius:6px; --tr:.25s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--text);
+  font-family:'Inter','Segoe UI',system-ui,sans-serif;font-size:13px;overflow:hidden}
+#app{
+  display:grid;
+  grid-template-rows:var(--header-h) 1fr var(--footer-h);
+  grid-template-columns:var(--sidebar-w) 1fr 0px;
+  grid-template-areas:"header header header" "sidebar canvas detail" "footer footer footer";
+  width:100vw;height:100vh;
+  transition:grid-template-columns var(--tr);
+}
+body.detail-open #app{grid-template-columns:var(--sidebar-w) 1fr var(--detail-w)}
+#header{
+  grid-area:header;display:flex;align-items:center;gap:8px;padding:0 14px;
+  background:var(--surface);border-bottom:1px solid var(--border);z-index:100;
+}
+#btn-toc{
+  display:inline-flex;align-items:center;padding:4px 10px;border-radius:4px;
+  border:1px solid var(--border);background:var(--surface2);color:var(--text);
+  font-size:11px;font-weight:600;text-decoration:none;white-space:nowrap;flex-shrink:0;
+  transition:background var(--tr),color var(--tr),border-color var(--tr);
+}
+#btn-toc:hover{background:var(--blue-dim);border-color:var(--blue);color:var(--blue)}
+#header h1{font-size:13px;font-weight:700;color:var(--text-bright);white-space:nowrap;margin-right:6px}
+#header h1 span{color:var(--blue)}
+.hdr-sep{width:1px;height:20px;background:var(--border);flex-shrink:0}
+.hdr-spacer{flex:1}
+.hdr-btn{
+  padding:4px 10px;border-radius:4px;border:1px solid var(--border);
+  background:var(--surface2);color:var(--text);font-size:11px;font-weight:600;
+  cursor:pointer;white-space:nowrap;letter-spacing:.3px;
+  transition:background var(--tr),color var(--tr),border-color var(--tr);
+}
+.hdr-btn:hover{background:var(--border);color:var(--text-bright)}
+#sidebar{
+  grid-area:sidebar;display:flex;flex-direction:column;
+  border-right:1px solid var(--border);overflow:hidden;z-index:50;background:var(--surface);
+}
+#sidebar-title{
+  font-size:9px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--text-dim);padding:10px 8px 6px;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+#cat-list{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+#cat-list::-webkit-scrollbar{width:3px}
+#cat-list::-webkit-scrollbar-thumb{background:var(--border)}
+.cat-btn{
+  display:flex;align-items:center;gap:6px;padding:7px 8px;
+  border:none;border-bottom:1px solid rgba(255,255,255,.04);
+  background:transparent;color:var(--text-dim);font-size:9px;font-weight:600;
+  text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;
+  line-height:1.3;width:100%;
+  transition:background var(--tr),color var(--tr);
+}
+.cat-btn:hover{background:var(--surface2);color:var(--text-bright)}
+.cat-btn.active{color:var(--text-bright);background:var(--surface2)}
+.cat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+#clear-btn{
+  margin:8px;padding:5px 0;border-radius:4px;border:1px solid var(--border);
+  background:transparent;color:var(--text-dim);font-size:10px;font-weight:600;
+  cursor:pointer;transition:background var(--tr),color var(--tr);
+}
+#clear-btn:hover{background:var(--surface2);color:var(--text-bright)}
+.filter-banner{
+  margin:6px;padding:6px 8px;border-radius:4px;font-size:9px;
+  font-weight:700;text-align:center;line-height:1.4;
+  border:1px solid currentColor;cursor:pointer;display:none;
+}
+#canvas{
+  grid-area:canvas;overflow:auto;padding:18px;
+  display:flex;flex-direction:column;gap:14px;background:var(--bg);
+}
+#canvas::-webkit-scrollbar{width:6px;height:6px}
+#canvas::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.zone{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:12px 14px;
+}
+.zone-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.zone-icon{font-size:14px}
+.zone-title{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--text-bright)}
+.zone-sub{font-size:10px;color:var(--text-dim);margin-left:auto}
+.zone-nodes{display:flex;flex-wrap:wrap;gap:7px}
+.zone-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.zone-row.wide{grid-template-columns:2fr 1fr}
+.zone-full{width:100%}
+.node{
+  display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:6px 10px;border-radius:var(--radius);border:1px solid var(--border);
+  background:var(--surface2);cursor:pointer;text-align:center;
+  transition:opacity var(--tr),transform var(--tr),box-shadow var(--tr),filter var(--tr);
+  min-width:72px;
+}
+.node:hover{filter:brightness(1.2)}
+.node.selected{box-shadow:0 0 0 2px var(--blue),0 0 10px rgba(52,152,219,.25)}
+.node-label{font-size:10px;font-weight:700;color:var(--text-bright);line-height:1.3}
+.node-sub{font-size:8.5px;color:var(--text-dim);margin-top:1px;line-height:1.2}
+.node.teal  {border-color:rgba(26,188,156,.4); background:rgba(26,188,156,.08)}
+.node.green {border-color:rgba(46,204,113,.4); background:rgba(46,204,113,.08)}
+.node.blue  {border-color:rgba(52,152,219,.4); background:rgba(52,152,219,.08)}
+.node.orange{border-color:rgba(230,126,34,.4); background:rgba(230,126,34,.08)}
+.node.red   {border-color:rgba(231,76,60,.4);  background:rgba(231,76,60,.08)}
+.node.purple{border-color:rgba(155,89,182,.4); background:rgba(155,89,182,.08)}
+.node.yellow{border-color:rgba(241,196,15,.4); background:rgba(241,196,15,.08)}
+.node.gray  {border-color:rgba(149,165,166,.4);background:rgba(149,165,166,.08)}
+body.cat-filtered .node.cat-dim{opacity:.07;transform:scale(.93);pointer-events:none;filter:grayscale(90%)}
+body.cat-filtered .node.cat-match{opacity:1;box-shadow:0 0 0 2px currentColor,0 0 10px rgba(255,255,255,.1)}
+body.cat-filtered .zone.zone-all-dim{opacity:.15}
+#detail-panel{
+  grid-area:detail;background:var(--surface);border-left:1px solid var(--border);
+  overflow:hidden;display:flex;flex-direction:column;z-index:60;
+  transition:opacity var(--tr);
+}
+#detail-panel.collapsed{opacity:0;pointer-events:none}
+body.detail-open #detail-panel{opacity:1;pointer-events:auto}
+#detail-close{
+  position:absolute;top:10px;right:10px;width:22px;height:22px;
+  border-radius:50%;border:1px solid var(--border);background:var(--surface2);
+  color:var(--text-dim);font-size:14px;cursor:pointer;display:flex;
+  align-items:center;justify-content:center;z-index:5;
+}
+#detail-close:hover{color:var(--text-bright);background:var(--border)}
+#detail-scroll{flex:1;overflow-y:auto;padding:14px 14px 20px}
+#detail-scroll::-webkit-scrollbar{width:4px}
+#detail-scroll::-webkit-scrollbar-thumb{background:var(--border)}
+#detail-title{font-size:14px;font-weight:800;color:var(--text-bright);margin-bottom:4px;padding-right:28px;line-height:1.3}
+#detail-category{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px}
+#detail-body{font-size:12px;line-height:1.65;color:var(--text)}
+#detail-body h4{font-size:10px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--text-dim);margin:12px 0 5px}
+#detail-body p{margin-bottom:8px}
+#detail-body ul{padding-left:16px;margin-bottom:8px}
+#detail-body li{margin-bottom:3px}
+#detail-body .exam-tip{
+  background:rgba(26,188,156,.1);border:1px solid rgba(26,188,156,.3);
+  border-radius:4px;padding:8px 10px;margin-top:10px;font-size:11px;color:var(--teal);
+}
+#detail-body .exam-tip::before{content:'★ EXAM TIP  ';font-weight:800}
+#detail-body code{
+  background:var(--surface2);border:1px solid var(--border);border-radius:3px;
+  padding:1px 5px;font-family:monospace;font-size:11px;color:var(--green);
+}
+#detail-body .warn-box{
+  background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);
+  border-radius:4px;padding:8px 10px;margin-top:10px;font-size:11px;color:var(--red);
+}
+#detail-body .warn-box::before{content:'⚠ NOTE  ';font-weight:800}
+#footer{
+  grid-area:footer;display:flex;align-items:center;gap:6px;
+  padding:0 14px;background:var(--surface);border-top:1px solid var(--border);
+  overflow:hidden;font-size:10px;color:var(--text-dim);
+}
+.foot-label{font-weight:700;letter-spacing:.5px;margin-right:4px;white-space:nowrap}
+.foot-pill{
+  padding:2px 8px;border-radius:10px;border:1px solid var(--border);
+  font-size:9px;font-weight:600;white-space:nowrap;background:var(--surface2);
+}
+.foot-pill.green{border-color:rgba(46,204,113,.4);color:var(--green)}
+.foot-pill.blue {border-color:rgba(52,152,219,.4);color:var(--blue)}
+.foot-pill.teal {border-color:rgba(26,188,156,.4);color:var(--teal)}
+.foot-pill.red  {border-color:rgba(231,76,60,.4);color:var(--red)}
+.foot-pill.orange{border-color:rgba(230,126,34,.4);color:var(--orange)}
+.foot-pill.purple{border-color:rgba(155,89,182,.4);color:var(--purple)}
+.foot-sep{width:1px;height:14px;background:var(--border);flex-shrink:0;margin:0 4px}
+#graph-view{
+  grid-area:canvas;display:none;flex-direction:column;
+  background:var(--bg);position:relative;overflow:hidden;
+}
+#graph-view.visible{display:flex}
+#graph-svg{flex:1;width:100%;cursor:grab}
+#graph-svg:active{cursor:grabbing}
+#graph-toolbar{position:absolute;top:10px;right:12px;display:flex;gap:6px;z-index:10}
+#graph-toolbar button{
+  padding:4px 10px;border-radius:4px;border:1px solid var(--border);
+  background:var(--surface);color:var(--text-dim);font-size:10px;font-weight:600;cursor:pointer;
+  transition:background var(--tr),color var(--tr);
+}
+#graph-toolbar button:hover{background:var(--surface2);color:var(--text-bright)}
+#graph-hint{
+  position:absolute;bottom:12px;left:50%;transform:translateX(-50%);
+  background:rgba(15,23,42,.85);border:1px solid var(--border);
+  border-radius:4px;padding:5px 12px;font-size:10px;color:var(--text-dim);
+  pointer-events:none;white-space:nowrap;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<header id="header">
+  <a href="../chapter9.html" id="btn-toc">&#8592; Chapter 9</a>
+  <h1>Security<span>+</span> SY0-701 &nbsp;·&nbsp; Chapter 9</h1>
+  <div class="hdr-sep"></div>
+  <button class="hdr-btn" onclick="toggleStudyMode()" id="btn-study">👁 Study Mode</button>
+  <div class="hdr-sep"></div>
+  <button class="hdr-btn" id="btn-graph" onclick="toggleGraphView()">🗺 Graph View</button>
+  <div class="hdr-spacer"></div>
+  <span style="font-size:11px;color:var(--text-dim)">Click any concept to explore</span>
+</header>
+
+<aside id="sidebar">
+  <div id="sidebar-title">Filter by Topic</div>
+  <div id="cat-list"></div>
+  <button id="clear-btn" onclick="clearFilter()" style="display:none">✕ Clear Filter</button>
+  <div class="filter-banner" id="filter-banner"></div>
+</aside>
+
+<main id="canvas">
+
+  <!-- Zone 1: Physical Controls -->
+  <div class="zone zone-full" id="zone-physical">
+    <div class="zone-header"><span class="zone-icon">🏢</span><span class="zone-title">Physical Security Controls</span><span class="zone-sub">Layer the perimeter</span></div>
+    <div class="zone-nodes">
+      <div class="node blue"   data-node-id="access-badge"    onclick="openDetail('access-badge')"><span class="node-label">Access Badge</span><span class="node-sub">RFID credential</span></div>
+      <div class="node green"  data-node-id="security-guards" onclick="openDetail('security-guards')"><span class="node-label">Security Guards</span><span class="node-sub">adaptable control</span></div>
+      <div class="node orange" data-node-id="cctv"            onclick="openDetail('cctv')"><span class="node-label">CCTV</span><span class="node-sub">video surveillance</span></div>
+      <div class="node yellow" data-node-id="lighting"        onclick="openDetail('lighting')"><span class="node-label">Lighting</span><span class="node-sub">removes dark spots</span></div>
+      <div class="node orange" data-node-id="alarms"          onclick="openDetail('alarms')"><span class="node-label">Alarms</span><span class="node-sub">audible or silent</span></div>
+      <div class="node gray"   data-node-id="bollards"        onclick="openDetail('bollards')"><span class="node-label">Bollards</span><span class="node-sub">vehicle barriers</span></div>
+      <div class="node blue"   data-node-id="dual-gate"       onclick="openDetail('dual-gate')"><span class="node-label">Dual Gate</span><span class="node-sub">vehicle checkpoint</span></div>
+      <div class="node green"  data-node-id="vestibule"       onclick="openDetail('vestibule')"><span class="node-label">Vestibule / Mantrap</span><span class="node-sub">anti-tailgate</span></div>
+    </div>
+  </div>
+
+  <!-- Zone 2: Sensors + Physical Attacks -->
+  <div class="zone-row">
+    <div class="zone" id="zone-sensors">
+      <div class="zone-header"><span class="zone-icon">📡</span><span class="zone-title">Security Sensors</span><span class="zone-sub">Detect intrusion via physics</span></div>
+      <div class="zone-nodes">
+        <div class="node teal"   data-node-id="motion-sensor"    onclick="openDetail('motion-sensor')"><span class="node-label">Motion Sensor</span><span class="node-sub">movement detection</span></div>
+        <div class="node teal"   data-node-id="noise-sensor"     onclick="openDetail('noise-sensor')"><span class="node-label">Noise Sensor</span><span class="node-sub">glass break / sound</span></div>
+        <div class="node teal"   data-node-id="infrared-sensor"  onclick="openDetail('infrared-sensor')"><span class="node-label">Infrared Sensor</span><span class="node-sub">heat signature</span></div>
+        <div class="node teal"   data-node-id="pressure-sensor"  onclick="openDetail('pressure-sensor')"><span class="node-label">Pressure Sensor</span><span class="node-sub">weight trigger</span></div>
+        <div class="node teal"   data-node-id="microwave-sensor" onclick="openDetail('microwave-sensor')"><span class="node-label">Microwave Sensor</span><span class="node-sub">large open areas</span></div>
+        <div class="node teal"   data-node-id="ultrasonic-sensor" onclick="openDetail('ultrasonic-sensor')"><span class="node-label">Ultrasonic Sensor</span><span class="node-sub">indoor sound waves</span></div>
+      </div>
+    </div>
+    <div class="zone" id="zone-physatk">
+      <div class="zone-header"><span class="zone-icon">⚔️</span><span class="zone-title">Physical Attacks</span><span class="zone-sub">Targeting the physical layer</span></div>
+      <div class="zone-nodes">
+        <div class="node red"    data-node-id="skimming"         onclick="openDetail('skimming')"><span class="node-label">Card Skimming</span><span class="node-sub">mag stripe theft</span></div>
+        <div class="node red"    data-node-id="card-cloning"     onclick="openDetail('card-cloning')"><span class="node-label">Card Cloning</span><span class="node-sub">duplicate card</span></div>
+        <div class="node red"    data-node-id="phys-brute-force" onclick="openDetail('phys-brute-force')"><span class="node-label">Physical Brute Force</span><span class="node-sub">break / ram / smash</span></div>
+        <div class="node red"    data-node-id="environ-attack"   onclick="openDetail('environ-attack')"><span class="node-label">Environmental Attack</span><span class="node-sub">power · cooling</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Zone 3: Asset Management -->
+  <div class="zone zone-full" id="zone-assets">
+    <div class="zone-header"><span class="zone-icon">📦</span><span class="zone-title">Asset Management</span><span class="zone-sub">Acquire → Assign → Monitor</span></div>
+    <div class="zone-nodes">
+      <div class="node blue"   data-node-id="hardware-assets"    onclick="openDetail('hardware-assets')"><span class="node-label">Hardware Assets</span><span class="node-sub">serial · location</span></div>
+      <div class="node purple" data-node-id="software-assets"    onclick="openDetail('software-assets')"><span class="node-label">Software Assets</span><span class="node-sub">license tracking</span></div>
+      <div class="node teal"   data-node-id="data-assets"        onclick="openDetail('data-assets')"><span class="node-label">Data Assets</span><span class="node-sub">classify · retain</span></div>
+      <div class="node orange" data-node-id="rfid"               onclick="openDetail('rfid')"><span class="node-label">RFID Tracking</span><span class="node-sub">auto inventory</span></div>
+      <div class="node red"    data-node-id="system-sprawl"      onclick="openDetail('system-sprawl')"><span class="node-label">System Sprawl</span><span class="node-sub">untracked growth</span></div>
+      <div class="node orange" data-node-id="arch-weaknesses"    onclick="openDetail('arch-weaknesses')"><span class="node-label">Design Weaknesses</span><span class="node-sub">baked-in flaws</span></div>
+    </div>
+  </div>
+
+  <!-- Zone 4: Defense in Depth + RAID -->
+  <div class="zone-row">
+    <div class="zone" id="zone-did">
+      <div class="zone-header"><span class="zone-icon">🛡️</span><span class="zone-title">Defense in Depth</span><span class="zone-sub">Layer controls — diversity is key</span></div>
+      <div class="zone-nodes">
+        <div class="node blue"   data-node-id="vendor-diversity"  onclick="openDetail('vendor-diversity')"><span class="node-label">Vendor Diversity</span><span class="node-sub">no single-vendor risk</span></div>
+        <div class="node purple" data-node-id="tech-diversity"    onclick="openDetail('tech-diversity')"><span class="node-label">Tech Diversity</span><span class="node-sub">different stacks</span></div>
+        <div class="node green"  data-node-id="control-diversity" onclick="openDetail('control-diversity')"><span class="node-label">Control Diversity</span><span class="node-sub">prevent·detect·correct</span></div>
+      </div>
+    </div>
+    <div class="zone" id="zone-raid">
+      <div class="zone-header"><span class="zone-icon">💾</span><span class="zone-title">RAID Levels</span><span class="zone-sub">RAID ≠ backup</span></div>
+      <div class="zone-nodes">
+        <div class="node red"    data-node-id="raid0"  onclick="openDetail('raid0')"><span class="node-label">RAID-0</span><span class="node-sub">stripe · no redundancy</span></div>
+        <div class="node green"  data-node-id="raid1"  onclick="openDetail('raid1')"><span class="node-label">RAID-1</span><span class="node-sub">mirror · 1 can fail</span></div>
+        <div class="node blue"   data-node-id="raid5"  onclick="openDetail('raid5')"><span class="node-label">RAID-5</span><span class="node-sub">stripe+parity · 1 fail</span></div>
+        <div class="node teal"   data-node-id="raid6"  onclick="openDetail('raid6')"><span class="node-label">RAID-6</span><span class="node-sub">double parity · 2 fail</span></div>
+        <div class="node purple" data-node-id="raid10" onclick="openDetail('raid10')"><span class="node-label">RAID-10</span><span class="node-sub">mirror+stripe · fast+safe</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Zone 5: HA & Power -->
+  <div class="zone zone-full" id="zone-ha">
+    <div class="zone-header"><span class="zone-icon">⚡</span><span class="zone-title">High Availability &amp; Power Redundancy</span><span class="zone-sub">Eliminate single points of failure</span></div>
+    <div class="zone-nodes">
+      <div class="node green"  data-node-id="active-active"  onclick="openDetail('active-active')"><span class="node-label">Active/Active LB</span><span class="node-sub">all nodes serve load</span></div>
+      <div class="node orange" data-node-id="active-passive" onclick="openDetail('active-passive')"><span class="node-label">Active/Passive LB</span><span class="node-sub">standby waits</span></div>
+      <div class="node blue"   data-node-id="software-lb"   onclick="openDetail('software-lb')"><span class="node-label">Software Load Balancer</span><span class="node-sub">NGINX · HAProxy</span></div>
+      <div class="node teal"   data-node-id="clustering"    onclick="openDetail('clustering')"><span class="node-label">Clustering</span><span class="node-sub">nodes = 1 system</span></div>
+      <div class="node purple" data-node-id="nic-teaming"   onclick="openDetail('nic-teaming')"><span class="node-label">NIC Teaming</span><span class="node-sub">bonded interfaces</span></div>
+      <div class="node yellow" data-node-id="ups"           onclick="openDetail('ups')"><span class="node-label">UPS</span><span class="node-sub">instant battery backup</span></div>
+      <div class="node orange" data-node-id="dual-psu"      onclick="openDetail('dual-psu')"><span class="node-label">Dual PSU</span><span class="node-sub">two power supplies</span></div>
+      <div class="node green"  data-node-id="generator"     onclick="openDetail('generator')"><span class="node-label">Generator</span><span class="node-sub">extended outages</span></div>
+      <div class="node gray"   data-node-id="managed-pdu"   onclick="openDetail('managed-pdu')"><span class="node-label">Managed PDU</span><span class="node-sub">smart power strip</span></div>
+    </div>
+  </div>
+
+  <!-- Zone 6: Backups -->
+  <div class="zone zone-full" id="zone-backups">
+    <div class="zone-header"><span class="zone-icon">🗄️</span><span class="zone-title">Backups &amp; Data Protection</span><span class="zone-sub">Types · media · rules</span></div>
+    <div class="zone-nodes">
+      <div class="node blue"   data-node-id="full-backup"     onclick="openDetail('full-backup')"><span class="node-label">Full Backup</span><span class="node-sub">all data · 1 set restore</span></div>
+      <div class="node purple" data-node-id="differential"    onclick="openDetail('differential')"><span class="node-label">Differential</span><span class="node-sub">since last full</span></div>
+      <div class="node teal"   data-node-id="incremental"     onclick="openDetail('incremental')"><span class="node-label">Incremental</span><span class="node-sub">since last backup</span></div>
+      <div class="node green"  data-node-id="snapshot"        onclick="openDetail('snapshot')"><span class="node-label">Snapshot</span><span class="node-sub">point-in-time copy</span></div>
+      <div class="node orange" data-node-id="replication"     onclick="openDetail('replication')"><span class="node-label">Replication</span><span class="node-sub">continuous sync</span></div>
+      <div class="node gray"   data-node-id="journaling"      onclick="openDetail('journaling')"><span class="node-label">Journaling</span><span class="node-sub">transaction log</span></div>
+      <div class="node blue"   data-node-id="offsite-backup"  onclick="openDetail('offsite-backup')"><span class="node-label">Offsite Backup</span><span class="node-sub">geographic separation</span></div>
+      <div class="node green"  data-node-id="rule-321"        onclick="openDetail('rule-321')"><span class="node-label">3-2-1 Rule</span><span class="node-sub">3 copies · 2 media · 1 offsite</span></div>
+    </div>
+  </div>
+
+  <!-- Zone 7: DB Backup Types + BCP/BIA -->
+  <div class="zone-row">
+    <div class="zone" id="zone-db-backup">
+      <div class="zone-header"><span class="zone-icon">🗃️</span><span class="zone-title">DB Backup Types</span><span class="zone-sub">Not the same as DR sites!</span></div>
+      <div class="zone-nodes">
+        <div class="node red"    data-node-id="hot-backup-db"  onclick="openDetail('hot-backup-db')"><span class="node-label">Hot DB Backup</span><span class="node-sub">database fully online</span></div>
+        <div class="node orange" data-node-id="warm-backup-db" onclick="openDetail('warm-backup-db')"><span class="node-label">Warm DB Backup</span><span class="node-sub">partially offline</span></div>
+        <div class="node teal"   data-node-id="cold-backup-db" onclick="openDetail('cold-backup-db')"><span class="node-label">Cold DB Backup</span><span class="node-sub">database shut down</span></div>
+      </div>
+    </div>
+    <div class="zone" id="zone-bcp">
+      <div class="zone-header"><span class="zone-icon">📋</span><span class="zone-title">BCP &amp; BIA</span><span class="zone-sub">Plan before the disaster</span></div>
+      <div class="zone-nodes">
+        <div class="node green"  data-node-id="bcp"             onclick="openDetail('bcp')"><span class="node-label">BCP</span><span class="node-sub">keep business running</span></div>
+        <div class="node blue"   data-node-id="bia"             onclick="openDetail('bia')"><span class="node-label">BIA</span><span class="node-sub">impact analysis</span></div>
+        <div class="node purple" data-node-id="mission-ess"     onclick="openDetail('mission-ess')"><span class="node-label">Mission Essential</span><span class="node-sub">must-survive functions</span></div>
+        <div class="node teal"   data-node-id="coop"            onclick="openDetail('coop')"><span class="node-label">COOP</span><span class="node-sub">alternate site ops</span></div>
+        <div class="node orange" data-node-id="disaster-types"  onclick="openDetail('disaster-types')"><span class="node-label">Disaster Types</span><span class="node-sub">environ·human·internal·external</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Zone 8: Recovery Metrics & DR Sites -->
+  <div class="zone zone-full" id="zone-recovery">
+    <div class="zone-header"><span class="zone-icon">♻️</span><span class="zone-title">Recovery Metrics &amp; DR Sites</span><span class="zone-sub">Measure readiness — plan before the event</span></div>
+    <div class="zone-nodes">
+      <div class="node blue"   data-node-id="rto"         onclick="openDetail('rto')"><span class="node-label">RTO</span><span class="node-sub">max downtime target</span></div>
+      <div class="node orange" data-node-id="rpo"         onclick="openDetail('rpo')"><span class="node-label">RPO</span><span class="node-sub">max data loss target</span></div>
+      <div class="node green"  data-node-id="mtbf"        onclick="openDetail('mtbf')"><span class="node-label">MTBF</span><span class="node-sub">avg time between failures</span></div>
+      <div class="node red"    data-node-id="mttr"        onclick="openDetail('mttr')"><span class="node-label">MTTR</span><span class="node-sub">avg repair time</span></div>
+      <div class="node teal"   data-node-id="drp"         onclick="openDetail('drp')"><span class="node-label">DRP</span><span class="node-sub">IT recovery plan</span></div>
+      <div class="node green"  data-node-id="hot-site"    onclick="openDetail('hot-site')"><span class="node-label">Hot Site</span><span class="node-sub">live · minutes to fail over</span></div>
+      <div class="node orange" data-node-id="warm-site"   onclick="openDetail('warm-site')"><span class="node-label">Warm Site</span><span class="node-sub">hw ready · restore data</span></div>
+      <div class="node gray"   data-node-id="cold-site"   onclick="openDetail('cold-site')"><span class="node-label">Cold Site</span><span class="node-sub">shell · days to weeks</span></div>
+      <div class="node blue"   data-node-id="mobile-site" onclick="openDetail('mobile-site')"><span class="node-label">Mobile Site</span><span class="node-sub">portable deploy</span></div>
+      <div class="node purple" data-node-id="restoration"  onclick="openDetail('restoration')"><span class="node-label">Restoration</span><span class="node-sub">back to primary site</span></div>
+    </div>
+  </div>
+
+  <!-- Zone 9: DR Testing + Capacity Planning -->
+  <div class="zone-row">
+    <div class="zone" id="zone-drtest">
+      <div class="zone-header"><span class="zone-icon">🧪</span><span class="zone-title">DR Testing Methods</span><span class="zone-sub">Verify the plan before you need it</span></div>
+      <div class="zone-nodes">
+        <div class="node purple" data-node-id="tabletop"       onclick="openDetail('tabletop')"><span class="node-label">Tabletop Exercise</span><span class="node-sub">talk through scenarios</span></div>
+        <div class="node teal"   data-node-id="simulations"    onclick="openDetail('simulations')"><span class="node-label">Simulations</span><span class="node-sub">active mock response</span></div>
+        <div class="node blue"   data-node-id="parallel-test"  onclick="openDetail('parallel-test')"><span class="node-label">Parallel Processing</span><span class="node-sub">both systems run</span></div>
+        <div class="node red"    data-node-id="failover-test"  onclick="openDetail('failover-test')"><span class="node-label">Failover Test</span><span class="node-sub">real production cutover</span></div>
+      </div>
+    </div>
+    <div class="zone" id="zone-capacity">
+      <div class="zone-header"><span class="zone-icon">📊</span><span class="zone-title">Capacity Planning</span><span class="zone-sub">Plan for growth before it happens</span></div>
+      <div class="zone-nodes">
+        <div class="node orange" data-node-id="cap-people" onclick="openDetail('cap-people')"><span class="node-label">People Capacity</span><span class="node-sub">staff · training · coverage</span></div>
+        <div class="node blue"   data-node-id="cap-tech"   onclick="openDetail('cap-tech')"><span class="node-label">Technology Capacity</span><span class="node-sub">compute · licenses</span></div>
+        <div class="node green"  data-node-id="cap-infra"  onclick="openDetail('cap-infra')"><span class="node-label">Infrastructure Capacity</span><span class="node-sub">power · space · cooling</span></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- GRAPH VIEW -->
+<div id="graph-view">
+  <div id="graph-toolbar">
+    <button onclick="runGraphLayout(200)">↺ Re-layout</button>
+    <button onclick="fitGraph()">⊡ Fit</button>
+  </div>
+  <svg id="graph-svg" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="ga-gray"  markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#475569"/></marker>
+      <marker id="ga-green" markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#2ecc71"/></marker>
+      <marker id="ga-blue"  markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#3498db"/></marker>
+      <marker id="ga-red"   markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#e74c3c"/></marker>
+      <marker id="ga-teal"  markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#1abc9c"/></marker>
+    </defs>
+    <g id="graph-root"><g id="ge"></g><g id="gn"></g></g>
+  </svg>
+  <div id="graph-hint">Scroll to zoom · Drag nodes · Click to inspect</div>
+</div>
+
+<!-- DETAIL PANEL -->
+<aside id="detail-panel" class="collapsed">
+  <div style="position:relative;flex-shrink:0;padding:14px 14px 0">
+    <button id="detail-close" onclick="closeDetail()">✕</button>
+    <div id="detail-title">—</div>
+    <div id="detail-category">—</div>
+  </div>
+  <div id="detail-scroll">
+    <div id="detail-body"></div>
+  </div>
+</aside>
+
+<!-- FOOTER -->
+<footer id="footer">
+  <span class="foot-label">Key Rules:</span>
+  <span class="foot-pill red">RAID-0 = zero fault tolerance</span>
+  <span class="foot-pill green">3-2-1 rule = backup minimum</span>
+  <span class="foot-pill orange">RPO = data loss · RTO = downtime</span>
+  <span class="foot-sep"></span>
+  <span class="foot-pill blue">Hot DB backup ≠ hot DR site</span>
+  <span class="foot-pill teal">BIA drives BCP drives DRP/COOP</span>
+  <span class="foot-pill purple">Tabletop → Simulation → Parallel → Failover</span>
+</footer>
+
+</div>
+
+<script>
+/* ═══ NODE DATA ═══ */
+const NODE_DATA = {
+
+'access-badge':{title:'Access Badge',cat:'Physical Controls',html:`
+  <p>A card containing an <strong>RFID chip or smart card chip</strong> granting access to a secured area when presented to a reader. The card is tied to an identity in the access control system — it can be <strong>instantly deactivated</strong> if the holder leaves the organization, without changing locks.</p>
+  <div class="exam-tip">If the question describes single-factor physical access using a card, the answer is access badge. If combined with a PIN or biometric, that's multi-factor physical access control.</div>`},
+
+'security-guards':{title:'Security Guards',cat:'Physical Controls',html:`
+  <p>Trained human personnel who provide <strong>deterrence, detection, and response</strong> at a physical location. Guards can verify identity, respond to alarms, challenge tailgating, and make judgment calls that automated systems can't — they are the most <strong>flexible</strong> physical control.</p>
+  <div class="exam-tip">Guards are the control type that can <em>adapt</em> to unexpected situations. If a question describes a novel physical scenario requiring human judgment, guards are often the answer.</div>`},
+
+'cctv':{title:'CCTV — Video Surveillance',cat:'Physical Controls',html:`
+  <p><strong>Closed-circuit TV</strong> systems record and monitor physical spaces. Cameras provide two functions: <strong>deterrence</strong> (attackers avoid visible cameras) and <strong>forensic evidence</strong> after an incident. Modern systems use IP cameras with digital recording and motion-triggered alerts.</p>
+  <div class="exam-tip">CCTV is a <em>detective</em> and <em>deterrent</em> control, not a preventive one. It records and deters — it doesn't physically stop anyone.</div>`},
+
+'lighting':{title:'Lighting',cat:'Physical Controls',html:`
+  <p>Adequate <strong>illumination around a facility perimeter</strong> eliminates the dark areas that attackers use for concealment. Lighting deters intruders and improves the effectiveness of CCTV systems at night. Emergency lighting ensures evacuation routes stay visible during power failures.</p>`},
+
+'alarms':{title:'Alarms',cat:'Physical Controls',html:`
+  <p>Trigger when a sensor detects unauthorized access. Two modes: <strong>audible alarms</strong> (loud sound that deters the intruder and alerts nearby people) and <strong>silent alarms</strong> (notifies security remotely without alerting the attacker, allowing apprehension).</p>
+  <div class="exam-tip">If a question describes wanting to catch the attacker in the act rather than just scare them off, a silent alarm is the better choice.</div>`},
+
+'bollards':{title:'Bollards',cat:'Physical Controls',html:`
+  <p>Short, heavy <strong>posts installed at building entrances</strong> to prevent vehicles from being driven or rammed into a facility. Used at banks, government buildings, data centers, and any facility where vehicle-borne threats are a risk.</p>
+  <div class="exam-tip">Bollards are specifically for <em>vehicle</em> threats. If the question mentions vehicle ramming or physical barrier at an entrance, bollards are the answer.</div>`},
+
+'dual-gate':{title:'Dual Gate',cat:'Physical Controls',html:`
+  <p>A <strong>two-gate vehicle entry checkpoint</strong> where the second gate cannot open until the first gate closes and security has verified the vehicle and its occupants. This prevents a vehicle from tailgating another through a secured gate.</p>
+  <div class="exam-tip">Dual gate is the <em>vehicle</em> equivalent of an access control vestibule (mantrap) for foot traffic. Both solve the tailgating problem at different entry types.</div>`},
+
+'vestibule':{title:'Access Control Vestibule (Mantrap)',cat:'Physical Controls',html:`
+  <p>A small room with <strong>two interlocking doors</strong> where only one door can be open at a time. A person enters, the outer door closes, identity is verified, and then the inner door opens. This prevents <strong>tailgating</strong> (following an authorized person into a secured area).</p>
+  <div class="exam-tip">Mantrap and access control vestibule are the same thing. Both terms appear on the exam. The defining feature is <em>two interlocking doors</em>.</div>`},
+
+'motion-sensor':{title:'Motion Sensor',cat:'Security Sensors',html:`
+  <p>Detects <strong>movement within a monitored zone</strong>. Most motion sensors combine infrared detection (body heat) and microwave for reliability. Common in general-purpose interior and exterior intrusion detection.</p>`},
+
+'noise-sensor':{title:'Noise Detection Sensor',cat:'Security Sensors',html:`
+  <p>Triggers when ambient <strong>sound exceeds a threshold</strong>, tuned to detect specific sounds like breaking glass, forced entry, or gunshots. Used to detect forced entry through windows or walls where a motion sensor might not trigger immediately.</p>`},
+
+'infrared-sensor':{title:'Infrared Detection Sensor',cat:'Security Sensors',html:`
+  <p>Detects <strong>thermal radiation (heat signatures)</strong> emitted by people, animals, or warm objects. Works in complete darkness. Common for after-hours perimeter monitoring.</p>
+  <div class="exam-tip">Infrared sensors detect <em>heat</em>, not motion directly. They work in total darkness — a scenario question about detecting intruders at night with lights off points to infrared.</div>`},
+
+'pressure-sensor':{title:'Pressure Detection Sensor',cat:'Security Sensors',html:`
+  <p>Triggers when <strong>weight is applied</strong> to an embedded sensor in the floor or surface. Used to detect movement through a secured room or vault where floor sensors would catch anyone who steps on them.</p>`},
+
+'microwave-sensor':{title:'Microwave Detection Sensor',cat:'Security Sensors',html:`
+  <p>Emits <strong>microwave pulses and measures reflections</strong> from moving objects using the Doppler effect. Microwave signals pass through walls, making this sensor effective for <strong>large open areas, garages, and warehouses</strong> where walls create blind spots for other sensors.</p>`},
+
+'ultrasonic-sensor':{title:'Ultrasonic Detection Sensor',cat:'Security Sensors',html:`
+  <p>Emits <strong>high-frequency sound waves</strong> and detects changes in the reflected pattern caused by movement. Very sensitive for indoor spaces. Susceptible to false positives from HVAC air turbulence and vibration.</p>`},
+
+'skimming':{title:'Credit Card Skimming',cat:'Physical Attacks',html:`
+  <p>Attaching a <strong>hidden device to a legitimate payment terminal</strong> (ATM, gas pump, POS system) that secretly reads and stores magnetic stripe data as cards are swiped. The victim is unaware — the transaction succeeds normally while their card data is stolen.</p>
+  <div class="exam-tip">Skimming steals the card data. Cloning uses that data to produce a fraudulent card. These are two steps of the same attack chain.</div>`},
+
+'card-cloning':{title:'Card Cloning',cat:'Physical Attacks',html:`
+  <p>Using <strong>stolen magnetic stripe data</strong> (from a skimmer) to produce a duplicate card that functions like the original. The cloned card can be used for purchases anywhere the magnetic stripe is accepted.</p>
+  <div class="exam-tip">Skimming = data theft from the card reader side. Cloning = using that stolen data to produce a fraudulent card. The exam may ask about either step.</div>`},
+
+'phys-brute-force':{title:'Physical Brute Force',cat:'Physical Attacks',html:`
+  <p>Using <strong>direct physical force</strong> to bypass security controls — breaking padlocks, ramming doors, smashing windows, or destroying card readers. Countered by reinforced entry points, security-grade glass, deadbolts, and security guards.</p>`},
+
+'environ-attack':{title:'Environmental Attack',cat:'Physical Attacks',html:`
+  <p>Targeting the <strong>physical environment that supports IT systems</strong> — cutting power, triggering fire suppression systems, flooding a data center, or disabling HVAC cooling. This takes systems offline without touching the hardware directly.</p>
+  <div class="exam-tip">If the question describes an attacker disrupting power, cooling, or fire suppression to take systems down, the answer is <em>environmental attack</em>.</div>`},
+
+'hardware-assets':{title:'Hardware Asset Management',cat:'Asset Management',html:`
+  <p>Tracking physical devices — servers, laptops, switches, printers — by <strong>serial number, location, owner, and status</strong> in a centralized inventory. Untracked hardware is an unmanaged attack surface: you can't patch, monitor, or secure what you don't know exists.</p>`},
+
+'software-assets':{title:'Software Asset Management',cat:'Asset Management',html:`
+  <p>Tracking <strong>software licenses, versions, and installation counts</strong> across the organization. Identifies unlicensed software (compliance risk), outdated versions (patch risk), and unauthorized applications (shadow IT risk).</p>`},
+
+'data-assets':{title:'Data Asset Management',cat:'Asset Management',html:`
+  <p>Managing data through its full lifecycle: <strong>classification, ownership assignment, retention policies, and secure disposal</strong>. Ensures sensitive data receives appropriate protection throughout its life and is destroyed securely at end of retention.</p>`},
+
+'rfid':{title:'RFID — Radio Frequency Identification',cat:'Asset Management',html:`
+  <p>Tags affixed to assets that allow inventory systems to <strong>automatically read and log asset locations</strong> using radio signals — no line-of-sight scanning required. Passive RFID tags have no battery (short range); active RFID tags are battery-powered (longer range).</p>
+  <div class="exam-tip">RFID enables <em>automated</em> inventory tracking. If the question describes scanning assets without removing them from cabinets or boxes, RFID is the answer.</div>`},
+
+'system-sprawl':{title:'System Sprawl',cat:'Asset Management',html:`
+  <p>Uncontrolled growth of systems, VMs, and services <strong>without adequate tracking, documentation, or governance</strong>. Creates unpatched machines, unknown services, and attack surfaces that security teams can't keep up with. Often caused by rapid growth or lack of decommissioning discipline.</p>
+  <div class="exam-tip">System sprawl is both an asset management failure and a security risk — it expands the attack surface with assets nobody is watching.</div>`},
+
+'arch-weaknesses':{title:'Architecture and Design Weaknesses',cat:'Asset Management',html:`
+  <p>Security flaws <strong>baked into a system's fundamental design</strong> rather than introduced later. These are the hardest to fix because remediation may require redesigning or replacing the system entirely. Examples include systems designed without authentication, or protocols with no encryption built in.</p>`},
+
+'vendor-diversity':{title:'Vendor Diversity',cat:'Defense in Depth',html:`
+  <p>Using products from <strong>multiple vendors</strong> at different security layers. A zero-day in one vendor's product compromises only that layer, not the entire security stack. If your firewall and endpoint protection come from different vendors, a flaw in one leaves the other intact.</p>
+  <div class="exam-tip">Vendor diversity is a specific implementation of defense in depth. If a question asks why an org uses different vendors for firewall vs. AV vs. IDS, the answer is vendor diversity / defense in depth.</div>`},
+
+'tech-diversity':{title:'Technology Diversity',cat:'Defense in Depth',html:`
+  <p>Deploying <strong>different technologies and platforms</strong> at different layers. A Windows-specific exploit doesn't automatically compromise Linux servers. Different protocols and architectures require different attack techniques.</p>`},
+
+'control-diversity':{title:'Control Diversity',cat:'Defense in Depth',html:`
+  <p>Applying a <strong>mix of control types</strong>: preventive (stop the attack), detective (identify it has occurred), corrective (fix damage), and deterrent (discourage attempts). If a preventive control is bypassed, detective controls still catch it.</p>`},
+
+'raid0':{title:'RAID-0 — Striping',cat:'RAID & Storage',html:`
+  <p>Data is <strong>split (striped) across all drives</strong> in equal chunks. Provides maximum performance and capacity but <strong>zero fault tolerance</strong> — if any single drive fails, all data is lost.</p>
+  <div class="exam-tip">RAID-0 is the only RAID level with NO redundancy. It improves speed/capacity but makes data loss worse — one drive failure = 100% data loss.</div>`},
+
+'raid1':{title:'RAID-1 — Mirroring',cat:'RAID & Storage',html:`
+  <p>Every drive contains an <strong>identical copy</strong> of all data. If one drive fails, the other has a complete copy. Simple and reliable. Requires 2 drives minimum. Uses <strong>50% of total capacity</strong> (the other 50% is the mirror).</p>
+  <div class="exam-tip">RAID-1 is the simplest redundancy. Only 1 drive can fail. Requires the fewest drives (2). 50% capacity efficiency.</div>`},
+
+'raid5':{title:'RAID-5 — Striping with Parity',cat:'RAID & Storage',html:`
+  <p>Data and <strong>parity information</strong> are distributed across all drives. If one drive fails, data can be rebuilt from the remaining drives and parity. Requires minimum 3 drives. Tolerates <strong>1 drive failure</strong>.</p>
+  <div class="exam-tip">RAID-5 is the most common enterprise RAID level — good balance of speed, capacity, and redundancy. If a question says "1 drive can fail safely" with 3+ drives, it's RAID-5.</div>`},
+
+'raid6':{title:'RAID-6 — Double Parity',cat:'RAID & Storage',html:`
+  <p>Like RAID-5 but with <strong>two parity blocks per stripe</strong>. Tolerates <strong>2 simultaneous drive failures</strong>. Requires minimum 4 drives. Slower writes than RAID-5 due to double parity calculation overhead.</p>
+  <div class="exam-tip">RAID-6 is the answer when you need to survive 2 simultaneous drive failures. Costs more drives than RAID-5 but offers better protection in large arrays where multi-drive failure is more likely.</div>`},
+
+'raid10':{title:'RAID-10 — Mirror + Stripe',cat:'RAID & Storage',html:`
+  <p>Combines <strong>RAID-1 (mirroring) and RAID-0 (striping)</strong> — data is mirrored across pairs of drives, then striped across the pairs. Provides both high performance AND high redundancy. Requires minimum 4 drives. Uses 50% of total capacity.</p>
+  <div class="exam-tip">RAID-10 = best performance + best redundancy, highest cost. One drive per mirror pair can fail. The exam distinguishes RAID-10 from RAID-5 by emphasizing that it can survive more drive losses in specific configurations.</div>`},
+
+'active-active':{title:'Active/Active Load Balancing',cat:'High Availability',html:`
+  <p>All nodes in the cluster <strong>actively handle live traffic simultaneously</strong>. Load is distributed across every node. Any node can fail without service interruption, and the remaining nodes absorb its load. Maximizes resource utilization.</p>
+  <div class="exam-tip">Active/active = all nodes working, maximum throughput. Active/passive = one node waiting idle. Both provide HA but handle capacity differently.</div>`},
+
+'active-passive':{title:'Active/Passive Load Balancing',cat:'High Availability',html:`
+  <p>One or more <strong>standby (passive) nodes sit idle</strong> until an active node fails. The passive node then activates and takes over. Resources are underutilized during normal operation but dedicated failover capacity is always available.</p>`},
+
+'software-lb':{title:'Software Load Balancer',cat:'High Availability',html:`
+  <p>Load balancing logic implemented as <strong>software or a virtual appliance</strong> rather than dedicated hardware. Examples: HAProxy, NGINX, cloud-native load balancers (AWS ALB, Azure Load Balancer). Flexible, cost-effective, and easily scaled.</p>`},
+
+'clustering':{title:'Clustering',cat:'High Availability',html:`
+  <p>Multiple servers grouped into a <strong>single logical unit</strong> that appears as one system. Nodes share workloads and state. If one node fails, others continue serving. Provides both high availability (failover) and horizontal scaling.</p>`},
+
+'nic-teaming':{title:'NIC Teaming (Link Aggregation)',cat:'High Availability',html:`
+  <p>Two or more physical network interface cards <strong>bonded into one logical interface</strong>. If one NIC or cable fails, the others maintain connectivity. Can also increase aggregate bandwidth by load-balancing traffic across the bonded NICs.</p>
+  <div class="exam-tip">NIC teaming solves the network single-point-of-failure problem at the server level. Don't confuse with port aggregation on the switch side (same concept, different layer).</div>`},
+
+'ups':{title:'UPS — Uninterruptible Power Supply',cat:'Power Redundancy',html:`
+  <p>A <strong>battery-backed device</strong> that provides power the instant utility power fails — with zero gap between outage and power delivery. Protects against short outages, voltage spikes, and brownouts. Provides time to gracefully shut down or start a generator.</p>
+  <div class="exam-tip">UPS is the <em>immediate</em> response to power failure (seconds to minutes). A generator is the <em>sustained</em> response (hours+). UPS bridges the gap while the generator starts.</div>`},
+
+'dual-psu':{title:'Dual Power Supply',cat:'Power Redundancy',html:`
+  <p>Two independent PSUs inside a single server, each connected to a <strong>different power circuit or UPS</strong>. If one PSU or one power circuit fails, the server stays running on the other. Eliminates the server power supply as a single point of failure.</p>`},
+
+'generator':{title:'Generator',cat:'Power Redundancy',html:`
+  <p>A <strong>fuel-powered device</strong> that produces electricity to sustain a facility during extended outages after the UPS battery depletes. Starts in seconds to minutes after an outage. Sustained by fuel supply (hours to days).</p>`},
+
+'managed-pdu':{title:'Managed PDU',cat:'Power Redundancy',html:`
+  <p>A <strong>smart power distribution unit</strong> that distributes power to rack equipment with remote monitoring, per-outlet switching, and consumption tracking. Allows administrators to remotely power-cycle a hung server without physical access to the data center.</p>`},
+
+'full-backup':{title:'Full Backup',cat:'Backups',html:`
+  <p>A <strong>complete copy of all selected data</strong> at a point in time. Uses the most storage but provides the <strong>fastest restore</strong> — only one backup set is needed. Typically run weekly, with other backup types used nightly to fill the gaps.</p>
+  <div class="exam-tip">Full = most storage, fastest restore, fewest sets needed for recovery. This is the baseline for all other backup types.</div>`},
+
+'differential':{title:'Differential Backup',cat:'Backups',html:`
+  <p>Backs up all data that has <strong>changed since the last full backup</strong>. Grows in size each day as more changes accumulate. To restore: you need the last full backup + <strong>only the most recent differential</strong> (2 sets total).</p>
+  <div class="exam-tip">Differential = 2 sets to restore (full + latest differential). Grows larger daily. Middle ground between full and incremental in storage and restore speed.</div>`},
+
+'incremental':{title:'Incremental Backup',cat:'Backups',html:`
+  <p>Backs up only data that has <strong>changed since the last backup of any type</strong>. Each nightly backup is small. To restore: you need the last full backup + <strong>every incremental since</strong> — the restore chain can be long.</p>
+  <div class="exam-tip">Incremental = smallest backup each night, slowest restore (many sets). If a question asks about minimizing backup storage/time, incremental wins. If it asks about fastest restore, incremental loses.</div>`},
+
+'snapshot':{title:'Snapshot Backup',cat:'Backups',html:`
+  <p>A <strong>point-in-time copy of system state</strong> captured at the hypervisor or storage layer. After the initial snapshot, only changed blocks (deltas) are stored. Enables near-instant rollback to a known good state.</p>
+  <div class="exam-tip">Snapshots are <em>not</em> a replacement for backups — they are typically short-term, stored on the same storage system, and vulnerable to the same failures.</div>`},
+
+'replication':{title:'Replication',cat:'Backups',html:`
+  <p><strong>Continuously or near-continuously copies data</strong> to a secondary location. Synchronous replication: every write commits to both locations before acknowledging (zero data loss). Asynchronous: slight delay (minimal data loss, less performance impact).</p>
+  <div class="exam-tip">Replication drives a near-zero RPO. Synchronous = zero data loss, high performance cost. Asynchronous = tiny data loss, much lower performance cost.</div>`},
+
+'journaling':{title:'Journaling',cat:'Backups',html:`
+  <p>Records every change to a database or file system as a <strong>sequential transaction log</strong>. If a crash occurs, the journal is replayed from the last known good checkpoint to restore consistency. Prevents partial writes from corrupting data.</p>`},
+
+'offsite-backup':{title:'Offsite Backup',cat:'Backups',html:`
+  <p>Copies stored at a <strong>geographically separate location</strong> from the primary site. Protects against site-wide disasters (fire, flood, power failure). A backup stored in the same building as the primary data is not truly protected against facility-level events.</p>`},
+
+'rule-321':{title:'3-2-1 Backup Rule',cat:'Backups',html:`
+  <p>Keep <strong>3</strong> copies of data, on <strong>2</strong> different media types, with <strong>1</strong> copy stored offsite. Simultaneously protects against media failure (2 types), local disasters (offsite copy), and single points of failure (3 copies).</p>
+  <div class="exam-tip">3-2-1 is the universal minimum standard for backup strategy. If a question describes a backup approach and asks if it's adequate, check it against 3-2-1.</div>`},
+
+'hot-backup-db':{title:'Hot Backup (Database Context)',cat:'DB Backup Types',html:`
+  <p>A database backup taken while the database is <strong>fully online and serving transactions</strong>. Users are unaffected. Requires special tooling to ensure consistency since data can change during the backup window.</p>
+  <div class="warn-box">This is a DATABASE backup term, NOT the same as a "hot site" DR site. Hot/warm/cold DB backup describes database state during the backup; hot/warm/cold sites describe disaster recovery site readiness.</div>`},
+
+'warm-backup-db':{title:'Warm Backup (Database Context)',cat:'DB Backup Types',html:`
+  <p>A database backup taken while the database is <strong>partially offline</strong> — some services or connections are paused but a full shutdown is not required. Balance between consistency and user availability.</p>
+  <div class="warn-box">Database context only — not a DR site type.</div>`},
+
+'cold-backup-db':{title:'Cold Backup (Database Context)',cat:'DB Backup Types',html:`
+  <p>A database backup taken while the database is <strong>completely shut down</strong>. No transactions are possible during the backup. Produces the most consistent backup (no changes can occur during copy) but requires scheduled downtime.</p>
+  <div class="warn-box">Database context only — not a DR site type. Cold DB backup = most consistent, requires downtime. Cold DR site = basic facility with no equipment.</div>`},
+
+'bcp':{title:'BCP — Business Continuity Plan',cat:'BCP & BIA',html:`
+  <p>A comprehensive plan for <strong>maintaining or rapidly resuming critical business functions</strong> during and after a disruption. BCP covers the entire organization — people, processes, facilities, and technology. Broader than a DRP, which focuses only on IT systems.</p>
+  <div class="exam-tip">BCP = big picture, whole organization. DRP = IT systems specifically. BIA provides the input that drives both plans.</div>`},
+
+'bia':{title:'BIA — Business Impact Analysis',cat:'BCP & BIA',html:`
+  <p>The process of <strong>identifying mission-essential functions</strong> and quantifying the impact if those functions are disrupted. Analyzes consequences across five domains: life, property, safety, finance, and reputation. BIA results drive RTO/RPO targets and recovery site choices.</p>
+  <div class="exam-tip">BIA comes FIRST — before BCP and DRP. You can't write a recovery plan until you know what's critical and how long you can be without it.</div>`},
+
+'mission-ess':{title:'Mission Essential Functions',cat:'BCP & BIA',html:`
+  <p>The subset of business processes <strong>absolutely critical to the organization's survival</strong> or legal obligations, identified during the BIA. These receive the highest recovery priority and the most aggressive RTO/RPO targets. For a hospital: patient care systems. For a bank: transaction processing.</p>`},
+
+'coop':{title:'COOP — Continuity of Operations Plan',cat:'BCP & BIA',html:`
+  <p>A plan that ensures <strong>mission-essential functions continue from an alternate location</strong> when the primary facility is unavailable. Pre-identifies alternate sites, cross-trained personnel, and the procedures for activating remote operations quickly. COOP is BCP applied specifically to facility unavailability.</p>`},
+
+'disaster-types':{title:'Disaster Types',cat:'BCP & BIA',html:`
+  <p>Four categories the BCP must plan for:</p>
+  <ul>
+    <li><strong>Environmental:</strong> hurricanes, earthquakes, floods, wildfires</li>
+    <li><strong>Human-made:</strong> cyberattacks, terrorism, sabotage</li>
+    <li><strong>Internal:</strong> hardware failure, accidental deletion, software bugs</li>
+    <li><strong>External:</strong> vendor failure, utility outage, supply chain disruption</li>
+  </ul>
+  <div class="exam-tip">BIA impact scenarios also matter: life loss, property loss, safety reduction, financial losses, and reputation losses.</div>`},
+
+'rto':{title:'RTO — Recovery Time Objective',cat:'Recovery & DR',html:`
+  <p>The <strong>maximum acceptable time a system can be offline</strong> before the organization suffers unacceptable harm. Answers "how long can we be down?" Set by business stakeholders based on revenue/safety impact. Drives the choice of DR site (hot = low RTO; cold = high RTO).</p>
+  <div class="exam-tip">RTO measures TIME to recovery. RPO measures DATA LOSS. RTO looks forward from the failure; RPO looks backward to the last backup.</div>`},
+
+'rpo':{title:'RPO — Recovery Point Objective',cat:'Recovery & DR',html:`
+  <p>The <strong>maximum acceptable data loss measured in time</strong>. Answers "how far back can we restore to?" A 4-hour RPO means you can lose at most 4 hours of data. Drives backup frequency and replication strategy.</p>
+  <div class="exam-tip">RPO = data loss tolerance. To achieve RPO = 0, you need synchronous replication. To achieve RPO = 24h, nightly backups suffice.</div>`},
+
+'mtbf':{title:'MTBF — Mean Time Between Failures',cat:'Recovery & DR',html:`
+  <p>The <strong>average time a component or system operates between failures</strong>. Measures <em>reliability</em>. Higher MTBF = more reliable. Used by engineering and procurement to compare component reliability and set maintenance schedules.</p>
+  <div class="exam-tip">MTBF = reliability (how often it fails). MTTR = repairability (how fast you fix it). Both are metrics, not objectives — they describe what actually happens, not what you want.</div>`},
+
+'mttr':{title:'MTTR — Mean Time To Repair',cat:'Recovery & DR',html:`
+  <p>The <strong>average time to restore a failed system to full operation</strong>. Measures <em>repairability</em>. Lower MTTR = faster recovery. Driven by technician skill, spare parts availability, and documented procedures.</p>`},
+
+'drp':{title:'DRP — Disaster Recovery Plan',cat:'Recovery & DR',html:`
+  <p>The IT-focused plan for <strong>restoring systems, data, and infrastructure after a disaster</strong>. Documents specific procedures, responsibilities, contact lists, and recovery sequences. The DRP is a component of the broader BCP.</p>`},
+
+'hot-site':{title:'Hot Site',cat:'Recovery & DR',html:`
+  <p>A fully operational DR site with <strong>live, up-to-date data and hardware mirroring production</strong>. Failover can happen in minutes to hours. The most expensive option — you are running full duplicate infrastructure at all times.</p>
+  <div class="warn-box">Hot SITE (DR) ≠ Hot BACKUP (database). Hot site = a fully ready facility for disaster recovery. Hot backup = a backup taken while the database is online.</div>`},
+
+'warm-site':{title:'Warm Site',cat:'Recovery & DR',html:`
+  <p>A DR site with <strong>hardware in place and configured, but data must be restored from backup</strong> before going live. Recovery takes hours to days. Medium cost — infrastructure exists but isn't running production workloads.</p>`},
+
+'cold-site':{title:'Cold Site',cat:'Recovery & DR',html:`
+  <p>A DR site with only <strong>basic utilities (power, connectivity) — no equipment, no configured systems</strong>. Everything must be provisioned and data restored before operations can resume. Takes days to weeks. Lowest cost.</p>
+  <div class="warn-box">Cold SITE (DR) ≠ Cold BACKUP (database). Cold site = empty facility. Cold backup = a backup taken with the database fully shut down.</div>`},
+
+'mobile-site':{title:'Mobile Site',cat:'Recovery & DR',html:`
+  <p>A <strong>portable facility</strong> (trailer, container, or prefab unit) that can be deployed to any location. Pre-loaded with equipment or rapidly configured on arrival. Good for organizations where fixed alternate sites are impractical.</p>`},
+
+'restoration':{title:'Restoration',cat:'Recovery & DR',html:`
+  <p>The process of <strong>returning systems and data to normal operation at the primary site</strong> after the disaster has passed and the site is repaired. Restoration follows recovery — recovery gets you operational at the DR site; restoration brings operations back home.</p>`},
+
+'tabletop':{title:'Tabletop Exercise',cat:'DR Testing',html:`
+  <p>The team <strong>gathers to verbally discuss</strong> how they would respond to a given disaster scenario — no systems are touched and no actual actions are taken. Lowest risk; good for identifying gaps in documentation and communication chains.</p>
+  <div class="exam-tip">Tabletop = discussion only, no real actions. Safest test. Identifies plan gaps before a more disruptive test.</div>`},
+
+'simulations':{title:'Simulations',cat:'DR Testing',html:`
+  <p>The team <strong>actively responds to a realistic mock scenario</strong>. Actual decisions and some technical actions are taken, but production systems are not cut over to the DR environment. Medium realism, low risk.</p>`},
+
+'parallel-test':{title:'Parallel Processing Test',cat:'DR Testing',html:`
+  <p>The <strong>recovery system runs alongside production simultaneously</strong>. Real workloads are sent to both systems and outputs are compared before any actual cutover. High realism with lower risk because production keeps running on the primary systems.</p>
+  <div class="exam-tip">Parallel processing = both systems run at once; compare outputs before committing. More realistic than simulation but safer than full failover.</div>`},
+
+'failover-test':{title:'Failover Test',cat:'DR Testing',html:`
+  <p><strong>Production traffic actually switches to the recovery system</strong> — a real cutover with real consequences if the DR system fails. The most realistic test but also the most disruptive and highest risk.</p>
+  <div class="exam-tip">Failover test = highest realism, highest risk. If the DR system fails during a failover test, you have a real outage. Perform only after passing parallel processing tests.</div>`},
+
+'cap-people':{title:'People Capacity Planning',cat:'Capacity Planning',html:`
+  <p>Ensuring the organization has enough <strong>trained personnel</strong> to handle current and projected workloads, cover peak periods, respond to incidents, and absorb absences. Understaffed security teams create gaps attackers exploit.</p>`},
+
+'cap-tech':{title:'Technology Capacity Planning',cat:'Capacity Planning',html:`
+  <p>Ensuring <strong>systems, compute resources, storage, and software licenses</strong> can scale to meet projected demand. Includes server CPU/RAM headroom, storage growth rates, network bandwidth planning, and cloud resource limits.</p>`},
+
+'cap-infra':{title:'Infrastructure Capacity Planning',cat:'Capacity Planning',html:`
+  <p>Ensuring <strong>physical and network infrastructure</strong> (data center floor space, power circuits, cooling tonnage, network bandwidth) is sufficient for growth. Infrastructure upgrades take months — planning must anticipate demand well in advance.</p>`},
+};
+
+/* ═══ CATEGORIES ═══ */
+const CATEGORIES = [
+  {id:'physical',  label:'Physical Controls',  color:'#3498db',  nodes:['access-badge','security-guards','cctv','lighting','alarms','bollards','dual-gate','vestibule']},
+  {id:'sensors',   label:'Security Sensors',   color:'#1abc9c',  nodes:['motion-sensor','noise-sensor','infrared-sensor','pressure-sensor','microwave-sensor','ultrasonic-sensor']},
+  {id:'physatk',   label:'Physical Attacks',   color:'#e74c3c',  nodes:['skimming','card-cloning','phys-brute-force','environ-attack']},
+  {id:'assets',    label:'Asset Management',   color:'#9b59b6',  nodes:['hardware-assets','software-assets','data-assets','rfid','system-sprawl','arch-weaknesses']},
+  {id:'did',       label:'Defense in Depth',   color:'#2ecc71',  nodes:['vendor-diversity','tech-diversity','control-diversity']},
+  {id:'raid',      label:'RAID & Storage',     color:'#3498db',  nodes:['raid0','raid1','raid5','raid6','raid10']},
+  {id:'ha',        label:'High Availability',  color:'#2ecc71',  nodes:['active-active','active-passive','software-lb','clustering','nic-teaming']},
+  {id:'power',     label:'Power Redundancy',   color:'#f1c40f',  nodes:['ups','dual-psu','generator','managed-pdu']},
+  {id:'backups',   label:'Backups',            color:'#3498db',  nodes:['full-backup','differential','incremental','snapshot','replication','journaling','offsite-backup','rule-321']},
+  {id:'dbbackup',  label:'DB Backup Types',    color:'#e67e22',  nodes:['hot-backup-db','warm-backup-db','cold-backup-db']},
+  {id:'bcp',       label:'BCP & BIA',          color:'#9b59b6',  nodes:['bcp','bia','mission-ess','coop','disaster-types']},
+  {id:'recovery',  label:'Recovery & DR',      color:'#1abc9c',  nodes:['rto','rpo','mtbf','mttr','drp','hot-site','warm-site','cold-site','mobile-site','restoration']},
+  {id:'drtest',    label:'DR Testing',         color:'#e74c3c',  nodes:['tabletop','simulations','parallel-test','failover-test']},
+  {id:'capacity',  label:'Capacity Planning',  color:'#2ecc71',  nodes:['cap-people','cap-tech','cap-infra']},
+];
+
+/* ═══ GRAPH NODES ═══ */
+function gn(id,label,color,nodeId,x,y){return{id,label,color,nodeId:nodeId||null,x,y,vx:0,vy:0,r:20,pinned:false}}
+function ge(s,t,type,label){return{s,t,type:type||'relates',label:label||null}}
+
+const GNODES = [
+  gn('cat-physical','Physical\nControls','#3498db',null,-800,-400),
+  gn('cat-sensors','Sensors','#1abc9c',null,-800,-200),
+  gn('cat-physatk','Physical\nAttacks','#e74c3c',null,-800,0),
+  gn('cat-assets','Asset\nMgmt','#9b59b6',null,-400,-500),
+  gn('cat-did','Defense\nin Depth','#2ecc71',null,-200,-500),
+  gn('cat-raid','RAID &\nStorage','#3498db',null,200,-500),
+  gn('cat-ha','High\nAvailability','#2ecc71',null,500,-400),
+  gn('cat-power','Power\nRedundancy','#f1c40f',null,700,-200),
+  gn('cat-backups','Backups','#3498db',null,600,100),
+  gn('cat-dbbackup','DB Backup\nTypes','#e67e22',null,400,300),
+  gn('cat-bcp','BCP &\nBIA','#9b59b6',null,0,400),
+  gn('cat-recovery','Recovery\n& DR','#1abc9c',null,-400,300),
+  gn('cat-drtest','DR\nTesting','#e74c3c',null,-600,100),
+  gn('cat-capacity','Capacity\nPlanning','#2ecc71',null,0,-300),
+
+  /* Physical Controls */
+  gn('access-badge','Access\nBadge','#3498db','access-badge',-860,-440),
+  gn('security-guards','Guards','#2ecc71','security-guards',-780,-470),
+  gn('cctv','CCTV','#e67e22','cctv',-860,-370),
+  gn('lighting','Lighting','#f1c40f','lighting',-740,-410),
+  gn('alarms','Alarms','#e67e22','alarms',-780,-380),
+  gn('bollards','Bollards','#95a5a6','bollards',-860,-310),
+  gn('dual-gate','Dual\nGate','#3498db','dual-gate',-740,-340),
+  gn('vestibule','Vestibule','#2ecc71','vestibule',-820,-290),
+
+  /* Sensors */
+  gn('motion-sensor','Motion','#1abc9c','motion-sensor',-900,-220),
+  gn('noise-sensor','Noise','#1abc9c','noise-sensor',-820,-240),
+  gn('infrared-sensor','Infrared','#1abc9c','infrared-sensor',-900,-160),
+  gn('pressure-sensor','Pressure','#1abc9c','pressure-sensor',-820,-180),
+  gn('microwave-sensor','Microwave','#1abc9c','microwave-sensor',-740,-200),
+  gn('ultrasonic-sensor','Ultrasonic','#1abc9c','ultrasonic-sensor',-740,-140),
+
+  /* Physical Attacks */
+  gn('skimming','Skimming','#e74c3c','skimming',-860,-30),
+  gn('card-cloning','Cloning','#e74c3c','card-cloning',-780,-60),
+  gn('phys-brute-force','Brute\nForce','#e74c3c','phys-brute-force',-860,50),
+  gn('environ-attack','Environ.\nAttack','#e74c3c','environ-attack',-740,20),
+
+  /* Asset Management */
+  gn('hardware-assets','Hardware\nAssets','#3498db','hardware-assets',-460,-560),
+  gn('software-assets','Software\nAssets','#9b59b6','software-assets',-380,-580),
+  gn('data-assets','Data\nAssets','#1abc9c','data-assets',-460,-480),
+  gn('rfid','RFID','#e67e22','rfid',-340,-500),
+  gn('system-sprawl','System\nSprawl','#e74c3c','system-sprawl',-380,-460),
+  gn('arch-weaknesses','Design\nWeakness','#e67e22','arch-weaknesses',-460,-420),
+
+  /* Defense in Depth */
+  gn('vendor-diversity','Vendor\nDiversity','#3498db','vendor-diversity',-220,-560),
+  gn('tech-diversity','Tech\nDiversity','#9b59b6','tech-diversity',-140,-540),
+  gn('control-diversity','Control\nDiversity','#2ecc71','control-diversity',-200,-480),
+
+  /* RAID */
+  gn('raid0','RAID-0','#e74c3c','raid0',140,-560),
+  gn('raid1','RAID-1','#2ecc71','raid1',220,-580),
+  gn('raid5','RAID-5','#3498db','raid5',300,-540),
+  gn('raid6','RAID-6','#1abc9c','raid6',140,-480),
+  gn('raid10','RAID-10','#9b59b6','raid10',260,-480),
+
+  /* High Availability */
+  gn('active-active','Active/\nActive','#2ecc71','active-active',500,-470),
+  gn('active-passive','Active/\nPassive','#e67e22','active-passive',580,-440),
+  gn('software-lb','Software\nLB','#3498db','software-lb',440,-420),
+  gn('clustering','Clustering','#1abc9c','clustering',560,-380),
+  gn('nic-teaming','NIC\nTeaming','#9b59b6','nic-teaming',460,-360),
+
+  /* Power */
+  gn('ups','UPS','#f1c40f','ups',740,-240),
+  gn('dual-psu','Dual\nPSU','#e67e22','dual-psu',800,-170),
+  gn('generator','Generator','#2ecc71','generator',660,-170),
+  gn('managed-pdu','Managed\nPDU','#95a5a6','managed-pdu',720,-120),
+
+  /* Backups */
+  gn('full-backup','Full\nBackup','#3498db','full-backup',620,50),
+  gn('differential','Differential','#9b59b6','differential',700,80),
+  gn('incremental','Incremental','#1abc9c','incremental',660,160),
+  gn('snapshot','Snapshot','#2ecc71','snapshot',560,140),
+  gn('replication','Replication','#e67e22','replication',580,60),
+  gn('journaling','Journaling','#95a5a6','journaling',720,160),
+  gn('offsite-backup','Offsite','#3498db','offsite-backup',540,200),
+  gn('rule-321','3-2-1\nRule','#2ecc71','rule-321',640,220),
+
+  /* DB Backup Types */
+  gn('hot-backup-db','Hot DB\nBackup','#e74c3c','hot-backup-db',440,260),
+  gn('warm-backup-db','Warm DB\nBackup','#e67e22','warm-backup-db',380,300),
+  gn('cold-backup-db','Cold DB\nBackup','#1abc9c','cold-backup-db',440,340),
+
+  /* BCP & BIA */
+  gn('bcp','BCP','#2ecc71','bcp',60,440),
+  gn('bia','BIA','#3498db','bia',-60,460),
+  gn('mission-ess','Mission\nEssential','#9b59b6','mission-ess',0,500),
+  gn('coop','COOP','#1abc9c','coop',120,500),
+  gn('disaster-types','Disaster\nTypes','#e67e22','disaster-types',-100,400),
+
+  /* Recovery & DR */
+  gn('rto','RTO','#3498db','rto',-360,260),
+  gn('rpo','RPO','#e67e22','rpo',-440,280),
+  gn('mtbf','MTBF','#2ecc71','mtbf',-360,340),
+  gn('mttr','MTTR','#e74c3c','mttr',-440,360),
+  gn('drp','DRP','#1abc9c','drp',-500,260),
+  gn('hot-site','Hot\nSite','#2ecc71','hot-site',-480,180),
+  gn('warm-site','Warm\nSite','#e67e22','warm-site',-400,200),
+  gn('cold-site','Cold\nSite','#95a5a6','cold-site',-480,120),
+  gn('mobile-site','Mobile\nSite','#3498db','mobile-site',-380,140),
+  gn('restoration','Restoration','#9b59b6','restoration',-300,280),
+
+  /* DR Testing */
+  gn('tabletop','Tabletop','#9b59b6','tabletop',-660,60),
+  gn('simulations','Simulations','#1abc9c','simulations',-600,120),
+  gn('parallel-test','Parallel\nTest','#3498db','parallel-test',-680,140),
+  gn('failover-test','Failover\nTest','#e74c3c','failover-test',-600,60),
+
+  /* Capacity */
+  gn('cap-people','People','#e67e22','cap-people',80,-340),
+  gn('cap-tech','Tech','#3498db','cap-tech',0,-380),
+  gn('cap-infra','Infra','#2ecc71','cap-infra',-80,-340),
+];
+
+const GEDGES = [
+  /* category membership */
+  ge('cat-physical','access-badge','member'), ge('cat-physical','security-guards','member'),
+  ge('cat-physical','cctv','member'), ge('cat-physical','lighting','member'),
+  ge('cat-physical','alarms','member'), ge('cat-physical','bollards','member'),
+  ge('cat-physical','dual-gate','member'), ge('cat-physical','vestibule','member'),
+
+  ge('cat-sensors','motion-sensor','member'), ge('cat-sensors','noise-sensor','member'),
+  ge('cat-sensors','infrared-sensor','member'), ge('cat-sensors','pressure-sensor','member'),
+  ge('cat-sensors','microwave-sensor','member'), ge('cat-sensors','ultrasonic-sensor','member'),
+
+  ge('cat-physatk','skimming','member'), ge('cat-physatk','card-cloning','member'),
+  ge('cat-physatk','phys-brute-force','member'), ge('cat-physatk','environ-attack','member'),
+
+  ge('cat-assets','hardware-assets','member'), ge('cat-assets','software-assets','member'),
+  ge('cat-assets','data-assets','member'), ge('cat-assets','rfid','member'),
+  ge('cat-assets','system-sprawl','member'), ge('cat-assets','arch-weaknesses','member'),
+
+  ge('cat-did','vendor-diversity','member'), ge('cat-did','tech-diversity','member'),
+  ge('cat-did','control-diversity','member'),
+
+  ge('cat-raid','raid0','member'), ge('cat-raid','raid1','member'),
+  ge('cat-raid','raid5','member'), ge('cat-raid','raid6','member'), ge('cat-raid','raid10','member'),
+
+  ge('cat-ha','active-active','member'), ge('cat-ha','active-passive','member'),
+  ge('cat-ha','software-lb','member'), ge('cat-ha','clustering','member'), ge('cat-ha','nic-teaming','member'),
+
+  ge('cat-power','ups','member'), ge('cat-power','dual-psu','member'),
+  ge('cat-power','generator','member'), ge('cat-power','managed-pdu','member'),
+
+  ge('cat-backups','full-backup','member'), ge('cat-backups','differential','member'),
+  ge('cat-backups','incremental','member'), ge('cat-backups','snapshot','member'),
+  ge('cat-backups','replication','member'), ge('cat-backups','journaling','member'),
+  ge('cat-backups','offsite-backup','member'), ge('cat-backups','rule-321','member'),
+
+  ge('cat-dbbackup','hot-backup-db','member'), ge('cat-dbbackup','warm-backup-db','member'),
+  ge('cat-dbbackup','cold-backup-db','member'),
+
+  ge('cat-bcp','bcp','member'), ge('cat-bcp','bia','member'),
+  ge('cat-bcp','mission-ess','member'), ge('cat-bcp','coop','member'), ge('cat-bcp','disaster-types','member'),
+
+  ge('cat-recovery','rto','member'), ge('cat-recovery','rpo','member'),
+  ge('cat-recovery','mtbf','member'), ge('cat-recovery','mttr','member'),
+  ge('cat-recovery','drp','member'), ge('cat-recovery','hot-site','member'),
+  ge('cat-recovery','warm-site','member'), ge('cat-recovery','cold-site','member'),
+  ge('cat-recovery','mobile-site','member'), ge('cat-recovery','restoration','member'),
+
+  ge('cat-drtest','tabletop','member'), ge('cat-drtest','simulations','member'),
+  ge('cat-drtest','parallel-test','member'), ge('cat-drtest','failover-test','member'),
+
+  ge('cat-capacity','cap-people','member'), ge('cat-capacity','cap-tech','member'),
+  ge('cat-capacity','cap-infra','member'),
+
+  /* cross-links */
+  ge('skimming','card-cloning','enables'),
+  ge('vestibule','dual-gate','relates'),
+  ge('alarms','motion-sensor','uses'),
+  ge('bia','bcp','enables'),
+  ge('bia','mission-ess','identifies'),
+  ge('bcp','coop','implements'),
+  ge('bcp','drp','includes'),
+  ge('drp','hot-site','uses'),
+  ge('drp','warm-site','uses'),
+  ge('drp','cold-site','uses'),
+  ge('bia','rto','sets'),
+  ge('bia','rpo','sets'),
+  ge('rpo','replication','drives'),
+  ge('rpo','full-backup','drives'),
+  ge('ups','generator','precedes'),
+  ge('tabletop','simulations','precedes'),
+  ge('simulations','parallel-test','precedes'),
+  ge('parallel-test','failover-test','precedes'),
+  ge('rule-321','offsite-backup','requires'),
+  ge('rfid','hardware-assets','tracks'),
+  ge('system-sprawl','arch-weaknesses','relates'),
+];
+
+/* ═══ SIDEBAR BUILD ═══ */
+let activeCat = null;
+document.addEventListener('DOMContentLoaded', () => {
+  const list = document.getElementById('cat-list');
+  CATEGORIES.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn';
+    btn.dataset.catId = cat.id;
+    btn.innerHTML = `<span class="cat-dot" style="background:${cat.color}"></span>${cat.label}`;
+    btn.onclick = () => activeCat === cat.id ? clearFilter() : applyFilter(cat.id);
+    list.appendChild(btn);
+  });
+});
+
+function applyFilter(catId) {
+  activeCat = catId;
+  const cat = CATEGORIES.find(c => c.id === catId);
+  const matchSet = new Set(cat.nodes);
+  document.querySelectorAll('.node[data-node-id]').forEach(n => {
+    n.classList.remove('cat-match','cat-dim');
+    n.classList.add(matchSet.has(n.dataset.nodeId) ? 'cat-match' : 'cat-dim');
+  });
+  document.querySelectorAll('.zone').forEach(zone => {
+    const nodes = zone.querySelectorAll('.node[data-node-id]');
+    const allDim = [...nodes].every(n => n.classList.contains('cat-dim'));
+    zone.classList.toggle('zone-all-dim', allDim && nodes.length > 0);
+  });
+  document.body.classList.add('cat-filtered');
+  document.querySelectorAll('.cat-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.catId === catId));
+  const banner = document.getElementById('filter-banner');
+  banner.style.display = 'block';
+  banner.style.color = cat.color;
+  banner.style.borderColor = cat.color;
+  banner.innerHTML = `${cat.label}<br><span style="opacity:.55;font-size:8px">click to clear</span>`;
+  banner.onclick = clearFilter;
+  document.getElementById('clear-btn').style.display = 'block';
+}
+
+function clearFilter() {
+  activeCat = null;
+  document.body.classList.remove('cat-filtered');
+  document.querySelectorAll('.node').forEach(n => n.classList.remove('cat-match','cat-dim'));
+  document.querySelectorAll('.zone').forEach(z => z.classList.remove('zone-all-dim'));
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('filter-banner').style.display = 'none';
+  document.getElementById('clear-btn').style.display = 'none';
+}
+
+/* ═══ DETAIL PANEL ═══ */
+let selectedNode = null;
+function openDetail(id) {
+  const d = NODE_DATA[id]; if (!d) return;
+  if (selectedNode) selectedNode.classList.remove('selected');
+  const el = document.querySelector(`.node[data-node-id="${id}"]`);
+  if (el) { el.classList.add('selected'); selectedNode = el; }
+  document.getElementById('detail-title').textContent = d.title;
+  document.getElementById('detail-category').textContent = d.cat;
+  document.getElementById('detail-body').innerHTML = d.html;
+  document.getElementById('detail-panel').classList.remove('collapsed');
+  document.body.classList.add('detail-open');
+}
+function closeDetail() {
+  document.getElementById('detail-panel').classList.add('collapsed');
+  document.body.classList.remove('detail-open');
+  if (selectedNode) { selectedNode.classList.remove('selected'); selectedNode = null; }
+}
+
+/* ═══ GRAPH VIEW ═══ */
+const G_REPEL=18000,G_SPRING=0.03,G_IDEAL=120,G_GRAVITY=0.003,G_DAMPING=0.80;
+let gNodes=[],gNodeMap={},gGraphInited=false,gGraphActive=false;
+let gDragNode=null,gDragOff={},gPanning=false,gPanStart={};
+let gTx={x:0,y:0,k:1};
+
+function gTick(){
+  const ns=gNodes;
+  for(let i=0;i<ns.length;i++){
+    const a=ns[i];if(a.pinned)continue;
+    for(let j=i+1;j<ns.length;j++){
+      const b=ns[j];
+      let dx=b.x-a.x,dy=b.y-a.y;
+      const d2=dx*dx+dy*dy+1,d=Math.sqrt(d2);
+      const f=G_REPEL/d2,fx=f*dx/d,fy=f*dy/d;
+      a.vx-=fx;a.vy-=fy;
+      if(!b.pinned){b.vx+=fx;b.vy+=fy;}
+    }
+  }
+  for(const e of GEDGES){
+    const a=gNodeMap[e.s],b=gNodeMap[e.t];if(!a||!b)continue;
+    const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)+0.001;
+    const f=G_SPRING*(d-G_IDEAL),fx=f*dx/d,fy=f*dy/d;
+    if(!a.pinned){a.vx+=fx;a.vy+=fy;}
+    if(!b.pinned){b.vx-=fx;b.vy-=fy;}
+  }
+  for(const n of ns){
+    if(n.pinned)continue;
+    n.vx+=-n.x*G_GRAVITY;n.vy+=-n.y*G_GRAVITY;
+    n.vx*=G_DAMPING;n.vy*=G_DAMPING;
+    n.x+=n.vx;n.y+=n.vy;
+  }
+}
+function runGraphLayout(steps){gNodes.forEach(n=>{n.pinned=false;n.vx=0;n.vy=0;});for(let i=0;i<steps;i++)gTick();gRender();}
+
+const GESTYLE={
+  member:{color:'#1e3a5f',w:1,dash:'3,7',mk:null},
+  'type-of':{color:'#222c44',w:1,dash:'',mk:'ga-gray'},
+  uses:{color:'#222c44',w:1.5,dash:'',mk:'ga-gray'},
+  causes:{color:'#e74c3c',w:1.5,dash:'5,3',mk:'ga-red'},
+  enables:{color:'#e67e22',w:1.5,dash:'',mk:'ga-gray'},
+  mitigates:{color:'#2ecc71',w:1.5,dash:'',mk:'ga-green'},
+  implements:{color:'#3498db',w:1,dash:'',mk:'ga-blue'},
+  protects:{color:'#1abc9c',w:1.5,dash:'',mk:'ga-teal'},
+  sets:{color:'#3498db',w:1.5,dash:'',mk:'ga-blue'},
+  drives:{color:'#e67e22',w:1.5,dash:'',mk:'ga-gray'},
+  includes:{color:'#9b59b6',w:1,dash:'4,4',mk:null},
+  requires:{color:'#2ecc71',w:1,dash:'4,4',mk:'ga-green'},
+  tracks:{color:'#1abc9c',w:1,dash:'',mk:'ga-teal'},
+  identifies:{color:'#9b59b6',w:1.5,dash:'',mk:'ga-blue'},
+  precedes:{color:'#e67e22',w:1.5,dash:'',mk:'ga-gray'},
+  relates:{color:'#475569',w:1,dash:'4,4',mk:null},
+};
+
+function gRender(){
+  const svgGe=document.getElementById('ge'),svgGn=document.getElementById('gn');
+  svgGe.innerHTML='';svgGn.innerHTML='';
+  function el(tag,attrs){
+    const e=document.createElementNS('http://www.w3.org/2000/svg',tag);
+    for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);return e;
+  }
+  for(const e of GEDGES){
+    const a=gNodeMap[e.s],b=gNodeMap[e.t];if(!a||!b)continue;
+    const st=GESTYLE[e.type]||GESTYLE.uses;
+    const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)+0.001;
+    const sr=a.r+2,er=b.r+(st.mk?9:2);
+    const x1=a.x+dx/d*sr,y1=a.y+dy/d*sr,x2=b.x-dx/d*er,y2=b.y-dy/d*er;
+    const line=el('line',{x1,y1,x2,y2,stroke:st.color,'stroke-width':st.w,
+      opacity:e.type==='member'?'0.3':'0.65','data-gs':e.s,'data-gt':e.t});
+    if(st.dash)line.setAttribute('stroke-dasharray',st.dash);
+    if(st.mk)line.setAttribute('marker-end',`url(#${st.mk})`);
+    svgGe.appendChild(line);
+  }
+  for(const n of gNodes){
+    const isCat=n.id.startsWith('cat-');
+    const g=el('g',{transform:`translate(${n.x.toFixed(1)},${n.y.toFixed(1)})`,cursor:'pointer','data-g-node-id':n.id});
+    const circle=el('circle',{r:n.r,fill:n.color+'22',stroke:n.color,'stroke-width':isCat?'2.5':'1.5'});
+    g.appendChild(circle);
+    const lines=n.label.split('\n');
+    const lh=11,sy=-(lines.length-1)*lh/2;
+    lines.forEach((lbl,i)=>{
+      const t=el('text',{'text-anchor':'middle','dominant-baseline':'middle',y:sy+i*lh,'font-size':n.r>28?'10':'9','font-family':'Segoe UI,system-ui,sans-serif','font-weight':'700',fill:n.color,'pointer-events':'none'});
+      t.textContent=lbl;g.appendChild(t);
+    });
+    g.addEventListener('mouseenter',()=>{circle.setAttribute('fill',n.color+'44');circle.setAttribute('stroke-width','2.5');});
+    g.addEventListener('mouseleave',()=>{if(gDragNode!==n){circle.setAttribute('fill',n.color+'22');circle.setAttribute('stroke-width',isCat?'2.5':'1.5');}});
+    g.addEventListener('mousedown',ev=>{ev.stopPropagation();gDragNode=n;n.pinned=true;const pt=gSvgPt(ev);gDragOff={x:pt.x-n.x,y:pt.y-n.y};});
+    g.addEventListener('click',ev=>{ev.stopPropagation();if(n.nodeId&&NODE_DATA[n.nodeId])openDetail(n.nodeId);});
+    svgGn.appendChild(g);
+  }
+  gApplyTx();
+  if(activeCat)applyGraphFilter(activeCat);
+}
+function gSvgPt(e){const r=document.getElementById('graph-svg').getBoundingClientRect();return{x:(e.clientX-r.left-gTx.x)/gTx.k,y:(e.clientY-r.top-gTx.y)/gTx.k};}
+function gApplyTx(){document.getElementById('graph-root').setAttribute('transform',`translate(${gTx.x.toFixed(1)},${gTx.y.toFixed(1)}) scale(${gTx.k.toFixed(4)})`);}
+function fitGraph(){
+  if(!gNodes.length)return;
+  const svg=document.getElementById('graph-svg');
+  const{width:W,height:H}=svg.getBoundingClientRect();
+  let mnx=1e9,mxx=-1e9,mny=1e9,mxy=-1e9;
+  gNodes.forEach(n=>{mnx=Math.min(mnx,n.x-n.r);mxx=Math.max(mxx,n.x+n.r);mny=Math.min(mny,n.y-n.r);mxy=Math.max(mxy,n.y+n.r);});
+  const pad=50,k=Math.min((W-pad*2)/(mxx-mnx),(H-pad*2)/(mxy-mny),1.8);
+  gTx.k=k;gTx.x=W/2-(mnx+mxx)/2*k;gTx.y=H/2-(mny+mxy)/2*k;gApplyTx();
+}
+function gSetupInteraction(){
+  const svg=document.getElementById('graph-svg');
+  svg.addEventListener('wheel',e=>{
+    e.preventDefault();
+    const r=svg.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+    const f=e.deltaY<0?1.12:0.89;
+    gTx.x=mx-(mx-gTx.x)*f;gTx.y=my-(my-gTx.y)*f;
+    gTx.k=Math.max(0.12,Math.min(4,gTx.k*f));gApplyTx();
+  },{passive:false});
+  svg.addEventListener('mousedown',e=>{
+    const tgt=e.target;
+    if(tgt===svg||tgt.id==='graph-root'||tgt.id==='ge'||tgt.id==='gn'){gPanning=true;gPanStart={x:e.clientX-gTx.x,y:e.clientY-gTx.y};}
+  });
+  window.addEventListener('mousemove',e=>{
+    if(gDragNode){const pt=gSvgPt(e);gDragNode.x=pt.x-gDragOff.x;gDragNode.y=pt.y-gDragOff.y;gRender();}
+    else if(gPanning){gTx.x=e.clientX-gPanStart.x;gTx.y=e.clientY-gPanStart.y;gApplyTx();}
+  });
+  window.addEventListener('mouseup',()=>{gDragNode=null;gPanning=false;});
+}
+function applyGraphFilter(catId){
+  const cat=CATEGORIES.find(c=>c.id===catId);if(!cat)return;
+  const matchSet=new Set(cat.nodes);
+  document.querySelectorAll('#gn > g[data-g-node-id]').forEach(g=>{
+    const nid=g.dataset.gNodeId,isCat=nid.startsWith('cat-');
+    const nodeId=GNODES.find(n=>n.id===nid)?.nodeId;
+    const vis=isCat||(nodeId&&matchSet.has(nodeId));
+    g.style.opacity=vis?'1':'0.05';g.style.pointerEvents=vis?'auto':'none';
+  });
+  document.querySelectorAll('#ge > line[data-gs][data-gt]').forEach(line=>{
+    const sNode=GNODES.find(n=>n.id===line.dataset.gs),tNode=GNODES.find(n=>n.id===line.dataset.gt);
+    const sVis=!sNode||sNode.id.startsWith('cat-')||(sNode.nodeId&&matchSet.has(sNode.nodeId));
+    const tVis=!tNode||tNode.id.startsWith('cat-')||(tNode.nodeId&&matchSet.has(tNode.nodeId));
+    line.style.opacity=(sVis&&tVis)?'0.6':'0.04';
+  });
+}
+function clearGraphFilter(){
+  document.querySelectorAll('#gn > g[data-g-node-id]').forEach(g=>{g.style.opacity='';g.style.pointerEvents='';});
+  document.querySelectorAll('#ge > line').forEach(l=>l.style.opacity='');
+}
+function toggleGraphView(){
+  gGraphActive=!gGraphActive;
+  const btn=document.getElementById('btn-graph');
+  const gview=document.getElementById('graph-view');
+  const canvas=document.getElementById('canvas');
+  if(gGraphActive){
+    btn.style.cssText='border-color:var(--teal);color:var(--teal);background:rgba(26,188,156,.1)';
+    gview.classList.add('visible');canvas.style.display='none';
+    if(!gGraphInited){
+      gNodes=GNODES.map(n=>({...n}));gNodeMap={};gNodes.forEach(n=>gNodeMap[n.id]=n);
+      const deg={};gNodes.forEach(n=>deg[n.id]=0);
+      GEDGES.forEach(e=>{if(deg[e.s]!==undefined)deg[e.s]++;if(deg[e.t]!==undefined)deg[e.t]++;});
+      gNodes.forEach(n=>{const isCat=n.id.startsWith('cat-');n.r=isCat?36:Math.max(18,Math.min(34,18+((deg[n.id]||0)*1.6)));});
+      runGraphLayout(300);gSetupInteraction();gGraphInited=true;
+    }
+    setTimeout(fitGraph,60);if(activeCat)applyGraphFilter(activeCat);
+  }else{
+    btn.style.cssText='';gview.classList.remove('visible');canvas.style.display='';
+  }
+}
+const _origApply=applyFilter;
+applyFilter=function(catId){_origApply(catId);if(gGraphActive&&gGraphInited)applyGraphFilter(catId);};
+const _origClear=clearFilter;
+clearFilter=function(){_origClear();if(gGraphActive&&gGraphInited)clearGraphFilter();};
+
+let studyMode=false;
+function toggleStudyMode(){
+  studyMode=!studyMode;
+  const btn=document.getElementById('btn-study');
+  if(studyMode){
+    document.querySelectorAll('.node-label,.node-sub').forEach(el=>el.style.opacity='0');
+    btn.style.cssText='border-color:var(--teal);color:var(--teal);background:rgba(26,188,156,.1)';
+    btn.textContent='👁 Labels Hidden';
+  }else{
+    document.querySelectorAll('.node-label,.node-sub').forEach(el=>el.style.opacity='');
+    btn.style.cssText='';btn.textContent='👁 Study Mode';
+  }
+}
+</script>
+<style id="declutter-overrides">
+#sidebar, #footer, #btn-study, #header .hdr-sep { display: none !important; }
+#app { grid-template-columns: 0 1fr 0 !important; grid-template-rows: var(--header-h) 1fr 0 !important; }
+body.detail-open #app { grid-template-columns: 0 1fr var(--detail-w) !important; }
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var b = document.getElementById('btn-graph');
+  if (!b) return;
+  function upd() {
+    var cv = document.getElementById('canvas'), gv = document.getElementById('graph-view');
+    var active = (cv && cv.style.display === 'none') || (gv && gv.classList.contains('visible'));
+    b.textContent = active ? '🫧 Bubble View' : '🗺 Graph View';
+  }
+  b.addEventListener('click', function () { setTimeout(upd, 0); });
+  upd();
+});
+</script>
+</body>
+</html>
