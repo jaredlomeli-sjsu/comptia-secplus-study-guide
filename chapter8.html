@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch 8 · Risk Management Tools — Security+ SY0-701</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+<nav class="topnav">
+  <a class="brand" href="index.html">Security<span>+</span> SY0-701</a>
+  <a class="navlink" href="index.html">Home</a>
+  <a class="navlink" href="chapters1-2.html">Ch 1–2 · Basics &amp; IAM</a>
+  <a class="navlink" href="chapter3.html">Ch 3 · Networks</a>
+  <a class="navlink" href="chapters4-5.html">Ch 4–5 · Net Defense &amp; Hosts</a>
+  <a class="navlink" href="chapter6.html">Ch 6 · Threats</a>
+  <a class="navlink" href="chapter7.html">Ch 7 · Advanced Attacks</a>
+  <a class="navlink active" href="chapter8.html">Ch 8 · Risk Mgmt</a>
+  <a class="navlink" href="chapter9.html">Ch 9 · Controls</a>
+  <a class="navlink" href="practice.html">Practice</a>
+  <a class="navlink" href="glossary.html">Glossary</a>
+</nav>
+
+<main class="page" id="main">
+
+  <header class="page-header">
+    <div class="badge">Chapter 8</div>
+    <h1>Using <span>Risk Management Tools</span></h1>
+    <p class="subtitle">Identify and quantify risk with SLE/ARO/ALE · run credentialed and non-credentialed vulnerability scans · conduct penetration tests across all phases · apply ISO and NIST frameworks to real environments.</p>
+  </header>
+
+  <div class="toc">
+    <a href="#risk-fundamentals">Risk Fundamentals</a>
+    <a href="#risk-types">Risk &amp; Vuln Types</a>
+    <a href="#risk-management">Risk Management</a>
+    <a href="#quantitative">Quantitative Analysis</a>
+    <a href="#qualitative">Qualitative Analysis</a>
+    <a href="#risk-register">Risk Register</a>
+    <a href="#supply-chain">Supply Chain</a>
+    <a href="#vuln-assessment">Vulnerability Assessment</a>
+    <a href="#cve-cvss">CVE · CVSS · SCAP</a>
+    <a href="#scan-types">Scan Credential Types</a>
+    <a href="#pentest">Penetration Testing</a>
+    <a href="#knowledge-levels">Knowledge Levels</a>
+    <a href="#recon">Recon &amp; Footprinting</a>
+    <a href="#scan-tools">Scanning Tools</a>
+    <a href="#pentest-phases">Pentest Phases</a>
+    <a href="#testing-types">Testing Types</a>
+    <a href="#packet-tools">Packet Analysis Tools</a>
+    <a href="#remediation">Remediation Controls</a>
+    <a href="#frameworks">Frameworks</a>
+    <a href="#audits">Audits &amp; Assessments</a>
+  </div>
+
+  <!-- ════════ RISK FUNDAMENTALS ════════ -->
+  <section id="risk-fundamentals">
+    <div class="sec-head"><h2>Risk Fundamentals</h2><span class="sec-tag">Every security decision starts here</span></div>
+
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Term</th><th>Definition</th><th>Exam Focus</th></tr></thead>
+      <tbody>
+        <tr><td>Risk</td><td>The <em>likelihood</em> that a threat will exploit a vulnerability, resulting in harm to an asset. Expressed as: <strong>Risk = Likelihood × Impact</strong>.</td><td>Risk is a combination of both factors — not just likelihood or just impact alone.</td></tr>
+        <tr><td>Impact</td><td>The magnitude of harm if a risk materializes — financial loss, operational disruption, data breach, reputational damage, or regulatory penalties.</td><td>High impact + high likelihood = highest priority risk.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Threat types</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Threat Type</th><th>Description</th><th>Examples</th></tr></thead>
+      <tbody>
+        <tr><td>Malicious human threat</td><td>An intentional act by a person aiming to cause harm — insider or outsider.</td><td>Hacker, disgruntled employee planting a logic bomb, nation-state actor exfiltrating data.</td></tr>
+        <tr><td>Accidental human threat</td><td>Unintentional harm caused by a person without malicious intent.</td><td>Employee misconfiguring a firewall rule, accidentally emailing PII to the wrong address, dropping a laptop.</td></tr>
+        <tr><td>Environmental threat</td><td>Natural or physical events outside human control that can damage systems or data.</td><td>Earthquake, flood, hurricane, fire, power outage, extreme temperature causing hardware failure.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Threat assessment &amp; risk identification</h3>
+    <ul class="plain">
+      <li><strong>Threat assessment</strong> — the process of identifying and evaluating threats relevant to an organization: which actors are likely to target you, with what capabilities, using which vectors. Feeds directly into risk identification.</li>
+      <li><strong>Risk identification</strong> — cataloging all risks the organization faces by pairing threats with the vulnerabilities they could exploit across all assets. The output is the input to assessment and the risk register.</li>
+    </ul>
+
+    <div class="tip"><b>Exam cue:</b> Threat assessment asks <em>"who/what could hurt us?"</em> Risk identification asks <em>"what could go wrong with our assets?"</em> — two separate steps in the risk management lifecycle.</div>
+  </section>
+
+  <!-- ════════ RISK & VULNERABILITY TYPES ════════ -->
+  <section id="risk-types">
+    <div class="sec-head"><h2>Risk Types &amp; Vulnerability Types</h2><span class="sec-tag">Know what you're classifying</span></div>
+
+    <h3>Risk types</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Risk Type</th><th>What It Is</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td>Internal risk</td><td>Originates from inside the organization — people, processes, or systems you own and control (or fail to control).</td><td>Disgruntled employee with admin access, misconfigured internal server.</td></tr>
+        <tr><td>External risk</td><td>Originates from outside — threat actors, competitors, or events the organization doesn't control.</td><td>Nation-state attack, supply-chain compromise via a vendor, natural disaster.</td></tr>
+        <tr><td>Intellectual property (IP) theft</td><td>Risk that proprietary designs, source code, trade secrets, or confidential business data are stolen and used by competitors or sold.</td><td>Employee exfiltrating product roadmaps to a competitor before resignation.</td></tr>
+        <tr><td>Software compliance / licensing</td><td>Risk of using software outside the terms of its license — either running unlicensed copies or violating usage restrictions — creating legal and financial exposure.</td><td>Running more instances of a product than the license permits; using open-source code under a restrictive license in a commercial product without disclosure.</td></tr>
+        <tr><td>Legacy systems / platforms</td><td>Outdated hardware or software that no longer receives security patches (end-of-life/end-of-support) but remains in production. Each known unpatched CVE is an open risk.</td><td>Running Windows Server 2008 or an embedded industrial controller on firmware from 2010.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Vulnerability types</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Vulnerability Type</th><th>What It Means</th><th>Remediation</th></tr></thead>
+      <tbody>
+        <tr><td>Lack of hardening</td><td>Systems deployed with default settings, unnecessary services enabled, and default credentials unchanged. Default configurations are publicly known to attackers.</td><td>Apply CIS Benchmarks or STIG baselines; disable unneeded services; change all defaults.</td></tr>
+        <tr><td>Lack of security policies</td><td>No written, enforced rules defining acceptable use, password requirements, data classification, or incident response. People cannot follow rules that don't exist.</td><td>Develop and publish a security policy framework; train staff; audit compliance.</td></tr>
+        <tr><td>Improper / weak practices</td><td>Security controls exist but are implemented poorly — e.g., password policies that are technically in place but set to 4-character minimums.</td><td>Review and tighten existing controls against industry standards (NIST 800-63).</td></tr>
+        <tr><td>Lack of firewalls</td><td>No network boundary filtering between trust zones, or a firewall deployed but with "allow all" rules that negate its purpose.</td><td>Deploy host-based and network firewalls with default-deny rules; segment zones.</td></tr>
+        <tr><td>Lack of anti-malware</td><td>No endpoint detection for malware, or anti-malware with outdated signatures. Every endpoint is a potential initial-access point.</td><td>Deploy EDR/anti-malware with automatic updates; supplement with application allowlisting.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>Exam cue:</b> vulnerability type questions often describe a scenario ("the server was running with default credentials") and ask which <em>type</em> of vulnerability that represents — know the category name for each.</div>
+  </section>
+
+  <!-- ════════ RISK MANAGEMENT ════════ -->
+  <section id="risk-management">
+    <div class="sec-head"><h2>Risk Management</h2><span class="sec-tag">The ongoing process — not a one-time event</span></div>
+
+    <p><strong>Risk management</strong> is the continuous process of identifying, assessing, treating, and monitoring risks to keep them within acceptable levels. It wraps around everything else in this chapter.</p>
+
+    <h3>The three risk states</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Risk State</th><th>Definition</th><th>When It Applies</th></tr></thead>
+      <tbody>
+        <tr><td>Inherent risk</td><td>The level of risk that exists <strong>before any controls are applied</strong>. The raw, unmitigated exposure.</td><td>Used as the starting baseline when entering a risk into the register.</td></tr>
+        <tr><td>Residual risk</td><td>The risk that <strong>remains after controls are applied</strong>. No control eliminates risk completely — residual risk must be accepted, transferred, or further mitigated.</td><td>Compared to risk appetite to determine if additional treatment is needed.</td></tr>
+        <tr><td>Control risk</td><td>The risk that an existing control will <strong>fail or be circumvented</strong>, allowing the underlying risk to materialize anyway.</td><td>Considered when evaluating the reliability of a control during a risk assessment.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Risk appetite</h3>
+    <p><strong>Risk appetite</strong> is the amount of risk an organization is <em>willing to accept</em> in pursuit of its objectives. It reflects strategy and culture. Three postures:</p>
+    <div class="grid3">
+      <div class="card accent-green">
+        <h4>Expansionary</h4>
+        <p>High risk appetite. The organization accepts significant risk to pursue growth, innovation, or competitive advantage. Startups and high-growth companies often operate here.</p>
+      </div>
+      <div class="card accent-blue">
+        <h4>Neutral</h4>
+        <p>Balanced risk appetite. The organization accepts risk proportional to the expected return. Risks are evaluated case-by-case without a strong bias toward caution or aggression.</p>
+      </div>
+      <div class="card accent-orange">
+        <h4>Conservative</h4>
+        <p>Low risk appetite. The organization minimizes risk exposure even at the cost of slower growth. Government agencies, healthcare, and financial institutions typically operate here.</p>
+      </div>
+    </div>
+
+    <h3>Risk tolerance &amp; continuous risk assessment</h3>
+    <ul class="plain">
+      <li><strong>Risk tolerance</strong> — the <em>acceptable variation</em> around the risk appetite. If appetite is "no more than 1% data-breach probability per year," tolerance defines how far above that threshold action is required (e.g., 1.5% triggers a mitigation project). It is the operational boundary.</li>
+      <li><strong>Continuous risk assessment</strong> — an ongoing, real-time approach to risk assessment rather than a periodic point-in-time audit. Threat landscapes, assets, and controls change constantly; continuous assessment surfaces new risks before they materialize. Enabled by SIEM, threat intelligence feeds, and automated vulnerability scanning.</li>
+    </ul>
+    <div class="tip"><b>Appetite vs. tolerance:</b> Risk appetite is the strategic <em>goal</em> ("how much we want to take on"); risk tolerance is the operational <em>limit</em> ("how far we'll deviate before acting"). A company may have a conservative appetite but a tolerance that permits small exceptions with documented approval.</div>
+  </section>
+
+  <!-- ════════ QUANTITATIVE ANALYSIS ════════ -->
+  <section id="quantitative">
+    <div class="sec-head"><h2>Assets &amp; Quantitative Risk Analysis</h2><span class="sec-tag">Turn risk into dollar figures — the formulas the exam tests directly</span></div>
+
+    <h3>Asset fundamentals</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+      <tbody>
+        <tr><td>Asset</td><td>Anything of value the organization needs to protect: hardware, software, data, intellectual property, personnel, facilities, or reputation.</td></tr>
+        <tr><td>Asset value (AV)</td><td>The dollar (or equivalent monetary) value assigned to an asset — replacement cost, market value, or business impact of losing it. AV is the starting point for every quantitative risk calculation.</td></tr>
+        <tr><td>Risk control assessment</td><td>Evaluating the effectiveness of a specific control against a specific risk — does the control actually reduce likelihood or impact, and by how much?</td></tr>
+        <tr><td>Risk control self-assessment</td><td>A structured process where the <em>business unit that owns the risk</em> assesses its own controls rather than relying solely on an independent audit. Can be quantitative or qualitative.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>The quantitative formula chain</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Variable</th><th>Full Name</th><th>Definition</th><th>Formula</th></tr></thead>
+      <tbody>
+        <tr><td><code>AV</code></td><td>Asset Value</td><td>Dollar value of the asset being evaluated.</td><td>— (input, set by asset inventory)</td></tr>
+        <tr><td><code>EF</code></td><td>Exposure Factor</td><td>Percentage of the asset value expected to be <em>lost</em> in a single incident. Expressed as a decimal (0.0–1.0).</td><td>— (input, estimated per threat)</td></tr>
+        <tr><td><code>SLE</code></td><td>Single Loss Expectancy</td><td>Expected dollar loss from <em>one occurrence</em> of the risk.</td><td><strong>SLE = AV × EF</strong></td></tr>
+        <tr><td><code>ARO</code></td><td>Annualized Rate of Occurrence</td><td>Expected number of times the risk will occur <em>per year</em>. Can be a fraction (0.1 = once every 10 years).</td><td>— (input, from historical data or estimates)</td></tr>
+        <tr><td><code>ALE</code></td><td>Annualized Loss Expectancy</td><td>Expected total dollar loss <em>per year</em> from this risk. This is the number to compare against safeguard cost.</td><td><strong>ALE = SLE × ARO</strong></td></tr>
+      </tbody>
+    </table></div>
+
+    <figure class="diagram">
+      <svg width="640" viewBox="0 0 640 190" role="img" aria-label="Quantitative risk formula chain: Asset Value times Exposure Factor equals SLE; SLE times ARO equals ALE">
+        <defs><marker id="m-q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--dim)"/></marker></defs>
+        <!-- AV box -->
+        <rect x="10" y="50" width="110" height="56" rx="8" fill="var(--blue-dim)" stroke="var(--cyan)"/>
+        <text x="65" y="74" text-anchor="middle" font-size="12" font-weight="800" fill="var(--cyan)">AV</text>
+        <text x="65" y="92" text-anchor="middle" font-size="9.5" fill="var(--dim)">Asset Value</text>
+        <!-- × symbol -->
+        <text x="138" y="82" text-anchor="middle" font-size="16" font-weight="700" fill="var(--dim)">×</text>
+        <!-- EF box -->
+        <rect x="156" y="50" width="110" height="56" rx="8" fill="var(--teal-dim)" stroke="var(--teal)"/>
+        <text x="211" y="74" text-anchor="middle" font-size="12" font-weight="800" fill="var(--teal)">EF</text>
+        <text x="211" y="92" text-anchor="middle" font-size="9.5" fill="var(--dim)">Exposure Factor</text>
+        <!-- = arrow -->
+        <line x1="270" y1="78" x2="300" y2="78" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-q)"/>
+        <text x="285" y="68" text-anchor="middle" font-size="10" fill="var(--dim)">=</text>
+        <!-- SLE box -->
+        <rect x="306" y="36" width="110" height="84" rx="8" fill="var(--orange-dim)" stroke="var(--orange)"/>
+        <text x="361" y="68" text-anchor="middle" font-size="13" font-weight="800" fill="var(--orange)">SLE</text>
+        <text x="361" y="86" text-anchor="middle" font-size="9.5" fill="var(--dim)">Single Loss</text>
+        <text x="361" y="100" text-anchor="middle" font-size="9.5" fill="var(--dim)">Expectancy</text>
+        <!-- × symbol -->
+        <text x="434" y="82" text-anchor="middle" font-size="16" font-weight="700" fill="var(--dim)">×</text>
+        <!-- ARO box -->
+        <rect x="450" y="50" width="80" height="56" rx="8" fill="var(--purple-dim)" stroke="var(--purple)"/>
+        <text x="490" y="74" text-anchor="middle" font-size="12" font-weight="800" fill="var(--purple)">ARO</text>
+        <text x="490" y="92" text-anchor="middle" font-size="9.5" fill="var(--dim)">Occurrences/yr</text>
+        <!-- = arrow -->
+        <line x1="534" y1="78" x2="558" y2="78" stroke="var(--dim)" stroke-width="1.6" marker-end="url(#m-q)"/>
+        <text x="546" y="68" text-anchor="middle" font-size="10" fill="var(--dim)">=</text>
+        <!-- ALE box -->
+        <rect x="562" y="36" width="68" height="84" rx="8" fill="var(--green-dim)" stroke="var(--green)"/>
+        <text x="596" y="68" text-anchor="middle" font-size="13" font-weight="800" fill="var(--green)">ALE</text>
+        <text x="596" y="84" text-anchor="middle" font-size="9" fill="var(--dim)">Annual</text>
+        <text x="596" y="97" text-anchor="middle" font-size="9" fill="var(--dim)">Loss</text>
+        <text x="596" y="110" text-anchor="middle" font-size="9" fill="var(--dim)">Expectancy</text>
+        <!-- Formula labels -->
+        <text x="174" y="152" text-anchor="middle" font-size="11" font-weight="700" fill="var(--cyan)">SLE = AV × EF</text>
+        <text x="480" y="152" text-anchor="middle" font-size="11" font-weight="700" fill="var(--green)">ALE = SLE × ARO</text>
+        <line x1="10" y1="162" x2="420" y2="162" stroke="var(--cyan)" stroke-width="1" stroke-dasharray="4 3" opacity="0.4"/>
+        <line x1="306" y1="162" x2="630" y2="162" stroke="var(--green)" stroke-width="1" stroke-dasharray="4 3" opacity="0.4"/>
+      </svg>
+      <figcaption><b>The full quantitative chain.</b> Example: Server worth $100,000 (AV), fire destroys 60% of it (EF = 0.6) → <b>SLE = $60,000</b>. Fire occurs once every 10 years (ARO = 0.1) → <b>ALE = $6,000/year</b>. Only spend on a control if its annualized cost is less than $6,000.</figcaption>
+    </figure>
+
+    <h3>Impact &amp; risk reporting</h3>
+    <ul class="plain">
+      <li><strong>Impact</strong> — in the context of quantitative analysis, impact is operationalized as <em>SLE</em>: the dollar consequence of one event. Qualitatively it may be rated High/Medium/Low. Either way, it answers: "how bad is it if this happens?"</li>
+      <li><strong>Risk reporting</strong> — communicating identified risks, their quantified values, current treatment status, and trends to management and stakeholders. Risk reports drive resource allocation and executive decision-making.</li>
+    </ul>
+    <div class="tip"><b>Safeguard formula:</b> A control is worth buying if <strong>(ALE<sub>before</sub> − ALE<sub>after</sub>) − Annual Safeguard Cost &gt; 0</strong>. The difference between pre- and post-control ALE is the value the safeguard delivers. The exam may present this as a numeric scenario.</div>
+  </section>
+
+  <!-- ════════ QUALITATIVE ANALYSIS ════════ -->
+  <section id="qualitative">
+    <div class="sec-head"><h2>Qualitative Risk Analysis</h2><span class="sec-tag">When numbers aren't available — or aren't the point</span></div>
+
+    <p><strong>Qualitative risk analysis</strong> replaces dollar calculations with <em>descriptive ratings</em>. Likelihood and impact are each scored Low / Medium / High (or on a 1–5 scale). The resulting risk level is determined by crossing the two scores on a risk matrix. Used when quantitative data is unavailable, unreliable, or when you need fast stakeholder communication.</p>
+
+    <div class="table-wrap"><table>
+      <thead><tr><th>Method</th><th>How It Works</th><th>Output</th><th>Best For</th></tr></thead>
+      <tbody>
+        <tr><td>Quantitative</td><td>Assigns monetary values; uses AV, EF, SLE, ARO, ALE formulas</td><td>Dollar amounts (ALE)</td><td>Justifying specific control spend; insurance; executive reporting</td></tr>
+        <tr><td>Qualitative</td><td>Rates likelihood and impact with descriptive levels; plots on a risk matrix</td><td>Risk level (High / Med / Low)</td><td>Fast prioritization; broad risk inventories; scenarios without reliable data</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Risk matrix (heat map)</h3>
+    <p>The <strong>risk matrix</strong> maps <em>likelihood</em> (horizontal axis) against <em>impact</em> (vertical axis). Each cell represents the combined risk level for that combination. High-impact + high-likelihood risks land in the top-right "red zone" and demand immediate treatment.</p>
+
+    <figure class="diagram">
+      <svg width="480" viewBox="0 0 480 310" role="img" aria-label="3 by 3 risk matrix: impact on the vertical axis low to high, likelihood on the horizontal axis low to high, cells color from green to red">
+        <!-- Y axis label -->
+        <text x="18" y="175" text-anchor="middle" font-size="10.5" fill="var(--dim)" transform="rotate(-90 18 175)">Impact →</text>
+        <!-- X axis label -->
+        <text x="285" y="298" text-anchor="middle" font-size="10.5" fill="var(--dim)">Likelihood →</text>
+        <!-- Row labels (Impact) -->
+        <text x="50" y="82" text-anchor="middle" font-size="10" font-weight="700" fill="var(--red)">High</text>
+        <text x="50" y="167" text-anchor="middle" font-size="10" font-weight="700" fill="var(--orange)">Med</text>
+        <text x="50" y="252" text-anchor="middle" font-size="10" font-weight="700" fill="var(--green)">Low</text>
+        <!-- Col labels (Likelihood) -->
+        <text x="153" y="282" text-anchor="middle" font-size="10" font-weight="700" fill="var(--green)">Low</text>
+        <text x="248" y="282" text-anchor="middle" font-size="10" font-weight="700" fill="var(--orange)">Med</text>
+        <text x="343" y="282" text-anchor="middle" font-size="10" font-weight="700" fill="var(--red)">High</text>
+        <!-- Grid cells: row High impact -->
+        <rect x="100" y="42" width="90" height="70" rx="6" fill="rgba(251,191,36,0.25)" stroke="rgba(251,191,36,0.5)"/>
+        <text x="145" y="80" text-anchor="middle" font-size="10" font-weight="700" fill="var(--amber)">MEDIUM</text>
+        <rect x="195" y="42" width="90" height="70" rx="6" fill="rgba(251,113,133,0.25)" stroke="rgba(251,113,133,0.5)"/>
+        <text x="240" y="80" text-anchor="middle" font-size="10" font-weight="700" fill="var(--rose)">HIGH</text>
+        <rect x="290" y="42" width="90" height="70" rx="6" fill="rgba(239,68,68,0.32)" stroke="rgba(239,68,68,0.6)"/>
+        <text x="335" y="80" text-anchor="middle" font-size="10" font-weight="800" fill="#f87171">CRITICAL</text>
+        <!-- Grid cells: row Med impact -->
+        <rect x="100" y="127" width="90" height="70" rx="6" fill="rgba(52,211,153,0.18)" stroke="rgba(52,211,153,0.4)"/>
+        <text x="145" y="165" text-anchor="middle" font-size="10" font-weight="700" fill="var(--emerald)">LOW</text>
+        <rect x="195" y="127" width="90" height="70" rx="6" fill="rgba(251,191,36,0.25)" stroke="rgba(251,191,36,0.5)"/>
+        <text x="240" y="165" text-anchor="middle" font-size="10" font-weight="700" fill="var(--amber)">MEDIUM</text>
+        <rect x="290" y="127" width="90" height="70" rx="6" fill="rgba(251,113,133,0.25)" stroke="rgba(251,113,133,0.5)"/>
+        <text x="335" y="165" text-anchor="middle" font-size="10" font-weight="700" fill="var(--rose)">HIGH</text>
+        <!-- Grid cells: row Low impact -->
+        <rect x="100" y="212" width="90" height="70" rx="6" fill="rgba(52,211,153,0.12)" stroke="rgba(52,211,153,0.3)"/>
+        <text x="145" y="250" text-anchor="middle" font-size="10" font-weight="700" fill="var(--emerald)">LOW</text>
+        <rect x="195" y="212" width="90" height="70" rx="6" fill="rgba(52,211,153,0.18)" stroke="rgba(52,211,153,0.4)"/>
+        <text x="240" y="250" text-anchor="middle" font-size="10" font-weight="700" fill="var(--emerald)">LOW</text>
+        <rect x="290" y="212" width="90" height="70" rx="6" fill="rgba(251,191,36,0.25)" stroke="rgba(251,191,36,0.5)"/>
+        <text x="335" y="250" text-anchor="middle" font-size="10" font-weight="700" fill="var(--amber)">MEDIUM</text>
+        <!-- Axis lines -->
+        <line x1="97" y1="40" x2="97" y2="285" stroke="var(--border-strong)" stroke-width="1.2"/>
+        <line x1="97" y1="283" x2="385" y2="283" stroke="var(--border-strong)" stroke-width="1.2"/>
+      </svg>
+      <figcaption><b>Risk = Likelihood × Impact.</b> The matrix shows a 3×3 example — real organizations often use 5×5. The top-right cell (High impact, High likelihood) is always the highest priority. The bottom-left (Low/Low) can often be accepted without further treatment.</figcaption>
+    </figure>
+    <div class="tip"><b>Exam cue:</b> "Using a heat map to rate risks as High/Medium/Low" = <strong>qualitative analysis</strong>. "Calculating ALE using SLE × ARO" = <strong>quantitative analysis</strong>. Both feed the risk register.</div>
+  </section>
+
+  <!-- ════════ RISK REGISTER ════════ -->
+  <section id="risk-register">
+    <div class="sec-head"><h2>Risk Register</h2><span class="sec-tag">The living document of every identified risk</span></div>
+
+    <p>A <strong>risk register</strong> is a formal, structured document (often a spreadsheet or GRC tool) that catalogs every identified risk in the organization. It is continuously updated as risks are identified, treated, change status, or close. It is the primary output of risk assessment and the input to risk treatment decisions.</p>
+
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Field</th><th>What Goes Here</th></tr></thead>
+      <tbody>
+        <tr><td>Risk ID</td><td>Unique identifier (R-001, R-002…) for tracking and referencing.</td></tr>
+        <tr><td>Risk description</td><td>Clear statement of the risk: what could happen, to which asset, due to which threat/vulnerability.</td></tr>
+        <tr><td>Likelihood</td><td>Qualitative (H/M/L) or quantitative (ARO) rating of how often this risk may materialize.</td></tr>
+        <tr><td>Impact</td><td>Qualitative (H/M/L) or quantitative (SLE) rating of the harm if it does.</td></tr>
+        <tr><td>Risk level</td><td>Combined rating from the risk matrix — drives prioritization.</td></tr>
+        <tr><td>Current controls</td><td>Existing countermeasures already reducing this risk (what's already in place).</td></tr>
+        <tr><td>Risk response / treatment</td><td>The chosen strategy: Avoid, Transfer, Mitigate, or Accept.</td></tr>
+        <tr><td>Residual risk</td><td>Risk level after controls are applied — what the organization is living with.</td></tr>
+        <tr><td>Risk owner</td><td>The person or role accountable for managing this risk.</td></tr>
+        <tr><td>Status / review date</td><td>Open, closed, in treatment — and when it was last reviewed.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Risk response strategies</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Strategy</th><th>Definition</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td>Avoid</td><td>Eliminate the risk entirely by stopping the risky activity. No activity = no exposure.</td><td>Decide not to build a public-facing service that would introduce the risk.</td></tr>
+        <tr><td>Transfer (Share)</td><td>Shift the financial impact to a third party, typically through insurance or a contract.</td><td>Purchase cyber liability insurance; include indemnification clauses with a cloud vendor.</td></tr>
+        <tr><td>Mitigate</td><td>Reduce the likelihood or impact of the risk to an acceptable level using controls.</td><td>Patch the vulnerability, deploy a WAF, implement MFA.</td></tr>
+        <tr><td>Accept</td><td>Acknowledge the risk and choose to take no additional action — the residual risk is within appetite. Must be a documented, conscious decision.</td><td>A low-impact/low-likelihood risk whose mitigation cost exceeds its ALE.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="warn"><b>Accept ≠ ignore:</b> Accepting a risk requires a formal documented sign-off from the appropriate risk owner. An undocumented assumption is not "acceptance" — it is negligence.</div>
+  </section>
+
+  <!-- ════════ SUPPLY CHAIN ════════ -->
+  <section id="supply-chain">
+    <div class="sec-head"><h2>Supply Chain Risk</h2><span class="sec-tag">Third parties extend your attack surface</span></div>
+
+    <p>The <strong>supply chain</strong> encompasses every vendor, supplier, contractor, MSP, and open-source dependency the organization relies on. A compromise anywhere in the chain can cascade into your environment — through trusted software update mechanisms, shared infrastructure, or privileged vendor access.</p>
+    <ul class="plain">
+      <li><strong>Software supply chain</strong> — malicious code injected into a widely-used library or build pipeline (e.g., SolarWinds, XZ Utils backdoor). Every dependency is a potential entry point.</li>
+      <li><strong>Hardware supply chain</strong> — counterfeit or tampered components inserted during manufacturing or shipping.</li>
+      <li><strong>Service supply chain</strong> — a managed service provider (MSP) or cloud vendor with privileged access to your systems.</li>
+      <li><strong>Mitigations</strong> — vendor risk assessments, contractual security requirements (SLAs, right-to-audit clauses), software composition analysis (SCA) for dependency scanning, code signing verification for updates.</li>
+    </ul>
+    <div class="tip"><b>Exam cue:</b> "The attacker compromised the company through its IT management vendor" = <strong>supply chain attack via MSP</strong>. See also: <a href="chapter6.html#vectors">Chapter 6 — Threat Vectors</a>.</div>
+  </section>
+
+  <!-- ════════ VULNERABILITY ASSESSMENT ════════ -->
+  <section id="vuln-assessment">
+    <div class="sec-head"><h2>Vulnerability Assessment</h2><span class="sec-tag">Find your weaknesses before attackers do</span></div>
+
+    <p>A <strong>vulnerability assessment</strong> is a systematic review of an environment to identify security weaknesses. It stops at <em>identification and reporting</em> — unlike a penetration test, it does not attempt to exploit what it finds. Output: a prioritized list of vulnerabilities with remediation guidance.</p>
+
+    <h3>Network scanner types — each does something distinct</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Scanner / Scan Type</th><th>What It Does</th><th>Exam Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Network scanner</td><td>Broad term for tools that probe a network to discover hosts, open ports, running services, and potential vulnerabilities. Umbrella category for the types below.</td><td>Nmap is the canonical network scanner — appears by name on the exam.</td></tr>
+        <tr><td>ARP ping scan</td><td>Sends ARP requests to each IP in a subnet to discover which hosts are alive. ARP operates at Layer 2 — works only on the <strong>local network segment</strong>. Cannot cross routers.</td><td>Used first in a local-network assessment to enumerate live hosts before port scanning.</td></tr>
+        <tr><td>SYN stealth scan</td><td>Sends a TCP SYN packet (start of the three-way handshake) but <em>never completes</em> the connection — sends RST after receiving SYN-ACK. Also called a <strong>half-open scan</strong>. Stealthier than a full-connect scan because many older logging systems only record completed connections.</td><td>"Half-open" or "stealth" scan = SYN scan. Nmap flag: <code>-sS</code>.</td></tr>
+        <tr><td>Port scan</td><td>Probes each port on a target host to determine whether it is open (service listening), closed (no service, RST returned), or filtered (firewall drops packets, no response).</td><td>Three states: open, closed, filtered. Filtered = firewall likely present.</td></tr>
+        <tr><td>Service scan</td><td>Attempts to identify the exact <em>application and version</em> running on each open port by sending probes and analyzing banner responses. Goes beyond "port 80 is open" to "Apache 2.4.51 is running on port 80."</td><td>Used to match running services against CVE databases. Nmap flag: <code>-sV</code>.</td></tr>
+        <tr><td>OS detection</td><td>Analyzes subtle differences in how the target's TCP/IP stack responds to crafted probes (TTL, window size, TCP options) to fingerprint the operating system and version.</td><td>OS fingerprinting guides which exploits are applicable. Nmap flag: <code>-O</code>.</td></tr>
+        <tr><td>Vulnerability scanner</td><td>Combines the results of port, service, and OS scans with a database of known vulnerabilities (CVEs) to identify which specific weaknesses likely exist on discovered targets.</td><td>Nessus is the exam's canonical vulnerability scanner. Output includes severity ratings mapped to CVSS scores.</td></tr>
+        <tr><td>Configuration compliance scanner</td><td>Compares a system's actual configuration against a known-good baseline (CIS Benchmark, STIG, PCI DSS requirements). Identifies configuration drift — settings that deviate from policy.</td><td>Distinct from a vulnerability scanner: it checks <em>settings</em>, not software CVEs.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ════════ CVE / CVSS / SCAP ════════ -->
+  <section id="cve-cvss">
+    <div class="sec-head"><h2>CVE · CVSS · SCAP</h2><span class="sec-tag">The standardized language of vulnerabilities</span></div>
+
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Standard</th><th>Full Name</th><th>What It Is</th><th>Exam Role</th></tr></thead>
+      <tbody>
+        <tr><td>CVE</td><td>Common Vulnerabilities and Exposures</td><td>A standardized identifier (e.g., <code>CVE-2021-44228</code>) for a publicly known vulnerability. Maintained by MITRE. Each CVE has a unique ID, description, and references.</td><td>CVEs appear in scan reports to identify <em>which specific flaw</em> was found.</td></tr>
+        <tr><td>CVSS</td><td>Common Vulnerability Scoring System</td><td>A numerical severity score from <strong>0.0 to 10.0</strong> (None → Low → Medium → High → Critical) calculated from base metrics: attack vector, complexity, privileges required, user interaction, and impact on CIA.</td><td>Used to prioritize remediation — Critical (9.0–10.0) first. CVSS ≠ CVE: CVE names the flaw; CVSS scores its severity.</td></tr>
+        <tr><td>SCAP</td><td>Security Content Automation Protocol</td><td>An NIST framework of standards (including CVE, CVSS, CCE, XCCDF, OVAL) that automates vulnerability management, configuration compliance checking, and security measurement across an enterprise.</td><td>SCAP is the <em>automation framework</em> that ties CVE and CVSS together with machine-readable content. Configuration compliance scanners often run SCAP content.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Vulnerability information sources</h3>
+    <ul class="plain">
+      <li><strong>NVD</strong> (National Vulnerability Database) — NIST-maintained database of CVEs enriched with CVSS scores, affected products, and remediation references. The primary authoritative source.</li>
+      <li><strong>Vendor advisories</strong> — Microsoft Patch Tuesday, Cisco PSIRT, Red Hat Security Advisories. First to publish details on flaws in their own products.</li>
+      <li><strong>CERT/CC</strong> — Carnegie Mellon's coordination center; publishes vulnerability notes and coordinates disclosure.</li>
+      <li><strong>Exploit databases</strong> — Exploit-DB, Rapid7 Metasploit modules; show what public exploit code exists for known CVEs (elevates priority).</li>
+      <li><strong>Threat intelligence feeds</strong> — STIX/TAXII feeds, ISACs, commercial feeds that include emerging CVEs before they are widely published.</li>
+    </ul>
+  </section>
+
+  <!-- ════════ SCAN CREDENTIAL TYPES ════════ -->
+  <section id="scan-types">
+    <div class="sec-head"><h2>Scan Credential Types</h2><span class="sec-tag">Two fundamentally different views of a target</span></div>
+
+    <div class="grid2">
+      <div class="card accent-green">
+        <h4>Credentialed scan</h4>
+        <p>The scanner logs into the target system using valid credentials (admin account, SSH key, WMI access). It can read installed software, patch levels, registry keys, running processes, and configuration — a <strong>deep, accurate internal view</strong>.</p>
+        <p><strong>Pros:</strong> Far fewer false positives; detects vulnerabilities invisible from the network (e.g., an unpatched library used only internally).</p>
+        <p><strong>Cons:</strong> Requires managing credentials securely; a compromised scan account is a risk.</p>
+      </div>
+      <div class="card accent-orange">
+        <h4>Non-credentialed scan</h4>
+        <p>The scanner probes the target from the <strong>outside only</strong> — no login. It fingerprints services via network responses and banner grabbing. Simulates what an external attacker would see.</p>
+        <p><strong>Pros:</strong> No credentials needed; shows attacker's perspective; faster to set up.</p>
+        <p><strong>Cons:</strong> Higher false positive and false negative rates; cannot see inside the OS.</p>
+      </div>
+    </div>
+
+    <div class="table-wrap" style="margin-top:16px"><table>
+      <thead><tr><th></th><th>Credentialed</th><th>Non-credentialed</th></tr></thead>
+      <tbody>
+        <tr><td>View</td><td>Inside the OS and application layer</td><td>Outside — network-facing services only</td></tr>
+        <tr><td>False positives</td><td>Low</td><td>Higher</td></tr>
+        <tr><td>False negatives</td><td>Low</td><td>Higher (misses internal-only vulns)</td></tr>
+        <tr><td>Simulates</td><td>Insider / post-authentication attacker</td><td>External unauthenticated attacker</td></tr>
+        <tr><td>Use case</td><td>Compliance scans, patch verification, internal assessments</td><td>Perimeter assessments, simulating attacker perspective</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>False positive vs. false negative:</b> A <strong>false positive</strong> is a reported vulnerability that doesn't actually exist (wastes remediation time). A <strong>false negative</strong> is a real vulnerability the scanner missed (the dangerous one — creates a false sense of security). Credentialed scans reduce both.</div>
+  </section>
+
+  <!-- ════════ PENETRATION TESTING ════════ -->
+  <section id="pentest">
+    <div class="sec-head"><h2>Penetration Testing</h2><span class="sec-tag">Authorized attack simulation — authorization is everything</span></div>
+
+    <p>A <strong>penetration test</strong> goes beyond a vulnerability assessment: it actively attempts to <em>exploit</em> discovered vulnerabilities to demonstrate real-world impact. Always requires written authorization before starting.</p>
+
+    <h3>Penetration test types</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Type</th><th>What It Tests</th><th>How It Works</th></tr></thead>
+      <tbody>
+        <tr><td>Physical penetration test</td><td>Physical security controls — badge readers, locked doors, tailgating procedures, guard alertness, CCTV coverage.</td><td>Testers attempt to gain unauthorized physical access to a facility through social engineering, bypassing access controls, or exploiting gaps in physical procedures.</td></tr>
+        <tr><td>Offensive (red team)</td><td>The organization's full defensive capability — can attackers get in, move laterally, and reach high-value targets undetected?</td><td>A red team simulates a real-world attacker using all available techniques against live production systems over an extended engagement.</td></tr>
+        <tr><td>Defensive (blue team)</td><td>The detection and response capabilities of the security operations team.</td><td>The blue team monitors and responds to simulated attacks. The test evaluates whether defenders can detect, contain, and eradicate a real intrusion.</td></tr>
+        <tr><td>Integrated (purple team)</td><td>Both offensive and defensive capabilities simultaneously — and the collaboration between them.</td><td>Red and blue teams work together (or alternate roles) in real time, immediately sharing what attacks were used and whether they were detected. Accelerates improvement.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Rules of engagement (ROE)</h3>
+    <p>The <strong>rules of engagement</strong> are a written agreement between the tester and the client that defines the legal and operational boundaries of the test. The ROE must be signed and in place <em>before</em> any testing begins.</p>
+    <ul class="plain">
+      <li><strong>Scope</strong> — exactly which IP ranges, hosts, applications, or facilities are in scope (and which are explicitly out of scope).</li>
+      <li><strong>Timing</strong> — permitted testing windows (e.g., only between 10 p.m. and 6 a.m. to avoid production impact).</li>
+      <li><strong>Techniques</strong> — which attack techniques are permitted (e.g., social engineering allowed vs. prohibited; DoS testing explicitly prohibited).</li>
+      <li><strong>Communication</strong> — emergency contact procedures if a tester discovers a critical vulnerability or causes unintended disruption.</li>
+      <li><strong>Data handling</strong> — how sensitive data encountered during testing must be protected and disposed of.</li>
+    </ul>
+    <div class="warn"><b>No authorization = criminal activity.</b> A penetration test without written authorization is indistinguishable from an actual attack under computer crime law. The ROE is what makes testing legal.</div>
+
+    <h3>Bug bounty programs</h3>
+    <p>A <strong>bug bounty</strong> is a public or private program in which an organization invites independent researchers to find and responsibly disclose security vulnerabilities in exchange for monetary rewards. Effectively outsources continuous security testing to a global pool of researchers under defined rules.</p>
+  </section>
+
+  <!-- ════════ KNOWLEDGE LEVELS ════════ -->
+  <section id="knowledge-levels">
+    <div class="sec-head"><h2>Tester's Level of Environment Knowledge</h2><span class="sec-tag">What the tester knows shapes what the test simulates</span></div>
+
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Knowledge Level</th><th>Common Name</th><th>What the Tester Knows</th><th>Simulates</th></tr></thead>
+      <tbody>
+        <tr><td>Unknown environment</td><td>Black-box test</td><td>Nothing — only the organization's public name (and possibly a general IP range). No internal knowledge, no credentials, no architecture diagrams.</td><td>An external attacker with no prior knowledge. The most realistic simulation of an opportunistic external attack.</td></tr>
+        <tr><td>Known environment</td><td>White-box test</td><td>Everything — full source code, network diagrams, architecture documentation, credentials, and system configurations are provided.</td><td>An insider or an attacker who has already done extensive reconnaissance. Most thorough — finds the most vulnerabilities because nothing is hidden.</td></tr>
+        <tr><td>Partially known environment</td><td>Gray-box test</td><td>Some information — perhaps user-level credentials, a network diagram, or documentation about specific components. Mimics a scenario where an attacker has done some prior research.</td><td>A compromised user account, or an attacker who obtained partial documentation through OSINT.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>Exam cue:</b> "The tester was given network diagrams and a standard user account" = <strong>gray-box</strong>. "The tester was given full source code and admin access" = <strong>white-box</strong>. "The tester was only told the company name" = <strong>black-box</strong>.</div>
+  </section>
+
+  <!-- ════════ RECON & FOOTPRINTING ════════ -->
+  <section id="recon">
+    <div class="sec-head"><h2>Reconnaissance &amp; Footprinting</h2><span class="sec-tag">Phase 1 — know your target before touching it</span></div>
+
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Technique</th><th>Definition</th><th>Methods / Tools</th></tr></thead>
+      <tbody>
+        <tr><td>Passive reconnaissance</td><td>Gathering information about a target <strong>without directly interacting</strong> with its systems. Leaves no footprint on the target. Uses only publicly available information.</td><td>WHOIS, DNS lookups, Google dorking, LinkedIn, Shodan, certificate transparency logs, job postings, OSINT frameworks.</td></tr>
+        <tr><td>Network reconnaissance</td><td>Active probing of the target's network — directly interacting with systems to map hosts, ports, and services. <em>Will appear in the target's logs.</em></td><td>Ping sweeps, ARP scans, port scans (nmap), traceroute. Used in the scanning phase.</td></tr>
+        <tr><td>Network footprinting</td><td>Building a comprehensive map of the target's network topology: IP ranges, subnets, DNS records, ASN, routing paths, and publicly visible hosts.</td><td>WHOIS, nslookup/dig, dnsenum, traceroute, BGP looking glass. Primarily passive.</td></tr>
+        <tr><td>Fingerprinting</td><td>Identifying the exact software, version, and configuration of a service by analyzing its responses, banners, or behavior.</td><td>Banner grabbing (netcat, cURL), HTTP header analysis, service probing (nmap <code>-sV</code>).</td></tr>
+        <tr><td>OS fingerprinting</td><td>Specifically identifying the <strong>operating system</strong> of a target host by analyzing TCP/IP stack behavior: TTL values, window size, TCP options, and ICMP responses.</td><td>Active: nmap <code>-O</code>, hping. Passive: p0f (analyzes traffic without sending probes).</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ════════ SCANNING TOOLS ════════ -->
+  <section id="scan-tools">
+    <div class="sec-head"><h2>Reconnaissance &amp; Scanning Tools</h2><span class="sec-tag">Know the tool, know its job — each one is distinct</span></div>
+
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Tool</th><th>Primary Purpose</th><th>Key Detail / Exam Cue</th></tr></thead>
+      <tbody>
+        <tr><td><code>nmap</code></td><td>Network mapper. The primary tool for host discovery, port scanning, service version detection, OS fingerprinting, and scripted vulnerability checks via the Nmap Scripting Engine (NSE).</td><td>Most versatile scanner on the exam. Key flags: <code>-sS</code> (SYN stealth), <code>-sV</code> (service version), <code>-O</code> (OS detection), <code>-p</code> (specific ports).</td></tr>
+        <tr><td><code>netcat</code> (<code>nc</code>)</td><td>"Swiss army knife" of networking. Creates raw TCP/UDP connections for banner grabbing, port scanning, file transfer, and acting as a bind or reverse shell listener.</td><td>Simple port scan: <code>nc -zv host port</code>. Often used by attackers to establish reverse shells post-exploitation.</td></tr>
+        <tr><td><code>scanless</code></td><td>A port scanner that routes scans through third-party online scanning services so the scan traffic appears to originate from an external host — not the tester's machine.</td><td>Used for <strong>evasion</strong>: the target sees scan traffic from a third-party IP, not the tester. Reduces risk of triggering IP-based blacklists.</td></tr>
+        <tr><td><code>dnsenum</code></td><td>DNS enumeration. Discovers subdomains, mail servers, nameservers, and zone transfer vulnerabilities for a target domain.</td><td>Attempts zone transfers (AXFR); brute-forces subdomains. Primary reconnaissance tool for DNS infrastructure mapping.</td></tr>
+        <tr><td><code>Nessus</code></td><td>Comprehensive vulnerability scanner. The market-leading commercial tool that combines port scanning, service detection, and a massive CVE-mapped plugin library to find vulnerabilities across thousands of product types.</td><td>The canonical <em>vulnerability scanner</em> on the Security+ exam. Supports credentialed and non-credentialed scans. Produces CVSS-scored reports.</td></tr>
+        <tr><td><code>hping</code></td><td>Packet crafting and analysis tool. Sends custom TCP, UDP, ICMP, and raw IP packets — used for firewall testing, OS fingerprinting, traceroute, and testing IDS/IPS responses.</td><td>Can craft packets that bypass packet filters. Unlike nmap, hping lets the tester <em>define exactly what each packet looks like</em>.</td></tr>
+        <tr><td><code>sn1per</code></td><td>Automated attack surface discovery and reconnaissance framework. Chains together many tools (nmap, Metasploit, Nikto, etc.) into a single automated workflow for initial assessment.</td><td>Used in the early phases of a pentest to rapidly enumerate a large scope; combines passive and active recon.</td></tr>
+        <tr><td><code>cURL</code></td><td>Command-line HTTP/S client for transferring data with URLs. Used in testing to grab web-server banners, probe API endpoints, test authentication, and check HTTP security headers.</td><td><code>curl -I https://target.com</code> grabs headers. Used for manual web-app fingerprinting and API testing.</td></tr>
+        <tr><td>IP scanner</td><td>Generic category of tools that discover live hosts on a network segment by sending ICMP pings or ARP requests and reporting which IPs respond.</td><td>Includes tools like Angry IP Scanner. Nmap can perform IP scanning with <code>-sn</code> (ping scan / host discovery only).</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ════════ PENTEST PHASES ════════ -->
+  <section id="pentest-phases">
+    <div class="sec-head"><h2>Penetration Test Phases &amp; Techniques</h2><span class="sec-tag">What happens after you get in</span></div>
+
+    <figure class="diagram">
+      <svg width="700" viewBox="0 0 700 110" role="img" aria-label="Penetration test phases in order: Reconnaissance, Scanning, Exploitation, Post-Exploitation, Reporting, Cleanup">
+        <defs><marker id="m-pt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--dim)"/></marker></defs>
+        <rect x="8"   y="24" width="96" height="52" rx="8" fill="var(--blue-dim)"   stroke="var(--cyan)"/>
+        <text x="56"  y="47" text-anchor="middle" font-size="10" font-weight="800" fill="var(--cyan)">1 · Recon</text>
+        <text x="56"  y="62" text-anchor="middle" font-size="8.5" fill="var(--dim)">passive + active</text>
+        <line x1="106" y1="50" x2="118" y2="50" stroke="var(--dim)" stroke-width="1.5" marker-end="url(#m-pt)"/>
+        <rect x="120" y="24" width="96" height="52" rx="8" fill="var(--purple-dim)" stroke="var(--purple)"/>
+        <text x="168" y="47" text-anchor="middle" font-size="10" font-weight="800" fill="var(--purple)">2 · Scanning</text>
+        <text x="168" y="62" text-anchor="middle" font-size="8.5" fill="var(--dim)">ports · services · OS</text>
+        <line x1="218" y1="50" x2="230" y2="50" stroke="var(--dim)" stroke-width="1.5" marker-end="url(#m-pt)"/>
+        <rect x="232" y="24" width="102" height="52" rx="8" fill="var(--red-dim)"    stroke="var(--rose)"/>
+        <text x="283" y="47" text-anchor="middle" font-size="10" font-weight="800" fill="var(--rose)">3 · Exploitation</text>
+        <text x="283" y="62" text-anchor="middle" font-size="8.5" fill="var(--dim)">gain initial access</text>
+        <line x1="336" y1="50" x2="348" y2="50" stroke="var(--dim)" stroke-width="1.5" marker-end="url(#m-pt)"/>
+        <rect x="350" y="14" width="110" height="72" rx="8" fill="var(--orange-dim)" stroke="var(--orange)"/>
+        <text x="405" y="40" text-anchor="middle" font-size="10" font-weight="800" fill="var(--orange)">4 · Post-Exploit</text>
+        <text x="405" y="56" text-anchor="middle" font-size="8.5" fill="var(--dim)">persist · escalate</text>
+        <text x="405" y="70" text-anchor="middle" font-size="8.5" fill="var(--dim)">pivot · exfiltrate</text>
+        <line x1="462" y1="50" x2="474" y2="50" stroke="var(--dim)" stroke-width="1.5" marker-end="url(#m-pt)"/>
+        <rect x="476" y="24" width="96" height="52" rx="8" fill="var(--teal-dim)"   stroke="var(--teal)"/>
+        <text x="524" y="47" text-anchor="middle" font-size="10" font-weight="800" fill="var(--teal)">5 · Reporting</text>
+        <text x="524" y="62" text-anchor="middle" font-size="8.5" fill="var(--dim)">findings + remediations</text>
+        <line x1="574" y1="50" x2="586" y2="50" stroke="var(--dim)" stroke-width="1.5" marker-end="url(#m-pt)"/>
+        <rect x="588" y="24" width="96" height="52" rx="8" fill="var(--green-dim)"  stroke="var(--green)"/>
+        <text x="636" y="47" text-anchor="middle" font-size="10" font-weight="800" fill="var(--green)">6 · Cleanup</text>
+        <text x="636" y="62" text-anchor="middle" font-size="8.5" fill="var(--dim)">remove all artifacts</text>
+      </svg>
+      <figcaption><b>Post-exploitation is where most of the interesting work happens.</b> Phases 4–6 are where testers demonstrate real-world impact — persistence, lateral movement, pivoting — and then undo everything they did.</figcaption>
+    </figure>
+
+    <h3>Post-exploitation techniques — each term is distinct</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Technique</th><th>Definition</th><th>Exam Cue</th></tr></thead>
+      <tbody>
+        <tr><td>Persistence</td><td>Maintaining access across system reboots, logouts, or other interruptions. The attacker installs a backdoor, creates a rogue service, adds a scheduled task, or creates new admin accounts so they don't have to re-exploit.</td><td>"Survived a reboot" or "continued access even after the initial vulnerability was patched" = persistence.</td></tr>
+        <tr><td>Privilege escalation</td><td>Moving from a lower-privilege account to a higher-privilege one on the <strong>same system</strong> — e.g., from a standard user to local administrator, or from local admin to SYSTEM/root.</td><td>Vertical movement within a single host. Enables access to protected data and the ability to install tools.</td></tr>
+        <tr><td>Vertical movement</td><td>The same concept as privilege escalation — moving <em>up the privilege hierarchy</em> on a host or in a domain. "Vertical" because it moves up the privilege ladder on one system.</td><td>On the Security+ exam, vertical movement and privilege escalation refer to the same concept.</td></tr>
+        <tr><td>Lateral movement</td><td>Moving <em>horizontally</em> across the network — from one compromised host to other hosts at a similar privilege level. Attacker uses credentials, sessions, or trust relationships to access additional machines.</td><td>Techniques: pass-the-hash, pass-the-ticket, RDP with stolen creds, SMB exploitation. "Compromised multiple workstations from the first beachhead" = lateral movement.</td></tr>
+        <tr><td>Pivoting</td><td>Using a compromised host as a <strong>relay point</strong> to reach network segments that are otherwise inaccessible to the attacker — such as an internal VLAN behind a firewall. The compromised host acts as a proxy or tunnel.</td><td>"Used the compromised web server to attack the database server on an isolated VLAN" = pivoting. Distinct from lateral movement: pivoting crosses network boundaries, lateral movement stays within one segment.</td></tr>
+        <tr><td>Cleanup</td><td>The final phase — removing all tools, backdoors, created accounts, and logs generated during testing to return the system to its pre-test state. Required by the rules of engagement and professional ethics.</td><td>Cleanup is the attacker's equivalent of "covering tracks" — in pentesting it is a <em>required deliverable</em>.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ════════ TESTING TYPES ════════ -->
+  <section id="testing-types">
+    <div class="sec-head"><h2>Testing Types &amp; System Audits</h2><span class="sec-tag">How aggressive is the test?</span></div>
+
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Testing Type</th><th>Definition</th><th>Risk</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td>Intrusive testing</td><td>Actively exploits vulnerabilities or interacts with systems in ways that <em>could cause disruption</em>. Produces the most definitive evidence of exploitability.</td><td>May crash services, lock accounts, or cause unintended downtime. Requires explicit authorization and change-management approval.</td><td>Running Metasploit exploits against a live production server; executing a buffer overflow during a pentest.</td></tr>
+        <tr><td>Non-intrusive testing</td><td>Assesses a target without actively exploiting or disrupting it. Gathers evidence through scanning, review, and observation only.</td><td>Minimal — almost no risk of service disruption.</td><td>Running a vulnerability scan without exploitation; passive traffic capture; reviewing configuration files.</td></tr>
+        <tr><td>System and process audits</td><td>A structured review of a system's configuration, access controls, log management, and operational processes against a defined standard or policy. Combines document review, interviews, and technical testing.</td><td>Non-intrusive by nature.</td><td>Auditing Active Directory account configurations against the least-privilege policy; reviewing the change management process against ISO 27001.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ════════ PACKET ANALYSIS TOOLS ════════ -->
+  <section id="packet-tools">
+    <div class="sec-head"><h2>Packet Analysis Tools</h2><span class="sec-tag">Capturing, reading, and replaying network traffic</span></div>
+
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Tool / Concept</th><th>What It Does</th><th>Key Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Packet capture</td><td>The process of intercepting and recording raw network packets as they traverse a network interface. Stored in <strong>pcap</strong> (packet capture) format.</td><td>Requires promiscuous mode on the NIC (or a SPAN port / network tap). Contains full packet contents including payloads.</td></tr>
+        <tr><td>Protocol analyzer</td><td>Software that reads and decodes captured packets to make them human-readable — dissecting headers, protocols, and payloads across all OSI layers.</td><td><strong>Wireshark</strong> is the canonical GUI protocol analyzer on the exam. <code>tcpdump</code> is the CLI equivalent.</td></tr>
+        <tr><td>Packet replay</td><td>Re-transmitting previously captured packets onto the network — used to test how systems respond to specific traffic patterns or to reproduce conditions that triggered an event.</td><td>Useful for testing IDS/IPS rules, application behavior, or firewall configurations without needing a live attacker.</td></tr>
+        <tr><td><code>tcpreplay</code></td><td>Replays captured pcap files onto the network at controlled speeds. The primary tool for packet replay in assessments.</td><td>Works in conjunction with <code>tcpprep</code> and <code>tcprewrite</code>. Can replay at original timing or accelerated rates.</td></tr>
+        <tr><td><code>tcpdump</code></td><td>Command-line packet capture and analysis tool. Captures live traffic or reads pcap files, filtered by BPF (Berkeley Packet Filter) expressions.</td><td>The go-to CLI tool for network capture on Linux/Unix. Example: <code>tcpdump -i eth0 port 80 -w capture.pcap</code>.</td></tr>
+        <tr><td><code>tcpprep</code></td><td>Preprocesses pcap files to classify packets as "client" or "server" traffic before replay with <code>tcpreplay</code>. Required when replaying two-sided conversations.</td><td>Part of the <em>tcpreplay suite</em>. Used to correctly split bidirectional traffic for replay on dual-interface setups.</td></tr>
+        <tr><td><code>tcprewrite</code></td><td>Modifies pcap files before replay — changes source/destination IP addresses, MAC addresses, port numbers, or checksums to adapt captures to a new test environment.</td><td>Also part of the tcpreplay suite. Essential when replaying captures in a different IP address space than the original.</td></tr>
+        <tr><td>NetFlow</td><td>A Cisco-originated protocol (now standardized as IPFIX) that collects <em>flow metadata</em> from routers and switches: source/destination IP, port, protocol, packet count, byte count, and timestamps — <strong>without capturing full packet payloads</strong>.</td><td>NetFlow = traffic statistics. Protocol analyzer = full packet contents. NetFlow is used for traffic analysis, capacity planning, anomaly detection, and security monitoring at scale.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>Exam distinction:</b> NetFlow records <em>who talked to whom, when, and how much</em> — no payloads. A protocol analyzer (Wireshark/tcpdump) captures <em>everything including the contents of packets</em>. For detecting anomalous patterns across an entire network, NetFlow scales better. For forensic examination of specific traffic, use a full packet capture.</div>
+  </section>
+
+  <!-- ════════ REMEDIATION CONTROLS ════════ -->
+  <section id="remediation">
+    <div class="sec-head"><h2>Remediation Controls</h2><span class="sec-tag">How you fix what scanning and testing finds</span></div>
+
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Control / Action</th><th>Definition</th><th>Exam Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Patching</td><td>Applying vendor-released software updates that fix known vulnerabilities. The primary and most direct remediation for software CVEs.</td><td>Patching should be prioritized by CVSS score and exploitability. Unpatched systems are the leading root cause of breaches. Patch management includes testing patches before deployment.</td></tr>
+        <tr><td>Compensating control</td><td>An alternative control used when the preferred or primary control cannot be implemented — provides equivalent (or partial) protection through a different mechanism.</td><td>Classic exam scenario: "The legacy system cannot be patched — what compensating control would you apply?" Answers: network segmentation, WAF, enhanced monitoring, disabling the vulnerable feature.</td></tr>
+        <tr><td>Segmentation</td><td>Dividing the network into isolated zones so that a compromise in one segment cannot directly reach others. Limits lateral movement and reduces blast radius.</td><td>VLANs, firewall DMZ zones, microsegmentation in cloud environments. "Contains the attack to one segment" = segmentation worked.</td></tr>
+        <tr><td>Exception</td><td>A formally documented waiver granting an exemption from a security policy or control requirement for a specific system or timeframe. Requires risk-owner sign-off and a defined review date.</td><td>An exception is not a permanent state — it must have an expiration or remediation plan. Undocumented exceptions are policy violations.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ════════ FRAMEWORKS ════════ -->
+  <section id="frameworks">
+    <div class="sec-head"><h2>Security Frameworks</h2><span class="sec-tag">Structured guidance that turns policy into practice</span></div>
+
+    <p>A <strong>framework</strong> is a structured set of guidelines, best practices, and controls that organizations use to build and maintain a security program. Frameworks are not laws — they are voluntary reference structures (unless contractually or regulatorily required).</p>
+
+    <h3>ISO standards — each covers a different scope</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Standard</th><th>Name</th><th>What It Governs</th><th>Key Fact</th></tr></thead>
+      <tbody>
+        <tr><td>ISO 27001</td><td>Information Security Management System (ISMS)</td><td>Requirements for establishing, implementing, maintaining, and continually improving an ISMS. The certifiable standard — organizations can receive an ISO 27001 certification after a third-party audit.</td><td>The <em>only certifiable</em> ISO security standard in this set. Defines the <em>what</em> (requirements), not the <em>how</em>.</td></tr>
+        <tr><td>ISO 27002</td><td>Code of Practice for Information Security Controls</td><td>Implementation guidance for the controls referenced in ISO 27001 Annex A. Provides detailed recommendations on how to implement each control.</td><td>Companion to 27001 — 27001 says what controls are needed; <strong>27002 explains how to implement them</strong>.</td></tr>
+        <tr><td>ISO 27701</td><td>Privacy Information Management System (PIMS)</td><td>Extends ISO 27001 and 27002 to address privacy and the protection of personally identifiable information (PII). Aligns with GDPR principles.</td><td>An extension to 27001, not a standalone standard. An organization needs 27001 first, then adds 27701 for privacy.</td></tr>
+        <tr><td>ISO 31000</td><td>Risk Management — Guidelines</td><td>Principles, framework, and process for risk management across all types of risk — not limited to information security. A general risk management standard applicable to any industry.</td><td>Not IT-specific. Broader than 27001. Provides the risk management philosophy that the security-specific standards build on.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>NIST frameworks</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Framework</th><th>Full Name</th><th>Purpose &amp; Structure</th></tr></thead>
+      <tbody>
+        <tr><td>NIST SP 800-37</td><td>Risk Management Framework (RMF)</td><td>A 7-step process for managing security and privacy risk in federal information systems: <strong>Prepare → Categorize → Select → Implement → Assess → Authorize → Monitor</strong>. Mandated for US federal agencies under FISMA.</td></tr>
+        <tr><td>NIST CSF</td><td>Cybersecurity Framework</td><td>A voluntary framework for private-sector organizations organized around five core functions: <strong>Identify → Protect → Detect → Respond → Recover</strong>. Designed to help organizations manage and reduce cybersecurity risk using a common language.</td></tr>
+      </tbody>
+    </table></div>
+
+    <figure class="diagram">
+      <svg width="620" viewBox="0 0 620 110" role="img" aria-label="NIST Cybersecurity Framework five functions: Identify, Protect, Detect, Respond, Recover in order">
+        <defs><marker id="m-csf" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--border-strong)"/></marker></defs>
+        <rect x="8"   y="24" width="100" height="56" rx="8" fill="var(--blue-dim)"   stroke="var(--cyan)"/>
+        <text x="58"  y="49" text-anchor="middle" font-size="11" font-weight="800" fill="var(--cyan)">Identify</text>
+        <text x="58"  y="65" text-anchor="middle" font-size="8.5" fill="var(--dim)">assets · risks · gaps</text>
+        <line x1="110" y1="52" x2="122" y2="52" stroke="var(--border-strong)" stroke-width="1.4" marker-end="url(#m-csf)"/>
+        <rect x="124" y="24" width="100" height="56" rx="8" fill="var(--green-dim)"  stroke="var(--green)"/>
+        <text x="174" y="49" text-anchor="middle" font-size="11" font-weight="800" fill="var(--green)">Protect</text>
+        <text x="174" y="65" text-anchor="middle" font-size="8.5" fill="var(--dim)">controls · training</text>
+        <line x1="226" y1="52" x2="238" y2="52" stroke="var(--border-strong)" stroke-width="1.4" marker-end="url(#m-csf)"/>
+        <rect x="240" y="24" width="100" height="56" rx="8" fill="var(--purple-dim)" stroke="var(--purple)"/>
+        <text x="290" y="49" text-anchor="middle" font-size="11" font-weight="800" fill="var(--purple)">Detect</text>
+        <text x="290" y="65" text-anchor="middle" font-size="8.5" fill="var(--dim)">monitor · alert</text>
+        <line x1="342" y1="52" x2="354" y2="52" stroke="var(--border-strong)" stroke-width="1.4" marker-end="url(#m-csf)"/>
+        <rect x="356" y="24" width="100" height="56" rx="8" fill="var(--orange-dim)" stroke="var(--orange)"/>
+        <text x="406" y="49" text-anchor="middle" font-size="11" font-weight="800" fill="var(--orange)">Respond</text>
+        <text x="406" y="65" text-anchor="middle" font-size="8.5" fill="var(--dim)">contain · analyze</text>
+        <line x1="458" y1="52" x2="470" y2="52" stroke="var(--border-strong)" stroke-width="1.4" marker-end="url(#m-csf)"/>
+        <rect x="472" y="24" width="100" height="56" rx="8" fill="var(--teal-dim)"   stroke="var(--teal)"/>
+        <text x="522" y="49" text-anchor="middle" font-size="11" font-weight="800" fill="var(--teal)">Recover</text>
+        <text x="522" y="65" text-anchor="middle" font-size="8.5" fill="var(--dim)">restore · improve</text>
+        <text x="310" y="100" text-anchor="middle" font-size="9.5" fill="var(--dim)">NIST CSF 1.1 — CSF 2.0 adds a sixth function: Govern</text>
+      </svg>
+      <figcaption><b>The five CSF functions are not sequential steps</b> — they are concurrent capabilities that should all be operating at once. An organization that only focuses on Protect but ignores Detect and Respond will fail when controls are bypassed.</figcaption>
+    </figure>
+
+    <h3>NIST SP 800-37 RMF — the 7 steps</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>#</th><th>Step</th><th>What Happens</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Prepare</td><td>Establish organizational context, risk tolerance, and resources for the RMF process.</td></tr>
+        <tr><td>2</td><td>Categorize</td><td>Classify the information system and its data by impact level (Low / Moderate / High) per FIPS 199.</td></tr>
+        <tr><td>3</td><td>Select</td><td>Choose a baseline set of security controls from NIST SP 800-53 appropriate for the impact level.</td></tr>
+        <tr><td>4</td><td>Implement</td><td>Deploy the selected controls and document how they are implemented.</td></tr>
+        <tr><td>5</td><td>Assess</td><td>Independently evaluate whether controls are implemented correctly and operating effectively.</td></tr>
+        <tr><td>6</td><td>Authorize</td><td>A senior official makes a risk-based authorization decision: ATO (Authority to Operate) or denial.</td></tr>
+        <tr><td>7</td><td>Monitor</td><td>Continuously track control effectiveness, changes, and new risks — feeds back into the cycle.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Reference architecture</h3>
+    <p>A <strong>reference architecture</strong> is a standardized, pre-built template for implementing security controls within a specific technology context (cloud, ICS, mobile, etc.). Rather than designing from scratch, organizations adopt a reference architecture as the starting point and customize it to their environment. Major examples include the NIST Cybersecurity Framework reference implementations, CISA Zero Trust reference architecture, and cloud-provider security landing zones.</p>
+  </section>
+
+  <!-- ════════ AUDITS & ASSESSMENTS ════════ -->
+  <section id="audits">
+    <div class="sec-head"><h2>Audits &amp; Assessments</h2><span class="sec-tag">Verify that controls exist, are implemented, and work</span></div>
+
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Activity</th><th>Definition</th><th>Key Distinction</th></tr></thead>
+      <tbody>
+        <tr><td>Assessment</td><td>A structured evaluation of a system, process, or control set to determine its security posture — typically against a defined standard or baseline. Less formal than an audit; may be internal.</td><td>Assessments <em>evaluate</em>; audits <em>verify</em> with formal evidence and attestation.</td></tr>
+        <tr><td>Audit</td><td>A formal, evidence-based review to verify that defined controls are in place and operating effectively. Produces a formal report with findings, evidence, and conclusions.</td><td>Audits have defined scope, criteria, evidence requirements, and formal conclusions.</td></tr>
+        <tr><td>Internal audit</td><td>An audit conducted by the organization's <strong>own</strong> internal audit team. Provides ongoing assurance and process improvement without the cost of external auditors.</td><td>Internal auditors report to the audit committee / board to maintain independence from operations. Less trusted externally than external audits.</td></tr>
+        <tr><td>External audit</td><td>An audit conducted by an <strong>independent third party</strong> outside the organization. Required for compliance certifications (ISO 27001, SOC 2, PCI DSS), regulatory submissions, or when customers demand independent assurance.</td><td>External audits are more credible to stakeholders. More expensive. Required for certifiable standards.</td></tr>
+        <tr><td>Gap analysis</td><td>Comparing the organization's <em>current</em> security state against a <em>desired</em> target state (a standard, framework, or best practice) to identify what is missing or non-compliant.</td><td>Output is a list of gaps with prioritized remediation recommendations. Precedes an implementation project, not the audit of a completed one.</td></tr>
+        <tr><td>Attestation</td><td>A formal, signed declaration by an authorized party (management, a CISO, or an auditor) that specified controls are in place and operating as described. Creates legal accountability.</td><td>Attestation is a <em>statement of assurance</em> — signing off that controls exist and work. Distinct from just running a scan. Required in SOC 2 reports and regulatory filings.</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="tip"><b>Assessment vs. audit vs. gap analysis:</b> Gap analysis asks "where are we vs. where we need to be?" An assessment asks "how strong are our current controls?" An audit asks "can we formally prove the controls operate?" — with documented evidence and a signed conclusion.</div>
+  </section>
+
+  <div style="margin:30px 0 8px;text-align:center">
+    <a href="diagrams/Security_Plus_Chapter8_Diagram.html" class="btn btn-primary">Open the interactive Chapter 8 diagram →</a>
+  </div>
+
+  <footer class="site-footer">
+    <a href="chapter7.html">← Chapter 7</a> &nbsp;·&nbsp; Chapter 8 &nbsp;·&nbsp; <a href="chapter9.html">Chapter 9 →</a>
+  </footer>
+
+</main>
+<script src="guide.js"></script>
+<script src="glossary.js"></script>
+<script src="assistant.js"></script>
+</body>
+</html>
