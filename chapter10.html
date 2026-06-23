@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch 10 · Cryptography &amp; PKI — Security+ SY0-701</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+<nav class="topnav">
+  <a class="brand" href="index.html">Security<span>+</span> SY0-701</a>
+  <a class="navlink" href="index.html">Home</a>
+  <a class="navlink" href="chapters1-2.html">Ch 1–2 · Basics &amp; IAM</a>
+  <a class="navlink" href="chapter3.html">Ch 3 · Networks</a>
+  <a class="navlink" href="chapters4-5.html">Ch 4–5 · Net Defense &amp; Hosts</a>
+  <a class="navlink" href="chapter6.html">Ch 6 · Threats</a>
+  <a class="navlink" href="chapter7.html">Ch 7 · Advanced Attacks</a>
+  <a class="navlink" href="chapter8.html">Ch 8 · Risk Mgmt</a>
+  <a class="navlink" href="chapter9.html">Ch 9 · Controls</a>
+  <a class="navlink active" href="chapter10.html">Ch 10 · Cryptography</a>
+  <a class="navlink" href="practice.html">Practice</a>
+  <a class="navlink" href="glossary.html">Glossary</a>
+</nav>
+
+<main class="page" id="main">
+
+  <header class="page-header">
+    <div class="badge">Chapter 10</div>
+    <h1>Cryptography <span>&amp; PKI</span></h1>
+    <p class="subtitle">Hashing &amp; integrity · password attacks &amp; defenses · symmetric and asymmetric encryption · digital certificates · PKI infrastructure · protocols, encoding &amp; certificate formats.</p>
+  </header>
+
+  <div class="toc">
+    <a href="#hashing">Hashing &amp; Integrity</a>
+    <a href="#password-attacks">Password Attacks &amp; Defenses</a>
+    <a href="#symmetric">Symmetric Encryption</a>
+    <a href="#asymmetric">Asymmetric Encryption</a>
+    <a href="#data-protection">Data States &amp; Protection</a>
+    <a href="#certificates">Digital Certificates</a>
+    <a href="#pki">PKI Infrastructure</a>
+    <a href="#standards">Protocols &amp; Formats</a>
+  </div>
+
+  <!-- ════════════ HASHING & INTEGRITY ════════════ -->
+  <section id="hashing">
+    <div class="sec-head">
+      <h2>Hashing &amp; Integrity</h2>
+      <span class="sec-tag">One-way transformation — same input always produces the same fixed-length output</span>
+    </div>
+    <p>A <strong>hash</strong> (also called a <strong>message digest</strong>) is the result of running data through a <strong>hash function</strong> — a one-way mathematical algorithm that converts any amount of input into a fixed-length string. Hash functions are deterministic (same input → same output) but irreversible. They are the backbone of data integrity, digital signatures, and password storage.</p>
+
+    <figure class="diagram">
+      <svg width="660" viewBox="0 0 660 180" role="img" aria-label="Hash function flow: variable-length input produces fixed-length digest">
+        <defs>
+          <marker id="ah" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#22d3ee"/>
+          </marker>
+        </defs>
+        <rect x="20" y="60" width="160" height="60" rx="10" fill="rgba(34,211,238,0.08)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="100" y="86" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#dbe4f1">Input Data</text>
+        <text x="100" y="104" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#93a1b8">Any size / any content</text>
+        <line x1="184" y1="90" x2="238" y2="90" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#ah)"/>
+        <rect x="242" y="48" width="196" height="84" rx="10" fill="rgba(129,140,248,0.10)" stroke="#818cf8" stroke-width="1.5"/>
+        <text x="340" y="78" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="700" fill="#dbe4f1">Hash Function</text>
+        <text x="340" y="96" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10.5" fill="#818cf8">SHA-256 / SHA-3 / MD5</text>
+        <text x="340" y="114" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#93a1b8">One-way · deterministic · fast</text>
+        <line x1="442" y1="90" x2="496" y2="90" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#ah)"/>
+        <rect x="500" y="60" width="140" height="60" rx="10" fill="rgba(52,211,153,0.08)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="570" y="86" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#dbe4f1">Digest</text>
+        <text x="570" y="104" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#34d399">256-bit / 512-bit</text>
+        <text x="330" y="164" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#64748b">Avalanche effect: 1-bit input change → completely different digest · Cannot reverse</text>
+      </svg>
+      <figcaption><b>Hash function flow.</b> Any input produces a fixed-length digest. A single-bit change in input completely changes the output (avalanche effect).</figcaption>
+    </figure>
+
+    <h3>Hash Algorithm Families</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Algorithm</th><th>Digest Size</th><th>Status</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><strong>MD5</strong></td><td>128-bit</td><td><span class="pill insecure">Broken</span></td><td><strong>Message Digest 5</strong>, designed by Ron Rivest (1992). Collisions can be generated easily — cryptographically broken. Still used for non-security checksums (file verification, cached lookups) where collision resistance is not required.</td></tr>
+        <tr><td><strong>SHA-0</strong></td><td>160-bit</td><td><span class="pill insecure">Withdrawn</span></td><td>Original SHA published by NIST in 1993. Withdrawn almost immediately by the NSA due to an undisclosed security flaw, before widespread deployment.</td></tr>
+        <tr><td><strong>SHA-1</strong></td><td>160-bit</td><td><span class="pill insecure">Deprecated</span></td><td><strong>Secure Hash Algorithm 1</strong>, replaced SHA-0 in 1995. Deprecated by NIST in 2011; a practical collision was demonstrated in 2017 (SHAttered attack). No longer accepted for TLS certificates or code signing.</td></tr>
+        <tr><td><strong>SHA-2</strong></td><td>224 / 256 / 384 / 512-bit</td><td><span class="pill secure">Current</span></td><td>Family including <strong>SHA-256</strong> and SHA-512. SHA-256 is the workhorse of modern cryptography — used in TLS, Bitcoin, code signing, and certificate hashing. No successful collision attack against it.</td></tr>
+        <tr><td><strong>SHA-3</strong></td><td>224 / 256 / 384 / 512-bit</td><td><span class="pill secure">Current</span></td><td>Standardized by NIST in 2015. Uses a completely different internal structure (Keccak sponge) from SHA-1/SHA-2. Designed as a backup standard if SHA-2 were broken. Resistant to length-extension attacks.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>HMAC — Hash-Based Message Authentication Code</h3>
+    <p>A <strong>Hash-Based Message Authentication Code (HMAC)</strong> combines a cryptographic hash function with a <strong>secret key</strong>. Unlike a plain hash (integrity only), an HMAC also proves <strong>authenticity</strong> — that the message came from someone who knows the shared key.</p>
+
+    <div class="grid2" style="margin-top:14px">
+      <div class="card accent-teal">
+        <h4>Plain Hash</h4>
+        <p>Verifies <strong>integrity only.</strong> Anyone who receives the data can compute and compare the hash. No secret needed. Does not prove who sent the message.</p>
+        <p><em>Use when:</em> File download verification, blockchain, password storage.</p>
+      </div>
+      <div class="card accent-blue">
+        <h4>HMAC</h4>
+        <p>Verifies <strong>integrity + authenticity.</strong> Requires a shared secret key. Only parties with the key can generate or verify valid HMACs. Prevents forgery even if traffic is intercepted.</p>
+        <p><em>Use when:</em> API authentication, TLS record-layer MAC, IPsec.</p>
+      </div>
+    </div>
+
+    <h3>Non-Repudiation &amp; Checksum</h3>
+    <div class="grid2" style="margin-top:14px">
+      <div class="card accent-purple">
+        <h4>Non-Repudiation</h4>
+        <p>The inability to deny having performed an action. A <strong>digital signature</strong> achieves non-repudiation — only the holder of a private key can produce that signature, so they cannot later deny signing. A plain HMAC does <em>not</em> provide non-repudiation because both parties share the key.</p>
+      </div>
+      <div class="card accent-orange">
+        <h4>Checksum</h4>
+        <p>A simple error-detection value (e.g., CRC32) that detects accidental corruption but is not collision-resistant and provides no security against intentional tampering. Use a cryptographic hash when security matters.</p>
+      </div>
+    </div>
+
+    <h3>Hash Collision</h3>
+    <p>A <strong>hash collision</strong> occurs when two different inputs produce the same hash output. Because hash functions map infinite inputs to a finite output space, collisions must theoretically exist — the goal is to make them computationally infeasible to find intentionally. MD5 and SHA-1 have known practical collision attacks; SHA-256 and SHA-3 do not.</p>
+
+    <div class="warn"><b>Collision danger:</b> An attacker who engineers a hash collision can substitute a malicious document for a legitimate one while producing the same hash — bypassing integrity checks entirely. This is why MD5 and SHA-1 are unsuitable for digital certificates and code signing.</div>
+
+    <div class="tip"><b>Exam tip:</b> SHA-256 is part of the SHA-2 family and is the current standard. SHA-1 is deprecated (SHAttered collision, 2017). MD5 is broken for security. SHA-3 uses a completely different internal structure (Keccak sponge). HMAC = hash + shared secret key.</div>
+  </section>
+
+  <!-- ════════════ PASSWORD ATTACKS & DEFENSES ════════════ -->
+  <section id="password-attacks">
+    <div class="sec-head">
+      <h2>Password Attacks &amp; Defenses</h2>
+      <span class="sec-tag">Online vs. offline · cracking techniques · salting &amp; key stretching</span>
+    </div>
+    <p>Password attacks split into <strong>online attacks</strong> (against a live authentication system, limited by lockout) and <strong>offline attacks</strong> (against a stolen hash database, running at billions of attempts per second on GPU hardware with no lockout).</p>
+
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Attack</th><th>Mode</th><th>How It Works</th><th>Primary Defense</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Online attack</strong></td><td><span class="pill port">Online</span></td><td>Submitting credentials to a live login interface (web form, SSH, RDP). Limited by account lockout, rate limiting, and IDS/IPS detection.</td><td>Account lockout, MFA, rate limiting, CAPTCHA.</td></tr>
+        <tr><td><strong>Offline attack</strong></td><td><span class="pill insecure">Offline</span></td><td>Attacker obtains a stolen hash database and cracks hashes locally. No lockout applies — speed is limited only by hardware.</td><td>bcrypt / Argon2, salting, key stretching.</td></tr>
+        <tr><td><strong>Dictionary attack</strong></td><td>Both</td><td>Tries passwords from a wordlist of common passwords, phrases, and previously leaked credentials. Effective against weak or predictable passwords.</td><td>Block known-breached passwords, enforce complexity.</td></tr>
+        <tr><td><strong>Brute force attack</strong></td><td>Both</td><td>Systematically tries every combination of characters up to a length. Guaranteed to succeed eventually — impractical against long passwords.</td><td>Long passwords (16+ chars), account lockout, MFA.</td></tr>
+        <tr><td><strong>Spraying attack</strong></td><td><span class="pill port">Online</span></td><td>Tries a small set of common passwords (<em>e.g., Summer2024!</em>) against a <em>large number of accounts</em>. Stays below per-account lockout thresholds by spreading attempts.</td><td>Monitor for distributed failures across many accounts; ban common passwords.</td></tr>
+        <tr><td><strong>Pass the hash</strong></td><td><span class="pill port">Online</span></td><td>Attacker steals the NTLM credential hash from memory (via Mimikatz) and replays it directly — never needing the plaintext. <em>The hash is the credential.</em></td><td>Credential Guard, Protected Users group, disable NTLM, Privileged Access Workstations.</td></tr>
+        <tr><td><strong>Birthday attack</strong></td><td><span class="pill insecure">Offline</span></td><td>Exploits the birthday paradox to find <em>any</em> two inputs producing the same hash. Reduces collision work from 2<sup>n</sup> to 2<sup>n/2</sup>.</td><td>Use hash algorithms with large digest sizes (SHA-256+).</td></tr>
+        <tr><td><strong>Rainbow table attack</strong></td><td><span class="pill insecure">Offline</span></td><td>Precomputed table of hash values for millions of common passwords. Lookup is near-instant — find the hash, read the plaintext. Much faster than brute force against unsalted hashes.</td><td><strong>Salting</strong> — a unique random salt per password makes precomputed tables useless.</td></tr>
+        <tr><td><strong>Plaintext / known-plaintext</strong></td><td><span class="pill insecure">Offline</span></td><td>Attacker has both plaintext and its encrypted/hashed form and uses the pair to analyze the algorithm or derive keys. Targets weak ciphers or predictable key generation.</td><td>Strong modern algorithms; random initialization vectors (IVs).</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="warn"><b>Pass the hash:</b> Resetting the user's password does <em>not</em> help — the attacker cached the old hash and will keep replaying it until the session is invalidated. Credential Guard (Windows) prevents hash extraction from LSASS memory.</div>
+
+    <h3>Password Defenses — Salting &amp; Key Stretching</h3>
+    <div class="grid2" style="margin-top:14px">
+      <div class="card accent-green">
+        <h4>Salting a Password</h4>
+        <p>A <strong>salt</strong> is a random unique value appended to a password before hashing. Each account gets a different salt, so two users with the same password produce completely different stored hashes.</p>
+        <p><strong>Defeats:</strong> Rainbow table attacks (precomputed tables become useless) and hash comparison (identical passwords no longer match in the database).</p>
+        <p>The salt is stored alongside the hash — it is not secret, but it must be unique per user.</p>
+      </div>
+      <div class="card accent-blue">
+        <h4>Key Stretching</h4>
+        <p>Deliberately makes the hash function slow by repeating it thousands or millions of times. A fraction-of-a-second delay is acceptable for legitimate logins but multiplies attacker cost by the same factor.</p>
+        <p>GPU rigs that compute billions of plain SHA-256 hashes per second are drastically slowed by bcrypt or Argon2, which are designed to resist parallelization.</p>
+      </div>
+    </div>
+
+    <h3>Key Stretching Algorithms</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Algorithm</th><th>Based On</th><th>Key Feature</th><th>Common Use</th></tr></thead>
+      <tbody>
+        <tr><td><strong>bcrypt</strong></td><td>Blowfish cipher</td><td>Tunable work factor (cost parameter doubles iteration count each increment). Memory-intensive; resists FPGA cracking.</td><td>Unix/Linux password hashing, web application frameworks.</td></tr>
+        <tr><td><strong>PBKDF2</strong></td><td>Iterative HMAC (typically HMAC-SHA-256)</td><td><strong>Password-Based Key Derivation Function 2.</strong> Configurable iteration count with a salt. FIPS 140-2 compliant. Widely supported across platforms.</td><td>WPA2/WPA3 Wi-Fi passwords, iOS device encryption, PKCS#5.</td></tr>
+        <tr><td><strong>Argon2</strong></td><td>Custom (2015 PHC winner)</td><td>Winner of the Password Hashing Competition. Configurable memory cost, time cost, and parallelism. Three variants: Argon2d (GPU-resistant), Argon2i (side-channel resistant), Argon2id (recommended hybrid).</td><td>New applications; recommended modern choice where FIPS compliance is not required.</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="tip"><b>Exam tip:</b> Salting defeats rainbow tables. Key stretching defeats GPU brute-force speed. bcrypt, PBKDF2, and Argon2 incorporate both. Plain SHA-256 — even with a salt — is <em>not</em> suitable for password storage because it is too fast.</div>
+  </section>
+
+  <!-- ════════════ SYMMETRIC ENCRYPTION ════════════ -->
+  <section id="symmetric">
+    <div class="sec-head">
+      <h2>Symmetric Encryption</h2>
+      <span class="sec-tag">Same key encrypts and decrypts — fast bulk encryption with a key distribution challenge</span>
+    </div>
+    <p>In <strong>symmetric encryption</strong>, the same secret key both encrypts and decrypts data. Both parties must share an identical key before communication. Symmetric algorithms are far faster than asymmetric ones and are used for bulk data (files, disk, network traffic). The fundamental challenge is <strong>key distribution</strong> — how do two parties share a key securely without it being intercepted?</p>
+
+    <figure class="diagram">
+      <svg width="660" viewBox="0 0 660 175" role="img" aria-label="Symmetric encryption: one shared key encrypts and decrypts">
+        <defs>
+          <marker id="as1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#22d3ee"/>
+          </marker>
+          <marker id="as2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#34d399"/>
+          </marker>
+        </defs>
+        <rect x="20" y="55" width="130" height="55" rx="10" fill="rgba(34,211,238,0.08)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="85" y="80" text-anchor="middle" font-family="Inter,sans-serif" font-size="12.5" font-weight="600" fill="#dbe4f1">Plaintext</text>
+        <text x="85" y="98" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#22d3ee">Hello World</text>
+        <line x1="154" y1="82" x2="218" y2="82" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#as1)"/>
+        <rect x="222" y="38" width="176" height="90" rx="10" fill="rgba(250,204,21,0.08)" stroke="#facc15" stroke-width="1.5"/>
+        <text x="310" y="68" text-anchor="middle" font-family="Inter,sans-serif" font-size="12.5" font-weight="700" fill="#dbe4f1">Encrypt / Decrypt</text>
+        <text x="310" y="86" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10.5" fill="#facc15">AES / 3DES / Blowfish</text>
+        <text x="310" y="106" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#93a1b8">Same secret key — both directions</text>
+        <line x1="402" y1="82" x2="466" y2="82" stroke="#34d399" stroke-width="1.5" marker-end="url(#as2)"/>
+        <rect x="470" y="55" width="170" height="55" rx="10" fill="rgba(52,211,153,0.08)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="555" y="80" text-anchor="middle" font-family="Inter,sans-serif" font-size="12.5" font-weight="600" fill="#dbe4f1">Ciphertext</text>
+        <text x="555" y="98" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#34d399">3f9a8b2c…</text>
+        <text x="330" y="152" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="#facc15">🔑 Secret Key — must be shared securely before communication begins</text>
+        <text x="330" y="169" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#64748b">Key distribution problem solved by asymmetric key exchange (hybrid cryptography)</text>
+      </svg>
+      <figcaption><b>Symmetric encryption.</b> One shared secret key both encrypts and decrypts. In practice, asymmetric cryptography is used to share the symmetric key.</figcaption>
+    </figure>
+
+    <h3>Algorithm vs. Key</h3>
+    <p>Every cipher has two components: the <strong>algorithm</strong> (the mathematical procedure) and the <strong>key</strong> (the secret value parameterizing it). The same algorithm with a different key produces completely different ciphertext. A larger <strong>key space</strong> means exponentially more work to brute-force — doubling key length squares the effort required.</p>
+
+    <h3>Symmetric Algorithm Comparison</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Algorithm</th><th>Key Size</th><th>Block Size</th><th>Status</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><strong>AES</strong></td><td>128 / 192 / 256-bit</td><td>128-bit</td><td><span class="pill secure">Current standard</span></td><td><strong>Advanced Encryption Standard</strong>, selected by NIST in 2001. AES-256 is used by the US government for TOP SECRET data. No practical attacks. Used in TLS, disk encryption (BitLocker, FileVault), WPA3, and virtually every modern system requiring symmetric encryption.</td></tr>
+        <tr><td><strong>3DES</strong></td><td>112 or 168-bit effective</td><td>64-bit</td><td><span class="pill insecure">Deprecated</span></td><td><strong>Triple DES.</strong> Applies DES three times (Encrypt–Decrypt–Encrypt). DES was broken in 1997; 3DES extended its life. NIST deprecated 3DES in 2023 — the 64-bit block size enables SWEET32 birthday attacks on long TLS sessions. Being replaced by AES everywhere.</td></tr>
+        <tr><td><strong>Blowfish</strong></td><td>32–448-bit (variable)</td><td>64-bit</td><td><span class="pill insecure">Legacy</span></td><td>Designed by Bruce Schneier in 1993 as a fast, unpatented alternative to DES. Variable key length is flexible but the 64-bit block shares the SWEET32 weakness with 3DES at high data volumes. Largely superseded by its successor Twofish and by AES.</td></tr>
+        <tr><td><strong>Twofish</strong></td><td>128 / 192 / 256-bit</td><td>128-bit</td><td><span class="pill secure">Secure</span></td><td>Schneier's successor to Blowfish. AES finalist (lost to Rijndael). 128-bit block eliminates birthday-attack concerns. No practical attacks known. Available in many libraries; less common than AES in practice.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Block Ciphers vs. Stream Ciphers</h3>
+    <div class="grid2" style="margin-top:14px">
+      <div class="card accent-blue">
+        <h4>Block Cipher</h4>
+        <p>Encrypts data in <strong>fixed-size blocks</strong> (AES: 128-bit blocks). The whole block must be available before encryption starts. Requires a <strong>mode of operation</strong> (CBC, GCM, CTR) to handle messages longer than one block and provide authentication where needed.</p>
+        <p><strong>Algorithms:</strong> AES, 3DES, Blowfish, Twofish.</p>
+        <p><strong>Best for:</strong> File encryption, disk encryption, stored data — any situation where the full data is available before processing.</p>
+      </div>
+      <div class="card accent-purple">
+        <h4>Stream Cipher</h4>
+        <p>Encrypts data <strong>one bit or byte at a time</strong> as it flows. Generates a keystream (pseudorandom sequence) and XORs it with plaintext. No need to wait for a full block — ideal for real-time data.</p>
+        <p><strong>Algorithms:</strong> RC4 (deprecated), ChaCha20 (modern — used in TLS 1.3 on mobile).</p>
+        <p><strong>Best for:</strong> Network streams, voice/video, low-latency applications where data size is unknown.</p>
+      </div>
+    </div>
+
+    <div class="tip"><b>Exam tip:</b> AES is the answer for symmetric encryption on any modern system. 3DES is legacy/deprecated. The 64-bit block of 3DES and Blowfish creates SWEET32 vulnerability at high volumes. Key size and block size are different — AES-128 uses a 128-bit key <em>and</em> a 128-bit block, but those are coincidentally equal.</div>
+  </section>
+
+  <!-- ════════════ ASYMMETRIC ENCRYPTION ════════════ -->
+  <section id="asymmetric">
+    <div class="sec-head">
+      <h2>Asymmetric Encryption &amp; Digital Signatures</h2>
+      <span class="sec-tag">Key pairs solve key distribution — public key in, private key out</span>
+    </div>
+    <p>In <strong>asymmetric encryption</strong>, mathematically linked key pairs are used: a <strong>public key</strong> (freely shared) and a <strong>private key</strong> (kept secret by the owner). Data encrypted with the public key can only be decrypted with the private key — and the reverse holds for digital signatures. Asymmetric algorithms are slower than symmetric ones; in practice they encrypt a <em>symmetric session key</em> rather than bulk data (hybrid cryptography).</p>
+
+    <figure class="diagram">
+      <svg width="660" viewBox="0 0 660 230" role="img" aria-label="Asymmetric key exchange and signature rules">
+        <defs>
+          <marker id="aa1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#22d3ee"/>
+          </marker>
+          <marker id="aa2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#818cf8"/>
+          </marker>
+        </defs>
+        <rect x="20" y="20" width="160" height="80" rx="10" fill="rgba(34,211,238,0.07)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="100" y="46" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="700" fill="#dbe4f1">Sender (Alice)</text>
+        <text x="100" y="66" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#93a1b8">Encrypts with</text>
+        <text x="100" y="84" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#22d3ee">Bob's Public Key</text>
+        <text x="330" y="16" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#64748b">① Bob shares public key freely</text>
+        <line x1="460" y1="30" x2="188" y2="30" stroke="#22d3ee" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#aa1)"/>
+        <text x="330" y="74" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#64748b">② Alice sends encrypted ciphertext</text>
+        <line x1="184" y1="68" x2="460" y2="68" stroke="#818cf8" stroke-width="1.5" marker-end="url(#aa2)"/>
+        <rect x="464" y="20" width="160" height="80" rx="10" fill="rgba(129,140,248,0.07)" stroke="#818cf8" stroke-width="1.5"/>
+        <text x="544" y="46" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="700" fill="#dbe4f1">Receiver (Bob)</text>
+        <text x="544" y="66" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#93a1b8">Decrypts with</text>
+        <text x="544" y="84" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#818cf8">Bob's Private Key</text>
+        <rect x="20" y="128" width="295" height="80" rx="10" fill="rgba(34,211,238,0.06)" stroke="rgba(34,211,238,0.3)" stroke-width="1"/>
+        <text x="167" y="152" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#22d3ee">Encryption Rule</text>
+        <text x="167" y="172" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" fill="#dbe4f1">Encrypt with recipient's Public Key</text>
+        <text x="167" y="190" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" fill="#dbe4f1">Decrypt with recipient's Private Key</text>
+        <rect x="345" y="128" width="295" height="80" rx="10" fill="rgba(129,140,248,0.06)" stroke="rgba(129,140,248,0.3)" stroke-width="1"/>
+        <text x="492" y="152" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#818cf8">Digital Signature Rule</text>
+        <text x="492" y="172" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" fill="#dbe4f1">Sign with signer's Private Key</text>
+        <text x="492" y="190" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" fill="#dbe4f1">Verify with signer's Public Key</text>
+        <text x="330" y="224" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#64748b">The rules reverse for signatures vs. encryption — memorize both</text>
+      </svg>
+      <figcaption><b>Asymmetric key rules.</b> Encryption uses the recipient's public key; signatures use the signer's private key. The rules are reversed in each case.</figcaption>
+    </figure>
+
+    <h3>Key Exchange</h3>
+    <p><strong>Key exchange</strong> is the process of securely establishing a shared secret over an untrusted network. In hybrid cryptography (TLS), asymmetric cryptography exchanges a symmetric session key; all bulk data is then encrypted with the faster symmetric key.</p>
+
+    <h3>Digital Signature Algorithms</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Algorithm</th><th>Based On</th><th>Key Size</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><strong>DSA</strong></td><td>Discrete logarithm problem</td><td>1024–3072-bit</td><td><strong>Digital Signature Algorithm.</strong> NIST FIPS 186 standard. Signatures only — not used for encryption. Being phased out in favor of ECDSA.</td></tr>
+        <tr><td><strong>RSA</strong></td><td>Integer factorization</td><td>2048–4096-bit</td><td>Rivest–Shamir–Adleman. Can encrypt and sign. 2048-bit minimum recommended. Larger keys needed vs. ECC for equivalent security.</td></tr>
+        <tr><td><strong>ECC</strong></td><td>Elliptic curve discrete log</td><td>256–521-bit</td><td><strong>Elliptic Curve Cryptography.</strong> Same security as RSA with much shorter keys. 256-bit ECC ≈ 3072-bit RSA. Faster, lower CPU, smaller certs. Standard for TLS 1.3 and modern certificates.</td></tr>
+        <tr><td><strong>ECDSA</strong></td><td>Elliptic curve discrete log</td><td>256–521-bit</td><td><strong>Elliptic Curve DSA.</strong> The elliptic curve variant of DSA — same signature-only purpose as DSA but with ECC efficiency. Used in TLS 1.3, Bitcoin, and modern X.509 certificates.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Ephemeral Keys, Static Keys &amp; Perfect Forward Secrecy</h3>
+    <div class="grid3" style="margin-top:14px">
+      <div class="card accent-red">
+        <h4>Static Key</h4>
+        <p>A long-lived key reused across many sessions. If ever compromised, <em>all past and future sessions</em> encrypted with it can be decrypted. Simpler to manage but one breach exposes all historical traffic.</p>
+      </div>
+      <div class="card accent-teal">
+        <h4>Ephemeral Key</h4>
+        <p>A <strong>temporary key generated fresh for each session</strong> and discarded immediately after use. Even if an attacker records traffic and later compromises a long-term private key, they cannot decrypt past sessions — each session used a unique throwaway key.</p>
+      </div>
+      <div class="card accent-green">
+        <h4>Perfect Forward Secrecy (PFS)</h4>
+        <p>Achieved by using <strong>ephemeral Diffie-Hellman (DHE or ECDHE)</strong> key exchange so that compromise of long-term keys cannot decrypt past sessions. TLS 1.3 mandates PFS. Look for <code>DHE</code> or <code>ECDHE</code> in cipher suite names.</p>
+      </div>
+    </div>
+
+    <div class="tip"><b>Exam tip:</b> PFS = ephemeral keys (DHE/ECDHE). Private key signs / decrypts. Public key verifies / encrypts. ECC = smaller keys, same security. ECDSA = ECC-based digital signature algorithm. TLS 1.3 requires PFS and forward-secrecy cipher suites.</div>
+  </section>
+
+  <!-- ════════════ DATA STATES & PROTECTION ════════════ -->
+  <section id="data-protection">
+    <div class="sec-head">
+      <h2>Data States &amp; Protection Techniques</h2>
+      <span class="sec-tag">Data at rest · in transit · in use — obfuscation, steganography, tokenization</span>
+    </div>
+
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>State</th><th>Definition</th><th>Threats</th><th>Primary Controls</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Data at rest</strong></td><td>Data stored on a medium — hard disk, SSD, USB, database, tape. Not actively transmitted or processed.</td><td>Device theft, unauthorized storage access, insider threat.</td><td>Full-disk encryption (BitLocker, FileVault), AES-256, database encryption, access controls, DLP.</td></tr>
+        <tr><td><strong>Data in transit</strong></td><td>Data actively moving across a network between endpoints. Also called <em>data in motion.</em></td><td>Eavesdropping/sniffing, man-in-the-middle, replay attacks.</td><td>TLS/HTTPS, IPsec VPN, SSH, SFTP, S/MIME. Never transmit sensitive data unencrypted.</td></tr>
+        <tr><td><strong>Data in use</strong></td><td>Data actively being processed — loaded in RAM, being decrypted, actively computed on. The hardest state to protect.</td><td>Memory scraping, DMA attacks, cold-boot attacks, process injection, pass-the-hash.</td><td>Trusted Execution Environments (TEE), Secure Enclaves, Credential Guard, minimal privilege.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Obfuscation, Steganography &amp; Tokenization</h3>
+    <div class="grid3" style="margin-top:14px">
+      <div class="card accent-purple">
+        <h4>Obfuscation</h4>
+        <p>Making data or code <strong>difficult to understand</strong> without necessarily encrypting it — code minification, variable renaming, data masking. Provides security through obscurity. Not strong security on its own; combine with encryption for sensitive data.</p>
+      </div>
+      <div class="card accent-blue">
+        <h4>Steganography</h4>
+        <p><strong>Hiding data inside other data</strong> without visibly altering the carrier. The goal is concealment, not just confidentiality.</p>
+        <ul class="plain">
+          <li><strong>Image</strong> — data hidden in least-significant pixel bits.</li>
+          <li><strong>Audio</strong> — data embedded in inaudible frequencies or low-order bits.</li>
+          <li><strong>Video</strong> — data hidden in individual frames.</li>
+        </ul>
+      </div>
+      <div class="card accent-teal">
+        <h4>Tokenization</h4>
+        <p>Replacing sensitive data (e.g., credit card number) with a <strong>non-sensitive token</strong> that maps back to the real value only inside a secure vault. The token has no mathematical relationship to the original — it cannot be reversed without the vault. PCI-DSS standard practice.</p>
+      </div>
+    </div>
+
+    <div class="warn"><b>Steganography in attacks:</b> Malware and data-exfiltration tools embed C2 traffic or stolen data inside innocuous image/audio files to evade DLP tools that scan for recognizable sensitive patterns.</div>
+  </section>
+
+  <!-- ════════════ DIGITAL CERTIFICATES ════════════ -->
+  <section id="certificates">
+    <div class="sec-head">
+      <h2>Digital Certificates</h2>
+      <span class="sec-tag">X.509 structure — binding a public key to an identity, signed by a trusted CA</span>
+    </div>
+    <p>A <strong>digital certificate</strong> is an electronic document that binds a <strong>public key</strong> to an <strong>identity</strong> (a server, person, device, or organization). Certificates follow the <strong>X.509</strong> standard and are digitally signed by a <strong>Certificate Authority (CA)</strong>. When your browser connects to an HTTPS site, it validates the site's certificate to confirm it is talking to the real server, not an impersonator.</p>
+
+    <h3>Certificate Structure — Key Fields</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Field</th><th>Content</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Version</strong></td><td>V1, V2, V3</td><td>X.509 version. V3 is current — adds extensions like SAN, key usage, and path length constraints.</td></tr>
+        <tr><td><strong>Serial Number</strong></td><td>Unique integer assigned by CA</td><td>Uniquely identifies the certificate within the issuing CA. Used in CRL and OCSP lookups to check revocation status.</td></tr>
+        <tr><td><strong>Issuer</strong></td><td>Distinguished Name of the CA</td><td>The CA that signed this certificate — used to trace the chain back to a trusted root.</td></tr>
+        <tr><td><strong>Validity Dates</strong></td><td>Not Before / Not After</td><td>The time window during which the certificate is valid. Clients reject certificates outside this range.</td></tr>
+        <tr><td><strong>Subject</strong></td><td>Distinguished Name of the entity</td><td>Who the certificate belongs to — the domain, person, or device whose public key this is.</td></tr>
+        <tr><td><strong>Public Key</strong></td><td>Subject's public key + algorithm</td><td>The actual public key (RSA, ECC) that relying parties use to encrypt or verify signatures.</td></tr>
+        <tr><td><strong>Key Usage</strong></td><td>Bit flags: digitalSignature, keyEncipherment…</td><td>Restricts how the certificate's key may be used — prevents, e.g., a TLS server certificate from being used to sign code.</td></tr>
+        <tr><td><strong>Extensions (v3)</strong></td><td>SAN, BasicConstraints, CDP, OCSP URL</td><td>Subject Alternative Names list additional hostnames; BasicConstraints marks CA certificates; CDP/OCSP URLs tell clients how to check revocation.</td></tr>
+        <tr><td><strong>CA Signature</strong></td><td>CA's digital signature over all fields</td><td>Proves the certificate has not been tampered with since issuance. Verified using the CA's public key.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Distinguished Name (DN) Attributes</h3>
+    <p>The <strong>Subject</strong> and <strong>Issuer</strong> fields use a <strong>Distinguished Name</strong> — a set of attributes identifying the entity, following X.500 naming conventions.</p>
+
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Attribute</th><th>Code</th><th>Example</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Common Name</strong></td><td><code>CN</code></td><td><code>www.example.com</code></td><td>Primary identifier. For server certs = domain name or wildcard (<code>*.example.com</code>). For person certs = full name.</td></tr>
+        <tr><td><strong>Organization</strong></td><td><code>O</code></td><td><code>Example Corp</code></td><td>Legal name of the company or organization owning the certificate.</td></tr>
+        <tr><td><strong>Organizational Unit</strong></td><td><code>OU</code></td><td><code>IT Security</code></td><td>Department within the organization. Optional; deprecated in newer CA/Browser Forum rules for public TLS certificates.</td></tr>
+        <tr><td><strong>Locality</strong></td><td><code>L</code></td><td><code>San Jose</code></td><td>City or locality of the organization.</td></tr>
+        <tr><td><strong>State / Province</strong></td><td><code>ST</code></td><td><code>California</code></td><td>Full state or province name (not abbreviation).</td></tr>
+        <tr><td><strong>Country</strong></td><td><code>C</code></td><td><code>US</code></td><td>Two-letter ISO 3166-1 alpha-2 country code.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Certificate File Types</h3>
+    <div class="grid3" style="margin-top:14px">
+      <div class="card accent-blue">
+        <h4><code>.CER</code> / <code>.DER</code></h4>
+        <p><strong>Binary-encoded</strong> certificate. DER (Distinguished Encoding Rules) is the binary ASN.1 encoding. CER and DER are functionally the same format — a single certificate in raw binary bytes. Cannot be opened in a text editor. Common on Windows.</p>
+      </div>
+      <div class="card accent-green">
+        <h4><code>.PEM</code></h4>
+        <p><strong>Base64-encoded text</strong> format (Privacy Enhanced Mail). Recognizable by <code>-----BEGIN CERTIFICATE-----</code> header. Can hold a certificate, private key, or full chain. Unix/Linux standard. Opened in any text editor. OpenSSL default format.</p>
+      </div>
+      <div class="card accent-orange">
+        <h4><code>.P7B</code> / PKCS#7</h4>
+        <p>Contains <strong>one or more certificates (no private key)</strong>. Base64 text with <code>-----BEGIN PKCS7-----</code> header. Used to distribute CA certificate chains. Standard import format for Windows and Java certificate stores.</p>
+      </div>
+      <div class="card accent-purple">
+        <h4><code>.P12</code> / <code>.PFX</code></h4>
+        <p><strong>PKCS#12 archive</strong> — contains the certificate <em>and</em> the <strong>private key</strong>, password-protected. PFX is Microsoft's name for the same format. Used to move certificate+key pairs between systems. Always protect with a strong password.</p>
+      </div>
+      <div class="card accent-teal">
+        <h4>OpenSSL</h4>
+        <p>The most widely used open-source toolkit for PKI operations. Key commands: <code>openssl req</code> (create CSR), <code>openssl x509</code> (inspect/sign), <code>openssl pkcs12</code> (convert formats), <code>openssl s_client</code> (test TLS). Default output is PEM.</p>
+      </div>
+    </div>
+
+    <div class="warn"><b>P12 / PFX contains the private key.</b> Exporting without a strong password means anyone who obtains the file has the private key. Compromise requires immediate certificate revocation.</div>
+  </section>
+
+  <!-- ════════════ PKI INFRASTRUCTURE ════════════ -->
+  <section id="pki">
+    <div class="sec-head">
+      <h2>PKI Infrastructure</h2>
+      <span class="sec-tag">Trust chains · CA hierarchy · revocation · key management</span>
+    </div>
+    <p><strong>Public Key Infrastructure (PKI)</strong> is the full framework — policies, procedures, hardware, software, and people — needed to create, manage, distribute, use, store, and revoke digital certificates. PKI lets entities that have never met establish trust by relying on a shared trusted third party: the Certificate Authority.</p>
+
+    <figure class="diagram">
+      <svg width="660" viewBox="0 0 660 265" role="img" aria-label="PKI trust chain: Root CA signs Intermediate CA which signs end-entity certificates">
+        <defs>
+          <marker id="apki" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#34d399"/>
+          </marker>
+        </defs>
+        <rect x="230" y="14" width="200" height="58" rx="12" fill="rgba(250,204,21,0.10)" stroke="#facc15" stroke-width="2"/>
+        <text x="330" y="39" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="700" fill="#facc15">Root CA</text>
+        <text x="330" y="57" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#93a1b8">Self-signed · offline · root of trust</text>
+        <line x1="330" y1="76" x2="330" y2="112" stroke="#34d399" stroke-width="1.5" marker-end="url(#apki)"/>
+        <text x="348" y="98" font-family="Inter,sans-serif" font-size="10" fill="#34d399">signs cert of</text>
+        <rect x="180" y="116" width="300" height="58" rx="12" fill="rgba(34,211,238,0.08)" stroke="#22d3ee" stroke-width="2"/>
+        <text x="330" y="141" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="700" fill="#22d3ee">Intermediate CA</text>
+        <text x="330" y="159" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#93a1b8">Online · issues end-entity certs · chained to Root</text>
+        <line x1="255" y1="178" x2="148" y2="210" stroke="#34d399" stroke-width="1.5" marker-end="url(#apki)"/>
+        <line x1="330" y1="178" x2="330" y2="210" stroke="#34d399" stroke-width="1.5" marker-end="url(#apki)"/>
+        <line x1="405" y1="178" x2="512" y2="210" stroke="#34d399" stroke-width="1.5" marker-end="url(#apki)"/>
+        <rect x="60" y="214" width="170" height="42" rx="9" fill="rgba(129,140,248,0.08)" stroke="#818cf8" stroke-width="1.5"/>
+        <text x="145" y="232" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="#dbe4f1">Server Certificate</text>
+        <text x="145" y="248" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#818cf8">www.example.com</text>
+        <rect x="245" y="214" width="170" height="42" rx="9" fill="rgba(129,140,248,0.08)" stroke="#818cf8" stroke-width="1.5"/>
+        <text x="330" y="232" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="#dbe4f1">Code Signing Cert</text>
+        <text x="330" y="248" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#818cf8">software publisher</text>
+        <rect x="430" y="214" width="170" height="42" rx="9" fill="rgba(129,140,248,0.08)" stroke="#818cf8" stroke-width="1.5"/>
+        <text x="515" y="232" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="#dbe4f1">Client Certificate</text>
+        <text x="515" y="248" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#818cf8">user@example.com</text>
+      </svg>
+      <figcaption><b>PKI certificate chain.</b> The offline Root CA signs the Intermediate CA. The online Intermediate CA issues end-entity certificates. Clients verify the full chain back to a trusted root.</figcaption>
+    </figure>
+
+    <h3>PKI Components</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Component</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Certificate Authority (CA)</strong></td><td>The trusted entity that issues and signs digital certificates. Verifies requester identity and binds their public key to that identity. Public CAs (DigiCert, Let's Encrypt) are trusted by browsers; private CAs serve internal use.</td></tr>
+        <tr><td><strong>Root CA</strong></td><td>Top-level CA in the hierarchy — <strong>self-signed</strong> (signs its own certificate). The <strong>root of trust</strong>. Should be kept <strong>offline</strong> and used only to sign intermediate CA certificates to minimize exposure. If the root private key is compromised, the entire PKI must be rebuilt.</td></tr>
+        <tr><td><strong>Intermediate CA</strong></td><td>A subordinate CA whose certificate is signed by the Root CA. Issues end-entity certificates in day-to-day operations. Multiple intermediates create a <strong>certificate chain</strong>. Compromise of an intermediate requires only revoking that intermediate — the root is unaffected.</td></tr>
+        <tr><td><strong>Registration Authority (RA)</strong></td><td>Verifies certificate requests on behalf of the CA. The RA validates requester identity and approves or denies the request; the CA does the actual signing. Separates identity verification from signing.</td></tr>
+        <tr><td><strong>Certificate Signing Request (CSR)</strong></td><td>A message from an entity to a CA requesting a certificate. Contains the public key, Distinguished Name attributes, and is signed with the requester's private key to prove possession. The CA verifies and returns a signed certificate.</td></tr>
+        <tr><td><strong>Certificate Store</strong></td><td>A repository (OS or application) holding trusted certificates. Operating systems maintain a trusted root CA store — certs chaining to those roots are automatically trusted. Windows Certificate Store; browsers like Firefox use their own stores.</td></tr>
+        <tr><td><strong>Root of Trust</strong></td><td>The foundational trusted anchor — typically the Root CA certificate. Also refers to hardware trust anchors like the TPM (Trusted Platform Module) that provide a trusted starting point for device attestation and secure boot.</td></tr>
+        <tr><td><strong>Certificate Chaining</strong></td><td>Validation by following the chain: end-entity certificate → intermediate CA → root CA. Each certificate is verified using the issuer's public key. The chain must terminate at a root in the trusted store.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Online vs. Offline CA</h3>
+    <div class="grid2" style="margin-top:14px">
+      <div class="card accent-red">
+        <h4>Offline Root CA</h4>
+        <p>The Root CA should be kept <strong>offline</strong> — powered down, air-gapped, and stored in a physically secure location (HSM or vault). Brought online only to sign intermediate CA certificates (rarely — perhaps once a year or less).</p>
+        <p><strong>Why:</strong> If the Root CA private key is ever compromised via a network attack, the entire PKI hierarchy must be rebuilt. No network connection = no network attack surface.</p>
+      </div>
+      <div class="card accent-green">
+        <h4>Online Issuing CA</h4>
+        <p>The Intermediate/Issuing CA stays <strong>online</strong> for day-to-day operations — issuing, renewing, and revoking end-entity certificates. Automated issuance (Let's Encrypt ACME protocol) requires persistent online availability.</p>
+        <p><strong>Risk mitigation:</strong> If the intermediate is compromised, only that intermediate is revoked and reissued — the Root CA is unaffected.</p>
+      </div>
+    </div>
+
+    <h3>Certificate Revocation</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Mechanism</th><th>How It Works</th><th>Trade-offs</th></tr></thead>
+      <tbody>
+        <tr><td><strong>CRL</strong></td><td><strong>Certificate Revocation List.</strong> The CA publishes a signed list of revoked serial numbers at a CRL Distribution Point (CDP) URL embedded in the certificate. Clients download and cache the list periodically.</td><td>Lists can be large. Not real-time — a cert revoked after the last CRL download is still trusted until the next refresh (typically 24h–7d).</td></tr>
+        <tr><td><strong>OCSP</strong></td><td><strong>Online Certificate Status Protocol.</strong> Client sends the cert's serial number to an OCSP Responder; receives a signed real-time response: Good, Revoked, or Unknown.</td><td>More current than CRL. Privacy concern (CA sees which certs clients check). Adds per-connection latency. Responder downtime creates availability problems.</td></tr>
+        <tr><td><strong>OCSP Stapling</strong></td><td>The <em>web server</em> fetches and caches a signed OCSP response and <strong>staples</strong> it to the TLS handshake. Client receives the revocation proof without contacting the CA.</td><td>Solves both the privacy and latency problems. Stapled response has a short validity period (24–48h) and must be refreshed by the server. Requires TLS stack support.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Advanced PKI Concepts</h3>
+    <div class="grid2" style="margin-top:14px">
+      <div class="card accent-orange">
+        <h4>Certificate Pinning</h4>
+        <p>An application <strong>hardcodes the expected certificate or public key</strong> rather than trusting any cert signed by a browser-trusted root. If the server presents a different cert (even a valid CA-signed one), the connection is rejected.</p>
+        <p><strong>Protects against:</strong> Rogue CA compromise, fraudulent MITM certificates. Used in high-security mobile apps and APIs.</p>
+        <p><strong>Risk:</strong> If the pinned cert expires and the app is not updated, connections break until the app is patched.</p>
+      </div>
+      <div class="card accent-red">
+        <h4>Key Escrow</h4>
+        <p>Storing a copy of a private key with a trusted third party (the escrow agent). Allows data recovery if the key owner loses the key or leaves the organization.</p>
+        <p><strong>Risk:</strong> The escrow store becomes an extremely high-value target. Law enforcement has historically pushed for mandatory key escrow to enable lawful access — strongly opposed by the security community as it weakens security for everyone.</p>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:15px">
+      <div class="card accent-purple">
+        <h4>Key Management System (KMS)</h4>
+        <p>A centralized system for <strong>creating, storing, distributing, rotating, and revoking cryptographic keys.</strong> Cloud KMS products (AWS KMS, Azure Key Vault, Google Cloud KMS) manage encryption keys for cloud workloads without exposing raw key material to applications. A <strong>Hardware Security Module (HSM)</strong> is the tamper-resistant hardware that stores keys — keys never leave the HSM in plaintext.</p>
+      </div>
+      <div class="card accent-teal">
+        <h4>Entropy</h4>
+        <p>The <strong>randomness</strong> available for cryptographic key generation. Security depends on keys being generated from a high-quality random source. Insufficient entropy produces predictable keys. Operating systems maintain entropy pools (<code>/dev/urandom</code>). HSMs include dedicated hardware True Random Number Generators (TRNGs) for highest-quality entropy.</p>
+      </div>
+    </div>
+
+    <div class="tip"><b>Exam tip:</b> Root CA = offline, self-signed, root of trust. Intermediate CA = online, signs end-entity certs. CSR goes from requester to CA. CRL = periodically downloaded list; OCSP = real-time query; OCSP stapling = server pre-fetches and attaches the OCSP response. Certificate pinning rejects unexpected certs even from valid CAs.</div>
+  </section>
+
+  <!-- ════════════ PROTOCOLS, ENCODING & FORMATS ════════════ -->
+  <section id="standards">
+    <div class="sec-head">
+      <h2>Protocols, Encoding &amp; Certificate Formats</h2>
+      <span class="sec-tag">S/MIME · TLS · blockchain · ASN.1 · encoding rules · certificate file types</span>
+    </div>
+
+    <h3>Cryptographic Protocols</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Protocol / Standard</th><th>Purpose</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>S/MIME</strong></td><td><strong>Secure/Multipurpose Internet Mail Extensions.</strong> Email encryption and digital signing.</td><td>Uses X.509 certificates to encrypt and sign email. Provides confidentiality, integrity, authentication, and non-repudiation. Both sender and receiver must have valid certificates. Widely used in enterprise email (Outlook, Exchange).</td></tr>
+        <tr><td><strong>CMS</strong></td><td><strong>Cryptographic Message Syntax.</strong> The underlying ASN.1-based data format used by S/MIME.</td><td>Defines how to structure signed data (SignedData), encrypted data (EnvelopedData), and digested data. S/MIME is an email application of CMS. Also used in code signing and other PKI applications.</td></tr>
+        <tr><td><strong>TLS</strong></td><td><strong>Transport Layer Security.</strong> Protocol protecting HTTPS, SMTPS, IMAPS, and most secure internet communications.</td><td>Uses asymmetric cryptography to establish a session, then switches to symmetric encryption for bulk data (hybrid). TLS 1.3 mandates PFS, removes weak ciphers, and completes the handshake in one round trip. TLS 1.0/1.1 are deprecated.</td></tr>
+        <tr><td><strong>Blockchain</strong></td><td>Distributed append-only ledger secured by cryptographic hashing.</td><td>Each <strong>block</strong> contains transaction data, a timestamp, and the hash of the previous block. Altering any block invalidates all subsequent blocks — tamper-evident by design. Uses SHA-256 (Bitcoin). Provides integrity and non-repudiation without a central authority.</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="warn"><b>Downgrade attack:</b> An attacker forces both parties to negotiate an older, weaker protocol version (e.g., TLS 1.0, SSLv3) or weaker cipher suite. Mitigated by disabling legacy protocol versions server-side, enforcing a minimum TLS version (1.2+, prefer 1.3), and enabling <code>TLS_FALLBACK_SCSV</code> to prevent unauthorized downgrades.</div>
+
+    <h3>Encoding Formats &amp; ASN.1</h3>
+    <p>Cryptographic objects (certificates, keys, CSRs) are encoded using formats defined by <strong>ASN.1 (Abstract Syntax Notation One)</strong> — an ISO/ITU standard for describing data structures independent of implementation. Multiple encoding rules exist for serializing ASN.1 to bytes.</p>
+
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Format</th><th>Full Name</th><th>Type</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><strong>ASCII</strong></td><td>American Standard Code for Information Interchange</td><td>Character encoding</td><td>7-bit encoding for 128 characters. The basis for text representation in most protocols. PEM files are ASCII text (Base64 subset of ASCII).</td></tr>
+        <tr><td><strong>Binary</strong></td><td>Raw binary encoding</td><td>Raw bytes</td><td>DER-encoded certificates are stored as raw binary bytes. More compact than Base64/PEM but not human-readable.</td></tr>
+        <tr><td><strong>ASN.1</strong></td><td>Abstract Syntax Notation One</td><td>Schema language</td><td>ISO/ITU standard for describing data structures. Certificates, private keys, and CRLs are defined in ASN.1. Not itself an encoding — requires a serialization rule (BER, DER, CER).</td></tr>
+        <tr><td><strong>BER</strong></td><td>Basic Encoding Rules</td><td>Binary (flexible)</td><td>Original ASN.1 serialization. Allows multiple valid encodings for the same data — too flexible for cryptographic signing where all parties must produce identical bytes.</td></tr>
+        <tr><td><strong>DER</strong></td><td>Distinguished Encoding Rules</td><td>Binary (canonical)</td><td>A strict subset of BER producing exactly one valid encoding for any ASN.1 value. Required for cryptographic operations (signing, hashing). Used for X.509 certificates and PKCS#8 keys. The <code>.der</code> and <code>.cer</code> file extensions indicate DER-encoded certificates.</td></tr>
+        <tr><td><strong>CER</strong></td><td>Canonical Encoding Rules</td><td>Binary (canonical)</td><td>Another canonical subset of BER, similar goal to DER but with different canonicalization rules. Less common in practice than DER.</td></tr>
+        <tr><td><strong>PEM</strong></td><td>Privacy Enhanced Mail</td><td>Base64 text</td><td>DER bytes encoded as Base64 and wrapped in <code>-----BEGIN/END-----</code> headers. Human-readable, email-safe. Default OpenSSL format. A PEM certificate file is simply a Base64-encoded DER certificate with header/footer lines.</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="tip"><b>Exam memory tip — certificate file types:</b> DER/CER = binary single certificate (Windows). PEM = Base64 text, cert or key or chain (Linux/OpenSSL). P7B = chain only, no private key. P12/PFX = cert + private key together (password-protect it!). OpenSSL converts between all formats.</div>
+
+    <div style="margin:30px 0 8px;text-align:center">
+      <a href="diagrams/Security_Plus_Chapter10_Diagram.html" class="btn btn-primary">Open the interactive Chapter 10 diagram →</a>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <a href="chapter9.html">← Chapter 9</a> &nbsp;·&nbsp; Chapter 10 &nbsp;·&nbsp; <a href="practice.html">Practice →</a>
+  </footer>
+
+</main>
+
+<script src="guide.js"></script>
+<script src="glossary.js"></script>
+<script src="assistant.js"></script>
+</body>
+</html>
