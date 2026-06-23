@@ -601,6 +601,40 @@ window.GLOSSARY = [
 {t:"Failover test",f:"",c:"Ops",d:"A DR test where production traffic actually switches to the recovery system — the most realistic and highest-risk test type."},
 {t:"Restoration",f:"",c:"Ops",d:"The process of returning systems and data to normal operation at the primary site after a disruption, following a disaster recovery or backup event."},
 /* Capacity Planning — Ops */
-{t:"Capacity planning",f:"",c:"Ops",d:"Proactively determining whether an organization will have sufficient people, technology, and infrastructure to handle current and future workload demands."}
+{t:"Capacity planning",f:"",c:"Ops",d:"Proactively determining whether an organization will have sufficient people, technology, and infrastructure to handle current and future workload demands."},
+
+/* ── Chapter 10: Cryptography Deep Dive & PKI ── */
+/* Hashing — Crypto */
+{t:"SHA-1",f:"Secure Hash Algorithm 1",c:"Crypto",d:"A 160-bit hash function that is now deprecated; practical collision attacks have been demonstrated. Do not use for security — use SHA-256 or higher."},
+{t:"SHA-256",f:"Secure Hash Algorithm 256",c:"Crypto",d:"The current standard secure hash producing a 256-bit digest. Part of the SHA-2 family and widely used in TLS, code signing, and password storage."},
+{t:"SHA-3",f:"Secure Hash Algorithm 3",c:"Crypto",d:"A newer hash family based on the Keccak sponge construction — different from SHA-2's design, providing algorithm diversity as a hedge against future SHA-2 weaknesses."},
+{t:"Hash collision",f:"",c:"Crypto",d:"When two different inputs produce the same hash output. A collision-resistant algorithm makes this computationally infeasible. MD5 and SHA-1 have known practical collisions."},
+{t:"Non-repudiation",f:"",c:"Crypto",d:"The inability to deny having sent a message or performed an action. Achieved through digital signatures — the private key proves only its owner could have signed."},
+/* Password Attacks — Crypto */
+{t:"Rainbow table",f:"",c:"Crypto",d:"A precomputed lookup table mapping passwords to their hashes, used to reverse unsalted password hashes quickly. Defeated by adding a per-password salt before hashing."},
+{t:"Pass-the-hash",f:"",c:"Crypto",d:"An attack where a stolen NTLM password hash is used directly to authenticate without knowing the plaintext password. Mitigated by Credential Guard and network segmentation."},
+{t:"Password spraying",f:"",c:"Crypto",d:"An attack that tries a few very common passwords across many accounts to avoid account-lockout thresholds. Opposite of brute force, which targets one account heavily."},
+/* Password Defenses — Crypto */
+{t:"bcrypt",f:"",c:"Crypto",d:"A key-stretching password hash algorithm with a built-in cost factor. Each hash is intentionally slow, resisting GPU brute force. Widely used for web application password storage."},
+{t:"Argon2",f:"",c:"Crypto",d:"The winner of the Password Hashing Competition. Memory-hard by design, requiring large amounts of RAM per hash computation, which neutralizes GPU and ASIC cracking rigs."},
+/* Symmetric — Crypto */
+{t:"ChaCha20",f:"",c:"Crypto",d:"A modern stream cipher used in TLS 1.3 and WireGuard. Faster than AES on CPUs lacking hardware AES acceleration, making it ideal for mobile and IoT devices."},
+{t:"Blowfish",f:"",c:"Crypto",d:"An older symmetric block cipher designed by Bruce Schneier. Now superseded by AES, but its derivative bcrypt remains widely used for password hashing."},
+/* Asymmetric & Key Exchange — Crypto */
+{t:"ECDSA",f:"Elliptic Curve Digital Signature Algorithm",c:"Crypto",d:"A digital signature algorithm based on ECC. Provides the same security as RSA/DSA with much smaller keys, making it efficient for TLS certificates and code signing."},
+{t:"DHE",f:"Diffie-Hellman Ephemeral",c:"Crypto",d:"A key exchange that generates a fresh Diffie-Hellman key pair per session, providing Perfect Forward Secrecy. Slower than static DH but required by TLS 1.3."},
+{t:"ECDHE",f:"Elliptic Curve Diffie-Hellman Ephemeral",c:"Crypto",d:"DHE using elliptic curve math. Provides Perfect Forward Secrecy with smaller, faster keys. The preferred key exchange in TLS 1.3."},
+{t:"Hybrid encryption",f:"",c:"Crypto",d:"Using asymmetric encryption only to exchange a symmetric session key, then using symmetric encryption for all bulk data. TLS is the classic example — combines the strengths of both."},
+/* PKI & Certificates — Crypto */
+{t:"X.509",f:"",c:"Crypto",d:"The international standard defining the format of digital certificates. Fields include subject, issuer, serial number, validity period, public key, and CA signature."},
+{t:"PEM format",f:"Privacy-Enhanced Mail",c:"Crypto",d:"A Base64-encoded certificate format wrapped in '-----BEGIN CERTIFICATE-----' headers. The most common format for distributing certificates across the internet."},
+{t:"DER format",f:"Distinguished Encoding Rules",c:"Crypto",d:"The binary (non-Base64) encoding of an X.509 certificate. PEM is Base64 of DER. Common file extensions: .der, .cer."},
+{t:"P7B",f:"PKCS#7",c:"Crypto",d:"A certificate format that can bundle a certificate and its full chain (but NOT the private key). Common for distributing intermediate CA certificates. Extension: .p7b."},
+{t:"P12 / PFX",f:"PKCS#12 / Personal Information Exchange",c:"Crypto",d:"The only standard certificate format that includes the private key. Must be password-protected. Used for certificate migration, backup, and client authentication. Extensions: .p12, .pfx."},
+{t:"RA",f:"Registration Authority",c:"Crypto",d:"A PKI entity that verifies applicant identity before authorizing the CA to issue a certificate. The RA does the vetting; the CA does the signing. Separating these roles limits the blast radius of a compromise."},
+{t:"Root of trust",f:"",c:"Crypto",d:"The starting point of a certificate chain — typically the Root CA. All certificates in the chain derive their trustworthiness from this anchor. Compromise of the root destroys the entire PKI."},
+{t:"OCSP Stapling",f:"",c:"Crypto",d:"A TLS extension where the server pre-fetches its OCSP revocation response and includes it in the handshake. Improves speed, privacy, and CA load compared to client-initiated OCSP."},
+{t:"KMS",f:"Key Management System",c:"Crypto",d:"A centralized system for generating, distributing, rotating, and revoking cryptographic keys. Cloud providers (AWS KMS, Azure Key Vault) offer managed KMS services."},
+{t:"Entropy",f:"",c:"Crypto",d:"Randomness collected by a system to seed cryptographic key generation. Low entropy (e.g., on a freshly booted VM) produces weak, predictable keys. Hardware random number generators (HRNGs) improve entropy."}
 ];
 
