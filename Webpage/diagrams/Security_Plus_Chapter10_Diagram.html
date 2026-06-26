@@ -208,9 +208,9 @@ body.detail-open #detail-panel{opacity:1;pointer-events:auto}
   <a href="../chapter10.html" id="btn-toc">&#8592; Chapter 10</a>
   <h1>Security<span>+</span> SY0-701 &nbsp;·&nbsp; Chapter 10</h1>
   <div class="hdr-sep"></div>
-  <button class="hdr-btn" onclick="toggleStudyMode()" id="btn-study">&#128065; Study Mode</button>
+  <button class="hdr-btn" onclick="toggleStudyMode()" id="btn-study">👁 Study Mode</button>
   <div class="hdr-sep"></div>
-  <button class="hdr-btn" id="btn-graph" onclick="toggleGraphView()">&#128506; Graph View</button>
+  <button class="hdr-btn" id="btn-graph" onclick="toggleGraphView()">🗺 Graph View</button>
   <div class="hdr-spacer"></div>
   <span style="font-size:11px;color:var(--text-dim)">Click any concept to explore</span>
 </header>
@@ -1828,10 +1828,10 @@ function toggleStudyMode(){
   if(studyMode){
     document.querySelectorAll('.node-label,.node-sub').forEach(el=>el.style.opacity='0');
     btn.style.cssText='border-color:var(--teal);color:var(--teal);background:rgba(26,188,156,.1)';
-    btn.textContent='&#128065; Labels Hidden';
+    btn.textContent='👁 Labels Hidden';
   }else{
     document.querySelectorAll('.node-label,.node-sub').forEach(el=>el.style.opacity='');
-    btn.style.cssText='';btn.textContent='&#128065; Study Mode';
+    btn.style.cssText='';btn.textContent='👁 Study Mode';
   }
 }
 
@@ -1841,8 +1841,9 @@ document.addEventListener('DOMContentLoaded', function () {
   function upd() {
     var cv = document.getElementById('canvas'), gv = document.getElementById('graph-view');
     var active = (cv && cv.style.display === 'none') || (gv && gv.classList.contains('visible'));
-    b.textContent = active ? '&#129671; Bubble View' : '&#128506; Graph View';
+    b.textContent = active ? '🫧 Bubble View' : '🗺 Graph View';
   }
+  if (!gGraphActive) { toggleGraphView(); }
   b.addEventListener('click', function () { setTimeout(upd, 0); });
   upd();
 });

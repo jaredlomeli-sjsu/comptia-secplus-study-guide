@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CompTIA Security+ SY0-701 — Chapter 11: Implementing Policies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#07090f; --surface:#0e1422; --surface2:#172033; --border:#222c44;
+  --text:#dbe4f1; --text-dim:#8b98ad; --text-bright:#ffffff;
+  --red:#e74c3c; --green:#2ecc71; --blue:#3498db; --orange:#e67e22;
+  --purple:#9b59b6; --teal:#1abc9c; --gray:#95a5a6; --yellow:#f1c40f;
+  --red-dim:rgba(231,76,60,.15); --green-dim:rgba(46,204,113,.12);
+  --blue-dim:rgba(52,152,219,.12); --orange-dim:rgba(230,126,34,.12);
+  --purple-dim:rgba(155,89,182,.12); --teal-dim:rgba(26,188,156,.12);
+  --sidebar-w:148px; --detail-w:300px; --header-h:52px; --footer-h:40px;
+  --radius:6px; --tr:.25s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--text);
+  font-family:'Inter','Segoe UI',system-ui,sans-serif;font-size:13px;overflow:hidden}
+#app{
+  display:grid;
+  grid-template-rows:var(--header-h) 1fr var(--footer-h);
+  grid-template-columns:var(--sidebar-w) 1fr 0px;
+  grid-template-areas:"header header header" "sidebar canvas detail" "footer footer footer";
+  width:100vw;height:100vh;
+  transition:grid-template-columns var(--tr);
+}
+body.detail-open #app{grid-template-columns:var(--sidebar-w) 1fr var(--detail-w)}
+#header{
+  grid-area:header;display:flex;align-items:center;gap:8px;padding:0 14px;
+  background:var(--surface);border-bottom:1px solid var(--border);z-index:100;
+}
+#btn-toc{
+  display:inline-flex;align-items:center;padding:4px 10px;border-radius:4px;
+  border:1px solid var(--border);background:var(--surface2);color:var(--text);
+  font-size:11px;font-weight:600;text-decoration:none;white-space:nowrap;flex-shrink:0;
+  transition:background var(--tr),color var(--tr),border-color var(--tr);
+}
+#btn-toc:hover{background:var(--blue-dim);border-color:var(--blue);color:var(--blue)}
+#header h1{font-size:13px;font-weight:700;color:var(--text-bright);white-space:nowrap;margin-right:6px}
+#header h1 span{color:var(--blue)}
+.hdr-sep{width:1px;height:20px;background:var(--border);flex-shrink:0}
+.hdr-spacer{flex:1}
+.hdr-btn{
+  padding:4px 10px;border-radius:4px;border:1px solid var(--border);
+  background:var(--surface2);color:var(--text);font-size:11px;font-weight:600;
+  cursor:pointer;white-space:nowrap;letter-spacing:.3px;
+  transition:background var(--tr),color var(--tr),border-color var(--tr);
+}
+.hdr-btn:hover{background:var(--border);color:var(--text-bright)}
+#sidebar{
+  grid-area:sidebar;display:flex;flex-direction:column;
+  border-right:1px solid var(--border);overflow:hidden;z-index:50;background:var(--surface);
+}
+#sidebar-title{
+  font-size:9px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--text-dim);padding:10px 8px 6px;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+#cat-list{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+#cat-list::-webkit-scrollbar{width:3px}
+#cat-list::-webkit-scrollbar-thumb{background:var(--border)}
+.cat-btn{
+  display:flex;align-items:center;gap:6px;padding:7px 8px;
+  border:none;border-bottom:1px solid rgba(255,255,255,.04);
+  background:transparent;color:var(--text-dim);font-size:9px;font-weight:600;
+  text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;
+  line-height:1.3;width:100%;
+  transition:background var(--tr),color var(--tr);
+}
+.cat-btn:hover{background:var(--surface2);color:var(--text-bright)}
+.cat-btn.active{color:var(--text-bright);background:var(--surface2)}
+.cat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+#clear-btn{
+  margin:8px;padding:5px 0;border-radius:4px;border:1px solid var(--border);
+  background:transparent;color:var(--text-dim);font-size:10px;font-weight:600;
+  cursor:pointer;transition:background var(--tr),color var(--tr);
+}
+#clear-btn:hover{background:var(--surface2);color:var(--text-bright)}
+.filter-banner{
+  margin:6px;padding:6px 8px;border-radius:4px;font-size:9px;
+  font-weight:700;text-align:center;line-height:1.4;
+  border:1px solid currentColor;cursor:pointer;display:none;
+}
+#canvas{
+  grid-area:canvas;overflow:auto;padding:18px;
+  display:flex;flex-direction:column;gap:14px;background:var(--bg);
+}
+#canvas::-webkit-scrollbar{width:6px;height:6px}
+#canvas::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.zone{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:12px 14px;
+}
+.zone-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.zone-icon{font-size:14px}
+.zone-title{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--text-bright)}
+.zone-sub{font-size:10px;color:var(--text-dim);margin-left:auto}
+.zone-nodes{display:flex;flex-wrap:wrap;gap:7px}
+.zone-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.zone-row.wide{grid-template-columns:2fr 1fr}
+.zone-full{width:100%}
+.node{
+  display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:6px 10px;border-radius:var(--radius);border:1px solid var(--border);
+  background:var(--surface2);cursor:pointer;text-align:center;
+  transition:opacity var(--tr),transform var(--tr),box-shadow var(--tr),filter var(--tr);
+  min-width:72px;
+}
+.node:hover{filter:brightness(1.2)}
+.node.selected{box-shadow:0 0 0 2px var(--blue),0 0 10px rgba(52,152,219,.25)}
+.node-label{font-size:10px;font-weight:700;color:var(--text-bright);line-height:1.3}
+.node-sub{font-size:8.5px;color:var(--text-dim);margin-top:1px;line-height:1.2}
+.node.teal  {border-color:rgba(26,188,156,.4); background:rgba(26,188,156,.08)}
+.node.green {border-color:rgba(46,204,113,.4); background:rgba(46,204,113,.08)}
+.node.blue  {border-color:rgba(52,152,219,.4); background:rgba(52,152,219,.08)}
+.node.orange{border-color:rgba(230,126,34,.4); background:rgba(230,126,34,.08)}
+.node.red   {border-color:rgba(231,76,60,.4);  background:rgba(231,76,60,.08)}
+.node.purple{border-color:rgba(155,89,182,.4); background:rgba(155,89,182,.08)}
+.node.yellow{border-color:rgba(241,196,15,.4); background:rgba(241,196,15,.08)}
+.node.gray  {border-color:rgba(149,165,166,.4);background:rgba(149,165,166,.08)}
+body.cat-filtered .node.cat-dim{opacity:.07;transform:scale(.93);pointer-events:none;filter:grayscale(90%)}
+body.cat-filtered .node.cat-match{opacity:1;box-shadow:0 0 0 2px currentColor,0 0 10px rgba(255,255,255,.1)}
+body.cat-filtered .zone.zone-all-dim{opacity:.15}
+#detail-panel{
+  grid-area:detail;background:var(--surface);border-left:1px solid var(--border);
+  overflow:hidden;display:flex;flex-direction:column;z-index:60;
+  transition:opacity var(--tr);
+}
+#detail-panel.collapsed{opacity:0;pointer-events:none}
+body.detail-open #detail-panel{opacity:1;pointer-events:auto}
+#detail-close{
+  position:absolute;top:10px;right:10px;width:22px;height:22px;
+  border-radius:50%;border:1px solid var(--border);background:var(--surface2);
+  color:var(--text-dim);font-size:14px;cursor:pointer;display:flex;
+  align-items:center;justify-content:center;z-index:5;
+}
+#detail-close:hover{color:var(--text-bright);background:var(--border)}
+#detail-scroll{flex:1;overflow-y:auto;padding:14px 14px 20px}
+#detail-scroll::-webkit-scrollbar{width:4px}
+#detail-scroll::-webkit-scrollbar-thumb{background:var(--border)}
+#detail-title{font-size:14px;font-weight:800;color:var(--text-bright);margin-bottom:4px;padding-right:28px;line-height:1.3}
+#detail-category{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px}
+#detail-body{font-size:12px;line-height:1.65;color:var(--text)}
+#detail-body h4{font-size:10px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--text-dim);margin:12px 0 5px}
+#detail-body p{margin-bottom:8px}
+#detail-body ul{padding-left:16px;margin-bottom:8px}
+#detail-body li{margin-bottom:3px}
+#detail-body .exam-tip{
+  background:rgba(26,188,156,.1);border:1px solid rgba(26,188,156,.3);
+  border-radius:4px;padding:8px 10px;margin-top:10px;font-size:11px;color:var(--teal);
+}
+#detail-body .exam-tip::before{content:'★ EXAM TIP  ';font-weight:800}
+#detail-body code{
+  background:var(--surface2);border:1px solid var(--border);border-radius:3px;
+  padding:1px 5px;font-family:monospace;font-size:11px;color:var(--green);
+}
+#detail-body .warn-box{
+  background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);
+  border-radius:4px;padding:8px 10px;margin-top:10px;font-size:11px;color:var(--red);
+}
+#detail-body .warn-box::before{content:'⚠ NOTE  ';font-weight:800}
+#footer{
+  grid-area:footer;display:flex;align-items:center;gap:6px;
+  padding:0 14px;background:var(--surface);border-top:1px solid var(--border);
+  overflow:hidden;font-size:10px;color:var(--text-dim);
+}
+.foot-label{font-weight:700;letter-spacing:.5px;margin-right:4px;white-space:nowrap}
+.foot-pill{
+  padding:2px 8px;border-radius:10px;border:1px solid var(--border);
+  font-size:9px;font-weight:600;white-space:nowrap;background:var(--surface2);
+}
+.foot-pill.green{border-color:rgba(46,204,113,.4);color:var(--green)}
+.foot-pill.blue {border-color:rgba(52,152,219,.4);color:var(--blue)}
+.foot-pill.teal {border-color:rgba(26,188,156,.4);color:var(--teal)}
+.foot-pill.red  {border-color:rgba(231,76,60,.4);color:var(--red)}
+.foot-pill.orange{border-color:rgba(230,126,34,.4);color:var(--orange)}
+.foot-pill.purple{border-color:rgba(155,89,182,.4);color:var(--purple)}
+.foot-sep{width:1px;height:14px;background:var(--border);flex-shrink:0;margin:0 4px}
+#graph-view{
+  grid-area:canvas;display:none;flex-direction:column;
+  background:var(--bg);position:relative;overflow:hidden;
+}
+#graph-view.visible{display:flex}
+#graph-svg{flex:1;width:100%;cursor:grab}
+#graph-svg:active{cursor:grabbing}
+#graph-toolbar{position:absolute;top:10px;right:12px;display:flex;gap:6px;z-index:10}
+#graph-toolbar button{
+  padding:4px 10px;border-radius:4px;border:1px solid var(--border);
+  background:var(--surface);color:var(--text-dim);font-size:10px;font-weight:600;cursor:pointer;
+  transition:background var(--tr),color var(--tr);
+}
+#graph-toolbar button:hover{background:var(--surface2);color:var(--text-bright)}
+#graph-hint{
+  position:absolute;bottom:12px;left:50%;transform:translateX(-50%);
+  background:rgba(15,23,42,.85);border:1px solid var(--border);
+  border-radius:4px;padding:5px 12px;font-size:10px;color:var(--text-dim);
+  pointer-events:none;white-space:nowrap;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<header id="header">
+  <a href="../chapter11.html" id="btn-toc">&#8592; Chapter 11</a>
+  <h1>Security<span>+</span> SY0-701 &nbsp;·&nbsp; Chapter 11</h1>
+  <div class="hdr-sep"></div>
+  <button class="hdr-btn" onclick="toggleStudyMode()" id="btn-study">👁 Study Mode</button>
+  <div class="hdr-sep"></div>
+  <button class="hdr-btn" id="btn-graph" onclick="toggleGraphView()">🗺 Graph View</button>
+  <div class="hdr-spacer"></div>
+  <span style="font-size:11px;color:var(--text-dim)">Click any concept to explore</span>
+</header>
+
+<aside id="sidebar">
+  <div id="sidebar-title">Filter by Topic</div>
+  <div id="cat-list"></div>
+  <button id="clear-btn" onclick="clearFilter()" style="display:none">✕ Clear Filter</button>
+  <div class="filter-banner" id="filter-banner"></div>
+</aside>
+
+<main id="canvas">
+
+  <!-- Zone 1: Data Classification -->
+  <div class="zone zone-full" id="zone-classify">
+    <div class="zone-header"><span class="zone-icon">🏷️</span><span class="zone-title">Data Classification</span><span class="zone-sub">Government &amp; commercial levels</span></div>
+    <div class="zone-nodes">
+      <div class="node red"    data-node-id="top-secret"       onclick="openDetail('top-secret')"><span class="node-label">Top Secret</span><span class="node-sub">exceptionally grave</span></div>
+      <div class="node orange" data-node-id="secret"           onclick="openDetail('secret')"><span class="node-label">Secret</span><span class="node-sub">serious damage</span></div>
+      <div class="node yellow" data-node-id="confidential-gov" onclick="openDetail('confidential-gov')"><span class="node-label">Confidential</span><span class="node-sub">damage (gov)</span></div>
+      <div class="node gray"   data-node-id="unclassified"     onclick="openDetail('unclassified')"><span class="node-label">Unclassified</span><span class="node-sub">no nat'l security risk</span></div>
+      <div class="node red"    data-node-id="restricted"       onclick="openDetail('restricted')"><span class="node-label">Restricted</span><span class="node-sub">severe harm (commercial)</span></div>
+      <div class="node orange" data-node-id="confidential-priv" onclick="openDetail('confidential-priv')"><span class="node-label">Confidential/Private</span><span class="node-sub">significant harm</span></div>
+      <div class="node blue"   data-node-id="sensitive-internal" onclick="openDetail('sensitive-internal')"><span class="node-label">Sensitive/Internal</span><span class="node-sub">not public, low impact</span></div>
+      <div class="node green"  data-node-id="public-data"      onclick="openDetail('public-data')"><span class="node-label">Public</span><span class="node-sub">approved for release</span></div>
+    </div>
+  </div>
+
+  <!-- Zone 2: Data Roles + Zone 3: Regulated Data (row) -->
+  <div class="zone-row">
+    <div class="zone" id="zone-roles">
+      <div class="zone-header"><span class="zone-icon">👤</span><span class="zone-title">Data Roles</span><span class="zone-sub">Owner classifies, custodian protects</span></div>
+      <div class="zone-nodes">
+        <div class="node purple" data-node-id="data-owner"     onclick="openDetail('data-owner')"><span class="node-label">Data Owner</span><span class="node-sub">classifies &amp; approves</span></div>
+        <div class="node blue"   data-node-id="data-steward"   onclick="openDetail('data-steward')"><span class="node-label">Data Steward</span><span class="node-sub">quality &amp; governance</span></div>
+        <div class="node teal"   data-node-id="data-custodian" onclick="openDetail('data-custodian')"><span class="node-label">Data Custodian</span><span class="node-sub">stores &amp; protects</span></div>
+        <div class="node orange" data-node-id="data-controller" onclick="openDetail('data-controller')"><span class="node-label">Data Controller</span><span class="node-sub">GDPR — decides purpose</span></div>
+        <div class="node green"  data-node-id="data-processor" onclick="openDetail('data-processor')"><span class="node-label">Data Processor</span><span class="node-sub">GDPR — executes</span></div>
+      </div>
+    </div>
+    <div class="zone" id="zone-regulated">
+      <div class="zone-header"><span class="zone-icon">📋</span><span class="zone-title">Regulated &amp; Sensitive Data</span><span class="zone-sub">Categories with legal obligations</span></div>
+      <div class="zone-nodes">
+        <div class="node blue"   data-node-id="pii-data"           onclick="openDetail('pii-data')"><span class="node-label">PII</span><span class="node-sub">identifies individual</span></div>
+        <div class="node teal"   data-node-id="phi-data"           onclick="openDetail('phi-data')"><span class="node-label">PHI</span><span class="node-sub">health records</span></div>
+        <div class="node green"  data-node-id="financial-data"     onclick="openDetail('financial-data')"><span class="node-label">Financial Data</span><span class="node-sub">PCI DSS / SOX</span></div>
+        <div class="node purple" data-node-id="intellectual-property" onclick="openDetail('intellectual-property')"><span class="node-label">Intellectual Property</span><span class="node-sub">patents, copyrights</span></div>
+        <div class="node orange" data-node-id="trade-secret"       onclick="openDetail('trade-secret')"><span class="node-label">Trade Secret</span><span class="node-sub">competitive value</span></div>
+        <div class="node gray"   data-node-id="legal-information"  onclick="openDetail('legal-information')"><span class="node-label">Legal Information</span><span class="node-sub">privilege at risk</span></div>
+        <div class="node blue"   data-node-id="data-retention"     onclick="openDetail('data-retention')"><span class="node-label">Data Retention</span><span class="node-sub">how long to keep it</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Zone 4: Data Sanitization -->
+  <div class="zone zone-full" id="zone-sanitize">
+    <div class="zone-header"><span class="zone-icon">🗑️</span><span class="zone-title">Data Sanitization &amp; Destruction</span><span class="zone-sub">Match the method to the media</span></div>
+    <div class="zone-nodes">
+      <div class="node blue"   data-node-id="wiping"             onclick="openDetail('wiping')"><span class="node-label">Wiping</span><span class="node-sub">overwrite sectors</span></div>
+      <div class="node teal"   data-node-id="file-shredding"     onclick="openDetail('file-shredding')"><span class="node-label">File Shredding</span><span class="node-sub">overwrite file blocks</span></div>
+      <div class="node purple" data-node-id="degaussing"         onclick="openDetail('degaussing')"><span class="node-label">Degaussing</span><span class="node-sub">magnetic field wipe</span></div>
+      <div class="node red"    data-node-id="physical-destruction" onclick="openDetail('physical-destruction')"><span class="node-label">Physical Destruction</span><span class="node-sub">shred/crush — SSD only</span></div>
+      <div class="node orange" data-node-id="paper-shredding"    onclick="openDetail('paper-shredding')"><span class="node-label">Paper Shredding</span><span class="node-sub">cross-cut minimum</span></div>
+      <div class="node green"  data-node-id="pulping"            onclick="openDetail('pulping')"><span class="node-label">Pulping</span><span class="node-sub">soak &amp; dissolve paper</span></div>
+      <div class="node yellow" data-node-id="burning"            onclick="openDetail('burning')"><span class="node-label">Burning</span><span class="node-sub">incineration</span></div>
+      <div class="node gray"   data-node-id="cert-destruction"   onclick="openDetail('cert-destruction')"><span class="node-label">Cert. of Destruction</span><span class="node-sub">NAID vendor proof</span></div>
+    </div>
+  </div>
+
+  <!-- Zone 5: Incident Response -->
+  <div class="zone zone-full" id="zone-ir">
+    <div class="zone-header"><span class="zone-icon">🚨</span><span class="zone-title">Incident Response (NIST SP 800-61)</span><span class="zone-sub">Prepare → Detect → Contain → Learn</span></div>
+    <div class="zone-nodes">
+      <div class="node green"  data-node-id="ir-preparation"    onclick="openDetail('ir-preparation')"><span class="node-label">Preparation</span><span class="node-sub">plan · team · tools</span></div>
+      <div class="node blue"   data-node-id="ir-detection"      onclick="openDetail('ir-detection')"><span class="node-label">Detection &amp; Analysis</span><span class="node-sub">SIEM · IoC · severity</span></div>
+      <div class="node orange" data-node-id="ir-containment"    onclick="openDetail('ir-containment')"><span class="node-label">Contain / Eradicate / Recover</span><span class="node-sub">isolate · remove · restore</span></div>
+      <div class="node purple" data-node-id="ir-post-incident"  onclick="openDetail('ir-post-incident')"><span class="node-label">Post-Incident</span><span class="node-sub">lessons learned</span></div>
+      <div class="node teal"   data-node-id="ir-team"           onclick="openDetail('ir-team')"><span class="node-label">IR Team</span><span class="node-sub">CIRT/CSIRT roles</span></div>
+      <div class="node gray"   data-node-id="comm-plan"         onclick="openDetail('comm-plan')"><span class="node-label">Communication Plan</span><span class="node-sub">escalation &amp; notify</span></div>
+      <div class="node red"    data-node-id="threat-hunting"    onclick="openDetail('threat-hunting')"><span class="node-label">Threat Hunting</span><span class="node-sub">assume compromise</span></div>
+    </div>
+  </div>
+
+  <!-- Zone 6: Digital Forensics + Zone 7: SOAR (row) -->
+  <div class="zone-row">
+    <div class="zone" id="zone-forensics">
+      <div class="zone-header"><span class="zone-icon">🔍</span><span class="zone-title">Digital Forensics &amp; Legal Holds</span><span class="zone-sub">Evidence chain — collect &amp; preserve</span></div>
+      <div class="zone-nodes">
+        <div class="node red"    data-node-id="order-volatility"  onclick="openDetail('order-volatility')"><span class="node-label">Order of Volatility</span><span class="node-sub">RAM first, disk last</span></div>
+        <div class="node blue"   data-node-id="forensic-artifacts" onclick="openDetail('forensic-artifacts')"><span class="node-label">Forensic Artifacts</span><span class="node-sub">file/email/web/mobile</span></div>
+        <div class="node teal"   data-node-id="rdp-cache"         onclick="openDetail('rdp-cache')"><span class="node-label">RDP Cache</span><span class="node-sub">bitmap tiles</span></div>
+        <div class="node purple" data-node-id="os-forensics"      onclick="openDetail('os-forensics')"><span class="node-label">OS Forensics</span><span class="node-sub">event log · registry</span></div>
+        <div class="node orange" data-node-id="legal-hold"        onclick="openDetail('legal-hold')"><span class="node-label">Legal Hold</span><span class="node-sub">suspends deletion</span></div>
+        <div class="node green"  data-node-id="ediscovery"        onclick="openDetail('ediscovery')"><span class="node-label">eDiscovery</span><span class="node-sub">produce ESI for legal</span></div>
+        <div class="node gray"   data-node-id="chain-custody"     onclick="openDetail('chain-custody')"><span class="node-label">Chain of Custody</span><span class="node-sub">hash + document</span></div>
+      </div>
+    </div>
+    <div class="zone" id="zone-soar">
+      <div class="zone-header"><span class="zone-icon">⚙️</span><span class="zone-title">SOAR &amp; Automation</span><span class="zone-sub">Automate response — speed &amp; consistency</span></div>
+      <div class="zone-nodes">
+        <div class="node green"  data-node-id="soar-platform"     onclick="openDetail('soar-platform')"><span class="node-label">SOAR</span><span class="node-sub">orchestrate &amp; automate</span></div>
+        <div class="node blue"   data-node-id="siem-vs-soar"      onclick="openDetail('siem-vs-soar')"><span class="node-label">SIEM vs SOAR</span><span class="node-sub">radar vs autopilot</span></div>
+        <div class="node orange" data-node-id="playbook"          onclick="openDetail('playbook')"><span class="node-label">Playbook</span><span class="node-sub">what to do &amp; when</span></div>
+        <div class="node teal"   data-node-id="runbook"           onclick="openDetail('runbook')"><span class="node-label">Runbook</span><span class="node-sub">exact commands</span></div>
+        <div class="node purple" data-node-id="reporting-ttps"    onclick="openDetail('reporting-ttps')"><span class="node-label">Reporting TTPs</span><span class="node-sub">STIX / TAXII</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Zone 8: Security Governance -->
+  <div class="zone zone-full" id="zone-governance">
+    <div class="zone-header"><span class="zone-icon">🏛️</span><span class="zone-title">Security Governance Structure</span><span class="zone-sub">Authority &amp; accountability from board to data center</span></div>
+    <div class="zone-nodes">
+      <div class="node purple" data-node-id="board"                onclick="openDetail('board')"><span class="node-label">Board of Directors</span><span class="node-sub">risk appetite owner</span></div>
+      <div class="node blue"   data-node-id="security-committee"  onclick="openDetail('security-committee')"><span class="node-label">Security Committee</span><span class="node-sub">cross-functional</span></div>
+      <div class="node orange" data-node-id="govt-entities"       onclick="openDetail('govt-entities')"><span class="node-label">Government Entities</span><span class="node-sub">NIST · CISA · FTC</span></div>
+      <div class="node teal"   data-node-id="ciso-team"           onclick="openDetail('ciso-team')"><span class="node-label">CISO / Security Team</span><span class="node-sub">operational governance</span></div>
+      <div class="node gray"   data-node-id="centralized-decentral" onclick="openDetail('centralized-decentral')"><span class="node-label">Centralized vs Decent.</span><span class="node-sub">consistent vs agile</span></div>
+      <div class="node red"    data-node-id="policy-hierarchy"    onclick="openDetail('policy-hierarchy')"><span class="node-label">Policy Hierarchy</span><span class="node-sub">Policy → Std → Proc → Guideline</span></div>
+      <div class="node green"  data-node-id="sdlc-sec"            onclick="openDetail('sdlc-sec')"><span class="node-label">SDLC</span><span class="node-sub">shift-left security</span></div>
+      <div class="node blue"   data-node-id="onboarding-offboarding" onclick="openDetail('onboarding-offboarding')"><span class="node-label">Onboarding / Offboarding</span><span class="node-sub">least priv &amp; revoke</span></div>
+      <div class="node yellow" data-node-id="policy-monitoring"   onclick="openDetail('policy-monitoring')"><span class="node-label">Policy Monitoring</span><span class="node-sub">annual review cycle</span></div>
+      <div class="node red"    data-node-id="eol-eosl"            onclick="openDetail('eol-eosl')"><span class="node-label">EoL vs EoSL</span><span class="node-sub">EoSL = no patches</span></div>
+    </div>
+  </div>
+
+  <!-- Zone 9: Legal Agreements + Zone 10: Awareness Training (row) -->
+  <div class="zone-row">
+    <div class="zone" id="zone-legal">
+      <div class="zone-header"><span class="zone-icon">📜</span><span class="zone-title">Legal Agreements &amp; Compliance</span><span class="zone-sub">Know which agreement does what</span></div>
+      <div class="zone-nodes">
+        <div class="node green"  data-node-id="sla"                onclick="openDetail('sla')"><span class="node-label">SLA</span><span class="node-sub">measurable &amp; enforceable</span></div>
+        <div class="node gray"   data-node-id="mou"                onclick="openDetail('mou')"><span class="node-label">MOU</span><span class="node-sub">NOT legally binding</span></div>
+        <div class="node blue"   data-node-id="nda"                onclick="openDetail('nda')"><span class="node-label">NDA</span><span class="node-sub">confidentiality, binding</span></div>
+        <div class="node purple" data-node-id="msa"                onclick="openDetail('msa')"><span class="node-label">MSA</span><span class="node-sub">umbrella agreement</span></div>
+        <div class="node teal"   data-node-id="bpa"                onclick="openDetail('bpa')"><span class="node-label">BPA</span><span class="node-sub">full partnership terms</span></div>
+        <div class="node orange" data-node-id="rules-engagement"   onclick="openDetail('rules-engagement')"><span class="node-label">Rules of Engagement</span><span class="node-sub">pen test scope</span></div>
+        <div class="node red"    data-node-id="right-to-audit"     onclick="openDetail('right-to-audit')"><span class="node-label">Right-to-Audit</span><span class="node-sub">verify vendor security</span></div>
+        <div class="node blue"   data-node-id="due-diligence"      onclick="openDetail('due-diligence')"><span class="node-label">Due Diligence</span><span class="node-sub">investigate before agree</span></div>
+        <div class="node yellow" data-node-id="conflicts-interest"  onclick="openDetail('conflicts-interest')"><span class="node-label">Conflicts of Interest</span><span class="node-sub">disclose &amp; recuse</span></div>
+        <div class="node green"  data-node-id="attestation"        onclick="openDetail('attestation')"><span class="node-label">Attestation / Ack.</span><span class="node-sub">formal declaration</span></div>
+        <div class="node purple" data-node-id="ccpa"               onclick="openDetail('ccpa')"><span class="node-label">CCPA</span><span class="node-sub">right-to-be-forgotten</span></div>
+        <div class="node teal"   data-node-id="data-inventory"     onclick="openDetail('data-inventory')"><span class="node-label">Data Inventory</span><span class="node-sub">prerequisite for CCPA</span></div>
+      </div>
+    </div>
+    <div class="zone" id="zone-awareness">
+      <div class="zone-header"><span class="zone-icon">🎓</span><span class="zone-title">Security Awareness Training</span><span class="zone-sub">The human layer — most exploited surface</span></div>
+      <div class="zone-nodes">
+        <div class="node teal"   data-node-id="cbt-training"       onclick="openDetail('cbt-training')"><span class="node-label">CBT</span><span class="node-sub">online LMS modules</span></div>
+        <div class="node orange" data-node-id="phishing-sim"       onclick="openDetail('phishing-sim')"><span class="node-label">Phishing Simulation</span><span class="node-sub">measure click rate</span></div>
+        <div class="node red"    data-node-id="insider-awareness"  onclick="openDetail('insider-awareness')"><span class="node-label">Insider Threat</span><span class="node-sub">report suspicious behavior</span></div>
+        <div class="node blue"   data-node-id="password-mgmt"      onclick="openDetail('password-mgmt')"><span class="node-label">Password Management</span><span class="node-sub">manager + MFA</span></div>
+        <div class="node purple" data-node-id="removable-media"    onclick="openDetail('removable-media')"><span class="node-label">Removable Media</span><span class="node-sub">no unknown USBs</span></div>
+        <div class="node yellow" data-node-id="social-eng-aware"   onclick="openDetail('social-eng-aware')"><span class="node-label">Social Engineering</span><span class="node-sub">recognize &amp; report</span></div>
+        <div class="node green"  data-node-id="opsec"              onclick="openDetail('opsec')"><span class="node-label">OPSEC</span><span class="node-sub">avoid oversharing</span></div>
+        <div class="node gray"   data-node-id="hybrid-work"        onclick="openDetail('hybrid-work')"><span class="node-label">Hybrid/Remote Work</span><span class="node-sub">VPN + home Wi-Fi</span></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- GRAPH VIEW -->
+<div id="graph-view">
+  <div id="graph-toolbar">
+    <button onclick="runGraphLayout(200)">↺ Re-layout</button>
+    <button onclick="fitGraph()">⊡ Fit</button>
+  </div>
+  <svg id="graph-svg" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="ga-gray"  markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#475569"/></marker>
+      <marker id="ga-green" markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#2ecc71"/></marker>
+      <marker id="ga-blue"  markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#3498db"/></marker>
+      <marker id="ga-red"   markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#e74c3c"/></marker>
+      <marker id="ga-teal"  markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#1abc9c"/></marker>
+    </defs>
+    <g id="graph-root"><g id="ge"></g><g id="gn"></g></g>
+  </svg>
+  <div id="graph-hint">Scroll to zoom · Drag nodes · Click to inspect</div>
+</div>
+
+<!-- DETAIL PANEL -->
+<aside id="detail-panel" class="collapsed">
+  <div style="position:relative;flex-shrink:0;padding:14px 14px 0">
+    <button id="detail-close" onclick="closeDetail()">✕</button>
+    <div id="detail-title">—</div>
+    <div id="detail-category">—</div>
+  </div>
+  <div id="detail-scroll">
+    <div id="detail-body"></div>
+  </div>
+</aside>
+
+<!-- FOOTER -->
+<footer id="footer">
+  <span class="foot-label">Key Rules:</span>
+  <span class="foot-pill red">MOU = NOT legally binding</span>
+  <span class="foot-pill orange">SSD → physical destruction (wipe/degauss fail)</span>
+  <span class="foot-pill blue">Order of volatility: RAM first, disk last</span>
+  <span class="foot-sep"></span>
+  <span class="foot-pill teal">Policy → Standard → Procedure → Guideline</span>
+  <span class="foot-pill green">Legal hold suspends deletion</span>
+  <span class="foot-pill purple">EoSL = no more security patches</span>
+  <span class="foot-pill red">Owner classifies, custodian protects</span>
+</footer>
+
+</div>
+
+<script>
+/* ═══ NODE DATA ═══ */
+const NODE_DATA = {
+
+'top-secret':{title:'Top Secret',cat:'Data Classification',html:`
+  <p>The highest U.S. government classification level. Unauthorized disclosure could cause <strong>exceptionally grave damage</strong> to national security. Access requires a Top Secret clearance and a "need to know." Examples: intelligence sources and methods, nuclear weapons designs, covert operations.</p>
+  <div class="exam-tip">Top Secret = exceptionally grave damage. Secret = serious damage. Confidential = damage. Remember: TS → S → C, each level down reduces severity.</div>`},
+
+'secret':{title:'Secret',cat:'Data Classification',html:`
+  <p>Unauthorized disclosure could cause <strong>serious damage</strong> to national security. Requires a Secret clearance. Examples: military plans, foreign government information, weapons systems specifications.</p>`},
+
+'confidential-gov':{title:'Confidential (Government)',cat:'Data Classification',html:`
+  <p>The lowest classified level — still requires a clearance. Unauthorized disclosure could cause <strong>damage</strong> to national security. Examples: troop strength data, defense procurement details.</p>
+  <div class="exam-tip">Confidential is the lowest level that still requires a security clearance. "Unclassified" does NOT mean publicly available — it simply lacks a national security classification.</div>`},
+
+'unclassified':{title:'Unclassified',cat:'Data Classification',html:`
+  <p>No national security classification. May still require protection under other rules (CUI — Controlled Unclassified Information). Examples: general government publications, press releases.</p>
+  <div class="warn-box">Unclassified does not mean public. Some unclassified data is still protected as CUI and requires access controls.</div>`},
+
+'restricted':{title:'Restricted (Commercial)',cat:'Data Classification',html:`
+  <p>Highest sensitivity in commercial classification. Disclosure would cause <strong>severe harm</strong> — financial, legal, or reputational. Strong access controls and encryption required. Examples: M&amp;A plans, private encryption keys, executive compensation.</p>`},
+
+'confidential-priv':{title:'Confidential / Private (Commercial)',cat:'Data Classification',html:`
+  <p>Sensitive internal information. Disclosure could cause significant harm. Accessible only to authorized staff. Examples: HR records, salary data, customer PII, internal audit findings.</p>`},
+
+'sensitive-internal':{title:'Sensitive / Internal (Commercial)',cat:'Data Classification',html:`
+  <p>Not for public release but lower impact if disclosed. Examples: internal project plans, product roadmaps, internal policies, non-public financial forecasts.</p>`},
+
+'public-data':{title:'Public (Commercial)',cat:'Data Classification',html:`
+  <p>Approved for public release. No restriction on distribution. Examples: marketing materials, press releases, published reports, job postings. Requires no special protection beyond accuracy.</p>`},
+
+'data-owner':{title:'Data Owner',cat:'Data Roles',html:`
+  <p>A senior executive who is <strong>accountable</strong> for a data set. Determines the classification level, approves access, and is ultimately responsible for security decisions related to that data set. Usually a business-side role, not IT.</p>
+  <div class="exam-tip">Owner classifies. Custodian protects. Under GDPR, controller decides purpose; processor executes instructions.</div>`},
+
+'data-steward':{title:'Data Steward',cat:'Data Roles',html:`
+  <p>The <strong>day-to-day manager</strong> of data quality and governance. Enforces classification rules, maintains data dictionaries, and ensures data integrity. Often a business analyst or domain expert, not a security role.</p>`},
+
+'data-custodian':{title:'Data Custodian',cat:'Data Roles',html:`
+  <p>IT personnel responsible for <strong>storing, maintaining, and protecting data</strong> per the owner's policies. Implements encryption, backups, and access controls. Does NOT set policy — implements it.</p>
+  <div class="exam-tip">If the question asks who implements the technical controls for data storage, the answer is custodian — not owner (who decides) or steward (who governs quality).</div>`},
+
+'data-controller':{title:'Data Controller',cat:'Data Roles',html:`
+  <p>Under <strong>GDPR</strong> — the entity that determines the <em>purpose and means</em> of processing personal data. Bears primary legal responsibility for compliance with GDPR data protection requirements.</p>`},
+
+'data-processor':{title:'Data Processor',cat:'Data Roles',html:`
+  <p>Under <strong>GDPR</strong> — a third party that processes personal data on behalf of a controller (e.g., a payroll vendor). Must follow the controller's instructions and meet GDPR security standards.</p>`},
+
+'pii-data':{title:'PII — Personally Identifiable Information',cat:'Regulated Data',html:`
+  <p>Any data that can identify an individual: name, SSN, email, IP address, biometrics. Regulations: GDPR, CCPA, state breach notification laws. Breaches involving PII typically trigger mandatory notification requirements.</p>`},
+
+'phi-data':{title:'PHI — Protected Health Information',cat:'Regulated Data',html:`
+  <p>Health records, diagnoses, treatment info, and insurance data tied to an individual. Regulated primarily by <strong>HIPAA and HITECH</strong>. Requires access controls, audit logs, encryption, and breach notification within 60 days.</p>`},
+
+'financial-data':{title:'Financial Data',cat:'Regulated Data',html:`
+  <p>Payment card data, bank account numbers, credit scores, and transaction histories. Must be encrypted and access-logged. Key regulations: <strong>PCI DSS</strong> (card data), <strong>SOX</strong> (public company financials), <strong>GLBA</strong> (consumer financial institutions).</p>`},
+
+'intellectual-property':{title:'Intellectual Property (IP)',cat:'Regulated Data',html:`
+  <p>Inventions, creative works, and proprietary business methods protected by patent, copyright, or trademark law. Requires access controls, NDAs with employees and vendors, and DLP tools to prevent exfiltration.</p>`},
+
+'trade-secret':{title:'Trade Secret',cat:'Regulated Data',html:`
+  <p>Confidential business information providing a competitive advantage (formulas, algorithms, customer lists). Protected as long as secrecy is maintained — no registration required, but loses protection when publicly disclosed.</p>
+  <div class="exam-tip">Trade secret vs. patent: a patent is publicly disclosed in exchange for a time-limited monopoly. A trade secret derives value from remaining secret indefinitely. Example: Coca-Cola formula is a trade secret, NOT a patent.</div>`},
+
+'legal-information':{title:'Legal Information',cat:'Regulated Data',html:`
+  <p>Attorney-client privileged communications, litigation strategy, regulatory filings, and contracts. Disclosure can waive privilege or cause legal harm. Requires strict access controls and legal hold compliance.</p>`},
+
+'data-retention':{title:'Data Retention Policy',cat:'Regulated Data',html:`
+  <p>Specifies how long each data category must be kept and when it must be destroyed. Retention is driven by legal requirements (SOX: 7 years for financials), operational need, and storage cost. Too long increases breach risk; too short risks regulatory violations.</p>
+  <div class="warn-box">GDPR's right-to-erasure (right to be forgotten) can conflict with mandatory retention requirements. A data inventory is the prerequisite for enforcing retention rules.</div>`},
+
+'wiping':{title:'Wiping (Overwrite)',cat:'Data Sanitization',html:`
+  <p>Writes patterns of 0s, 1s, or random data over every addressable sector — one or more passes (DoD 5220.22-M, NIST 800-88). Allows device reuse. Best for: HDDs, flash drives, USB sticks.</p>
+  <div class="warn-box">NOT sufficient for SSDs. Wear-leveling algorithms prevent all cells from being overwritten — data may remain in over-provisioned or worn-out cells.</div>`},
+
+'file-shredding':{title:'File Shredding',cat:'Data Sanitization',html:`
+  <p>Software overwrites a specific file's disk sectors before deleting it, preventing recovery even with undelete tools. OS "delete" only removes the directory entry — shredding overwrites the actual data blocks. Tools: <code>shred</code> (Linux), Eraser (Windows). Best for: individual sensitive files on HDDs.</p>`},
+
+'degaussing':{title:'Degaussing',cat:'Data Sanitization',html:`
+  <p>Exposes magnetic media to a strong, rapidly changing magnetic field, randomizing all magnetic domains and erasing all data. Renders the drive inoperable (servo tracks destroyed). Best for: HDDs and magnetic tapes.</p>
+  <div class="warn-box">Does NOT work on SSDs or optical media — they have no magnetic properties. Degaussing an SSD does nothing to the data.</div>`},
+
+'physical-destruction':{title:'Physical Destruction',cat:'Data Sanitization',html:`
+  <p>Shredding, crushing, drilling, or disintegrating the physical media into small particles (&lt;2mm for NSA/CSS standards). The <strong>only reliable method for SSDs and NVMe drives</strong>. Also required for Top Secret HDDs per NSA guidelines.</p>
+  <div class="exam-tip">SSD always → physical destruction (or vendor ATA Secure Erase if properly implemented). This is the single most frequently tested sanitization rule.</div>`},
+
+'paper-shredding':{title:'Paper Shredding',cat:'Data Sanitization',html:`
+  <p>Mechanical cutting of paper documents. Cross-cut (DIN 66399 P-4) is minimum for sensitive data; micro-cut (P-5/P-6) for highly sensitive. Strip-cut is insufficient — strips can be reassembled.</p>
+  <div class="exam-tip">P-4 cross-cut is the minimum acceptable level for sensitive documents. Strip-cut (P-2/P-3) does not meet the standard.</div>`},
+
+'pulping':{title:'Pulping',cat:'Data Sanitization',html:`
+  <p>Paper is soaked in water and chemicals, breaking it down into pulp. The original document cannot be reconstructed. Used by financial institutions and government agencies for bulk document disposal — more thorough than shredding.</p>`},
+
+'burning':{title:'Burning / Incineration',cat:'Data Sanitization',html:`
+  <p>Combustion reduces media to ash. Used for paper, optical discs, and some plastic-backed media in high-security environments. Must reach sufficient temperatures. Regulatory permits often required. Ashes may still require verification.</p>`},
+
+'cert-destruction':{title:'Certificate of Destruction',cat:'Data Sanitization',html:`
+  <p>Contracted destruction services that provide chain-of-custody documentation, witnessed destruction, and a formal <strong>certificate of destruction</strong> for audit trails and compliance. Choose a vendor certified under <strong>NAID AAA</strong> (National Association for Information Destruction).</p>
+  <div class="exam-tip">A certificate of destruction is required for regulatory compliance when disposing of sensitive media at scale. Third-party destruction shifts liability and provides documented proof.</div>`},
+
+'ir-preparation':{title:'Phase 1 — Preparation',cat:'Incident Response',html:`
+  <p>The foundation of the NIST SP 800-61 lifecycle. Activities: develop the IR plan; form the IR team (CIRT/CSIRT); define the communication plan; procure and stage tools; conduct tabletop exercises and drills. <strong>Preparation always comes first</strong> — you cannot effectively respond to what you haven't prepared for.</p>
+  <div class="exam-tip">Preparation phase includes establishing law enforcement contacts, customer notification templates, and escalation paths — before any incident occurs.</div>`},
+
+'ir-detection':{title:'Phase 2 — Detection & Analysis',cat:'Incident Response',html:`
+  <p>Monitor using SIEM, IDS/IPS, EDR; identify indicators of compromise (IoCs); classify incident severity; determine scope (what systems, what data); maintain an incident log; escalate per the IR plan. Goal: confirm whether an incident has occurred and how severe it is.</p>`},
+
+'ir-containment':{title:'Phase 3 — Containment / Eradication / Recovery',cat:'Incident Response',html:`
+  <p><strong>Containment:</strong> Isolate affected systems (network segmentation, blocking). Short-term (stop bleeding) then long-term (stable reduced-risk state).<br><strong>Eradication:</strong> Remove malware, patch vulnerabilities, revoke compromised credentials.<br><strong>Recovery:</strong> Restore from clean backups, verify integrity, return to production.</p>`},
+
+'ir-post-incident':{title:'Phase 4 — Post-Incident Activity',cat:'Incident Response',html:`
+  <p>Document timeline, root cause, and impact. Identify what worked and what failed. Update IR plan, playbooks, and detection rules. Produce the incident report. Hold a <strong>lessons-learned meeting within 2 weeks</strong>. Findings feed back into Preparation to improve the next cycle.</p>
+  <div class="exam-tip">Post-incident activity = lessons learned. The NIST cycle is continuous — each incident's lessons improve future preparation.</div>`},
+
+'ir-team':{title:'IR Team (CIRT/CSIRT)',cat:'Incident Response',html:`
+  <p>Composition of a typical IR team: <strong>Incident Commander</strong> (coordinates), Security Analysts (technical investigation), IT Operations (recovery), Legal/Counsel (litigation hold), PR/Communications (external messaging), HR (insider threat cases), Management (resource authorization).</p>`},
+
+'comm-plan':{title:'Communication Plan',cat:'Incident Response',html:`
+  <p>Defines who to contact during an incident: first responders (on-call analyst, CISO), internal communication paths, law enforcement contacts (FBI for ransomware/nation-state), and customer notification timelines (72 hours for GDPR; 30 days for many state laws). Use <strong>out-of-band channels</strong> if email is compromised.</p>`},
+
+'threat-hunting':{title:'Threat Hunting',cat:'Incident Response',html:`
+  <p>A <strong>proactive, human-led</strong> search for malicious activity that automated tools have not detected. Unlike reactive IR, threat hunters <em>assume compromise has already occurred</em> and search for hidden indicators. Hunters form a hypothesis, collect data, analyze it, and either confirm or refute. Confirmed findings become new SIEM detection rules.</p>
+  <div class="exam-tip">Threat hunting is proactive and assumption-based (assume breach). Incident response is reactive (respond to an alert). SOAR automates the response; threat hunters do the discovery.</div>`},
+
+'order-volatility':{title:'Order of Volatility',cat:'Digital Forensics',html:`
+  <p>Governs which evidence must be collected first — from most volatile (lost when power removed) to least volatile:</p>
+  <ul>
+    <li><strong>1.</strong> CPU registers &amp; cache</li>
+    <li><strong>2.</strong> RAM (memory dump) — encryption keys, running processes</li>
+    <li><strong>3.</strong> Network connections &amp; ARP/routing tables</li>
+    <li><strong>4.</strong> Running processes / open file handles</li>
+    <li><strong>5.</strong> Disk / Storage (HDD, SSD)</li>
+    <li><strong>6.</strong> Remote logging / SIEM data</li>
+    <li><strong>7.</strong> Archival media (backups, optical)</li>
+  </ul>
+  <div class="exam-tip">RAM first, disk last. Capture RAM with tools like Volatility or WinPmem before any reboot or shutdown.</div>`},
+
+'forensic-artifacts':{title:'Forensic Artifacts',cat:'Digital Forensics',html:`
+  <p>Digital traces left by user and system activity used to reconstruct events:</p>
+  <ul>
+    <li><strong>File Metadata:</strong> MAC times (created/modified/accessed), hash values. Attackers may timestomp to hide activity.</li>
+    <li><strong>Email Metadata:</strong> headers reveal originating IP, routing, timestamps.</li>
+    <li><strong>Web/Browser:</strong> history, cookies, cached pages, saved credentials (SQLite DBs in Chrome/Firefox).</li>
+    <li><strong>Mobile Device:</strong> call logs, SMS, GPS history, app data. Requires specialized tools (Cellebrite, Oxygen Forensics).</li>
+  </ul>`},
+
+'rdp-cache':{title:'RDP Cache',cat:'Digital Forensics',html:`
+  <p>When using Remote Desktop Protocol (RDP), Windows caches bitmap tiles of the remote desktop for rendering performance. These cache files (stored in <code>%LOCALAPPDATA%\\Microsoft\\Terminal Server Client\\Cache\\</code>) contain fragments of the remote session — visible documents, usernames, and UI elements. Forensic tools like <em>bmc-tools</em> reconstruct these tiles into viewable images, revealing what an attacker saw or did during an RDP session.</p>`},
+
+'os-forensics':{title:'OS Forensics Sources',cat:'Digital Forensics',html:`
+  <p>Key Windows forensic evidence locations:</p>
+  <ul>
+    <li><strong>Event Logs</strong> (<code>%SystemRoot%\\System32\\winevt\\</code>): logon events (4624/4625), process creation (4688)</li>
+    <li><strong>Registry:</strong> autorun keys, MRU (recently accessed), USB device history</li>
+    <li><strong>Prefetch Files</strong> (<code>%SystemRoot%\\Prefetch\\</code>): proof a program executed, even if deleted</li>
+    <li><strong>Recycle Bin</strong> (<code>$Recycle.Bin</code>): deletion timestamp, original path</li>
+    <li><strong>Pagefile/Hiberfil:</strong> memory snapshots — may contain encryption keys, passwords</li>
+  </ul>`},
+
+'legal-hold':{title:'Legal Hold (Litigation Hold)',cat:'Digital Forensics',html:`
+  <p>A directive issued by legal counsel to preserve all data potentially relevant to anticipated or active litigation. Once issued, normal retention and deletion policies are <strong>suspended</strong> for the affected data. Destroying data after a legal hold notice is <em>spoliation</em> — a serious legal offense that can result in adverse inference instructions to a jury.</p>
+  <div class="exam-tip">Legal hold suspends the data retention policy. This is the critical relationship: data-retention → delete after X; legal-hold → STOP deleting, preserve everything relevant.</div>`},
+
+'ediscovery':{title:'eDiscovery (Electronic Discovery)',cat:'Digital Forensics',html:`
+  <p>The process of identifying, collecting, preserving, and producing electronically stored information (ESI) in response to a legal or regulatory request. The <strong>EDRM</strong> (Electronic Discovery Reference Model) defines eDiscovery phases from information governance through presentation in court.</p>`},
+
+'chain-custody':{title:'Chain of Custody',cat:'Digital Forensics',html:`
+  <p>A documented record tracking: who collected evidence, how it was handled, where it was stored, who accessed it, and when. A broken chain of custody can make evidence inadmissible in court. Every transfer requires a signature. Digital evidence is sealed with a cryptographic hash (SHA-256) at time of collection — any modification changes the hash, proving tampering.</p>
+  <div class="exam-tip">Hash evidence at collection (SHA-256). Any change = different hash = tampering detected. Chain of custody documents every hand the evidence passes through.</div>`},
+
+'soar-platform':{title:'SOAR',cat:'SOAR & Automation',html:`
+  <p><strong>Security Orchestration, Automation, and Response</strong> — connects disparate security tools (SIEM, EDR, firewall, ticketing) via APIs and executes automated workflows when conditions are met. SOAR reduces mean time to respond (MTTR) and frees analysts for complex judgment tasks. Examples: Splunk SOAR, Palo Alto XSOAR, IBM QRadar SOAR.</p>`},
+
+'siem-vs-soar':{title:'SIEM vs SOAR',cat:'SOAR & Automation',html:`
+  <p><strong>SIEM:</strong> Aggregates logs, correlates events, generates alerts.<br><strong>SOAR:</strong> Receives SIEM alerts, automates investigation and response workflow.</p>
+  <p>They work together — SIEM is the radar; SOAR is the autopilot that responds to radar contacts. SOAR does not replace SIEM — it extends it with action.</p>
+  <div class="exam-tip">SIEM = detect and alert. SOAR = act. When a scenario says "a SIEM alert triggered an automated response," SOAR did the automation.</div>`},
+
+'playbook':{title:'Playbook',cat:'SOAR & Automation',html:`
+  <p>A <strong>pre-defined, step-by-step guide</strong> prescribing how to respond to a specific type of incident. Playbooks are <em>strategic</em> — they describe what to do and in what order, but not every specific command. Common playbooks: ransomware, phishing, data breach, DDoS, insider threat, account compromise.</p>
+  <div class="exam-tip">Playbook = strategy (what to do). Runbook = tactics (exactly how to do it — commands, scripts). Playbooks can be automated in SOAR using runbooks.</div>`},
+
+'runbook':{title:'Runbook',cat:'SOAR & Automation',html:`
+  <p>The <strong>operational companion to a playbook</strong> — contains specific technical commands, scripts, and procedures to execute each playbook step. Where a playbook says "isolate the affected host," the runbook specifies the exact firewall CLI commands, EDR isolation steps, and Active Directory account disablement procedure. Runbooks are directly automatable in SOAR platforms.</p>`},
+
+'reporting-ttps':{title:'Reporting TTPs (STIX/TAXII)',cat:'SOAR & Automation',html:`
+  <p>After an incident, analysts document the attacker's <strong>Tactics, Techniques, and Procedures (TTPs)</strong> using frameworks like MITRE ATT&amp;CK. <strong>STIX</strong> (Structured Threat Information Expression) is the standard format; <strong>TAXII</strong> (Trusted Automated eXchange of Indicator Information) is the transport protocol. Sharing TTPs enables collective defense — peers and defenders can update controls against the same attacker's methods.</p>`},
+
+'board':{title:'Board of Directors',cat:'Security Governance',html:`
+  <p>Ultimate accountability for organizational risk. Approves the organization's <strong>risk appetite</strong> and reviews material security risks at the enterprise level. Sets tone at the top — security culture starts here. Increasingly expected to receive regular CISO briefings; SEC now requires cybersecurity expertise on boards of public companies.</p>`},
+
+'security-committee':{title:'Security Committee',cat:'Security Governance',html:`
+  <p>A <strong>cross-functional group</strong> (CISO, legal, HR, IT, business units) that translates board risk appetite into security strategy. Reviews policy, prioritizes security investments, and resolves cross-departmental security conflicts. Acts as the bridge between the board's risk appetite and the CISO's operational execution.</p>`},
+
+'govt-entities':{title:'Government Entities',cat:'Security Governance',html:`
+  <p>External governance imposed by statute: <strong>NIST</strong> and <strong>CISA</strong> for federal agencies (FISMA); <strong>FTC</strong> for consumer data; <strong>SEC</strong> for public companies; <strong>HHS/OCR</strong> for healthcare. Failure to comply may result in audits, fines, consent decrees, or mandatory remediation programs.</p>`},
+
+'ciso-team':{title:'CISO / Security Team',cat:'Security Governance',html:`
+  <p>Operational governance — the <strong>CISO (Chief Information Security Officer)</strong> implements strategy, manages day-to-day security operations, reports metrics to the security committee, and escalates material risks to the board. The security team carries out technical controls, vulnerability management, and incident response.</p>`},
+
+'centralized-decentral':{title:'Centralized vs. Decentralized Governance',cat:'Security Governance',html:`
+  <p><strong>Centralized:</strong> Single security team sets and enforces policies organization-wide. High consistency, lower agility, single point of failure. Best for regulated industries (healthcare, finance).<br><strong>Decentralized:</strong> Business units manage their own security programs. Higher agility, inconsistent baseline, hard to audit holistically. Best for large multinationals with diverse regulatory environments.</p>`},
+
+'policy-hierarchy':{title:'Policy → Standard → Procedure → Guideline',cat:'Security Governance',html:`
+  <p>The four-level document hierarchy:</p>
+  <ul>
+    <li><strong>Policy:</strong> Mandatory, high-level commitment statement. Approved by board/executive team.</li>
+    <li><strong>Standard:</strong> Mandatory, specific requirements implementing the policy (e.g., "all passwords ≥ 12 chars").</li>
+    <li><strong>Procedure:</strong> Mandatory, step-by-step instructions for implementing a standard.</li>
+    <li><strong>Guideline:</strong> Recommended (not mandatory) best-practice guidance — provides flexibility.</li>
+  </ul>
+  <div class="exam-tip">Policy and Standard are mandatory; Guideline is optional. Procedures are the tactical "how-to" beneath standards.</div>`},
+
+'sdlc-sec':{title:'SDLC Security (Shift-Left)',cat:'Security Governance',html:`
+  <p>The <strong>Software Development Lifecycle</strong> must integrate security at every phase: security requirements in planning, threat modeling in design, code review and SAST in development, DAST and pen testing in testing, and vulnerability management post-deployment. <em>Shift-left</em> means finding defects early (design/code phases) where fixes are cheapest.</p>`},
+
+'onboarding-offboarding':{title:'Onboarding / Offboarding',cat:'Security Governance',html:`
+  <p><strong>Onboarding:</strong> New employees complete security awareness training, sign acceptable use agreements, and receive only the minimum access necessary (least privilege).<br><strong>Offboarding:</strong> Accounts immediately disabled on departure; access revoked (VPN, cloud, SaaS); devices returned and wiped; data preserved per legal hold requirements.</p>
+  <div class="warn-box">Offboarding failures are a leading cause of insider threat incidents. Account disablement must happen immediately — not after a grace period.</div>`},
+
+'policy-monitoring':{title:'Policy Lifecycle: Monitoring & Revision',cat:'Security Governance',html:`
+  <p>Policies must be reviewed at least <strong>annually</strong> — or triggered by a material event (breach, new regulation, M&amp;A activity). Governance includes tracking compliance against policies and feeding exceptions back into policy revision. A policy that is never reviewed eventually becomes inaccurate and unenforceable.</p>`},
+
+'eol-eosl':{title:'EoL vs. EoSL',cat:'Security Governance',html:`
+  <p><strong>EoL (End of Life):</strong> The date a product stops receiving new features from the vendor.<br><strong>EoSL (End of Service Life):</strong> The date a vendor stops providing security patches and support. Running EoSL software is a critical risk — unpatched vulnerabilities will never be fixed.</p>
+  <div class="exam-tip">EoSL is the dangerous one. EoL means no new features. EoSL means no more security patches — any new CVE found after EoSL is a permanent, unpatched vulnerability. Organizations must upgrade or isolate EoSL systems.</div>`},
+
+'sla':{title:'SLA — Service Level Agreement',cat:'Legal Agreements',html:`
+  <p>Defines <strong>measurable service performance standards</strong> (uptime, response time, support hours) between provider and customer. Contains specific metrics and remedies (credits, penalties) for non-performance. <strong>Contractually enforceable.</strong></p>
+  <div class="exam-tip">SLA = measurable, enforceable, has penalties. MOU = intent only, NOT enforceable. This distinction is heavily tested.</div>`},
+
+'mou':{title:'MOU — Memorandum of Understanding',cat:'Legal Agreements',html:`
+  <p>Documents mutual agreement and intent to cooperate between parties. Common between government agencies or internal departments. <strong>Typically NOT legally binding</strong> — expresses intent, not obligation. A precursor to a formal contract.</p>
+  <div class="exam-tip">MOU = NOT legally binding. This is one of the most tested agreement distinctions on Security+. When a question says "expressed intent but not enforceable," the answer is MOU.</div>`},
+
+'nda':{title:'NDA — Non-Disclosure Agreement',cat:'Legal Agreements',html:`
+  <p>Prevents one or both parties from sharing confidential information disclosed during the relationship. <strong>Legally binding.</strong> May be one-way (vendor NDA) or mutual (partnership NDA). Duration specified. Used before sharing trade secrets, IP, or proprietary information with vendors or partners.</p>`},
+
+'msa':{title:'MSA — Master Services Agreement',cat:'Legal Agreements',html:`
+  <p>Umbrella contract establishing the terms for all future work between two parties. Individual projects are covered by work orders or Statements of Work (SOWs) under the MSA. Reduces renegotiation overhead — terms negotiated once, applied to all engagements.</p>`},
+
+'bpa':{title:'BPA — Business Partnership Agreement',cat:'Legal Agreements',html:`
+  <p>Defines the terms of a business partnership including profit sharing, responsibilities, decision rights, and exit provisions. Broader than an SLA — governs the entire business relationship, not just service delivery metrics.</p>`},
+
+'rules-engagement':{title:'Rules of Engagement',cat:'Legal Agreements',html:`
+  <p>A document governing the scope and rules for a <strong>penetration test or security assessment</strong>. Defines what is in scope, out of scope, timing constraints, and emergency contacts. <strong>Must be signed before testing begins.</strong> Legally protects both the tester and the client.</p>
+  <div class="exam-tip">Rules of Engagement = penetration testing authorization document. Without it, even authorized testing could expose the tester to criminal liability.</div>`},
+
+'right-to-audit':{title:'Right-to-Audit Clause',cat:'Legal Agreements',html:`
+  <p>A contractual provision allowing the customer to <strong>audit the vendor's security controls</strong> and compliance posture. Critical for cloud and outsourced services — without it, you cannot verify that the vendor actually implements the security they claim. Should be included in any significant vendor contract.</p>`},
+
+'due-diligence':{title:'Due Diligence',cat:'Legal Agreements',html:`
+  <p>Reasonable investigation and verification <strong>before</strong> entering a business relationship or making a security decision. Vendor due diligence includes reviewing SOC 2 reports, security questionnaires, and penetration test results. Failure to perform due diligence = negligence.</p>`},
+
+'conflicts-interest':{title:'Conflicts of Interest',cat:'Legal Agreements',html:`
+  <p>Security personnel must <strong>disclose and recuse</strong> themselves from decisions where personal interests conflict with organizational interests. Example: an auditor who owns stock in the company being audited. Governance structures must include policies requiring disclosure to maintain integrity of security decisions.</p>`},
+
+'attestation':{title:'Attestation & Acknowledgement',cat:'Legal Agreements',html:`
+  <p><strong>Attestation:</strong> A formal declaration that security controls are in place and effective (e.g., SOC 2 Type II report, PCI DSS Attestation of Compliance).<br><strong>Acknowledgement:</strong> Employee or vendor signs to confirm they have read and will comply with a policy.</p>`},
+
+'ccpa':{title:'CCPA — California Consumer Privacy Act',cat:'Legal Agreements',html:`
+  <p>Grants California residents specific rights: right to know what data is collected, right to delete personal data, right to opt out of sale of data, and right to non-discrimination. The <strong>right-to-be-forgotten</strong> (right-to-erasure) appears in both GDPR (Article 17) and CCPA — organizations must delete a consumer's data upon verified request within mandated timeframes.</p>`},
+
+'data-inventory':{title:'Data Inventory',cat:'Legal Agreements',html:`
+  <p>A catalog of all data assets an organization holds — what data exists, where it is stored, who owns it, how it is classified, and what regulations apply. The <strong>prerequisite</strong> for fulfilling CCPA/GDPR erasure requests, enforcing retention policies, and performing accurate risk assessments. Without an inventory, you cannot manage what you don't know you have.</p>`},
+
+'cbt-training':{title:'Computer-Based Training (CBT)',cat:'Awareness Training',html:`
+  <p>Self-paced online modules delivered through a Learning Management System (LMS). Scalable, trackable, and cost-effective for large organizations. Completion rates and quiz scores create compliance evidence. Examples: KnowBe4, Proofpoint Security Awareness Training. Must be <strong>ongoing</strong>, not a one-time annual event.</p>`},
+
+'phishing-sim':{title:'Phishing Simulations',cat:'Awareness Training',html:`
+  <p>Simulated phishing emails sent to employees to measure susceptibility. Employees who click receive immediate educational feedback. Metrics: click rate, credential submission rate. Trend tracking shows training effectiveness over time. Phishing simulations provide measurable, quantifiable data on human risk.</p>
+  <div class="exam-tip">Phishing simulations are the primary tool for measuring and improving human resilience against phishing attacks. Trend data (improving or worsening click rates) is the key metric.</div>`},
+
+'insider-awareness':{title:'Insider Threat Awareness',cat:'Awareness Training',html:`
+  <p>Train employees to recognize signs of insider activity (unusual data access, copying large files, disgruntlement). Define reporting channels. Remind users that insiders — both malicious and negligent — represent a significant portion of all security breaches. Emphasize that reporting is encouraged and protected.</p>`},
+
+'password-mgmt':{title:'Password Management',cat:'Awareness Training',html:`
+  <p>User training topics: use a password manager; never reuse passwords; create long passphrases; enable MFA everywhere available; never share passwords; report suspected compromise immediately. Cover the difference between weak patterns ("P@ssw0rd") and strong passphrases ("TurtlesSingRock!22").</p>`},
+
+'removable-media':{title:'Removable Media & Cables',cat:'Awareness Training',html:`
+  <p>Never plug in unknown USB drives or cables (<strong>BadUSB attacks</strong>). Use only approved and encrypted removable media. Report found devices rather than plugging them in — this is a baiting/social engineering technique. O.MG cable attacks use malicious cables that look identical to normal cables but install malware.</p>
+  <div class="exam-tip">BadUSB = malicious firmware on USB device that impersonates a keyboard. Even a found USB cable can be malicious (O.MG cable). The rule: never plug in any device you didn't procure yourself.</div>`},
+
+'social-eng-aware':{title:'Social Engineering Awareness',cat:'Awareness Training',html:`
+  <p>Train users to recognize: phishing, spear-phishing, vishing, smishing, pretexting. Core principle: <strong>verify identity before providing information or taking action.</strong> Report all attempts — even failed ones create intelligence. Emphasize that security teams will never ask for passwords over the phone or email.</p>`},
+
+'opsec':{title:'OPSEC — Operational Security',cat:'Awareness Training',html:`
+  <p>Avoid oversharing information that could be used for reconnaissance (social media posts about projects, conference talks revealing internal architecture). Protect sensitive information in public spaces (shoulder surfing). Use screen privacy filters when traveling. Be aware of what is visible in video call backgrounds.</p>`},
+
+'hybrid-work':{title:'Hybrid / Remote Work Security',cat:'Awareness Training',html:`
+  <p>Secure home Wi-Fi (WPA3, unique SSID/password). Use VPN for all corporate access. Lock screens when stepping away. Do not use personal devices for work without MDM approval. Beware of shoulder surfing in coffee shops. Blurred personal/professional device boundaries are a key risk of remote work.</p>`},
+
+};
+
+/* ═══ CATEGORIES ═══ */
+const CATEGORIES = [
+  {id:'classify',   label:'Data Classification', color:'#e74c3c',  nodes:['top-secret','secret','confidential-gov','unclassified','restricted','confidential-priv','sensitive-internal','public-data']},
+  {id:'roles',      label:'Data Roles',          color:'#9b59b6',  nodes:['data-owner','data-steward','data-custodian','data-controller','data-processor']},
+  {id:'regulated',  label:'Regulated Data',      color:'#3498db',  nodes:['pii-data','phi-data','financial-data','intellectual-property','trade-secret','legal-information','data-retention']},
+  {id:'sanitize',   label:'Data Sanitization',   color:'#e67e22',  nodes:['wiping','file-shredding','degaussing','physical-destruction','paper-shredding','pulping','burning','cert-destruction']},
+  {id:'ir',         label:'Incident Response',   color:'#2ecc71',  nodes:['ir-preparation','ir-detection','ir-containment','ir-post-incident','ir-team','comm-plan','threat-hunting']},
+  {id:'forensics',  label:'Digital Forensics',   color:'#1abc9c',  nodes:['order-volatility','forensic-artifacts','rdp-cache','os-forensics','legal-hold','ediscovery','chain-custody']},
+  {id:'soar',       label:'SOAR & Automation',   color:'#f1c40f',  nodes:['soar-platform','siem-vs-soar','playbook','runbook','reporting-ttps']},
+  {id:'governance', label:'Security Governance', color:'#818cf8',  nodes:['board','security-committee','govt-entities','ciso-team','centralized-decentral','policy-hierarchy','sdlc-sec','onboarding-offboarding','policy-monitoring','eol-eosl']},
+  {id:'legal',      label:'Legal Agreements',    color:'#f59e0b',  nodes:['sla','mou','nda','msa','bpa','rules-engagement','right-to-audit','due-diligence','conflicts-interest','attestation','ccpa','data-inventory']},
+  {id:'awareness',  label:'Awareness Training',  color:'#34d399',  nodes:['cbt-training','phishing-sim','insider-awareness','password-mgmt','removable-media','social-eng-aware','opsec','hybrid-work']},
+];
+
+/* ═══ GRAPH NODES ═══ */
+function gn(id,label,color,nodeId,x,y){return{id,label,color,nodeId:nodeId||null,x,y,vx:0,vy:0,r:20,pinned:false}}
+function ge(s,t,type,label){return{s,t,type:type||'relates',label:label||null}}
+
+const GNODES = [
+  gn('cat-classify','Data\nClassify','#e74c3c',null,-700,-500),
+  gn('cat-roles','Data\nRoles','#9b59b6',null,-400,-500),
+  gn('cat-regulated','Regulated\nData','#3498db',null,-100,-500),
+  gn('cat-sanitize','Data\nSanitize','#e67e22',null,200,-500),
+  gn('cat-ir','Incident\nResponse','#2ecc71',null,500,-400),
+  gn('cat-forensics','Digital\nForensics','#1abc9c',null,700,-200),
+  gn('cat-soar','SOAR &\nAuto','#f1c40f',null,600,100),
+  gn('cat-governance','Security\nGovern.','#818cf8',null,200,400),
+  gn('cat-legal','Legal\nAgreements','#f59e0b',null,-300,400),
+  gn('cat-awareness','Awareness\nTraining','#34d399',null,-600,100),
+
+  /* Data Classification */
+  gn('top-secret','Top\nSecret','#e74c3c','top-secret',-800,-540),
+  gn('secret','Secret','#e67e22','secret',-720,-570),
+  gn('confidential-gov','Confid.\n(Gov)','#f1c40f','confidential-gov',-800,-460),
+  gn('unclassified','Unclassified','#95a5a6','unclassified',-680,-490),
+  gn('restricted','Restricted','#e74c3c','restricted',-740,-440),
+  gn('confidential-priv','Confid.\nPriv','#e67e22','confidential-priv',-660,-530),
+  gn('sensitive-internal','Sensitive\nInternal','#3498db','sensitive-internal',-620,-470),
+  gn('public-data','Public\nData','#2ecc71','public-data',-580,-430),
+
+  /* Data Roles */
+  gn('data-owner','Data\nOwner','#9b59b6','data-owner',-460,-550),
+  gn('data-steward','Data\nSteward','#3498db','data-steward',-380,-570),
+  gn('data-custodian','Data\nCustodian','#1abc9c','data-custodian',-440,-470),
+  gn('data-controller','Data\nController','#e67e22','data-controller',-320,-510),
+  gn('data-processor','Data\nProcessor','#2ecc71','data-processor',-360,-460),
+
+  /* Regulated Data */
+  gn('pii-data','PII','#3498db','pii-data',-160,-560),
+  gn('phi-data','PHI','#1abc9c','phi-data',-80,-570),
+  gn('financial-data','Financial\nData','#2ecc71','financial-data',-160,-480),
+  gn('intellectual-property','IP','#9b59b6','intellectual-property',-40,-520),
+  gn('trade-secret','Trade\nSecret','#e67e22','trade-secret',20,-490),
+  gn('legal-information','Legal\nInfo','#95a5a6','legal-information',-100,-470),
+  gn('data-retention','Data\nRetention','#3498db','data-retention',60,-540),
+
+  /* Data Sanitization */
+  gn('wiping','Wiping','#3498db','wiping',130,-560),
+  gn('file-shredding','File\nShred','#1abc9c','file-shredding',200,-580),
+  gn('degaussing','Degauss','#9b59b6','degaussing',280,-550),
+  gn('physical-destruction','Phys.\nDestruct','#e74c3c','physical-destruction',150,-480),
+  gn('paper-shredding','Paper\nShred','#e67e22','paper-shredding',240,-500),
+  gn('pulping','Pulping','#2ecc71','pulping',320,-480),
+  gn('burning','Burning','#f1c40f','burning',350,-540),
+  gn('cert-destruction','Cert.\nDestruct','#95a5a6','cert-destruction',300,-440),
+
+  /* Incident Response */
+  gn('ir-preparation','Prepara-\ntion','#2ecc71','ir-preparation',440,-460),
+  gn('ir-detection','Detection\nAnalysis','#3498db','ir-detection',540,-480),
+  gn('ir-containment','Contain\nErad/Rec','#f1c40f','ir-containment',600,-430),
+  gn('ir-post-incident','Post\nIncident','#9b59b6','ir-post-incident',560,-360),
+  gn('ir-team','IR\nTeam','#1abc9c','ir-team',460,-380),
+  gn('comm-plan','Comm.\nPlan','#95a5a6','comm-plan',420,-340),
+  gn('threat-hunting','Threat\nHunting','#e74c3c','threat-hunting',620,-360),
+
+  /* Digital Forensics */
+  gn('order-volatility','Order\nVolatility','#e74c3c','order-volatility',680,-280),
+  gn('forensic-artifacts','Forensic\nArtifacts','#3498db','forensic-artifacts',760,-240),
+  gn('rdp-cache','RDP\nCache','#1abc9c','rdp-cache',700,-170),
+  gn('os-forensics','OS\nForensics','#9b59b6','os-forensics',780,-160),
+  gn('legal-hold','Legal\nHold','#e67e22','legal-hold',660,-120),
+  gn('ediscovery','eDiscovery','#2ecc71','ediscovery',750,-80),
+  gn('chain-custody','Chain of\nCustody','#95a5a6','chain-custody',700,-40),
+
+  /* SOAR */
+  gn('soar-platform','SOAR','#2ecc71','soar-platform',620,80),
+  gn('siem-vs-soar','SIEM vs\nSOAR','#3498db','siem-vs-soar',700,100),
+  gn('playbook','Playbook','#e67e22','playbook',660,160),
+  gn('runbook','Runbook','#1abc9c','runbook',600,160),
+  gn('reporting-ttps','TTPs\nSTIX/TAXII','#9b59b6','reporting-ttps',680,220),
+
+  /* Security Governance */
+  gn('board','Board','#9b59b6','board',280,360),
+  gn('security-committee','Security\nCommittee','#3498db','security-committee',200,440),
+  gn('govt-entities','Govt\nEntities','#e67e22','govt-entities',320,440),
+  gn('ciso-team','CISO\nTeam','#1abc9c','ciso-team',240,500),
+  gn('centralized-decentral','Central\nvs Decent','#95a5a6','centralized-decentral',160,480),
+  gn('policy-hierarchy','Policy\nHierarchy','#e74c3c','policy-hierarchy',340,500),
+  gn('sdlc-sec','SDLC','#2ecc71','sdlc-sec',160,380),
+  gn('onboarding-offboarding','Onboard\nOffboard','#3498db','onboarding-offboarding',380,380),
+  gn('policy-monitoring','Policy\nMonitor','#f1c40f','policy-monitoring',420,460),
+  gn('eol-eosl','EoL vs\nEoSL','#e74c3c','eol-eosl',440,400),
+
+  /* Legal Agreements */
+  gn('sla','SLA','#2ecc71','sla',-240,360),
+  gn('mou','MOU','#95a5a6','mou',-320,380),
+  gn('nda','NDA','#3498db','nda',-200,440),
+  gn('msa','MSA','#9b59b6','msa',-360,440),
+  gn('bpa','BPA','#1abc9c','bpa',-280,460),
+  gn('rules-engagement','Rules of\nEngagement','#e67e22','rules-engagement',-160,400),
+  gn('right-to-audit','Right to\nAudit','#e74c3c','right-to-audit',-380,360),
+  gn('due-diligence','Due\nDiligence','#3498db','due-diligence',-200,500),
+  gn('conflicts-interest','Conflicts\nInterest','#f1c40f','conflicts-interest',-320,500),
+  gn('attestation','Attestation','#2ecc71','attestation',-420,500),
+  gn('ccpa','CCPA','#9b59b6','ccpa',-440,420),
+  gn('data-inventory','Data\nInventory','#1abc9c','data-inventory',-420,460),
+
+  /* Awareness Training */
+  gn('cbt-training','CBT','#1abc9c','cbt-training',-680,60),
+  gn('phishing-sim','Phishing\nSim','#e67e22','phishing-sim',-740,80),
+  gn('insider-awareness','Insider\nAware','#e74c3c','insider-awareness',-660,140),
+  gn('password-mgmt','Password\nMgmt','#3498db','password-mgmt',-600,140),
+  gn('removable-media','Removable\nMedia','#9b59b6','removable-media',-740,160),
+  gn('social-eng-aware','Social\nEng Aware','#f1c40f','social-eng-aware',-620,60),
+  gn('opsec','OPSEC','#2ecc71','opsec',-560,100),
+  gn('hybrid-work','Hybrid\nWork','#95a5a6','hybrid-work',-560,180),
+];
+
+const GEDGES = [
+  /* Category membership — Data Classification */
+  ge('cat-classify','top-secret','member'), ge('cat-classify','secret','member'),
+  ge('cat-classify','confidential-gov','member'), ge('cat-classify','unclassified','member'),
+  ge('cat-classify','restricted','member'), ge('cat-classify','confidential-priv','member'),
+  ge('cat-classify','sensitive-internal','member'), ge('cat-classify','public-data','member'),
+
+  /* Category membership — Data Roles */
+  ge('cat-roles','data-owner','member'), ge('cat-roles','data-steward','member'),
+  ge('cat-roles','data-custodian','member'), ge('cat-roles','data-controller','member'),
+  ge('cat-roles','data-processor','member'),
+
+  /* Category membership — Regulated Data */
+  ge('cat-regulated','pii-data','member'), ge('cat-regulated','phi-data','member'),
+  ge('cat-regulated','financial-data','member'), ge('cat-regulated','intellectual-property','member'),
+  ge('cat-regulated','trade-secret','member'), ge('cat-regulated','legal-information','member'),
+  ge('cat-regulated','data-retention','member'),
+
+  /* Category membership — Data Sanitization */
+  ge('cat-sanitize','wiping','member'), ge('cat-sanitize','file-shredding','member'),
+  ge('cat-sanitize','degaussing','member'), ge('cat-sanitize','physical-destruction','member'),
+  ge('cat-sanitize','paper-shredding','member'), ge('cat-sanitize','pulping','member'),
+  ge('cat-sanitize','burning','member'), ge('cat-sanitize','cert-destruction','member'),
+
+  /* Category membership — IR */
+  ge('cat-ir','ir-preparation','member'), ge('cat-ir','ir-detection','member'),
+  ge('cat-ir','ir-containment','member'), ge('cat-ir','ir-post-incident','member'),
+  ge('cat-ir','ir-team','member'), ge('cat-ir','comm-plan','member'),
+  ge('cat-ir','threat-hunting','member'),
+
+  /* Category membership — Digital Forensics */
+  ge('cat-forensics','order-volatility','member'), ge('cat-forensics','forensic-artifacts','member'),
+  ge('cat-forensics','rdp-cache','member'), ge('cat-forensics','os-forensics','member'),
+  ge('cat-forensics','legal-hold','member'), ge('cat-forensics','ediscovery','member'),
+  ge('cat-forensics','chain-custody','member'),
+
+  /* Category membership — SOAR */
+  ge('cat-soar','soar-platform','member'), ge('cat-soar','siem-vs-soar','member'),
+  ge('cat-soar','playbook','member'), ge('cat-soar','runbook','member'),
+  ge('cat-soar','reporting-ttps','member'),
+
+  /* Category membership — Governance */
+  ge('cat-governance','board','member'), ge('cat-governance','security-committee','member'),
+  ge('cat-governance','govt-entities','member'), ge('cat-governance','ciso-team','member'),
+  ge('cat-governance','centralized-decentral','member'), ge('cat-governance','policy-hierarchy','member'),
+  ge('cat-governance','sdlc-sec','member'), ge('cat-governance','onboarding-offboarding','member'),
+  ge('cat-governance','policy-monitoring','member'), ge('cat-governance','eol-eosl','member'),
+
+  /* Category membership — Legal */
+  ge('cat-legal','sla','member'), ge('cat-legal','mou','member'),
+  ge('cat-legal','nda','member'), ge('cat-legal','msa','member'),
+  ge('cat-legal','bpa','member'), ge('cat-legal','rules-engagement','member'),
+  ge('cat-legal','right-to-audit','member'), ge('cat-legal','due-diligence','member'),
+  ge('cat-legal','conflicts-interest','member'), ge('cat-legal','attestation','member'),
+  ge('cat-legal','ccpa','member'), ge('cat-legal','data-inventory','member'),
+
+  /* Category membership — Awareness */
+  ge('cat-awareness','cbt-training','member'), ge('cat-awareness','phishing-sim','member'),
+  ge('cat-awareness','insider-awareness','member'), ge('cat-awareness','password-mgmt','member'),
+  ge('cat-awareness','removable-media','member'), ge('cat-awareness','social-eng-aware','member'),
+  ge('cat-awareness','opsec','member'), ge('cat-awareness','hybrid-work','member'),
+
+  /* Cross-links */
+  ge('data-owner','top-secret','classifies'),
+  ge('data-owner','data-custodian','delegates-to'),
+  ge('data-custodian','wiping','implements'),
+  ge('data-custodian','physical-destruction','implements'),
+  ge('legal-hold','data-retention','suspends'),
+  ge('data-retention','wiping','triggers'),
+  ge('pii-data','ccpa','regulated-by'),
+  ge('phi-data','pii-data','type-of'),
+  ge('ccpa','data-inventory','requires'),
+  ge('ir-preparation','ir-detection','precedes'),
+  ge('ir-detection','ir-containment','precedes'),
+  ge('ir-containment','ir-post-incident','precedes'),
+  ge('ir-post-incident','ir-preparation','improves'),
+  ge('siem-vs-soar','soar-platform','feeds'),
+  ge('soar-platform','playbook','executes'),
+  ge('playbook','runbook','uses'),
+  ge('reporting-ttps','ir-post-incident','documents'),
+  ge('order-volatility','forensic-artifacts','governs'),
+  ge('chain-custody','ediscovery','enables'),
+  ge('legal-hold','ediscovery','triggers'),
+  ge('board','security-committee','delegates'),
+  ge('security-committee','ciso-team','directs'),
+  ge('policy-hierarchy','sdlc-sec','applies-to'),
+  ge('onboarding-offboarding','policy-hierarchy','follows'),
+  ge('degaussing','physical-destruction','inferior-to'),
+  ge('threat-hunting','siem-vs-soar','feeds'),
+  ge('right-to-audit','due-diligence','part-of'),
+  ge('rules-engagement','due-diligence','requires'),
+  ge('cbt-training','phishing-sim','complements'),
+  ge('phishing-sim','social-eng-aware','measures'),
+];
+
+/* ═══ SIDEBAR BUILD ═══ */
+let activeCat = null;
+document.addEventListener('DOMContentLoaded', () => {
+  const list = document.getElementById('cat-list');
+  CATEGORIES.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn';
+    btn.dataset.catId = cat.id;
+    btn.innerHTML = `<span class="cat-dot" style="background:${cat.color}"></span>${cat.label}`;
+    btn.onclick = () => activeCat === cat.id ? clearFilter() : applyFilter(cat.id);
+    list.appendChild(btn);
+  });
+});
+
+function applyFilter(catId) {
+  activeCat = catId;
+  const cat = CATEGORIES.find(c => c.id === catId);
+  const matchSet = new Set(cat.nodes);
+  document.querySelectorAll('.node[data-node-id]').forEach(n => {
+    n.classList.remove('cat-match','cat-dim');
+    n.classList.add(matchSet.has(n.dataset.nodeId) ? 'cat-match' : 'cat-dim');
+  });
+  document.querySelectorAll('.zone').forEach(zone => {
+    const nodes = zone.querySelectorAll('.node[data-node-id]');
+    const allDim = [...nodes].every(n => n.classList.contains('cat-dim'));
+    zone.classList.toggle('zone-all-dim', allDim && nodes.length > 0);
+  });
+  document.body.classList.add('cat-filtered');
+  document.querySelectorAll('.cat-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.catId === catId));
+  const banner = document.getElementById('filter-banner');
+  banner.style.display = 'block';
+  banner.style.color = cat.color;
+  banner.style.borderColor = cat.color;
+  banner.innerHTML = `${cat.label}<br><span style="opacity:.55;font-size:8px">click to clear</span>`;
+  banner.onclick = clearFilter;
+  document.getElementById('clear-btn').style.display = 'block';
+}
+
+function clearFilter() {
+  activeCat = null;
+  document.body.classList.remove('cat-filtered');
+  document.querySelectorAll('.node').forEach(n => n.classList.remove('cat-match','cat-dim'));
+  document.querySelectorAll('.zone').forEach(z => z.classList.remove('zone-all-dim'));
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('filter-banner').style.display = 'none';
+  document.getElementById('clear-btn').style.display = 'none';
+}
+
+/* ═══ DETAIL PANEL ═══ */
+let selectedNode = null;
+function openDetail(id) {
+  const d = NODE_DATA[id]; if (!d) return;
+  if (selectedNode) selectedNode.classList.remove('selected');
+  const el = document.querySelector(`.node[data-node-id="${id}"]`);
+  if (el) { el.classList.add('selected'); selectedNode = el; }
+  document.getElementById('detail-title').textContent = d.title;
+  document.getElementById('detail-category').textContent = d.cat;
+  document.getElementById('detail-body').innerHTML = d.html;
+  document.getElementById('detail-panel').classList.remove('collapsed');
+  document.body.classList.add('detail-open');
+}
+function closeDetail() {
+  document.getElementById('detail-panel').classList.add('collapsed');
+  document.body.classList.remove('detail-open');
+  if (selectedNode) { selectedNode.classList.remove('selected'); selectedNode = null; }
+}
+
+/* ═══ GRAPH VIEW ═══ */
+const G_REPEL=18000,G_SPRING=0.03,G_IDEAL=120,G_GRAVITY=0.003,G_DAMPING=0.80;
+let gNodes=[],gNodeMap={},gGraphInited=false,gGraphActive=false;
+let gDragNode=null,gDragOff={},gPanning=false,gPanStart={};
+let gTx={x:0,y:0,k:1};
+
+function gTick(){
+  const ns=gNodes;
+  for(let i=0;i<ns.length;i++){
+    const a=ns[i];if(a.pinned)continue;
+    for(let j=i+1;j<ns.length;j++){
+      const b=ns[j];
+      let dx=b.x-a.x,dy=b.y-a.y;
+      const d2=dx*dx+dy*dy+1,d=Math.sqrt(d2);
+      const f=G_REPEL/d2,fx=f*dx/d,fy=f*dy/d;
+      a.vx-=fx;a.vy-=fy;
+      if(!b.pinned){b.vx+=fx;b.vy+=fy;}
+    }
+  }
+  for(const e of GEDGES){
+    const a=gNodeMap[e.s],b=gNodeMap[e.t];if(!a||!b)continue;
+    const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)+0.001;
+    const f=G_SPRING*(d-G_IDEAL),fx=f*dx/d,fy=f*dy/d;
+    if(!a.pinned){a.vx+=fx;a.vy+=fy;}
+    if(!b.pinned){b.vx-=fx;b.vy-=fy;}
+  }
+  for(const n of ns){
+    if(n.pinned)continue;
+    n.vx+=-n.x*G_GRAVITY;n.vy+=-n.y*G_GRAVITY;
+    n.vx*=G_DAMPING;n.vy*=G_DAMPING;
+    n.x+=n.vx;n.y+=n.vy;
+  }
+}
+function runGraphLayout(steps){gNodes.forEach(n=>{n.pinned=false;n.vx=0;n.vy=0;});for(let i=0;i<steps;i++)gTick();gRender();}
+
+const GESTYLE={
+  member:{color:'#1e3a5f',w:1,dash:'3,7',mk:null},
+  'type-of':{color:'#222c44',w:1,dash:'',mk:'ga-gray'},
+  uses:{color:'#222c44',w:1.5,dash:'',mk:'ga-gray'},
+  causes:{color:'#e74c3c',w:1.5,dash:'5,3',mk:'ga-red'},
+  enables:{color:'#e67e22',w:1.5,dash:'',mk:'ga-gray'},
+  mitigates:{color:'#2ecc71',w:1.5,dash:'',mk:'ga-green'},
+  implements:{color:'#3498db',w:1,dash:'',mk:'ga-blue'},
+  protects:{color:'#1abc9c',w:1.5,dash:'',mk:'ga-teal'},
+  sets:{color:'#3498db',w:1.5,dash:'',mk:'ga-blue'},
+  drives:{color:'#e67e22',w:1.5,dash:'',mk:'ga-gray'},
+  includes:{color:'#9b59b6',w:1,dash:'4,4',mk:null},
+  requires:{color:'#2ecc71',w:1,dash:'4,4',mk:'ga-green'},
+  tracks:{color:'#1abc9c',w:1,dash:'',mk:'ga-teal'},
+  identifies:{color:'#9b59b6',w:1.5,dash:'',mk:'ga-blue'},
+  precedes:{color:'#e67e22',w:1.5,dash:'',mk:'ga-gray'},
+  relates:{color:'#475569',w:1,dash:'4,4',mk:null},
+  classifies:{color:'#9b59b6',w:1.5,dash:'',mk:'ga-blue'},
+  suspends:{color:'#e74c3c',w:1.5,dash:'5,3',mk:'ga-red'},
+  feeds:{color:'#2ecc71',w:1.5,dash:'',mk:'ga-green'},
+  executes:{color:'#1abc9c',w:1.5,dash:'',mk:'ga-teal'},
+  governs:{color:'#3498db',w:1.5,dash:'',mk:'ga-blue'},
+  triggers:{color:'#e67e22',w:1.5,dash:'',mk:'ga-gray'},
+  complements:{color:'#2ecc71',w:1,dash:'4,4',mk:'ga-green'},
+  measures:{color:'#1abc9c',w:1,dash:'',mk:'ga-teal'},
+  delegates:{color:'#9b59b6',w:1.5,dash:'',mk:'ga-blue'},
+  directs:{color:'#3498db',w:1.5,dash:'',mk:'ga-blue'},
+  documents:{color:'#95a5a6',w:1,dash:'4,4',mk:null},
+  'part-of':{color:'#475569',w:1,dash:'4,4',mk:null},
+  'applies-to':{color:'#3498db',w:1,dash:'',mk:'ga-blue'},
+  follows:{color:'#1abc9c',w:1,dash:'',mk:'ga-teal'},
+  improves:{color:'#2ecc71',w:1.5,dash:'5,3',mk:'ga-green'},
+  'inferior-to':{color:'#e74c3c',w:1,dash:'3,5',mk:'ga-red'},
+  'regulated-by':{color:'#9b59b6',w:1.5,dash:'',mk:'ga-blue'},
+  'delegates-to':{color:'#3498db',w:1,dash:'',mk:'ga-blue'},
+};
+
+function gRender(){
+  const svgGe=document.getElementById('ge'),svgGn=document.getElementById('gn');
+  svgGe.innerHTML='';svgGn.innerHTML='';
+  function el(tag,attrs){
+    const e=document.createElementNS('http://www.w3.org/2000/svg',tag);
+    for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);return e;
+  }
+  for(const e of GEDGES){
+    const a=gNodeMap[e.s],b=gNodeMap[e.t];if(!a||!b)continue;
+    const st=GESTYLE[e.type]||GESTYLE.uses;
+    const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)+0.001;
+    const sr=a.r+2,er=b.r+(st.mk?9:2);
+    const x1=a.x+dx/d*sr,y1=a.y+dy/d*sr,x2=b.x-dx/d*er,y2=b.y-dy/d*er;
+    const line=el('line',{x1,y1,x2,y2,stroke:st.color,'stroke-width':st.w,
+      opacity:e.type==='member'?'0.3':'0.65','data-gs':e.s,'data-gt':e.t});
+    if(st.dash)line.setAttribute('stroke-dasharray',st.dash);
+    if(st.mk)line.setAttribute('marker-end',`url(#${st.mk})`);
+    svgGe.appendChild(line);
+  }
+  for(const n of gNodes){
+    const isCat=n.id.startsWith('cat-');
+    const g=el('g',{transform:`translate(${n.x.toFixed(1)},${n.y.toFixed(1)})`,cursor:'pointer','data-g-node-id':n.id});
+    const circle=el('circle',{r:n.r,fill:n.color+'22',stroke:n.color,'stroke-width':isCat?'2.5':'1.5'});
+    g.appendChild(circle);
+    const lines=n.label.split('\n');
+    const lh=11,sy=-(lines.length-1)*lh/2;
+    lines.forEach((lbl,i)=>{
+      const t=el('text',{'text-anchor':'middle','dominant-baseline':'middle',y:sy+i*lh,'font-size':n.r>28?'10':'9','font-family':'Segoe UI,system-ui,sans-serif','font-weight':'700',fill:n.color,'pointer-events':'none'});
+      t.textContent=lbl;g.appendChild(t);
+    });
+    g.addEventListener('mouseenter',()=>{circle.setAttribute('fill',n.color+'44');circle.setAttribute('stroke-width','2.5');});
+    g.addEventListener('mouseleave',()=>{if(gDragNode!==n){circle.setAttribute('fill',n.color+'22');circle.setAttribute('stroke-width',isCat?'2.5':'1.5');}});
+    g.addEventListener('mousedown',ev=>{ev.stopPropagation();gDragNode=n;n.pinned=true;const pt=gSvgPt(ev);gDragOff={x:pt.x-n.x,y:pt.y-n.y};});
+    g.addEventListener('click',ev=>{ev.stopPropagation();if(n.nodeId&&NODE_DATA[n.nodeId])openDetail(n.nodeId);});
+    svgGn.appendChild(g);
+  }
+  gApplyTx();
+  if(activeCat)applyGraphFilter(activeCat);
+}
+function gSvgPt(e){const r=document.getElementById('graph-svg').getBoundingClientRect();return{x:(e.clientX-r.left-gTx.x)/gTx.k,y:(e.clientY-r.top-gTx.y)/gTx.k};}
+function gApplyTx(){document.getElementById('graph-root').setAttribute('transform',`translate(${gTx.x.toFixed(1)},${gTx.y.toFixed(1)}) scale(${gTx.k.toFixed(4)})`);}
+function fitGraph(){
+  if(!gNodes.length)return;
+  const svg=document.getElementById('graph-svg');
+  const{width:W,height:H}=svg.getBoundingClientRect();
+  let mnx=1e9,mxx=-1e9,mny=1e9,mxy=-1e9;
+  gNodes.forEach(n=>{mnx=Math.min(mnx,n.x-n.r);mxx=Math.max(mxx,n.x+n.r);mny=Math.min(mny,n.y-n.r);mxy=Math.max(mxy,n.y+n.r);});
+  const pad=50,k=Math.min((W-pad*2)/(mxx-mnx),(H-pad*2)/(mxy-mny),1.8);
+  gTx.k=k;gTx.x=W/2-(mnx+mxx)/2*k;gTx.y=H/2-(mny+mxy)/2*k;gApplyTx();
+}
+function gSetupInteraction(){
+  const svg=document.getElementById('graph-svg');
+  svg.addEventListener('wheel',e=>{
+    e.preventDefault();
+    const r=svg.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+    const f=e.deltaY<0?1.12:0.89;
+    gTx.x=mx-(mx-gTx.x)*f;gTx.y=my-(my-gTx.y)*f;
+    gTx.k=Math.max(0.12,Math.min(4,gTx.k*f));gApplyTx();
+  },{passive:false});
+  svg.addEventListener('mousedown',e=>{
+    const tgt=e.target;
+    if(tgt===svg||tgt.id==='graph-root'||tgt.id==='ge'||tgt.id==='gn'){gPanning=true;gPanStart={x:e.clientX-gTx.x,y:e.clientY-gTx.y};}
+  });
+  window.addEventListener('mousemove',e=>{
+    if(gDragNode){const pt=gSvgPt(e);gDragNode.x=pt.x-gDragOff.x;gDragNode.y=pt.y-gDragOff.y;gRender();}
+    else if(gPanning){gTx.x=e.clientX-gPanStart.x;gTx.y=e.clientY-gPanStart.y;gApplyTx();}
+  });
+  window.addEventListener('mouseup',()=>{gDragNode=null;gPanning=false;});
+}
+function applyGraphFilter(catId){
+  const cat=CATEGORIES.find(c=>c.id===catId);if(!cat)return;
+  const matchSet=new Set(cat.nodes);
+  document.querySelectorAll('#gn > g[data-g-node-id]').forEach(g=>{
+    const nid=g.dataset.gNodeId,isCat=nid.startsWith('cat-');
+    const nodeId=GNODES.find(n=>n.id===nid)?.nodeId;
+    const vis=isCat||(nodeId&&matchSet.has(nodeId));
+    g.style.opacity=vis?'1':'0.05';g.style.pointerEvents=vis?'auto':'none';
+  });
+  document.querySelectorAll('#ge > line[data-gs][data-gt]').forEach(line=>{
+    const sNode=GNODES.find(n=>n.id===line.dataset.gs),tNode=GNODES.find(n=>n.id===line.dataset.gt);
+    const sVis=!sNode||sNode.id.startsWith('cat-')||(sNode.nodeId&&matchSet.has(sNode.nodeId));
+    const tVis=!tNode||tNode.id.startsWith('cat-')||(tNode.nodeId&&matchSet.has(tNode.nodeId));
+    line.style.opacity=(sVis&&tVis)?'0.6':'0.04';
+  });
+}
+function clearGraphFilter(){
+  document.querySelectorAll('#gn > g[data-g-node-id]').forEach(g=>{g.style.opacity='';g.style.pointerEvents='';});
+  document.querySelectorAll('#ge > line').forEach(l=>l.style.opacity='');
+}
+function toggleGraphView(){
+  gGraphActive=!gGraphActive;
+  const btn=document.getElementById('btn-graph');
+  const gview=document.getElementById('graph-view');
+  const canvas=document.getElementById('canvas');
+  if(gGraphActive){
+    btn.style.cssText='border-color:var(--teal);color:var(--teal);background:rgba(26,188,156,.1)';
+    gview.classList.add('visible');canvas.style.display='none';
+    if(!gGraphInited){
+      gNodes=GNODES.map(n=>({...n}));gNodeMap={};gNodes.forEach(n=>gNodeMap[n.id]=n);
+      const deg={};gNodes.forEach(n=>deg[n.id]=0);
+      GEDGES.forEach(e=>{if(deg[e.s]!==undefined)deg[e.s]++;if(deg[e.t]!==undefined)deg[e.t]++;});
+      gNodes.forEach(n=>{const isCat=n.id.startsWith('cat-');n.r=isCat?36:Math.max(18,Math.min(34,18+((deg[n.id]||0)*1.6)));});
+      runGraphLayout(300);gSetupInteraction();gGraphInited=true;
+    }
+    setTimeout(fitGraph,60);if(activeCat)applyGraphFilter(activeCat);
+  }else{
+    btn.style.cssText='';gview.classList.remove('visible');canvas.style.display='';
+  }
+}
+const _origApply=applyFilter;
+applyFilter=function(catId){_origApply(catId);if(gGraphActive&&gGraphInited)applyGraphFilter(catId);};
+const _origClear=clearFilter;
+clearFilter=function(){_origClear();if(gGraphActive&&gGraphInited)clearGraphFilter();};
+
+let studyMode=false;
+function toggleStudyMode(){
+  studyMode=!studyMode;
+  const btn=document.getElementById('btn-study');
+  if(studyMode){
+    document.querySelectorAll('.node-label,.node-sub').forEach(el=>el.style.opacity='0');
+    btn.style.cssText='border-color:var(--teal);color:var(--teal);background:rgba(26,188,156,.1)';
+    btn.textContent='👁 Labels Hidden';
+  }else{
+    document.querySelectorAll('.node-label,.node-sub').forEach(el=>el.style.opacity='');
+    btn.style.cssText='';btn.textContent='👁 Study Mode';
+  }
+}
+</script>
+<style id="declutter-overrides">
+#sidebar, #footer, #btn-study, #header .hdr-sep { display: none !important; }
+#app { grid-template-columns: 0 1fr 0 !important; grid-template-rows: var(--header-h) 1fr 0 !important; }
+body.detail-open #app { grid-template-columns: 0 1fr var(--detail-w) !important; }
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var b = document.getElementById('btn-graph');
+  if (!b) return;
+  function upd() {
+    var cv = document.getElementById('canvas'), gv = document.getElementById('graph-view');
+    var active = (cv && cv.style.display === 'none') || (gv && gv.classList.contains('visible'));
+    b.textContent = active ? '🫧 Bubble View' : '🗺 Graph View';
+  }
+  if (!gGraphActive) { toggleGraphView(); }
+  b.addEventListener('click', function () { setTimeout(upd, 0); });
+  upd();
+});
+</script>
+</body>
+</html>

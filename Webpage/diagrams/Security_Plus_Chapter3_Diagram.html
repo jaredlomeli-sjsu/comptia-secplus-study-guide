@@ -951,7 +951,7 @@ body.study-mode #study-banner { display: block; }
        HEADER
   ═══════════════════════════════════════════ -->
   <header id="header">
-    <a href="file:///C:/Users/jared/OneDrive/Desktop/Claude_General/SecurityPlus_StudyGuide/index.html" id="btn-toc" title="Table of Contents">&#8592; Contents</a>
+    <a href="../chapter3.html" id="btn-toc">&#8592; Chapter 3</a>
     <h1>Security<span>+</span> SY0-701 &nbsp;·&nbsp; Chapter 3</h1>
     <div class="hdr-sep"></div>
     <button class="hdr-btn" id="btn-attack"   onclick="toggleOverlay('attack')"  >⚠ Attack Paths</button>
@@ -3717,6 +3717,7 @@ document.addEventListener('DOMContentLoaded', function () {
     b.textContent = active ? '🫧 Bubble View' : '🗺 Graph View';
   }
   b.addEventListener('click', function () { setTimeout(upd, 0); });
+  if (!gGraphActive) toggleGraphView();
   upd();
 });
 </script>

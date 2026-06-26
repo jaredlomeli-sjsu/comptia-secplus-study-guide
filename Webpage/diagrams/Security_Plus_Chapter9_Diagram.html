@@ -1193,6 +1193,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var active = (cv && cv.style.display === 'none') || (gv && gv.classList.contains('visible'));
     b.textContent = active ? '🫧 Bubble View' : '🗺 Graph View';
   }
+  if (!gGraphActive) { toggleGraphView(); }
   b.addEventListener('click', function () { setTimeout(upd, 0); });
   upd();
 });

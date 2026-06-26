@@ -129,9 +129,12 @@ em { color: var(--text); }
   backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
   padding: 0 20px; height: 64px;
-  overflow-x: auto; white-space: nowrap; scrollbar-width: none;
+  overflow-x: auto; white-space: nowrap; scrollbar-width: thin; scrollbar-color: rgba(34,211,238,0.4) transparent;
 }
-.topnav::-webkit-scrollbar { display: none; }
+.topnav::-webkit-scrollbar { height: 3px; }
+.topnav::-webkit-scrollbar-track { background: transparent; }
+.topnav::-webkit-scrollbar-thumb { background: rgba(34,211,238,0.4); border-radius: 999px; }
+.topnav::-webkit-scrollbar-thumb:hover { background: rgba(34,211,238,0.75); }
 .topnav .brand {
   display: inline-flex; align-items: center; gap: 9px;
   font-weight: 800; font-size: 15px; letter-spacing: -0.02em;

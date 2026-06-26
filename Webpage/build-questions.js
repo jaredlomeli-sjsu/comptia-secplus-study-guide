@@ -228,7 +228,13 @@ const ACR = [
   ['URL', 'Uniform Resource Locator', 3],
   ['OWASP', 'Open Worldwide Application Security Project', 2],
   ['API', 'Application Programming Interface', 4],
-  ['CI/CD', 'Continuous Integration and Continuous Deployment', 4]
+  ['CI/CD', 'Continuous Integration and Continuous Deployment', 4],
+  ['BPA', 'Business Partnership Agreement', 5],
+  ['RoE', 'Rules of Engagement', 5],
+  ['CCPA', 'California Consumer Privacy Act', 5],
+  ['EoL', 'End of Life', 5],
+  ['EoSL', 'End of Service Life', 5],
+  ['eDiscovery', 'Electronic Discovery (identifying and producing ESI for legal proceedings)', 5]
 ];
 
 /* ════════ SOURCE TABLE: SECURE PAIRS [insecure, secure, domain] ════════ */
@@ -411,7 +417,33 @@ const CONCEPTS = [
   ['Guardrails', 'automated policy limits that prevent unsafe actions in cloud or automation', 4],
   ['CI/CD', 'automatically building, testing, and deploying code on every change', 4],
   ['User provisioning', 'automatically creating, modifying, and disabling user accounts', 4],
-  ['Forgery', 'creating fraudulent data so a system treats it as genuine', 2]
+  ['Forgery', 'creating fraudulent data so a system treats it as genuine', 2],
+  /* Ch 11 Concepts */
+  ['Top Secret (government)', 'the highest U.S. government classification — unauthorized disclosure causes exceptionally grave damage to national security', 5],
+  ['Secret (government)', 'a U.S. government classification whose unauthorized disclosure would cause serious damage to national security', 5],
+  ['Confidential (government)', 'the lowest U.S. government classification requiring a clearance — disclosure would damage national security', 5],
+  ['Data owner', 'a senior executive accountable for a data set who determines its classification and approves access', 5],
+  ['Data custodian', 'IT personnel who store, maintain, and protect data per the owner\'s policies — implements controls but does not set policy', 5],
+  ['Data steward', 'the day-to-day manager of data quality and governance who enforces classification rules', 5],
+  ['Data controller (GDPR)', 'under GDPR, the entity that determines the purpose and means of processing personal data and bears primary legal responsibility', 5],
+  ['Data processor (GDPR)', 'under GDPR, a third party that processes personal data on behalf of a controller per the controller\'s instructions', 5],
+  ['Data retention policy', 'a policy specifying how long each data category must be kept before secure destruction, driven by legal mandates', 5],
+  ['Degaussing', 'exposing magnetic media to a strong magnetic field to erase data — effective on HDDs and tapes but does nothing to SSDs', 4],
+  ['Physical destruction (media)', 'shredding or crushing storage media into small particles — the only reliable sanitization method for SSDs', 4],
+  ['Certificate of destruction', 'a formal document from a NAID AAA-certified vendor confirming media was destroyed per standards, providing audit proof', 5],
+  ['NIST SP 800-61', 'the NIST incident handling guide defining four phases: Preparation, Detection & Analysis, Containment/Eradication/Recovery, Post-Incident', 4],
+  ['Order of volatility', 'the sequence for collecting digital evidence from most volatile to least: CPU registers → RAM → network state → processes → disk → remote logging → archival media', 4],
+  ['Legal hold', 'a directive that suspends normal data retention and deletion policies to preserve data relevant to anticipated or active litigation', 5],
+  ['Chain of custody', 'a documented record tracking who collected evidence, how it was handled, and who accessed it — a broken chain can make evidence inadmissible', 4],
+  ['Threat hunting', 'a proactive, human-led search for malicious activity that assumes compromise has already occurred and looks for hidden indicators automated tools missed', 4],
+  ['Runbook', 'the tactical companion to a playbook — contains exact commands and scripts to execute each response step, directly automatable in SOAR', 4],
+  ['Policy hierarchy', 'the four-level document hierarchy: Policy (mandatory) → Standard (mandatory specific) → Procedure (step-by-step) → Guideline (recommended)', 5],
+  ['EoSL', 'end of service life — the date a vendor stops providing security patches, leaving any new CVEs permanently unpatched', 5],
+  ['Centralized governance', 'a governance model where a single security team sets and enforces policy organization-wide, providing consistency at the cost of agility', 5],
+  ['MOU', 'a memorandum of understanding that documents mutual intent to cooperate — typically NOT legally binding, unlike a contract or NDA', 5],
+  ['Right-to-audit clause', 'a contractual provision allowing a customer to audit a vendor\'s security controls to verify their claimed security posture', 5],
+  ['CCPA', 'the California Consumer Privacy Act granting residents the right to know what data is collected, the right to delete it, and the right to opt out of its sale', 5],
+  ['Phishing simulation', 'a controlled simulated phishing campaign sent to employees to measure click rate and credential submission rate — the key metric for awareness training effectiveness', 4]
 ];
 
 /* ════════ HAND-WRITTEN SCENARIO QUESTIONS ════════ */
@@ -536,7 +568,38 @@ const SCEN = [
     'DNSSEC signs DNS records so resolvers can verify authenticity; it authenticates but does not encrypt.', 3],
   ['A flaw exploits the gap between when a resource is checked and when it is used. This is a:',
     ['Race condition (TOCTOU)', 'Buffer overflow', 'Integer overflow', 'Memory leak'], 0,
-    'A time-of-check to time-of-use race condition exploits the timing gap between validation and use.', 2]
+    'A time-of-check to time-of-use race condition exploits the timing gap between validation and use.', 2],
+  /* Ch 11 scenario questions */
+  ['Which data sanitization method is the ONLY reliable option for an SSD?',
+    ['Wiping (multiple-pass overwrite)', 'Degaussing', 'Physical destruction', 'File shredding'], 2,
+    'Wear-leveling on SSDs prevents all cells from being overwritten, making wiping and degaussing ineffective. Physical destruction (shredding/crushing) is the only reliable SSD sanitization method.', 4],
+  ['A legal team issues a litigation hold notice. Which action must the IT department take immediately?',
+    ['Delete all data older than 30 days', 'Suspend normal retention and deletion policies for relevant data', 'Move data to cold storage', 'Encrypt and archive all data'], 1,
+    'A legal hold suspends normal deletion policies to preserve potentially relevant data. Destroying data after a hold notice is issued is spoliation — a serious legal offense.', 5],
+  ['An employee signs a document confirming they read and will comply with the acceptable use policy. This is BEST described as:',
+    ['Attestation', 'Acknowledgement', 'Due diligence', 'Non-repudiation'], 1,
+    'An acknowledgement is a signed confirmation that someone has read and agrees to comply with a policy. Attestation is a formal declaration that controls are in place (e.g., SOC 2).', 5],
+  ['A MOU is described as "not legally binding." What does this mean for security agreements?',
+    ['It has the same force as a contract', 'It expresses intent to cooperate but is not contractually enforceable', 'It is a subset of an NDA', 'It defines service level metrics and penalties'], 1,
+    'A Memorandum of Understanding documents mutual intent but is typically not legally enforceable. An SLA defines enforceable metrics; an NDA is legally binding confidentiality.', 5],
+  ['When collecting evidence from a compromised workstation, which source should be captured FIRST?',
+    ['Hard disk image', 'Remote logging server', 'RAM (memory dump)', 'Archival backup tapes'], 2,
+    'The order of volatility dictates that RAM is captured before disk because memory contents are lost when the system is powered off or rebooted.', 4],
+  ['A SIEM alert fires and an automated platform isolates the affected host, opens a ticket, and notifies the analyst — without human intervention. Which technology did this?',
+    ['EDR', 'DLP', 'SOAR', 'CASB'], 2,
+    'SOAR (Security Orchestration, Automation, and Response) acts on SIEM alerts by executing automated playbooks. The SIEM detects; SOAR responds.', 4],
+  ['Which Ch 11 document is signed before a penetration test and defines the scope, out-of-scope systems, and emergency contacts?',
+    ['NDA', 'MOU', 'Rules of Engagement', 'MSA'], 2,
+    'Rules of Engagement (RoE) must be signed before any pen test begins. Without them, even authorized testing could expose the tester to criminal liability.', 5],
+  ['An organization discovers an employee has been copying customer PII to a personal drive before leaving. Under GDPR and CCPA, the organization MUST:',
+    ['Keep the data indefinitely as evidence', 'Honor deletion requests and notify affected customers per breach notification rules', 'Transfer data to a government agency', 'Re-classify the data as public'], 1,
+    'Both GDPR and CCPA impose breach notification requirements and honor deletion (right-to-be-forgotten) requests. A data breach involving PII triggers mandatory notification timelines.', 5],
+  ['Which software development practice ensures security is integrated from requirements through deployment rather than added at the end?',
+    ['Waterfall development', 'Shift-left security in the SDLC', 'Black-box testing only', 'EoSL monitoring'], 1,
+    'Shift-left security integrates security at every SDLC phase — requirements, design, development, testing, and deployment — finding defects earliest when they are cheapest to fix.', 5],
+  ['An organization runs software whose vendor stopped issuing security patches two years ago. Which term describes this software status?',
+    ['EoL (End of Life)', 'EoSL (End of Service Life)', 'Deprecated', 'Legacy and patched'], 1,
+    'EoSL (End of Service Life) is when the vendor stops security patches. Any new CVE discovered after EoSL is a permanent, unpatched vulnerability. EoL only means no new features.', 5]
 ];
 
 /* ════════ ASSEMBLY ════════ */

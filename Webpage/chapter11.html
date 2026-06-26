@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch 11 · Implementing Policies — Security+ SY0-701</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+<nav class="topnav">
+  <a class="brand" href="index.html">Security<span>+</span> SY0-701</a>
+  <a class="navlink" href="index.html">Home</a>
+  <a class="navlink" href="chapters1-2.html">Ch 1–2 · Basics &amp; IAM</a>
+  <a class="navlink" href="chapter3.html">Ch 3 · Networks</a>
+  <a class="navlink" href="chapters4-5.html">Ch 4–5 · Net Defense &amp; Hosts</a>
+  <a class="navlink" href="chapter6.html">Ch 6 · Threats</a>
+  <a class="navlink" href="chapter7.html">Ch 7 · Advanced Attacks</a>
+  <a class="navlink" href="chapter8.html">Ch 8 · Risk Mgmt</a>
+  <a class="navlink" href="chapter9.html">Ch 9 · Controls</a>
+  <a class="navlink" href="chapter10.html">Ch 10 · Cryptography</a>
+  <a class="navlink active" href="chapter11.html">Ch 11 · Policies</a>
+  <a class="navlink" href="practice.html">Practice</a>
+  <a class="navlink" href="glossary.html">Glossary</a>
+</nav>
+
+<main class="page" id="main">
+
+  <header class="page-header">
+    <div class="badge">Chapter 11</div>
+    <h1>Implementing Policies <span>to Mitigate Risks</span></h1>
+    <p class="subtitle">Data governance &amp; classification · sanitization &amp; destruction · incident response (NIST SP 800-61) · digital forensics &amp; legal holds · SOAR &amp; automation · security governance structure · legal agreements &amp; compliance frameworks · security awareness training.</p>
+  </header>
+
+  <div class="toc">
+    <a href="#data-classification">Data Classification</a>
+    <a href="#regulated-data">Regulated &amp; Sensitive Data</a>
+    <a href="#data-sanitization">Data Sanitization &amp; Destruction</a>
+    <a href="#incident-response">Incident Response</a>
+    <a href="#digital-forensics">Digital Forensics &amp; Legal Holds</a>
+    <a href="#soar">SOAR, Playbooks &amp; Runbooks</a>
+    <a href="#governance">Security Governance Structure</a>
+    <a href="#legal-agreements">Legal Agreements &amp; Compliance</a>
+    <a href="#awareness">Security Awareness Training</a>
+  </div>
+
+  <!-- ════════════ DATA CLASSIFICATION ════════════ -->
+  <section id="data-classification">
+    <div class="sec-head">
+      <h2>Data Classification</h2>
+      <span class="sec-tag">Labeling data by sensitivity so the right controls follow it everywhere</span>
+    </div>
+    <p><strong>Data classification</strong> is the process of assigning a sensitivity label to data based on its value, sensitivity, and the consequences of unauthorized disclosure. Classification drives access control, encryption requirements, data retention policies, and destruction methods. Two parallel schemas exist: <strong>government</strong> (formal statutory levels) and <strong>commercial/private sector</strong> (organization-defined).</p>
+
+    <h3>Government Classification Levels</h3>
+    <p>U.S. federal classification is defined by Executive Order 13526. Authorized by the President, only officials with original classification authority (OCA) can classify information at these levels:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Level</th><th>Definition</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Top Secret</strong></td><td>Unauthorized disclosure could cause <strong>exceptionally grave damage</strong> to national security.</td><td>Intelligence sources and methods, nuclear weapons designs, covert operations.</td></tr>
+        <tr><td><strong>Secret</strong></td><td>Unauthorized disclosure could cause <strong>serious damage</strong> to national security.</td><td>Military plans, foreign government information, weapons systems specifications.</td></tr>
+        <tr><td><strong>Confidential</strong></td><td>Unauthorized disclosure could cause <strong>damage</strong> to national security.</td><td>Troop strength data, defense procurement details.</td></tr>
+        <tr><td><strong>Unclassified</strong></td><td>No national security risk. May still require protection under other rules (CUI — Controlled Unclassified Information).</td><td>General government publications, press releases.</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="tip"><b>Exam tip:</b> The three classified levels in order from most to least sensitive: <strong>Top Secret → Secret → Confidential</strong>. Know that <em>Confidential</em> is the lowest <em>classified</em> level — it still requires clearance. "Unclassified" does not mean publicly available; it simply lacks a national security classification.</div>
+
+    <h3>Commercial / Private-Sector Classification</h3>
+    <p>Organizations that do not handle government-classified data still classify their own data using a custom schema. A common four-tier model:</p>
+    <div class="grid2">
+      <div class="card accent-red">
+        <h4>Restricted</h4>
+        <p>Highest sensitivity. Disclosure would cause <strong>severe harm</strong> — financial, legal, or reputational. Strong access controls and encryption required. Examples: merger &amp; acquisition plans, private encryption keys, executive compensation.</p>
+      </div>
+      <div class="card accent-orange">
+        <h4>Confidential / Private</h4>
+        <p>Sensitive internal information. Disclosure could cause significant harm. Accessible only to authorized staff. Examples: HR records, salary data, customer PII, internal audit findings.</p>
+      </div>
+      <div class="card accent-blue">
+        <h4>Sensitive / Internal</h4>
+        <p>Not for public release but lower impact if disclosed. Examples: internal project plans, product roadmaps, internal policies, non-public financial forecasts.</p>
+      </div>
+      <div class="card accent-teal">
+        <h4>Public</h4>
+        <p>Approved for public release. No restriction on distribution. Examples: marketing materials, press releases, published reports, job postings.</p>
+      </div>
+    </div>
+
+    <h3>Data Roles</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Role</th><th>Responsibility</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Data Owner</strong></td><td>Senior executive accountable for a data set. Determines classification level and approves access. Ultimately responsible for data security decisions.</td></tr>
+        <tr><td><strong>Data Steward</strong></td><td>Day-to-day manager of data quality and governance. Enforces classification rules and maintains data dictionaries. Often a business-side role.</td></tr>
+        <tr><td><strong>Data Custodian</strong></td><td>IT personnel responsible for storing, maintaining, and protecting data per the owner's policies. Implements encryption, backups, and access controls but does not set policy.</td></tr>
+        <tr><td><strong>Data Controller</strong></td><td>Under GDPR — the entity that determines the <em>purpose and means</em> of processing personal data. Bears primary legal responsibility for compliance.</td></tr>
+        <tr><td><strong>Data Processor</strong></td><td>Under GDPR — a third party that processes personal data on behalf of a controller (e.g., a payroll vendor). Must follow the controller's instructions and meet security standards.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Permission Restrictions &amp; Change Management</h3>
+    <p><strong>Permission restrictions</strong> define who can read, write, execute, or delete data in each classification tier. Access must follow <strong>least privilege</strong> and be reviewed regularly via access attestation. When sensitivity changes — through a merger, product launch, or legal ruling — <strong>change management</strong> processes must update the classification label and all downstream controls.</p>
+    <p><strong>Version control</strong> systems (Git, SVN) protect the integrity of source code and configuration files. Every change is logged with author, timestamp, and reason — creating an audit trail that supports both security and compliance. Version control is itself a security control: it prevents unauthorized modifications and enables rollback after incidents.</p>
+    <div class="tip"><b>Exam tip:</b> Know the five data roles — Owner, Steward, Custodian, Controller, Processor. The <em>owner</em> classifies; the <em>custodian</em> protects. Under GDPR, <em>controller</em> decides purpose; <em>processor</em> executes instructions.</div>
+  </section>
+
+  <!-- ════════════ REGULATED & SENSITIVE DATA ════════════ -->
+  <section id="regulated-data">
+    <div class="sec-head">
+      <h2>Regulated &amp; Sensitive Data Types</h2>
+      <span class="sec-tag">Categories that carry legal obligations regardless of your own classification scheme</span>
+    </div>
+    <p><strong>Regulated data</strong> is any information type that a statute, regulation, or industry standard requires to be protected in a specific way. Mishandling regulated data exposes organizations to fines, litigation, and reputational damage. Knowing which category a data element falls into determines which controls apply.</p>
+
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Data Type</th><th>Description</th><th>Key Regulation</th></tr></thead>
+      <tbody>
+        <tr><td><strong>PII</strong></td><td><strong>Personally Identifiable Information</strong> — any data that can identify an individual: name, SSN, email, IP address, biometrics.</td><td>GDPR, CCPA, state breach laws</td></tr>
+        <tr><td><strong>PHI</strong></td><td><strong>Protected Health Information</strong> — health records, diagnoses, treatment info, insurance data tied to an individual.</td><td>HIPAA, HITECH</td></tr>
+        <tr><td><strong>Financial Data</strong></td><td>Payment card data, bank account numbers, credit scores, transaction histories. Must be encrypted and access-logged.</td><td>PCI DSS, SOX, GLBA</td></tr>
+        <tr><td><strong>Intellectual Property (IP)</strong></td><td>Inventions, creative works, and proprietary business methods protected by patent, copyright, or trademark law.</td><td>Patent Act, Copyright Act, EEA</td></tr>
+        <tr><td><strong>Trade Secret</strong></td><td>Confidential business information that provides a competitive advantage (formulas, algorithms, customer lists, manufacturing processes). Protected as long as secrecy is maintained.</td><td>DTSA, state trade secret laws</td></tr>
+        <tr><td><strong>Legal Information</strong></td><td>Attorney-client privileged communications, litigation strategy, regulatory filings, and contracts. Disclosure can waive privilege or cause legal harm.</td><td>Attorney-client privilege, ethics rules</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="tip"><b>Exam tip:</b> A <strong>trade secret</strong> differs from a patent: a patent is publicly disclosed in exchange for a time-limited monopoly; a trade secret derives value from remaining <em>secret</em> indefinitely. The moment a trade secret is publicly disclosed or independently discovered, protection ends. Examples: Coca-Cola formula, Google search algorithm.</div>
+
+    <h3>Data Retention Policies</h3>
+    <p>A <strong>data retention policy</strong> specifies how long each data category must be kept and when it must be destroyed. Retention is driven by legal requirements (SOX requires 7 years for financial records), operational need, and storage cost. Keeping data longer than necessary increases breach risk and legal liability — this is why GDPR's <strong>right to be forgotten</strong> (right-to-erasure) is a compliance requirement. A <strong>data inventory</strong> cataloging all data assets is the prerequisite for enforcing retention rules.</p>
+    <div class="grid2">
+      <div class="card accent-blue">
+        <h4>Retention Too Short</h4>
+        <p>Risk: Regulatory violation. Cannot produce required records during audit or litigation. eDiscovery obligations may be unmet.</p>
+      </div>
+      <div class="card accent-orange">
+        <h4>Retention Too Long</h4>
+        <p>Risk: Unnecessarily large breach footprint. Higher storage costs. Difficulty identifying what data exists. Greater privacy-regulation exposure.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ DATA SANITIZATION & DESTRUCTION ════════════ -->
+  <section id="data-sanitization">
+    <div class="sec-head">
+      <h2>Data Sanitization &amp; Destruction</h2>
+      <span class="sec-tag">Wipe it right — the method must match the media and the classification</span>
+    </div>
+    <p><strong>Data sanitization</strong> is the deliberate, permanent, and irreversible removal of data from storage media before reuse, repurposing, or disposal. The goal: ensure data cannot be recovered even with forensic tools. The required method depends on the media type and the sensitivity of the data it held.</p>
+
+    <h3>Sanitization Methods</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Method</th><th>How It Works</th><th>Best For</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Wiping (Overwrite)</strong></td><td>Writes patterns of 0s, 1s, or random data over every addressable sector — one or more passes (DoD 5220.22-M, NIST 800-88).</td><td>HDDs, flash drives, USB sticks</td><td>Allows device reuse. Not sufficient for SSDs due to wear-leveling and overprovisioned cells that overwriting cannot reach.</td></tr>
+        <tr><td><strong>File Shredding</strong></td><td>Software overwrites a specific file's disk sectors before deleting it, preventing recovery even with undelete tools.</td><td>Individual sensitive files on HDDs</td><td>OS "delete" only removes the directory entry — file shredding overwrites the actual data blocks. Tools: shred (Linux), Eraser (Windows).</td></tr>
+        <tr><td><strong>Degaussing</strong></td><td>Exposes magnetic media to a strong, rapidly changing magnetic field, randomizing all magnetic domains and erasing all data.</td><td>HDDs, magnetic tapes</td><td>Renders the drive inoperable (servo tracks destroyed). <strong>Does not work on SSDs or optical media</strong> — they have no magnetic properties.</td></tr>
+        <tr><td><strong>Physical Destruction</strong></td><td>Shredding, crushing, drilling, disintegrating the physical media into small particles (&lt;2mm for NSA/CSS standards).</td><td>SSDs, NVMe, encrypted drives, smartphones</td><td><strong>Only reliable method for SSDs.</strong> Also the required method for Top Secret HDDs per NSA guidelines. Media shredders achieve particle sizes of 0.5–2mm.</td></tr>
+        <tr><td><strong>Paper Shredding</strong></td><td>Mechanical cutting of paper documents. Cross-cut (DIN 66399 P-4) is minimum for sensitive data; micro-cut (P-5/P-6) for highly sensitive. Strip-cut is insufficient.</td><td>Paper documents, printed records</td><td>DIN 66399 security levels P-1 through P-7. Government and financial records typically require cross-cut minimum.</td></tr>
+        <tr><td><strong>Pulping</strong></td><td>Paper is soaked in water and chemicals, breaking it down into pulp. The original document cannot be reconstructed.</td><td>Large volumes of paper</td><td>Used by financial institutions and government agencies for bulk document disposal. More thorough than shredding.</td></tr>
+        <tr><td><strong>Burning / Incineration</strong></td><td>Combustion reduces media to ash. Used for paper, optical discs, and some plastic-backed media in high-security environments.</td><td>Documents, optical media, some plastics</td><td>Must reach sufficient temperatures. Regulatory permits often required. Ashes may still require verification.</td></tr>
+        <tr><td><strong>Third-Party Solutions</strong></td><td>Contracted destruction services with chain-of-custody documentation, witnessed destruction, and <strong>certificates of destruction</strong>.</td><td>Enterprise-scale disposal</td><td>Choose a vendor certified under NAID AAA (National Association for Information Destruction). Certificate of destruction is required for audit trails and compliance.</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="warn"><b>⚠ SSD / NVMe Warning:</b> Standard wiping and degaussing <strong>do not reliably sanitize SSDs</strong>. Wear-leveling algorithms spread writes across cells — some data cells will not be overwritten, leaving data in over-provisioned or worn-out cells. The ATA Secure Erase command (if implemented correctly by the firmware) or physical destruction are the only reliable methods for flash-based media.</div>
+
+    <div class="tip"><b>Exam tip — match method to media:</b><br>
+    • HDD reuse → Wiping (overwrite)<br>
+    • HDD disposal → Degaussing (destroys drive)<br>
+    • SSD always → Physical destruction (or vendor Secure Erase)<br>
+    • Paper → Cross-cut shredding minimum; pulping for bulk<br>
+    • Optical (CD/DVD) → Physical destruction or incineration<br>
+    • Proof required → Certification of destruction from NAID-certified vendor</div>
+  </section>
+
+  <!-- ════════════ INCIDENT RESPONSE ════════════ -->
+  <section id="incident-response">
+    <div class="sec-head">
+      <h2>Incident Response</h2>
+      <span class="sec-tag">NIST SP 800-61 — a structured lifecycle for detecting and recovering from attacks</span>
+    </div>
+    <p>A <strong>security incident</strong> is any event that actually or potentially threatens the confidentiality, integrity, or availability of information systems or data. A <strong>data breach</strong> is a specific incident type in which unauthorized parties access or exfiltrate protected data. Organizations manage incidents through a formal <strong>incident response (IR) plan</strong> that defines roles, escalation paths, and procedures before an incident occurs.</p>
+    <p><strong>NIST SP 800-61 Revision 2</strong> (<em>Computer Security Incident Handling Guide</em>) is the authoritative federal framework for IR. It defines a four-phase lifecycle that is the basis for most exam questions in this area.</p>
+
+    <h3>NIST SP 800-61 Incident Response Lifecycle</h3>
+    <figure class="diagram">
+      <svg width="680" viewBox="0 0 680 160" role="img" aria-label="NIST IR lifecycle: Preparation, Detection and Analysis, Containment Eradication and Recovery, Post-Incident Activity">
+        <defs>
+          <marker id="ira" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#22d3ee"/>
+          </marker>
+        </defs>
+        <rect x="10" y="40" width="140" height="80" rx="10" fill="rgba(52,211,153,0.10)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="80" y="74" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#34d399">Preparation</text>
+        <text x="80" y="92" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#93a1b8">IR plan · team</text>
+        <text x="80" y="108" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#93a1b8">tools · training</text>
+        <line x1="154" y1="80" x2="172" y2="80" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#ira)"/>
+        <rect x="176" y="40" width="140" height="80" rx="10" fill="rgba(34,211,238,0.10)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="246" y="68" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#22d3ee">Detection &amp;</text>
+        <text x="246" y="84" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#22d3ee">Analysis</text>
+        <text x="246" y="104" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#93a1b8">SIEM · logs · IoC</text>
+        <line x1="320" y1="80" x2="338" y2="80" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#ira)"/>
+        <rect x="342" y="40" width="175" height="80" rx="10" fill="rgba(251,191,36,0.08)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="430" y="68" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#fbbf24">Containment,</text>
+        <text x="430" y="83" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#fbbf24">Eradication &amp;</text>
+        <text x="430" y="98" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#fbbf24">Recovery</text>
+        <line x1="521" y1="80" x2="539" y2="80" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#ira)"/>
+        <rect x="543" y="40" width="127" height="80" rx="10" fill="rgba(129,140,248,0.10)" stroke="#818cf8" stroke-width="1.5"/>
+        <text x="607" y="74" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#818cf8">Post-Incident</text>
+        <text x="607" y="90" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#818cf8">Activity</text>
+        <text x="607" y="108" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#93a1b8">Lessons learned</text>
+        <path d="M607,124 Q607,148 246,148 Q80,148 80,124" fill="none" stroke="#475569" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#ira)"/>
+        <text x="340" y="160" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#64748b">Cycle repeats — each incident improves future preparation</text>
+      </svg>
+      <figcaption><b>NIST SP 800-61 Rev 2 IR lifecycle.</b> The four phases form a continuous improvement loop — lessons learned feed back into preparation for the next incident.</figcaption>
+    </figure>
+
+    <div class="table-wrap"><table>
+      <thead><tr><th>Phase</th><th>Key Activities</th></tr></thead>
+      <tbody>
+        <tr><td><strong>1 — Preparation</strong></td><td>Develop the IR plan; form the IR team (CIRT/CSIRT); define communication plan (first responders, internal escalation, law enforcement contacts, customer notification templates); procure and stage tools; conduct tabletop exercises and drills.</td></tr>
+        <tr><td><strong>2 — Detection &amp; Analysis</strong></td><td>Monitor using SIEM, IDS/IPS, EDR; identify indicators of compromise (IoCs); classify incident severity; determine scope (what systems, what data); maintain incident log; escalate per plan.</td></tr>
+        <tr><td><strong>3 — Containment, Eradication &amp; Recovery</strong></td><td><em>Containment:</em> Isolate affected systems (network segmentation, blocking). <em>Eradication:</em> Remove malware, patch vulnerabilities, revoke compromised credentials. <em>Recovery:</em> Restore from clean backups, verify integrity, return to production. Short-term containment (stop bleeding) then long-term containment (stable reduced-risk state).</td></tr>
+        <tr><td><strong>4 — Post-Incident Activity (Lessons Learned)</strong></td><td>Document timeline, root cause, and impact. Identify what worked and what failed. Update IR plan, playbooks, and detection rules. Produce the incident report. Hold lessons-learned meeting within 2 weeks.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Incident Response Team &amp; Communication Plan</h3>
+    <div class="grid2">
+      <div class="card accent-teal">
+        <h4>IR Team Composition</h4>
+        <ul>
+          <li><strong>Incident Commander</strong> — coordinates overall response</li>
+          <li><strong>Security Analysts</strong> — technical investigation</li>
+          <li><strong>IT Operations</strong> — system recovery</li>
+          <li><strong>Legal / Counsel</strong> — litigation hold, regulatory obligations</li>
+          <li><strong>PR / Communications</strong> — external messaging</li>
+          <li><strong>HR</strong> — insider threat cases</li>
+          <li><strong>Management</strong> — resource authorization, business decisions</li>
+        </ul>
+      </div>
+      <div class="card accent-blue">
+        <h4>Communication Plan</h4>
+        <ul>
+          <li><strong>First responders</strong> — Who to call first (on-call analyst, CISO)</li>
+          <li><strong>Internal communication</strong> — What to tell employees; use out-of-band channels if email is compromised</li>
+          <li><strong>Reporting requests</strong> — Manage info requests carefully to avoid tipping off attackers</li>
+          <li><strong>Law enforcement</strong> — FBI (for nation-state/ransomware), USSS (financial crimes), local LE</li>
+          <li><strong>Customer communication</strong> — Breach notification timelines (72 hrs GDPR, 30 days many state laws)</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Threat Hunting</h3>
+    <p><strong>Threat hunting</strong> is a proactive, human-led search for malicious activity that automated tools have not detected. Unlike reactive incident response, threat hunters assume compromise has already occurred and search for hidden indicators. Hunters form a hypothesis (e.g., "an APT may have lateral movement via RDP"), collect data, analyze it, and either confirm or refute the hypothesis. Confirmed findings become new detection rules for the SIEM.</p>
+    <div class="tip"><b>Exam tip:</b> The seven IR phases in order: <strong>Preparation → Detection/Analysis → Containment → Eradication → Recovery → Lessons Learned</strong>. The exam may ask which phase involves notifying law enforcement (Preparation — the plan is established beforehand; Containment — when active engagement occurs) or which comes first (Preparation always comes first).</div>
+  </section>
+
+  <!-- ════════════ DIGITAL FORENSICS & LEGAL HOLDS ════════════ -->
+  <section id="digital-forensics">
+    <div class="sec-head">
+      <h2>Digital Forensics &amp; Legal Holds</h2>
+      <span class="sec-tag">Evidence chain — collect, preserve, analyze in a court-admissible way</span>
+    </div>
+    <p><strong>Digital forensics</strong> is the application of scientific methods to collect, preserve, analyze, and present digital evidence in a manner that is legally admissible and withstands scrutiny. Every action taken on a system potentially modifies evidence — forensic discipline requires documenting every step.</p>
+
+    <h3>Order of Volatility</h3>
+    <p>The <strong>order of volatility</strong> governs which evidence must be collected first, from most volatile (lost when power is removed) to least volatile (survives indefinitely). Forensic investigators must collect evidence in this order to preserve the most transient data before it is lost.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Priority</th><th>Evidence Type</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><strong>1 — Most Volatile</strong></td><td>CPU registers &amp; CPU cache</td><td>Lost the instant the CPU stops executing. Practically uncapturable in live forensics.</td></tr>
+        <tr><td><strong>2</strong></td><td>RAM (memory dump)</td><td>Contains running processes, encryption keys in memory, network connections, bash history not yet written to disk. Captured with tools like Volatility, WinPmem.</td></tr>
+        <tr><td><strong>3</strong></td><td>Network connections &amp; ARP/routing tables</td><td>Active connections, listening ports, ARP cache. Cleared when interfaces are reset or system reboots.</td></tr>
+        <tr><td><strong>4</strong></td><td>Running processes / open file handles</td><td>Process list, loaded modules, temp files mapped in memory.</td></tr>
+        <tr><td><strong>5</strong></td><td>Disk / Storage (HDD, SSD)</td><td>File system artifacts, logs, deleted files. Survives power cycle. Capture with write-blocker + forensic image (dd, FTK Imager).</td></tr>
+        <tr><td><strong>6</strong></td><td>Remote logging / SIEM data</td><td>Logs forwarded off-system to SIEM are preserved even if the local system is wiped.</td></tr>
+        <tr><td><strong>7 — Least Volatile</strong></td><td>Archival media (backups, optical)</td><td>Written once, rarely changes. Can be retrieved long after the incident.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Forensic Artifacts</h3>
+    <p><strong>Forensic artifacts</strong> are digital traces left by user and system activity that can be used to reconstruct events. Key artifact sources:</p>
+    <div class="grid2">
+      <div class="card accent-teal">
+        <h4>File Metadata</h4>
+        <p>Every file has metadata: created, modified, and accessed timestamps (MAC times), file size, owner, permissions, and hash values. Attackers often try to timestomp (alter MAC times) to hide activity.</p>
+      </div>
+      <div class="card accent-blue">
+        <h4>Email Metadata</h4>
+        <p>Email headers reveal sending IP, originating MTA servers, timestamps, and message routing. Useful for tracking phishing campaigns and data exfiltration via email.</p>
+      </div>
+      <div class="card accent-purple">
+        <h4>Web / Browser Artifacts</h4>
+        <p>Browser history, cookies, cached pages, download history, and saved credentials stored in browser profile folders. Index.dat (IE legacy) and SQLite databases (Chrome, Firefox).</p>
+      </div>
+      <div class="card accent-orange">
+        <h4>Mobile Device Artifacts</h4>
+        <p>Call logs, SMS/MMS, app data, GPS location history, Wi-Fi connection history, and app permission logs. Require specialized tools (Cellebrite, Oxygen Forensics) and may need locked device bypass.</p>
+      </div>
+    </div>
+
+    <h3>RDP Cache</h3>
+    <p>When using <strong>Remote Desktop Protocol (RDP)</strong>, Windows caches bitmap tiles of the remote desktop to improve rendering performance. These cache files (stored in <code>%LOCALAPPDATA%\Microsoft\Terminal Server Client\Cache\</code>) contain fragments of what was displayed on the remote session — including visible documents, screenshots, and usernames. Forensic tools like <em>bmc-tools</em> can reconstruct these tile caches into viewable images, revealing what an attacker saw or did during an RDP session.</p>
+
+    <h3>OS Forensics Sources</h3>
+    <p>Operating systems generate rich forensic evidence across many locations:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Artifact</th><th>Location (Windows)</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Windows Event Logs</td><td><code>%SystemRoot%\System32\winevt\Logs\</code></td><td>Logon events (4624, 4625), privilege use, process creation (4688), service installs</td></tr>
+        <tr><td>Registry Hives</td><td>HKCU, HKLM, SAM, SYSTEM, SOFTWARE</td><td>Autorun keys, recently accessed files (MRU), USB device history, user activity</td></tr>
+        <tr><td>Prefetch Files</td><td><code>%SystemRoot%\Prefetch\</code></td><td>Evidence that programs were executed, even if deleted afterward. Timestamps and run count.</td></tr>
+        <tr><td>Browser Databases</td><td>AppData\Local\Google\Chrome\User Data\</td><td>History, downloads, cookies, cached pages, saved passwords</td></tr>
+        <tr><td>Recycle Bin</td><td><code>$Recycle.Bin</code></td><td>Deleted files, original path, deletion timestamp</td></tr>
+        <tr><td>Pagefile / Hiberfil</td><td><code>pagefile.sys</code>, <code>hiberfil.sys</code></td><td>Memory snapshots — may contain encryption keys, plaintext passwords, process memory</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Legal Hold &amp; eDiscovery</h3>
+    <p>A <strong>legal hold</strong> (also called a <em>litigation hold</em>) is a directive issued by legal counsel to preserve all data potentially relevant to anticipated or active litigation. Once a legal hold is issued, normal retention and deletion policies are <strong>suspended</strong> for the affected data. Destroying data after a legal hold notice is spoliation — a serious legal offense that can result in adverse inference instructions (courts tell juries to assume the missing data was unfavorable to the destroying party).</p>
+    <p><strong>eDiscovery</strong> (electronic discovery) is the process of identifying, collecting, preserving, and producing electronically stored information (ESI) in response to a legal or regulatory request. The EDRM (Electronic Discovery Reference Model) defines eDiscovery phases from information governance through presentation.</p>
+
+    <h3>Chain of Custody</h3>
+    <p>The <strong>chain of custody</strong> is a documented record that tracks who collected evidence, how it was handled, where it was stored, who accessed it, and when. A broken chain of custody can make evidence inadmissible in court. Every transfer of custody requires a signature. Digital evidence is sealed with a cryptographic hash (SHA-256) at time of collection — any modification changes the hash, proving tampering.</p>
+    <div class="tip"><b>Exam tip:</b> Order of volatility: RAM first, disk last. Legal hold suspends all deletion. Chain of custody requires hashing evidence at collection. RDP cache reveals what attackers viewed remotely. eDiscovery is about producing ESI for legal proceedings.</div>
+  </section>
+
+  <!-- ════════════ SOAR, PLAYBOOKS & RUNBOOKS ════════════ -->
+  <section id="soar">
+    <div class="sec-head">
+      <h2>SOAR, Playbooks &amp; Runbooks</h2>
+      <span class="sec-tag">Automate the response — speed and consistency beat manual every time</span>
+    </div>
+    <p><strong>Security Orchestration, Automation, and Response (SOAR)</strong> platforms integrate security tools and automate repetitive response tasks. While a SIEM <em>collects and alerts</em> on events, SOAR <em>acts on</em> those alerts — automatically enriching, triaging, and remediating based on predefined logic. SOAR reduces mean time to respond (MTTR) and frees analysts to focus on complex, judgment-requiring tasks.</p>
+
+    <div class="grid2">
+      <div class="card accent-green">
+        <h4>SOAR — Security Orchestration, Automation &amp; Response</h4>
+        <p>Connects disparate security tools (SIEM, EDR, firewall, ticketing) via APIs. Executes automated workflows when conditions are met. Tracks all actions taken for audit purposes. Examples: Splunk SOAR, Palo Alto XSOAR, IBM QRadar SOAR.</p>
+      </div>
+      <div class="card accent-blue">
+        <h4>SIEM vs. SOAR</h4>
+        <p><strong>SIEM:</strong> Aggregates logs, correlates events, generates alerts.<br>
+        <strong>SOAR:</strong> Receives SIEM alerts, automates the investigation and response workflow.<br>
+        They work together — SIEM is the radar; SOAR is the autopilot that responds to radar contacts.</p>
+      </div>
+    </div>
+
+    <h3>Playbooks</h3>
+    <p>A <strong>playbook</strong> is a pre-defined, step-by-step guide that prescribes how to respond to a <em>specific type</em> of incident. Playbooks are high-level strategic documents — they describe <em>what to do</em> and <em>in what order</em>, but not every specific command. Common playbooks: ransomware response, phishing response, data breach, DDoS, insider threat, account compromise.</p>
+    <p>Key elements of a playbook:</p>
+    <ul>
+      <li>Trigger condition (what event activates this playbook)</li>
+      <li>Roles and responsibilities</li>
+      <li>Decision tree (if/then logic for different scenarios)</li>
+      <li>Containment and eradication steps</li>
+      <li>Communication requirements and escalation paths</li>
+      <li>Documentation and evidence collection requirements</li>
+    </ul>
+
+    <h3>Runbooks</h3>
+    <p>A <strong>runbook</strong> is the operational companion to a playbook — it contains the <em>specific technical commands</em>, scripts, and procedures needed to execute each playbook step. Where a playbook says "isolate the affected host," the runbook specifies the exact firewall CLI commands, EDR isolation steps, and Active Directory account disablement procedure. Runbooks can be automated in SOAR platforms.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th></th><th>Playbook</th><th>Runbook</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Level</strong></td><td>Strategic / procedural</td><td>Tactical / operational</td></tr>
+        <tr><td><strong>Audience</strong></td><td>IR team, management</td><td>Technical analysts, automation</td></tr>
+        <tr><td><strong>Content</strong></td><td>What to do and when</td><td>Exactly how to do it (commands, scripts)</td></tr>
+        <tr><td><strong>Automation</strong></td><td>Not directly automated</td><td>Directly automatable in SOAR</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Reporting TTPs</h3>
+    <p>After an incident, analysts document the attacker's <strong>Tactics, Techniques, and Procedures (TTPs)</strong> using frameworks like MITRE ATT&amp;CK. Reporting TTPs enables threat intelligence sharing — organizations can warn peers and update defenses against the same attacker's methods. STIX (Structured Threat Information Expression) and TAXII (Trusted Automated eXchange of Indicator Information) are the standard formats and protocols for sharing TTP data between organizations.</p>
+    <div class="tip"><b>Exam tip:</b> SOAR automates response; SIEM generates alerts. Playbook = strategy; Runbook = commands. TTPs are shared via STIX/TAXII to improve collective defenses.</div>
+  </section>
+
+  <!-- ════════════ GOVERNANCE STRUCTURE ════════════ -->
+  <section id="governance">
+    <div class="sec-head">
+      <h2>Security Governance Structure</h2>
+      <span class="sec-tag">Who decides — authority, accountability, and policy from the boardroom to the data center</span>
+    </div>
+    <p><strong>Security governance</strong> is the framework of policies, processes, and accountability structures that ensures an organization's security program aligns with business objectives and legal obligations. Good governance provides clear ownership of security decisions at every level of the organization.</p>
+
+    <h3>Governance Bodies</h3>
+    <div class="grid2">
+      <div class="card accent-purple">
+        <h4>Board of Directors</h4>
+        <p>Ultimate accountability for risk. Approves the organization's risk appetite and reviews material security risks at the enterprise level. Sets tone at the top — security culture starts here. Increasingly expected to receive regular CISO briefings.</p>
+      </div>
+      <div class="card accent-blue">
+        <h4>Security Committee</h4>
+        <p>Cross-functional group (CISO, legal, HR, IT, business units) that translates board risk appetite into security strategy. Reviews policy, prioritizes investments, and resolves cross-departmental security conflicts.</p>
+      </div>
+      <div class="card accent-teal">
+        <h4>Government Entities</h4>
+        <p>External governance imposed by statute (NIST, CISA, FISMA for federal agencies; FTC for consumer data; SEC for public companies; HHS/OCR for healthcare). Failure to comply may result in audits, fines, or consent decrees.</p>
+      </div>
+      <div class="card accent-green">
+        <h4>CISO / Security Team</h4>
+        <p>Operational governance — implements the strategy, manages day-to-day security operations, reports metrics to the committee, and escalates material risks to the board.</p>
+      </div>
+    </div>
+
+    <h3>Centralized vs. Decentralized Governance</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th></th><th>Centralized Governance</th><th>Decentralized Governance</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Control</strong></td><td>Single security team sets and enforces policies organization-wide</td><td>Business units / subsidiaries manage their own security programs</td></tr>
+        <tr><td><strong>Consistency</strong></td><td>High — uniform standards everywhere</td><td>Low — policies may vary across units</td></tr>
+        <tr><td><strong>Agility</strong></td><td>Lower — changes require central approval</td><td>Higher — units can adapt to local requirements</td></tr>
+        <tr><td><strong>Risk</strong></td><td>Single point of failure; bottleneck at central team</td><td>Inconsistent baseline; hard to audit holistically</td></tr>
+        <tr><td><strong>Best for</strong></td><td>Regulated industries (healthcare, finance), smaller organizations</td><td>Large multinationals with diverse regulatory environments</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Security Policies &amp; Related Documents</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Document Type</th><th>Definition</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Information Security Policy</strong></td><td>Top-level document stating management's commitment to security and defining the scope and objectives of the security program. Approved by the Board or executive team.</td><td>"All organizational data must be classified and protected according to its sensitivity level."</td></tr>
+        <tr><td><strong>Security Policy</strong></td><td>Specific rules for a security domain. More detailed than the overarching information security policy.</td><td>Acceptable Use Policy (AUP), Password Policy, Remote Access Policy</td></tr>
+        <tr><td><strong>Security Guideline</strong></td><td>Recommended (not mandatory) best-practice guidance. Provides flexibility where policies would be too rigid.</td><td>Recommendations for choosing password manager software.</td></tr>
+        <tr><td><strong>Standard</strong></td><td>Mandatory requirements for implementing a policy. More specific than a policy, more prescriptive than a guideline.</td><td>All passwords must be minimum 12 characters with complexity requirements.</td></tr>
+        <tr><td><strong>Procedure</strong></td><td>Step-by-step instructions for implementing a standard or policy. Operational and task-specific.</td><td>How to provision a new user account following least-privilege principles.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>SDLC, Onboarding &amp; Offboarding</h3>
+    <p>The <strong>Software Development Lifecycle (SDLC)</strong> must integrate security at every phase (shift-left security): security requirements in planning, threat modeling in design, code review and SAST in development, DAST and pen testing in testing, and vulnerability management post-deployment. Security is not a final gate — it is woven throughout.</p>
+    <p><strong>Onboarding procedures</strong> ensure new employees complete security awareness training, sign acceptable use agreements, and receive only the minimum access necessary (least privilege). <strong>Offboarding procedures</strong> are equally critical: accounts must be immediately disabled on departure, access revoked (including VPN, cloud, SaaS), devices returned and wiped, and data returned or preserved per legal hold requirements.</p>
+
+    <h3>Policy Lifecycle: Monitoring, Revision &amp; End-of-Life</h3>
+    <div class="grid2">
+      <div class="card accent-teal">
+        <h4>Monitoring &amp; Revision</h4>
+        <p>Policies must be reviewed at least annually — or triggered by a material event (breach, new regulation, M&amp;A). Governance includes tracking compliance against policies and feeding exceptions back into policy revision.</p>
+      </div>
+      <div class="card accent-orange">
+        <h4>End of Life (EoL) &amp; End of Service Life (EoSL)</h4>
+        <p><strong>EoL:</strong> The date a product stops receiving new features. <strong>EoSL:</strong> The date a vendor stops providing security patches and support. Running EoSL software is a critical risk — unpatched vulnerabilities will never be fixed. Organizations must have policies mandating upgrade or isolation of EoSL systems.</p>
+      </div>
+    </div>
+    <div class="tip"><b>Exam tip:</b> Know the document hierarchy: Policy (mandatory, high-level) → Standard (mandatory, specific) → Procedure (mandatory, step-by-step) → Guideline (recommended, flexible). EoSL = no more security patches — this is the critical risk level, not EoL alone.</div>
+  </section>
+
+  <!-- ════════════ LEGAL AGREEMENTS & COMPLIANCE ════════════ -->
+  <section id="legal-agreements">
+    <div class="sec-head">
+      <h2>Legal Agreements &amp; Compliance Frameworks</h2>
+      <span class="sec-tag">Binding documents — know which agreement does what</span>
+    </div>
+    <p>Security governance extends beyond the organization's walls. Vendors, partners, and contractors access your systems and data — legal agreements define expectations, responsibilities, and recourse. Knowing the purpose and distinguishing features of each agreement type is heavily tested on Security+.</p>
+
+    <h3>Agreement Types</h3>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Agreement</th><th>Full Name</th><th>Purpose</th><th>Key Feature</th></tr></thead>
+      <tbody>
+        <tr><td><strong>SLA</strong></td><td>Service Level Agreement</td><td>Defines measurable service performance standards (uptime, response time, support hours) between provider and customer.</td><td>Contains specific metrics and remedies (credits, penalties) for non-performance. Contractually enforceable.</td></tr>
+        <tr><td><strong>MOU</strong></td><td>Memorandum of Understanding</td><td>Documents mutual agreement and intent to cooperate between parties. Common between government agencies or departments.</td><td>Typically <strong>not legally binding</strong> — expresses intent, not obligation. Precursor to a formal contract.</td></tr>
+        <tr><td><strong>NDA</strong></td><td>Non-Disclosure Agreement</td><td>Prevents one or both parties from sharing confidential information disclosed during the relationship.</td><td>Legally binding. May be one-way (vendor NDA) or mutual (partnership NDA). Duration specified.</td></tr>
+        <tr><td><strong>MSA</strong></td><td>Master Services Agreement</td><td>Umbrella contract establishing the terms for all future work between two parties. Individual projects are covered by work orders or SOWs under the MSA.</td><td>Reduces renegotiation overhead — terms negotiated once, applied to all engagements.</td></tr>
+        <tr><td><strong>BPA</strong></td><td>Business Partnership Agreement</td><td>Defines the terms of a business partnership including profit sharing, responsibilities, decision rights, and exit provisions.</td><td>Broader than an SLA — governs the entire business relationship, not just service delivery.</td></tr>
+        <tr><td><strong>Rules of Engagement</strong></td><td>—</td><td>Document that governs the scope and rules for a penetration test or security assessment. Defines what is in scope, out of scope, timing constraints, and emergency contacts.</td><td>Legally protects both the tester and the client. Must be signed before testing begins.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Key Compliance Concepts</h3>
+    <div class="grid2">
+      <div class="card accent-blue">
+        <h4>Right-to-Audit Clause</h4>
+        <p>A contractual provision allowing the customer to audit the vendor's security controls and compliance posture. Critical for cloud and outsourced services — without it, you cannot verify that the vendor actually implements the security they claim.</p>
+      </div>
+      <div class="card accent-teal">
+        <h4>Due Diligence</h4>
+        <p>Reasonable investigation and verification before entering a business relationship or making a security decision. Due diligence on vendors includes reviewing SOC 2 reports, questionnaires, and penetration test results. Failure = negligence.</p>
+      </div>
+      <div class="card accent-orange">
+        <h4>Conflicts of Interest</h4>
+        <p>Security personnel must disclose and recuse from decisions where personal interests conflict with organizational interests. Example: an auditor who owns stock in the company being audited. Governance structures should include policies requiring disclosure.</p>
+      </div>
+      <div class="card accent-purple">
+        <h4>Attestation &amp; Acknowledgement</h4>
+        <p><strong>Attestation</strong> — formal declaration that security controls are in place and effective (e.g., SOC 2 Type II, PCI DSS AOC). <strong>Acknowledgement</strong> — employee or vendor signs to confirm they have read and will comply with a policy.</p>
+      </div>
+    </div>
+
+    <h3>CCPA &amp; Privacy Compliance</h3>
+    <p>The <strong>California Consumer Privacy Act (CCPA)</strong> grants California residents specific rights over their personal information collected by businesses: the right to know what data is collected, the right to delete personal data, the right to opt out of sale of personal data, and the right to non-discrimination for exercising privacy rights. The <strong>right to be forgotten</strong> (right-to-erasure) appears in both GDPR (Article 17) and CCPA — it requires organizations to delete a consumer's personal data upon verified request. Organizations must maintain a <strong>data inventory</strong> to fulfill these requests within mandated timeframes.</p>
+    <div class="tip"><b>Exam tip — agreement quick reference:</b><br>
+    • SLA = measurable uptime/performance metrics with penalties<br>
+    • MOU = intent, NOT legally binding<br>
+    • NDA = confidentiality, legally binding<br>
+    • MSA = umbrella agreement for ongoing relationship<br>
+    • BPA = full business partnership terms<br>
+    • Rules of Engagement = penetration testing scope &amp; permissions<br>
+    • Right-to-audit = your right to verify vendor security</div>
+  </section>
+
+  <!-- ════════════ SECURITY AWARENESS ════════════ -->
+  <section id="awareness">
+    <div class="sec-head">
+      <h2>Security Awareness Training</h2>
+      <span class="sec-tag">The human layer — the most frequently exploited attack surface on the exam</span>
+    </div>
+    <p>Technical controls can be bypassed by a single uninformed user. <strong>Security awareness training</strong> is a continuous program that educates users about threats, policies, and safe behaviors. NIST and CIS Controls both identify security awareness as a foundational control. Awareness is not a one-time event — it must be ongoing, measurable, and updated to reflect current threats.</p>
+
+    <h3>Training Methods</h3>
+    <div class="grid2">
+      <div class="card accent-teal">
+        <h4>Computer-Based Training (CBT)</h4>
+        <p>Self-paced online modules delivered through an LMS (Learning Management System). Scalable, trackable, and cost-effective for large organizations. Completion rates and quiz scores create compliance evidence. Examples: KnowBe4, Proofpoint Security Awareness Training.</p>
+      </div>
+      <div class="card accent-blue">
+        <h4>Phishing Simulations</h4>
+        <p>Simulated phishing emails sent to employees to measure susceptibility. Employees who click receive immediate educational feedback. Metrics: click rate, credential submission rate. Trend tracking shows training effectiveness over time.</p>
+      </div>
+    </div>
+
+    <h3>Required Training Topics (User Guidance)</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Topic</th><th>What Users Must Know</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Insider Threat</strong></td><td>Recognize signs of insider activity. Report suspicious behavior through defined channels. Understand that insiders (malicious or negligent) represent a significant portion of breaches.</td></tr>
+        <tr><td><strong>Password Management</strong></td><td>Use a password manager. Never reuse passwords. Create long passphrases. Enable MFA everywhere available. Never share passwords. Report suspected compromise immediately.</td></tr>
+        <tr><td><strong>Removable Media &amp; Cables</strong></td><td>Never plug in unknown USB drives or cables (BadUSB attacks). Use only approved and encrypted removable media. Report found devices rather than plugging them in (baiting attacks).</td></tr>
+        <tr><td><strong>Social Engineering</strong></td><td>Recognize phishing, spear-phishing, vishing, smishing, pretexting. Verify identity before providing information or taking action. Report all attempts — even failed ones.</td></tr>
+        <tr><td><strong>Operational Security (OPSEC)</strong></td><td>Avoid oversharing information that could be used for reconnaissance (social media, conference talks). Protect sensitive information in public spaces (shoulder surfing). Use screen privacy filters when traveling.</td></tr>
+        <tr><td><strong>Hybrid / Remote Work</strong></td><td>Secure home Wi-Fi (WPA3, unique SSID/password). Use VPN for all corporate access. Lock screens when stepping away. Do not use personal devices for work without MDM. Beware of shoulder surfing in public spaces.</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="tip"><b>Exam tip:</b> Security awareness training must be <em>ongoing</em> — not a one-time annual event. Phishing simulations provide measurable data on human risk. Topics always tested: insider threat, social engineering (phishing variants), password hygiene, removable media (BadUSB), and OPSEC. Hybrid/remote work introduces new risks: unsecured home networks, physical security, and blurred personal/professional device boundaries.</div>
+
+    <div style="margin:30px 0 8px;text-align:center">
+      <a href="diagrams/Security_Plus_Chapter11_Diagram.html" class="btn btn-primary">Open the interactive Chapter 11 diagram →</a>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <a href="chapter10.html">← Chapter 10</a> &nbsp;·&nbsp; Chapter 11 &nbsp;·&nbsp; <a href="practice.html">Practice →</a>
+  </footer>
+
+</main>
+
+<script src="guide.js"></script>
+<script src="glossary.js"></script>
+<script src="assistant.js"></script>
+</body>
+</html>

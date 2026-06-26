@@ -244,7 +244,7 @@ body.detail-open #detail-panel{opacity:1;pointer-events:auto}
 
 <!-- ═══ HEADER ═══ -->
 <header id="header">
-  <a href="../index.html" id="btn-toc">&#8592; Contents</a>
+  <a href="../chapter7.html" id="btn-toc">&#8592; Chapter 7</a>
   <h1>Security<span>+</span> SY0-701 &nbsp;·&nbsp; Chapter 7</h1>
   <div class="hdr-sep"></div>
   <button class="hdr-btn" onclick="toggleStudyMode()" id="btn-study">👁 Study Mode</button>
@@ -1294,6 +1294,7 @@ document.addEventListener('DOMContentLoaded', function () {
     b.textContent = active ? '🫧 Bubble View' : '🗺 Graph View';
   }
   b.addEventListener('click', function () { setTimeout(upd, 0); });
+  if (!gGraphActive) toggleGraphView();
   upd();
 });
 </script>

@@ -157,7 +157,7 @@ body.detail-open #detail-panel{opacity:1;pointer-events:auto}
 <div id="app">
 
 <header id="header">
-  <a href="file:///C:/Users/jared/OneDrive/Desktop/Claude_General/SecurityPlus_StudyGuide/index.html" id="btn-toc">&#8592; Contents</a>
+  <a href="../chapters1-2.html" id="btn-toc">&#8592; Chapter 1–2</a>
   <h1>Security<span>+</span> SY0-701 &nbsp;·&nbsp; Chapter 2</h1>
   <div class="hdr-sep"></div>
   <button class="hdr-btn" id="btn-study" onclick="toggleStudyMode()">👁 Study Mode</button>
@@ -1315,6 +1315,7 @@ document.addEventListener('DOMContentLoaded', function () {
     b.textContent = active ? '🫧 Bubble View' : '🗺 Graph View';
   }
   b.addEventListener('click', function () { setTimeout(upd, 0); });
+  if (!gGraphActive) toggleGraphView();
   upd();
 });
 </script>

@@ -19,7 +19,9 @@
 
   var PAGE_SHORT = {
     'chapters1-2.html': 'Ch 1–2', 'chapter3.html': 'Ch 3',
-    'chapters4-5.html': 'Ch 4–5', 'chapter6.html': 'Ch 6', 'chapter7.html': 'Ch 7'
+    'chapters4-5.html': 'Ch 4–5', 'chapter6.html': 'Ch 6', 'chapter7.html': 'Ch 7',
+    'chapter8.html': 'Ch 8', 'chapter9.html': 'Ch 9', 'chapter10.html': 'Ch 10',
+    'chapter11.html': 'Ch 11'
   };
 
   /* Section index: p=page, a=anchor id, l=label, k=extra keywords */
@@ -94,7 +96,16 @@
     { p: 'chapter7.html', a: 'analysis', l: 'Code Analysis & Secure Dev', k: 'static dynamic code analysis sast dast manual review fuzzing sandboxing package monitoring development testing staging production quality assurance qa stages' },
     { p: 'chapter7.html', a: 'injection', l: 'Injection & Memory Attacks', k: 'sql injection sqli database field query stored procedure parameterized ldap xml injection directory traversal cross site scripting xss reflected stored buffer overflow integer overflow memory leak dll injection dynamic link library web server logs' },
     { p: 'chapter7.html', a: 'automation', l: 'Automation & SOAR', k: 'soar security orchestration automation response user resource provisioning guardrails security groups ticket creation escalation enable disable services continuous integration testing cicd integration api apis scripting' },
-    { p: 'chapter7.html', a: 'autotradeoffs', l: 'Automation Trade-offs', k: 'automation scripting benefits drawbacks efficiency baselines standard configuration secure scaling single point of failure technical debt supportability workforce multiplier' }
+    { p: 'chapter7.html', a: 'autotradeoffs', l: 'Automation Trade-offs', k: 'automation scripting benefits drawbacks efficiency baselines standard configuration secure scaling single point of failure technical debt supportability workforce multiplier' },
+    { p: 'chapter11.html', a: 'data-classification', l: 'Data Classification', k: 'top secret secret confidential unclassified restricted public data classification government commercial data owner steward custodian controller processor roles sensitivity label' },
+    { p: 'chapter11.html', a: 'regulated-data', l: 'Regulated & Sensitive Data', k: 'pii phi financial data intellectual property trade secret legal information data retention policy gdpr ccpa right to be forgotten data inventory regulated sensitive' },
+    { p: 'chapter11.html', a: 'data-sanitization', l: 'Data Sanitization & Destruction', k: 'wiping degaussing physical destruction file shredding paper shredding pulping burning ssd overwrite certificate of destruction naid sanitization media disposal' },
+    { p: 'chapter11.html', a: 'incident-response', l: 'Incident Response', k: 'nist sp 800-61 incident response plan preparation detection analysis containment eradication recovery post-incident lessons learned ir team communication plan threat hunting security incident data breach' },
+    { p: 'chapter11.html', a: 'digital-forensics', l: 'Digital Forensics & Legal Holds', k: 'digital forensics order of volatility ram memory forensic artifacts file metadata email rdp cache os forensics prefetch registry event logs legal hold ediscovery chain of custody spoliation' },
+    { p: 'chapter11.html', a: 'soar', l: 'SOAR & Automation', k: 'soar security orchestration automation response siem playbook runbook ttp tactics techniques procedures stix taxii mttr' },
+    { p: 'chapter11.html', a: 'governance', l: 'Security Governance', k: 'governance board ciso security committee centralized decentralized policy standard procedure guideline sdlc onboarding offboarding eol eosl end of life service monitoring revision' },
+    { p: 'chapter11.html', a: 'legal-agreements', l: 'Legal Agreements & Compliance', k: 'sla mou nda msa bpa rules of engagement right to audit due diligence conflicts of interest attestation acknowledgement ccpa right to be forgotten data inventory service level agreement memorandum of understanding' },
+    { p: 'chapter11.html', a: 'awareness', l: 'Security Awareness Training', k: 'security awareness training computer based training cbt phishing simulation insider threat password management removable media usb cables social engineering opsec operational security hybrid remote work' }
   ];
 
   var STOP = {};
