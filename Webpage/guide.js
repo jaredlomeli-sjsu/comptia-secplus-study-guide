@@ -108,4 +108,10 @@
     }, { threshold: 0.5 });
     gio.observe(g);
   }
+
+  /* Credit line */
+  var credit = document.createElement('div');
+  credit.className = 'site-credit';
+  credit.textContent = 'Created by Jared Lomeli — 2026';
+  document.body.appendChild(credit);
 })();

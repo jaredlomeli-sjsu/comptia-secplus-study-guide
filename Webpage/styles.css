@@ -781,3 +781,9 @@ td { font-variant-numeric: tabular-nums; }
   .ai-panel { width: 100%; max-width: 100%; }
 }
 @media print { .ai-launcher, .ai-panel { display: none !important; } }
+
+.site-credit {
+  text-align: center; color: var(--dim); font-size: 12px;
+  padding: 20px 0 32px; margin-top: 32px;
+  border-top: 1px solid var(--border);
+}
