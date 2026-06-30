@@ -1,4 +1,4 @@
-/* questions-v2.js — 200 scenario-based SY0-701 questions (batch 1: 1–100, batch 2: 101–200)
+/* questions-v2.js — 400 scenario-based SY0-701 questions (batches 1–4: 1–400)
    Format: stem, options {A-D/E}, correct (array), type, difficulty, subdomain
    Sets window.QUESTION_BANK consumed by quiz.js */
 window.QUESTION_BANK = [
