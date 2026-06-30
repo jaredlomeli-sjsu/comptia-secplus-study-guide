@@ -574,6 +574,19 @@ td { font-variant-numeric: tabular-nums; }
 .q-nav { margin-top: 18px; display: flex; }
 .q-nav.center { justify-content: center; }
 
+/* Difficulty badge */
+.diff-badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+.diff-easy   { background: rgba(52,211,153,.15); color: var(--emerald); border: 1px solid rgba(52,211,153,.3); }
+.diff-medium { background: rgba(251,191,36,.12);  color: #f59e0b;       border: 1px solid rgba(251,191,36,.3); }
+.diff-hard   { background: rgba(251,113,133,.12); color: var(--rose);   border: 1px solid rgba(251,113,133,.3); }
+
+/* Select TWO banner */
+.q-select-two { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 14px; padding: 5px 12px; border-radius: 8px; background: rgba(129,140,248,.12); border: 1px solid rgba(129,140,248,.3); color: var(--indigo); font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+
+/* Multi-select option — "selected but not yet submitted" state */
+.q-option.selected { border-color: var(--indigo); background: rgba(129,140,248,.1); }
+.q-option.selected .q-letter { background: var(--indigo); color: #fff; border-color: transparent; }
+
 /* Results */
 .practice-card.results { text-align: center; padding: 40px 28px; }
 .result-ring {
