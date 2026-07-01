@@ -385,10 +385,16 @@
      PBQ MODE  (compact format — unchanged)
   ════════════════════════════════════════ */
   var pbq = { set: [], idx: 0, results: [] };
+  var pbqAdv = { qIdx: 0, qRight: 0 };
   var PBQ_PER_SET = 5;
 
   function pbqPoolFor(d) {
-    return d === 'all' ? PBQ : PBQ.filter(function (p) { return String(p.d) === String(d); });
+    var all = PBQ.concat(window.PBQ_BANK || []);
+    if (d === 'all') return all;
+    return all.filter(function (p) {
+      var dk = p.d !== undefined ? String(p.d) : String(p.domain).charAt(0);
+      return dk === String(d);
+    });
   }
 
   function pbqSetup() {
@@ -418,6 +424,12 @@
 
   function renderPbq() {
     var item = pbq.set[pbq.idx];
+    if (item.questions) {
+      pbqAdv.qIdx  = 0;
+      pbqAdv.qRight = 0;
+      renderPbqAdvQuestion(item);
+      return;
+    }
     pbqArea.innerHTML = '';
 
     var bar  = el('div', 'quiz-progress');
@@ -572,6 +584,149 @@
   }
 
   /* ─── init ─── */
+  /* ════════════════════════════════════════
+     ADVANCED PBQ — scenario / multi-question
+  ════════════════════════════════════════ */
+  function renderPbqAdvQuestion(lab) {
+    var q       = lab.questions[pbqAdv.qIdx];
+    var letters = Object.keys(q.options);
+    var isMulti = q.type === 'multi';
+    pbqArea.innerHTML = '';
+
+    var bar = el('div', 'quiz-progress');
+    var fill = el('div', 'quiz-progress-fill');
+    fill.style.width = (pbq.idx / pbq.set.length * 100) + '%';
+    bar.appendChild(fill);
+    pbqArea.appendChild(bar);
+
+    var meta = el('div', 'quiz-meta');
+    meta.appendChild(el('span', 'q-counter', 'Lab ' + (pbq.idx + 1) + ' / ' + pbq.set.length));
+    meta.appendChild(el('span', 'q-domain', lab.title + ' · Domain ' + lab.domain));
+    meta.appendChild(el('span', 'q-counter', 'Q' + (pbqAdv.qIdx + 1) + ' / ' + lab.questions.length));
+    pbqArea.appendChild(meta);
+
+    var card = el('div', 'practice-card');
+
+    var scenWrap = el('div', 'pbq-adv-scenario');
+    var togBtn   = el('button', 'pbq-adv-toggle', '▼ Scenario (click to collapse)');
+    var scenPre  = el('pre', 'pbq-adv-text', esc(lab.scenario));
+    togBtn.addEventListener('click', function () {
+      var hidden = scenPre.style.display === 'none';
+      scenPre.style.display = hidden ? '' : 'none';
+      togBtn.textContent = (hidden ? '▼' : '▶') + ' Scenario (click to ' + (hidden ? 'collapse' : 'expand') + ')';
+    });
+    scenWrap.appendChild(togBtn);
+    scenWrap.appendChild(scenPre);
+    card.appendChild(scenWrap);
+
+    if (isMulti) {
+      var howMany = Array.isArray(q.correct) ? q.correct.length : 2;
+      card.appendChild(el('div', 'q-select-two', '★ Select ' + howMany + ' answers'));
+    }
+    card.appendChild(el('div', 'q-text', esc(q.stem)));
+
+    var opts     = el('div', 'q-options');
+    var selected = [];
+    var submitBtn;
+    letters.forEach(function (letter) {
+      var b = el('button', 'q-option' + (isMulti ? ' q-option-multi' : ''));
+      b.innerHTML = '<span class="q-letter">' + esc(letter) + '</span>' +
+                    '<span class="q-opt-text">' + esc(q.options[letter]) + '</span>';
+      if (isMulti) {
+        b.addEventListener('click', function () {
+          if (card.classList.contains('locked')) return;
+          var pos    = selected.indexOf(letter);
+          var maxSel = Array.isArray(q.correct) ? q.correct.length : 2;
+          if (pos === -1) {
+            if (selected.length < maxSel) { selected.push(letter); b.classList.add('selected'); }
+          } else {
+            selected.splice(pos, 1);
+            b.classList.remove('selected');
+          }
+          if (submitBtn) submitBtn.disabled = (selected.length !== maxSel);
+        });
+      } else {
+        b.addEventListener('click', function () { gradeAdvQuestion(letter, card, lab, q, letters); });
+      }
+      opts.appendChild(b);
+    });
+    card.appendChild(opts);
+
+    if (isMulti) {
+      var mn = el('div', 'q-nav');
+      submitBtn = el('button', 'btn btn-primary', 'Check answers');
+      submitBtn.disabled = true;
+      submitBtn.addEventListener('click', function () { gradeAdvMulti(selected, card, lab, q, letters); });
+      mn.appendChild(submitBtn);
+      card.appendChild(mn);
+    }
+    pbqArea.appendChild(card);
+  }
+
+  function gradeAdvQuestion(chosen, card, lab, q, letters) {
+    if (card.classList.contains('locked')) return;
+    card.classList.add('locked');
+    var correct = Array.isArray(q.correct) ? q.correct[0] : q.correct;
+    var right   = (chosen === correct);
+    if (right) pbqAdv.qRight++;
+    var buttons = card.querySelectorAll('.q-option');
+    letters.forEach(function (letter, i) {
+      buttons[i].disabled = true;
+      if (letter === correct) buttons[i].classList.add('correct');
+      else if (letter === chosen) buttons[i].classList.add('incorrect');
+    });
+    appendFeedback(card, right, q.explanation);
+    appendAdvNextBtn(card, lab);
+  }
+
+  function gradeAdvMulti(selected, card, lab, q, letters) {
+    if (card.classList.contains('locked')) return;
+    card.classList.add('locked');
+    var correct = Array.isArray(q.correct) ? q.correct : [q.correct];
+    var right   = (selected.length === correct.length) &&
+                  correct.every(function (c) { return selected.indexOf(c) !== -1; });
+    if (right) pbqAdv.qRight++;
+    var buttons = card.querySelectorAll('.q-option');
+    letters.forEach(function (letter, i) {
+      buttons[i].disabled = true;
+      buttons[i].classList.remove('selected');
+      if (correct.indexOf(letter) !== -1)  buttons[i].classList.add('correct');
+      else if (selected.indexOf(letter) !== -1) buttons[i].classList.add('incorrect');
+    });
+    appendFeedback(card, right, q.explanation, true);
+    var oldNav = card.querySelector('.q-nav');
+    if (oldNav) oldNav.remove();
+    appendAdvNextBtn(card, lab);
+  }
+
+  function appendAdvNextBtn(card, lab) {
+    var isLastQ   = pbqAdv.qIdx + 1 >= lab.questions.length;
+    var isLastLab = pbq.idx + 1 >= pbq.set.length;
+    if (isLastQ) {
+      pbq.results.push({
+        correctRows: pbqAdv.qRight,
+        total:       lab.questions.length,
+        allRight:    pbqAdv.qRight === lab.questions.length
+      });
+    }
+    var nav   = el('div', 'q-nav');
+    var label = isLastQ ? (isLastLab ? 'See results →' : 'Next lab →') : 'Next question →';
+    var next  = el('button', 'btn btn-primary', label);
+    next.addEventListener('click', function () {
+      pbqAdv.qIdx++;
+      if (pbqAdv.qIdx < lab.questions.length) {
+        renderPbqAdvQuestion(lab);
+      } else {
+        pbq.idx++;
+        if (pbq.idx < pbq.set.length) renderPbq();
+        else renderPbqResults();
+      }
+    });
+    nav.appendChild(next);
+    card.appendChild(nav);
+    next.focus();
+  }
+
   if (!BANK.length) {
     quizArea.innerHTML =
       '<div class="practice-card"><p class="muted">Question bank failed to load — ensure questions-v2.js is included.</p></div>';
