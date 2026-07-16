@@ -52,7 +52,9 @@
         <a href="#certificates">Digital Certificates</a>
         <a href="#pki">PKI Infrastructure</a>
         <a href="#standards">Protocols &amp; Formats</a>
-      </div>
+      
+    <a href="#ch10-more">More Terms</a>
+  </div>
 
       <!-- ════════════ HASHING & INTEGRITY ════════════ -->
       <section id="hashing">
@@ -2396,7 +2398,51 @@
         </div>
       </section>
 
-      <footer class="site-footer">
+      
+  <!-- ══════════════════════ ADDITIONAL CH10 TERMS ══════════════════════ -->
+  <section id="ch10-more">
+    <div class="sec-head"><h2>Additional Ch 10 Terms</h2><span class="sec-tag">Quick reference — full entries in the Glossary</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+      <tbody>
+        <tr><td><strong>CFB</strong> <span class="g-exp">Cipher Feedback</span></td><td>A block cipher mode that turns a block cipher into a self-synchronizing stream cipher, encrypting data in smaller units than a full block.</td></tr>
+        <tr><td><strong>Chain of trust</strong></td><td>The linked path of certificates from a trusted root down to a server's certificate.</td></tr>
+        <tr><td><strong>Cryptographic vulnerabilities</strong></td><td>Weaknesses from using broken or outdated algorithms, weak keys, or flawed implementations — the reason deprecated ciphers like DES and RC4 must be retired.</td></tr>
+        <tr><td><strong>Cryptoprocessor</strong></td><td>A dedicated chip that performs cryptographic operations and stores keys in tamper-resistant hardware — TPM and HSM are both types of cryptoprocessors.</td></tr>
+        <tr><td><strong>Database encryption</strong></td><td>Encrypting data stored inside a database, either the whole database or specific tables/columns, protecting it even if the underlying storage is compromised.</td></tr>
+        <tr><td><strong>ECB</strong> <span class="g-exp">Electronic Codebook</span></td><td>A block cipher mode that encrypts each block independently and identically; insecure because identical plaintext blocks produce identical ciphertext, leaking patterns.</td></tr>
+        <tr><td><strong>GPG</strong> <span class="g-exp">GNU Privacy Guard</span></td><td>A free, open-source implementation of the PGP encryption standard.</td></tr>
+        <tr><td><strong>Homomorphic encryption</strong></td><td>Encryption that lets you compute on data while it stays encrypted.</td></tr>
+        <tr><td><strong>Hybrid encryption</strong></td><td>Using asymmetric encryption only to exchange a symmetric session key, then using symmetric encryption for all bulk data. TLS is the classic example — combines the strengths of both.</td></tr>
+        <tr><td><strong>KEK</strong> <span class="g-exp">Key Encryption Key</span></td><td>A key whose only job is to encrypt other keys for safe storage.</td></tr>
+        <tr><td><strong>KMIP</strong> <span class="g-exp">Key Management Interoperability Protocol</span></td><td>A standard protocol that lets different vendors' encryption key management systems communicate with each other, avoiding vendor lock-in for enterprise key management.</td></tr>
+        <tr><td><strong>KRA</strong> <span class="g-exp">Key Recovery Agent</span></td><td>A trusted role authorized to recover an escrowed private key on behalf of a user who lost theirs — the person or system that carries out key recovery in a key escrow setup.</td></tr>
+        <tr><td><strong>Lightweight cryptography</strong></td><td>Encryption designed for low-power, resource-constrained devices like IoT sensors and smart cards, providing security without heavy CPU or battery demands.</td></tr>
+        <tr><td><strong>Nonce</strong> <span class="g-exp">Number used once</span></td><td>A random or unique value used once to prevent replay attacks.</td></tr>
+        <tr><td><strong>OID</strong> <span class="g-exp">Object Identifier</span></td><td>A unique numeric string that identifies a specific object, policy, or attribute type — used inside X.509 certificates to label fields like the certificate policy.</td></tr>
+        <tr><td><strong>Open public ledger</strong></td><td>A blockchain record anyone can view and verify, used by cryptocurrencies; transparency and cryptographic linking make past entries practically impossible to alter.</td></tr>
+        <tr><td><strong>Partition encryption</strong></td><td>Encrypting a single disk partition rather than the whole drive or one file — a middle ground between full-disk and file-level encryption.</td></tr>
+        <tr><td><strong>PEM format</strong> <span class="g-exp">Privacy-Enhanced Mail</span></td><td>A Base64-encoded certificate format wrapped in '-----BEGIN CERTIFICATE-----' headers. The most common format for distributing certificates across the internet.</td></tr>
+        <tr><td><strong>Pepper</strong></td><td>A secret value added to a password hash and stored separately from the database.</td></tr>
+        <tr><td><strong>PGP</strong> <span class="g-exp">Pretty Good Privacy</span></td><td>Software for encrypting and signing email and files using public-key cryptography.</td></tr>
+        <tr><td><strong>Post-quantum cryptography</strong></td><td>New algorithms designed to resist future quantum computers that could break today's crypto.</td></tr>
+        <tr><td><strong>Record encryption</strong></td><td>Encrypting individual database records or fields rather than the whole database, so different records can have different access rules.</td></tr>
+        <tr><td><strong>RIPEMD</strong> <span class="g-exp">RACE Integrity Primitives Evaluation Message Digest</span></td><td>A hashing algorithm family, an alternative to SHA.</td></tr>
+        <tr><td><strong>SAN certificate</strong> <span class="g-exp">Subject Alternative Name</span></td><td>A certificate that secures multiple specific hostnames or domains at once by listing them in the Subject Alternative Name field — the pair to a wildcard certificate.</td></tr>
+        <tr><td><strong>SCEP</strong> <span class="g-exp">Simple Certificate Enrollment Protocol</span></td><td>A protocol that lets devices automatically request and receive digital certificates from a CA, commonly used to enroll large numbers of mobile devices via MDM.</td></tr>
+        <tr><td><strong>scrypt</strong></td><td>A key-stretching function that is deliberately slow and memory-hard, making brute-force and custom-hardware attacks costly — alongside bcrypt, PBKDF2, and Argon2.</td></tr>
+        <tr><td><strong>Self-signed certificate</strong></td><td>A certificate signed by its own creator instead of a trusted CA; fine for testing, not public trust.</td></tr>
+        <tr><td><strong>Subject name attributes</strong></td><td>The identifying fields inside a certificate's Subject field — Common Name (CN), Organization (O), Organizational Unit (OU) — that specify exactly who or what the certificate belongs to.</td></tr>
+        <tr><td><strong>TDE</strong> <span class="g-exp">Transparent Data Encryption</span></td><td>Database encryption that happens automatically at the storage level, requiring no changes to the application — protects data at rest without the app ever knowing encryption is happening.</td></tr>
+        <tr><td><strong>Third-party certificate</strong></td><td>A certificate issued and signed by an external, trusted Certificate Authority rather than the organization itself — the counterpart to a self-signed certificate.</td></tr>
+        <tr><td><strong>Volume encryption</strong></td><td>Encrypting an entire logical volume (a disk section that can span multiple partitions), broader than partition encryption but narrower than full-disk.</td></tr>
+        <tr><td><strong>Wildcard certificate</strong></td><td>A certificate that secures a domain and all of its subdomains (e.g., *.example.com).</td></tr>
+        <tr><td><strong>XOR</strong> <span class="g-exp">Exclusive OR</span></td><td>A logical operation that combines two bits and returns true only if they differ; a building block of stream ciphers and a common (weak) way malware obfuscates its code.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <footer class="site-footer">
         <a href="chapter9.html">← Chapter 9</a> &nbsp;·&nbsp; Chapter 10
         &nbsp;·&nbsp; <a href="practice.html">Practice →</a>
       </footer>

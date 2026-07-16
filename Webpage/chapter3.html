@@ -62,7 +62,9 @@
         <a href="#isolation">SCADA &amp; Air Gaps</a>
         <a href="#proxy">Proxies</a>
         <a href="#zerotrust">Zero Trust</a>
-      </div>
+      
+    <a href="#ch3-more">More Terms</a>
+  </div>
 
       <!-- ════════ OSI ════════ -->
       <section id="osi">
@@ -2918,7 +2920,74 @@
         </div>
       </section>
 
-      <footer class="site-footer">
+      
+  <!-- ══════════════════════ ADDITIONAL CH3 TERMS ══════════════════════ -->
+  <section id="ch3-more">
+    <div class="sec-head"><h2>Additional Ch 3 Terms</h2><span class="sec-tag">Quick reference — full entries in the Glossary</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Active device</strong></td><td>A network security device (like an inline firewall or IPS) that sits directly in the traffic path and can act on what it sees, such as blocking packets.</td></tr>
+        <tr><td><strong>Anomaly-based detection</strong></td><td>Detecting threats by spotting deviations from normal behavior; can catch unknown attacks.</td></tr>
+        <tr><td><strong>Block rules</strong></td><td>Explicit web filter rules that deny access to specific sites, categories, or URL patterns regardless of reputation score.</td></tr>
+        <tr><td><strong>Centralized proxy</strong></td><td>A web filtering approach where all outbound web traffic is routed through one central proxy server that applies filtering rules before traffic reaches the internet.</td></tr>
+        <tr><td><strong>Content categorization</strong></td><td>A web filter feature that sorts websites into categories (gambling, social media, malware) so policy can block or allow entire categories at once.</td></tr>
+        <tr><td><strong>Content filter</strong></td><td>A control that blocks access to disallowed websites or content categories.</td></tr>
+        <tr><td><strong>CSU</strong> <span class="g-exp">Channel Service Unit</span></td><td>A device that connects a LAN to a digital WAN circuit, terminating the line and providing diagnostics — often paired with a DSU (CSU/DSU).</td></tr>
+        <tr><td><strong>Device placement</strong></td><td>Deciding where in the network topology a security device sits (e.g., before or after a firewall) — placement determines what traffic it can actually see and control.</td></tr>
+        <tr><td><strong>DNAT</strong> <span class="g-exp">Destination Network Address Translation</span></td><td>NAT that rewrites the destination address of incoming traffic, commonly used to forward external requests to an internal server (port forwarding).</td></tr>
+        <tr><td><strong>DSL</strong> <span class="g-exp">Digital Subscriber Line</span></td><td>A technology that delivers internet access over existing copper telephone lines.</td></tr>
+        <tr><td><strong>DTLS</strong> <span class="g-exp">Datagram Transport Layer Security</span></td><td>A version of TLS adapted for UDP-based traffic like VoIP and VPNs, providing encryption for protocols that don't use TCP.</td></tr>
+        <tr><td><strong>GRE</strong> <span class="g-exp">Generic Routing Encapsulation</span></td><td>A tunneling protocol that wraps one type of network packet inside another; it provides no encryption on its own, so it's often paired with IPsec.</td></tr>
+        <tr><td><strong>IDF</strong> <span class="g-exp">Intermediate Distribution Frame</span></td><td>A secondary wiring closet that connects end-user cabling back to the main distribution frame — physical access to it should be restricted.</td></tr>
+        <tr><td><strong>Inline vs. tap/monitor</strong></td><td>Inline placement puts a device directly in the traffic path so it can block traffic; a tap or monitor port only feeds it a copy, so it can observe but not intervene.</td></tr>
+        <tr><td><strong>IRC</strong> <span class="g-exp">Internet Relay Chat</span></td><td>An old text chat protocol; historically popular as a command-and-control channel for botnets due to its simple, low-overhead messaging.</td></tr>
+        <tr><td><strong>ISP</strong> <span class="g-exp">Internet Service Provider</span></td><td>The company that provides an organization or individual with a connection to the internet.</td></tr>
+        <tr><td><strong>Layer 3 switch</strong></td><td>A switch that also performs routing between VLANs, combining Layer 2 switching and Layer 3 routing in one device — common as the core of an enterprise network.</td></tr>
+        <tr><td><strong>Logical segmentation</strong></td><td>Dividing a network into isolated zones using VLANs or software rules rather than separate physical hardware — contrast with physical isolation like air-gapping.</td></tr>
+        <tr><td><strong>MAC (media access)</strong> <span class="g-exp">Media Access Control address</span></td><td>A unique hardware address burned into a network interface card.</td></tr>
+        <tr><td><strong>Management plane</strong></td><td>In Software-Defined Networking, the layer that monitors traffic conditions and overall network status — distinct from the control plane (decisions) and data plane (traffic handling).</td></tr>
+        <tr><td><strong>MDF</strong> <span class="g-exp">Main Distribution Frame</span></td><td>The central wiring point where a building's external network connections and internal wiring meet — a high-value physical security target.</td></tr>
+        <tr><td><strong>MIB</strong> <span class="g-exp">Management Information Base</span></td><td>A structured database of manageable objects on a network device (like CPU load or interface status) that SNMP queries and reports on.</td></tr>
+        <tr><td><strong>MPLS</strong> <span class="g-exp">Multiprotocol Label Switching</span></td><td>A technique that speeds up and directs network traffic using short path labels instead of long network addresses, often used by ISPs for private WAN links.</td></tr>
+        <tr><td><strong>MTU</strong> <span class="g-exp">Maximum Transmission Unit</span></td><td>The largest packet size a network link can carry without fragmenting it; mismatched MTUs can cause dropped or fragmented traffic.</td></tr>
+        <tr><td><strong>Neighbor Discovery</strong> <span class="g-exp">ND</span></td><td>The IPv6 protocol that resolves IP addresses to MAC addresses and discovers neighboring routers — IPv6's replacement for ARP.</td></tr>
+        <tr><td><strong>Network segmentation</strong></td><td>Dividing a network into separate zones to limit how far an attacker can move.</td></tr>
+        <tr><td><strong>NIPS</strong> <span class="g-exp">Network-based Intrusion Prevention System</span></td><td>A system that sits inline on the network, monitoring traffic and actively blocking malicious activity in real time.</td></tr>
+        <tr><td><strong>North-south traffic</strong></td><td>Network traffic moving in and out of the data center to clients.</td></tr>
+        <tr><td><strong>Northbound API</strong></td><td>In Software-Defined Networking, the interface between the SDN controller and the applications that tell it what policies to enforce.</td></tr>
+        <tr><td><strong>OSPF</strong> <span class="g-exp">Open Shortest Path First</span></td><td>A routing protocol used inside a single organization's network to find the fastest path for traffic between routers.</td></tr>
+        <tr><td><strong>Out-of-band management</strong></td><td>Managing devices over a separate channel so it works even if the main network is down.</td></tr>
+        <tr><td><strong>P2P</strong> <span class="g-exp">Peer-to-Peer</span></td><td>A network model where devices connect and share resources directly with each other instead of through a central server — used by some malware for resilient C2 communication.</td></tr>
+        <tr><td><strong>Passive device</strong></td><td>A network security device (like a traditional IDS) that only observes a copy of traffic and can alert but cannot block it in real time.</td></tr>
+        <tr><td><strong>PBX</strong> <span class="g-exp">Private Branch Exchange</span></td><td>An organization's internal telephone switching system; a poorly secured PBX can be hijacked for toll fraud or eavesdropping.</td></tr>
+        <tr><td><strong>POTS</strong> <span class="g-exp">Plain Old Telephone Service</span></td><td>Traditional analog landline telephone service, still relevant for legacy fax lines, alarm systems, and out-of-band management links.</td></tr>
+        <tr><td><strong>PPTP</strong> <span class="g-exp">Point-to-Point Tunneling Protocol</span></td><td>An old, now-insecure VPN protocol with well-known cryptographic weaknesses; replaced by more modern options like IPsec and OpenVPN. Uses TCP port 1723.</td></tr>
+        <tr><td><strong>Protocol selection</strong></td><td>Choosing the most secure available protocol for a given service (e.g., HTTPS over HTTP, SFTP over FTP) when implementing secure communications.</td></tr>
+        <tr><td><strong>Proxy server</strong></td><td>An intermediary that forwards, filters, and can cache requests between clients and servers.</td></tr>
+        <tr><td><strong>RAS</strong> <span class="g-exp">Remote Access Server</span></td><td>A server that provides and manages remote connections into a private network, historically over dial-up and now typically via VPN.</td></tr>
+        <tr><td><strong>RDP gateway</strong></td><td>A hardened entry point that brokers Remote Desktop connections so RDP is never exposed directly.</td></tr>
+        <tr><td><strong>Remote access VPN</strong></td><td>A VPN that lets individual users connect securely to a network from anywhere.</td></tr>
+        <tr><td><strong>RTBH</strong> <span class="g-exp">Remotely Triggered Black Hole</span></td><td>A DDoS mitigation technique that routes traffic destined for an attacked IP address to a null route ("black hole"), dropping it before it overwhelms the network.</td></tr>
+        <tr><td><strong>Security Association</strong> <span class="g-exp">SA</span></td><td>The negotiated set of security parameters (keys, algorithms, protocols) between two IPsec peers that governs how their traffic is protected.</td></tr>
+        <tr><td><strong>SHTTP</strong> <span class="g-exp">Secure HyperText Transfer Protocol</span></td><td>An older, now-obsolete protocol for encrypting individual HTTP messages; lost out to HTTPS (HTTP over TLS), which encrypts the whole connection instead.</td></tr>
+        <tr><td><strong>SOAP</strong> <span class="g-exp">Simple Object Access Protocol</span></td><td>An older XML-based messaging protocol for exchanging structured data between web services, largely superseded by REST APIs but still found in legacy enterprise systems.</td></tr>
+        <tr><td><strong>Southbound API</strong></td><td>In Software-Defined Networking, the interface between the SDN controller and the actual network devices it configures and controls.</td></tr>
+        <tr><td><strong>Split tunneling</strong></td><td>A VPN setup where only some traffic goes through the tunnel and the rest goes direct.</td></tr>
+        <tr><td><strong>Stateful firewall</strong></td><td>A firewall that tracks active connections and allows return traffic for them.</td></tr>
+        <tr><td><strong>TSIG</strong> <span class="g-exp">Transaction Signature</span></td><td>A mechanism that adds a shared-secret signature to DNS messages, letting DNS servers verify that updates (like dynamic DNS changes) come from an authorized source.</td></tr>
+        <tr><td><strong>URI</strong> <span class="g-exp">Uniform Resource Identifier</span></td><td>A string that identifies a resource, either by location (URL) or by name; a URL is technically a type of URI.</td></tr>
+        <tr><td><strong>URL scanning</strong></td><td>A web filter feature that checks requested URLs against known-malicious lists or analyzes them in real time before allowing the connection through.</td></tr>
+        <tr><td><strong>UTP</strong> <span class="g-exp">Unshielded Twisted Pair</span></td><td>The standard copper cabling used for most Ethernet connections (like Cat 5e/Cat 6), without a metal shield — cheaper than shielded cable but more susceptible to interference.</td></tr>
+        <tr><td><strong>VLSM</strong> <span class="g-exp">Variable Length Subnet Masking</span></td><td>A subnetting technique that allows different subnets on the same network to use different-sized address ranges, reducing wasted IP addresses.</td></tr>
+        <tr><td><strong>VNC</strong> <span class="g-exp">Virtual Network Computing</span></td><td>A remote desktop protocol that lets you view and control another computer's screen over a network — similar in purpose to RDP but cross-platform and open standard. Uses TCP port 5900.</td></tr>
+        <tr><td><strong>VTC</strong> <span class="g-exp">Video Teleconferencing</span></td><td>Real-time video meeting technology; unauthorized access to a VTC session ("zoombombing"-style) is a confidentiality risk worth securing with waiting rooms and passcodes.</td></tr>
+        <tr><td><strong>Web filter</strong></td><td>A security tool that inspects and controls outbound web traffic, blocking or allowing sites based on category, reputation, or explicit rules — implemented via a centralized proxy, URL scanning, and content categorization.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <footer class="site-footer">
         <a href="chapters1-2.html">← Chapters 1–2</a> &nbsp;·&nbsp; Chapter 3
         &nbsp;·&nbsp; Next:
         <a href="chapters4-5.html"

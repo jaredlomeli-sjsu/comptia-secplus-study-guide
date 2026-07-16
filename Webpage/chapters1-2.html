@@ -52,6 +52,9 @@
     <a href="#sso">SSO &amp; Federation</a>
     <a href="#models">Access Control Models</a>
     <a href="#anomalies">Anomaly Indicators</a>
+  
+    <a href="#ch1-more">Ch1 More Terms</a>
+    <a href="#ch2-more">Ch2 More Terms</a>
   </div>
 
   <!-- ══════════════════════ CHAPTER 1 ══════════════════════ -->
@@ -210,6 +213,34 @@
         <tr><td>Horizontal scaling</td><td>Add <em>more nodes</em> behind a load balancer</td><td>"Scale out"</td></tr>
         <tr><td>Scalability</td><td><em>Manual</em> ability to grow to meet demand</td><td>Elasticity is automatic</td></tr>
         <tr><td>Elasticity</td><td><em>Automatic</em> scale up <strong>and back down</strong> with demand (cloud hallmark)</td><td>Saves cost vs. static provisioning</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  
+  <!-- ══════════════════════ ADDITIONAL CH1 TERMS ══════════════════════ -->
+  <section id="ch1-more">
+    <div class="sec-head"><h2>Additional Ch 1 Terms</h2><span class="sec-tag">Quick reference — full entries in the Glossary</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Corrective control</strong></td><td>A control that fixes or restores systems after an incident, like a backup.</td></tr>
+        <tr><td><strong>Deperimeterization</strong></td><td>The erosion of a fixed network perimeter as cloud services, remote work, and mobile devices spread resources outside the traditional firewall boundary — the trend that makes Zero Trust necessary.</td></tr>
+        <tr><td><strong>Detective control</strong></td><td>A control that identifies an incident after it occurs, like CCTV or logs.</td></tr>
+        <tr><td><strong>Deterrent control</strong></td><td>A control that discourages an attacker, like a warning sign.</td></tr>
+        <tr><td><strong>Directive control</strong></td><td>A control that instructs behavior, like a policy or procedure.</td></tr>
+        <tr><td><strong>Fencing</strong></td><td>A physical barrier around a facility's perimeter that deters and delays unauthorized entry — often paired with lighting, cameras, and guards.</td></tr>
+        <tr><td><strong>Implicit trust zones</strong></td><td>Areas where, once a user is verified, they are trusted to move freely without re-checking — Zero Trust aims to shrink or eliminate these zones.</td></tr>
+        <tr><td><strong>Job rotation</strong></td><td>Moving staff between roles to detect fraud and reduce dependence on one person.</td></tr>
+        <tr><td><strong>Managerial control</strong></td><td>A control implemented through policy and management decisions, like risk assessments.</td></tr>
+        <tr><td><strong>Mandatory vacation</strong></td><td>Requiring time off so hidden fraud surfaces while someone else covers the role.</td></tr>
+        <tr><td><strong>Need to know</strong></td><td>Limiting access to information to only those who require it for a task.</td></tr>
+        <tr><td><strong>Operational control</strong></td><td>A control carried out by people in day-to-day operations, like security training.</td></tr>
+        <tr><td><strong>PTZ</strong> <span class="g-exp">Pan-Tilt-Zoom</span></td><td>A type of security camera that can be remotely rotated and zoomed by an operator, covering a wider area than a fixed camera.</td></tr>
+        <tr><td><strong>Separation of duties</strong></td><td>Splitting a critical task between people so no single person can abuse it.</td></tr>
+        <tr><td><strong>Subject/System</strong></td><td>In Zero Trust, the user, device, or service requesting access to a resource — the entity every policy decision is evaluated against.</td></tr>
+        <tr><td><strong>Technical control</strong></td><td>A control enforced by technology, like encryption or access lists.</td></tr>
+        <tr><td><strong>Threat scope reduction</strong></td><td>A Zero Trust goal of limiting how far an attacker can reach by minimizing access and network exposure, shrinking the blast radius of any single compromise.</td></tr>
       </tbody>
     </table></div>
   </section>
@@ -432,6 +463,42 @@
         <tr><td>Resource consumption anomaly</td><td>Sudden CPU/RAM/disk/bandwidth spike → cryptomining, exfiltration, or compromise.</td></tr>
         <tr><td>Resource inaccessibility</td><td>Files suddenly unreadable → possible ransomware encryption in progress.</td></tr>
         <tr><td>Log anomalies</td><td>Gaps in logs, cleared event logs, or out-of-pattern entries → attacker covering tracks.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  
+  <!-- ══════════════════════ ADDITIONAL CH2 TERMS ══════════════════════ -->
+  <section id="ch2-more">
+    <div class="sec-head"><h2>Additional Ch 2 Terms</h2><span class="sec-tag">Quick reference — full entries in the Glossary</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Conditional access</strong></td><td>Allowing or blocking access based on conditions like device health, location, or risk.</td></tr>
+        <tr><td><strong>Ephemeral credentials</strong></td><td>Temporary access credentials that automatically expire after a short time, reducing the damage if they are ever leaked or stolen.</td></tr>
+        <tr><td><strong>FACL</strong> <span class="g-exp">File System Access Control List</span></td><td>Permissions attached directly to a file or folder specifying exactly which users or groups can read, write, or execute it.</td></tr>
+        <tr><td><strong>FER</strong> <span class="g-exp">Failure to Enroll Rate</span></td><td>The percentage of people a biometric system fails to successfully register in the first place, due to poor-quality scans or physical characteristics the sensor can't read.</td></tr>
+        <tr><td><strong>FIDO</strong> <span class="g-exp">Fast IDentity Online</span></td><td>An industry standard for passwordless and phishing-resistant authentication using public-key cryptography instead of shared secrets — the technology behind passkeys and security keys.</td></tr>
+        <tr><td><strong>Interoperability</strong></td><td>The ability of different identity systems and organizations to work together using shared standards like SAML and OAuth, enabling federation across company boundaries.</td></tr>
+        <tr><td><strong>Just-in-time permissions</strong></td><td>Granting elevated access only for the moment it is needed, then revoking it.</td></tr>
+        <tr><td><strong>JWT</strong> <span class="g-exp">JSON Web Token</span></td><td>A compact, signed token format used to securely pass identity and authorization claims between parties — common in modern API authentication and OAuth flows.</td></tr>
+        <tr><td><strong>KDC</strong> <span class="g-exp">Key Distribution Center</span></td><td>The Kerberos server that issues authentication tickets to users and services.</td></tr>
+        <tr><td><strong>MAC (access control)</strong> <span class="g-exp">Mandatory Access Control</span></td><td>An access model where the system enforces access using labels and clearances; common in military settings.</td></tr>
+        <tr><td><strong>OpenID Connect</strong></td><td>An identity layer built on OAuth that confirms who the user is for single sign-on.</td></tr>
+        <tr><td><strong>PAM (auth modules)</strong> <span class="g-exp">Pluggable Authentication Modules</span></td><td>A Linux framework that lets programs use shared authentication methods.</td></tr>
+        <tr><td><strong>Password age</strong></td><td>The minimum time a password must be in use before it can be changed again — prevents users from cycling through passwords quickly to defeat a reuse policy.</td></tr>
+        <tr><td><strong>Passwordless</strong></td><td>Authentication without a password, using methods like biometrics or hardware keys.</td></tr>
+        <tr><td><strong>PIV</strong> <span class="g-exp">Personal Identity Verification</span></td><td>A smart-card credential standard used by US federal employees for secure access.</td></tr>
+        <tr><td><strong>Rule-based access control</strong></td><td>Access decided by predefined rules, such as a firewall's access control list.</td></tr>
+        <tr><td><strong>Security keys</strong></td><td>Physical hardware devices (like a YubiKey) used as an MFA method — you plug in or tap the key to prove possession as an authentication factor.</td></tr>
+        <tr><td><strong>SID</strong> <span class="g-exp">Security Identifier</span></td><td>A unique value Windows assigns to every user and group to track permissions internally, independent of the account's display name.</td></tr>
+        <tr><td><strong>Something you are</strong></td><td>An authentication factor based on a biometric trait, like a fingerprint.</td></tr>
+        <tr><td><strong>Something you have</strong></td><td>An authentication factor based on possession, like a token or smart card.</td></tr>
+        <tr><td><strong>Something you know</strong></td><td>An authentication factor based on knowledge, like a password or PIN.</td></tr>
+        <tr><td><strong>Somewhere you are</strong></td><td>An authentication factor based on location, like GPS or network address.</td></tr>
+        <tr><td><strong>TGS</strong> <span class="g-exp">Ticket Granting Service</span></td><td>The part of a Kerberos server that issues service tickets after verifying a user's Ticket Granting Ticket, letting them access a specific resource without re-entering credentials.</td></tr>
+        <tr><td><strong>TGT</strong> <span class="g-exp">Ticket Granting Ticket</span></td><td>A Kerberos ticket that proves you logged in and lets you request access to services.</td></tr>
+        <tr><td><strong>ZSP</strong> <span class="g-exp">Zero Standing Privileges</span></td><td>A privileged access model where no account holds elevated permissions by default — access is granted just-in-time for a specific task and revoked immediately after.</td></tr>
       </tbody>
     </table></div>
   </section>

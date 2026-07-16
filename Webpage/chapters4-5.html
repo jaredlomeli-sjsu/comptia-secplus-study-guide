@@ -61,7 +61,10 @@
         <a href="#encryption">TPM · HSM · FDE · DLP</a>
         <a href="#mobile">Mobile / MDM</a>
         <a href="#embedded">Embedded &amp; IoT</a>
-      </div>
+      
+    <a href="#ch4-more">Ch4 More Terms</a>
+    <a href="#ch5-more">Ch5 More Terms</a>
+  </div>
 
       <!-- ══════════════════════ CHAPTER 4 ══════════════════════ -->
       <section id="ch4" style="margin-bottom: 8px">
@@ -1431,7 +1434,28 @@
         </ul>
       </section>
 
-      <!-- ══════════════════════ CHAPTER 5 ══════════════════════ -->
+      
+  <!-- ══════════════════════ ADDITIONAL CH4 TERMS ══════════════════════ -->
+  <section id="ch4-more">
+    <div class="sec-head"><h2>Additional Ch 4 Terms</h2><span class="sec-tag">Quick reference — full entries in the Glossary</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+      <tbody>
+        <tr><td><strong>BLE</strong> <span class="g-exp">Bluetooth Low Energy</span></td><td>A power-efficient variant of Bluetooth designed for small devices like wearables and IoT sensors — trades range and speed for dramatically lower battery use.</td></tr>
+        <tr><td><strong>BSSID</strong> <span class="g-exp">Basic Service Set Identifier</span></td><td>The MAC address of a wireless access point's radio, uniquely identifying that specific AP — used to distinguish access points that share the same network name (SSID).</td></tr>
+        <tr><td><strong>Deauthentication attack</strong></td><td>Forcing devices off Wi-Fi, often to capture handshakes or set up an evil twin.</td></tr>
+        <tr><td><strong>MSCHAP</strong> <span class="g-exp">Microsoft Challenge Handshake Authentication Protocol</span></td><td>A Microsoft authentication protocol that exchanges a hashed challenge instead of a plaintext password; version 2 (MSCHAPv2) is commonly paired with PEAP for Wi-Fi authentication.</td></tr>
+        <tr><td><strong>PMK</strong> <span class="g-exp">Pairwise Master Key</span></td><td>The top-level key generated during WPA2/WPA3 authentication, used to derive the session keys that actually encrypt wireless traffic.</td></tr>
+        <tr><td><strong>Rogue access point</strong></td><td>An unauthorized wireless access point connected to the network.</td></tr>
+        <tr><td><strong>WAP</strong> <span class="g-exp">Wireless Access Point</span></td><td>A device that lets wireless clients connect to a wired network — a rogue or misconfigured WAP is a common way attackers gain network access.</td></tr>
+        <tr><td><strong>WIDS</strong> <span class="g-exp">Wireless Intrusion Detection System</span></td><td>A system that monitors wireless traffic and airwaves for rogue access points and attacks, alerting security teams without blocking them.</td></tr>
+        <tr><td><strong>WIPS</strong> <span class="g-exp">Wireless Intrusion Prevention System</span></td><td>Like a WIDS, but able to actively respond to wireless threats, such as disconnecting a rogue access point from the network.</td></tr>
+        <tr><td><strong>WTLS</strong> <span class="g-exp">Wireless Transport Layer Security</span></td><td>A security protocol adapted from TLS for older, low-bandwidth mobile devices to encrypt data over wireless networks.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ══════════════════════ CHAPTER 5 ══════════════════════ -->
       <section id="ch5" style="margin-bottom: 8px">
         <div class="sec-head">
           <h2>Chapter 5 — Securing Hosts &amp; Data</h2>
@@ -2525,7 +2549,54 @@
         </ul>
       </section>
 
-      <footer class="site-footer">
+      
+  <!-- ══════════════════════ ADDITIONAL CH5 TERMS ══════════════════════ -->
+  <section id="ch5-more">
+    <div class="sec-head"><h2>Additional Ch 5 Terms</h2><span class="sec-tag">Quick reference — full entries in the Glossary</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+      <tbody>
+        <tr><td><strong>ASLR</strong> <span class="g-exp">Address Space Layout Randomization</span></td><td>An operating system defense that randomizes where a program's code and data sit in memory each time it runs, making memory-based exploits much harder to aim reliably.</td></tr>
+        <tr><td><strong>Auto-scaling</strong></td><td>Automatically adding or removing cloud computing resources based on real-time demand, keeping performance steady during traffic spikes while controlling cost during quiet periods.</td></tr>
+        <tr><td><strong>CDN</strong> <span class="g-exp">Content Delivery Network</span></td><td>A network of distributed servers that delivers content faster and absorbs traffic spikes.</td></tr>
+        <tr><td><strong>Cloud-specific vulnerabilities</strong></td><td>Weaknesses unique to cloud environments, like misconfigured storage buckets, insecure APIs, or overly permissive IAM roles — distinct from traditional on-prem flaws.</td></tr>
+        <tr><td><strong>COBO</strong> <span class="g-exp">Corporate-Owned, Business-Only</span></td><td>A mobile deployment model where the company owns the device and restricts it to business use only — the strictest control model, alongside BYOD, COPE, and CYOD.</td></tr>
+        <tr><td><strong>DCS</strong> <span class="g-exp">Distributed Control Systems</span></td><td>Industrial control systems where control functions are spread across many controllers throughout a facility rather than centralized — common in manufacturing plants, alongside SCADA and PLCs.</td></tr>
+        <tr><td><strong>DEP</strong> <span class="g-exp">Data Execution Prevention</span></td><td>An operating system feature that marks memory regions as non-executable, blocking attackers from running injected code from data areas like the stack.</td></tr>
+        <tr><td><strong>Edge computing</strong></td><td>Processing data near where it is generated instead of in a central cloud.</td></tr>
+        <tr><td><strong>EFS</strong> <span class="g-exp">Encrypted File System</span></td><td>A Windows feature that encrypts individual files and folders tied to a specific user account, distinct from whole-disk encryption like BitLocker.</td></tr>
+        <tr><td><strong>EPP</strong> <span class="g-exp">Endpoint Protection Platform</span></td><td>A preventive endpoint security suite (antivirus, firewall, device control) focused on stopping known threats before they execute — commonly paired with EDR, which handles detection and response after something gets through.</td></tr>
+        <tr><td><strong>ESN</strong> <span class="g-exp">Electronic Serial Number</span></td><td>A unique identifier permanently assigned to a mobile device's hardware, historically used by carriers to identify devices on their network.</td></tr>
+        <tr><td><strong>GPO</strong> <span class="g-exp">Group Policy Object</span></td><td>A collection of settings in Windows Group Policy that gets applied to users or computers in a domain, the actual container that enforces Group Policy rules.</td></tr>
+        <tr><td><strong>Group Policy</strong></td><td>A Windows feature that lets administrators centrally configure and enforce security settings across many computers in a domain at once.</td></tr>
+        <tr><td><strong>Hybrid cloud</strong></td><td>A mix of private and public cloud resources working together.</td></tr>
+        <tr><td><strong>MaaS</strong> <span class="g-exp">Monitoring as a Service</span></td><td>A cloud-delivered service where a third party continuously monitors your infrastructure or applications and alerts you to issues, without you running the monitoring tools yourself.</td></tr>
+        <tr><td><strong>MBR</strong> <span class="g-exp">Master Boot Record</span></td><td>The boot sector at the start of a legacy disk that loads the operating system; a common target for boot-level malware and rootkits.</td></tr>
+        <tr><td><strong>MFD</strong> <span class="g-exp">Multifunction Device</span></td><td>A combined printer/scanner/copier/fax device; often overlooked as an endpoint even though it stores scanned documents and connects to the network.</td></tr>
+        <tr><td><strong>MFP</strong> <span class="g-exp">Multifunction Printer</span></td><td>Another name for a multifunction device (MFD) — a networked printer that also scans, copies, and faxes, and needs the same hardening as other endpoints.</td></tr>
+        <tr><td><strong>Mobile wallet</strong></td><td>An app (like Apple Pay or Google Pay) that stores payment card information and uses NFC to make contactless payments, transmitting a one-time token instead of the real card number.</td></tr>
+        <tr><td><strong>NFV</strong> <span class="g-exp">Network Functions Virtualization</span></td><td>Running network functions like firewalls and load balancers as software on general-purpose VMs instead of dedicated hardware appliances, enabling faster deployment and easier scaling.</td></tr>
+        <tr><td><strong>On-premises</strong></td><td>Infrastructure physically owned and operated in the organization's own facility, rather than hosted in the cloud — full control, but full responsibility too.</td></tr>
+        <tr><td><strong>Operational Technology</strong> <span class="g-exp">OT</span></td><td>Hardware and software that monitors or controls physical processes and industrial equipment (e.g., SCADA, ICS) — often prioritizes uptime over patching.</td></tr>
+        <tr><td><strong>PED</strong> <span class="g-exp">Personal Electronic Device</span></td><td>Any personally owned electronic device (phone, tablet, smartwatch) brought into a workplace — a broader category than just BYOD phones.</td></tr>
+        <tr><td><strong>SEH</strong> <span class="g-exp">Structured Exception Handling</span></td><td>A Windows mechanism for handling program errors; attackers have historically abused it to hijack program execution during a buffer overflow (an SEH overwrite attack).</td></tr>
+        <tr><td><strong>Serverless</strong></td><td>Running code on demand without managing the underlying servers.</td></tr>
+        <tr><td><strong>Shared responsibility model</strong></td><td>The split of security duties between the cloud provider and the customer.</td></tr>
+        <tr><td><strong>Side loading</strong></td><td>Installing an app on a mobile device from outside the official app store, bypassing vetting and increasing the risk of installing malware.</td></tr>
+        <tr><td><strong>SIM</strong> <span class="g-exp">Subscriber Identity Module</span></td><td>The chip that identifies a subscriber to a mobile carrier; SIM swapping — tricking a carrier into porting your number to an attacker's SIM — is used to intercept SMS-based MFA codes.</td></tr>
+        <tr><td><strong>Thin client</strong></td><td>A lightweight computer with minimal local processing that relies on a server for most computing tasks — easier to secure and patch centrally.</td></tr>
+        <tr><td><strong>Type 1 hypervisor</strong> <span class="g-exp">Bare-metal hypervisor</span></td><td>A hypervisor that runs directly on hardware, used in data centers.</td></tr>
+        <tr><td><strong>Type 2 hypervisor</strong> <span class="g-exp">Hosted hypervisor</span></td><td>A hypervisor that runs on top of a normal operating system.</td></tr>
+        <tr><td><strong>UAC</strong> <span class="g-exp">User Account Control</span></td><td>The Windows feature that prompts for permission before allowing an action that requires administrator privileges, limiting how much malware can do even on a compromised admin account.</td></tr>
+        <tr><td><strong>UAV</strong> <span class="g-exp">Unmanned Aerial Vehicle</span></td><td>A drone; as a security concern, UAVs can be used for physical surveillance, Wi-Fi sniffing, or even payload delivery near a facility.</td></tr>
+        <tr><td><strong>USB OTG</strong> <span class="g-exp">USB On-The-Go</span></td><td>A USB standard letting mobile devices act as a host to connect directly to peripherals like USB drives — expands the attack surface of otherwise locked-down mobile devices.</td></tr>
+        <tr><td><strong>VDE</strong> <span class="g-exp">Virtual Desktop Environment</span></td><td>The actual virtual desktop session a user interacts with, delivered by the underlying VDI infrastructure.</td></tr>
+        <tr><td><strong>VPC</strong> <span class="g-exp">Virtual Private Cloud</span></td><td>An isolated, private section of a public cloud provider's network where you control IP ranges, subnets, and routing as if it were your own network.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <footer class="site-footer">
         <a href="chapter3.html">← Chapter 3</a> &nbsp;·&nbsp; Chapters 4–5
         &nbsp;·&nbsp; <a href="index.html">Back to Hub</a>
       </footer>

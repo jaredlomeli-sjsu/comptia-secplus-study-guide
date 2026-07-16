@@ -50,6 +50,8 @@
     <a href="#blocking">Blocking Malware</a>
     <a href="#intel">Threat Intelligence</a>
     <a href="#research">Research Sources</a>
+  
+    <a href="#ch6-more">More Terms</a>
   </div>
 
   <!-- ════════ THREAT ACTORS ════════ -->
@@ -413,6 +415,45 @@
         <tr><td>Academic journals</td><td>Peer-reviewed, rigorous — slower, but authoritative on fundamentals</td></tr>
         <tr><td>RFCs — Requests for Comments</td><td>The actual specifications of internet protocols (IETF) — how things are <em>supposed</em> to work, which defines what abuse looks like</td></tr>
         <tr><td>Social media</td><td>Fastest signal anywhere — security researchers break news on X/Mastodon hours before advisories — but verify before acting</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  
+  <!-- ══════════════════════ ADDITIONAL CH6 TERMS ══════════════════════ -->
+  <section id="ch6-more">
+    <div class="sec-head"><h2>Additional Ch 6 Terms</h2><span class="sec-tag">Quick reference — full entries in the Glossary</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Adware</strong></td><td>Software that displays unwanted ads, sometimes bundled with spyware.</td></tr>
+        <tr><td><strong>AI</strong> <span class="g-exp">Artificial Intelligence</span></td><td>Software that mimics human-like decision-making; in security, it cuts both ways — powering deepfakes and automated phishing for attackers, and anomaly detection for defenders.</td></tr>
+        <tr><td><strong>Bootkit</strong></td><td>A rootkit that infects the boot process so it loads before the operating system.</td></tr>
+        <tr><td><strong>Brute-force attack</strong></td><td>Trying many passwords or keys until the right one is found.</td></tr>
+        <tr><td><strong>Credential stuffing</strong></td><td>Reusing stolen username/password pairs from one breach against other sites.</td></tr>
+        <tr><td><strong>Crypto-malware</strong></td><td>Malware that encrypts a victim's files and demands payment for the decryption key — the mechanism ransomware uses to extort victims.</td></tr>
+        <tr><td><strong>Cryptojacking</strong></td><td>Malware that secretly uses a victim's computing power to mine cryptocurrency for the attacker — unlike crypto-malware, it doesn't encrypt or steal the victim's data, just steals CPU/GPU cycles.</td></tr>
+        <tr><td><strong>CSRF</strong> <span class="g-exp">Cross-Site Request Forgery</span></td><td>Tricking a logged-in user's browser into making an unwanted request.</td></tr>
+        <tr><td><strong>Disruption/chaos</strong></td><td>A threat actor motivation where the goal is simply to cause damage or disorder for its own sake, without a clear financial or ideological payoff.</td></tr>
+        <tr><td><strong>Ethical hacking motivation</strong></td><td>Acting with authorization to find and report vulnerabilities so they can be fixed, rather than exploiting them maliciously — the motivation behind legitimate penetration testers.</td></tr>
+        <tr><td><strong>File-based threat vector</strong></td><td>An attack delivered through a malicious file — an infected attachment, a trojanized download, or a document with a hidden macro.</td></tr>
+        <tr><td><strong>Fileless malware</strong></td><td>Malware that runs in memory using built-in tools, leaving little trace on disk.</td></tr>
+        <tr><td><strong>Image-based threat vector</strong></td><td>An attack delivered through a seemingly harmless image file — hidden malicious code, an embedded malicious QR code, or steganographic payloads.</td></tr>
+        <tr><td><strong>Influence campaign</strong></td><td>Coordinated use of misinformation to shape opinions or behavior.</td></tr>
+        <tr><td><strong>Malicious update</strong></td><td>An attack where a legitimate-looking software update is tampered with to deliver malware, exploiting the trust users place in vendor patches.</td></tr>
+        <tr><td><strong>Memory injection</strong></td><td>Injecting malicious code directly into a running process's memory space so it executes without ever touching disk, evading file-based detection.</td></tr>
+        <tr><td><strong>Misinformation/disinformation</strong></td><td>False information spread to deceive — misinformation is spread without intent to harm, disinformation is deliberately created and spread to mislead.</td></tr>
+        <tr><td><strong>Piggybacking</strong></td><td>Entering a secure area with an authorized person's knowing consent.</td></tr>
+        <tr><td><strong>PUP</strong> <span class="g-exp">Potentially Unwanted Program</span></td><td>Software that is not strictly malware but is unwanted, like bundled toolbars.</td></tr>
+        <tr><td><strong>Removable device</strong></td><td>A threat vector where portable media like USB drives introduce malware or exfiltrate data by physically bypassing network-based defenses.</td></tr>
+        <tr><td><strong>Session fixation</strong></td><td>An attack where the attacker sets a victim's session ID before they log in, then uses that known ID to hijack the session once the victim authenticates.</td></tr>
+        <tr><td><strong>Session hijacking</strong></td><td>Stealing a user's session token to take over their logged-in session.</td></tr>
+        <tr><td><strong>Session sidejacking</strong></td><td>Stealing an active session ID by sniffing unencrypted network traffic (like on an open Wi-Fi network), then reusing it to impersonate the victim — defeated by HTTPS everywhere.</td></tr>
+        <tr><td><strong>SSRF</strong> <span class="g-exp">Server-Side Request Forgery</span></td><td>Tricking a server into making requests to systems the attacker can't reach directly.</td></tr>
+        <tr><td><strong>Threat vector</strong></td><td>The path or method an attacker uses to reach and compromise a target.</td></tr>
+        <tr><td><strong>VBA</strong> <span class="g-exp">Visual Basic for Applications</span></td><td>A macro scripting language built into Microsoft Office; malicious VBA macros embedded in documents are a classic way to deliver malware through phishing attachments.</td></tr>
+        <tr><td><strong>VLAN hopping</strong></td><td>An attack that lets traffic reach a VLAN it should not be able to access.</td></tr>
+        <tr><td><strong>Watering hole attack</strong></td><td>Compromising a website the target group is known to visit, to infect them.</td></tr>
       </tbody>
     </table></div>
   </section>

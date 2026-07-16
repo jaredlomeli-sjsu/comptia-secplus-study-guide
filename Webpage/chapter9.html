@@ -46,6 +46,8 @@
     <a href="#bcp">Business Continuity</a>
     <a href="#recovery">Recovery &amp; DR</a>
     <a href="#capacity">Capacity Planning</a>
+  
+    <a href="#ch9-more">More Terms</a>
   </div>
 
   <!-- ════════ PHYSICAL SECURITY CONTROLS ════════ -->
@@ -548,6 +550,46 @@
   <div style="margin:30px 0 8px;text-align:center">
     <a href="diagrams/Security_Plus_Chapter9_Diagram.html" class="btn btn-primary">Open the interactive Chapter 9 diagram →</a>
   </div>
+
+  
+  <!-- ══════════════════════ ADDITIONAL CH9 TERMS ══════════════════════ -->
+  <section id="ch9-more">
+    <div class="sec-head"><h2>Additional Ch 9 Terms</h2><span class="sec-tag">Quick reference — full entries in the Glossary</span></div>
+    <div class="table-wrap"><table class="wrap-first">
+      <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Agent-based scanning</strong></td><td>Vulnerability scanning using software installed directly on each host, giving deeper visibility but requiring deployment and maintenance on every endpoint.</td></tr>
+        <tr><td><strong>Agentless scanning</strong></td><td>Vulnerability scanning performed remotely over the network without installing software on the target, easier to deploy but often less thorough.</td></tr>
+        <tr><td><strong>Alert tuning</strong></td><td>Adjusting the thresholds and rules of monitoring tools to reduce false positives and false negatives, so alerts stay meaningful and actionable.</td></tr>
+        <tr><td><strong>Black-box testing</strong></td><td>A test where the tester has no inside knowledge, like an outside attacker.</td></tr>
+        <tr><td><strong>Concurrent session usage</strong></td><td>The same account being actively used in multiple sessions at once, which can indicate a stolen credential being used by an attacker at the same time as the real user.</td></tr>
+        <tr><td><strong>Configuration enforcement</strong></td><td>Automatically applying and maintaining approved system settings, alerting or auto-correcting when a system drifts from its secure baseline.</td></tr>
+        <tr><td><strong>CRC</strong> <span class="g-exp">Cyclical Redundancy Check</span></td><td>An error-detecting code used to catch accidental changes to data during transmission or storage — checks for corruption, not tampering (unlike a cryptographic hash).</td></tr>
+        <tr><td><strong>Deep web</strong></td><td>The parts of the internet not indexed by regular search engines, like private databases and login-walled pages. Broader and mostly mundane, unlike the dark web, which specifically requires special software like Tor.</td></tr>
+        <tr><td><strong>Geographic dispersion</strong></td><td>Spreading systems and backups across multiple physical locations so a regional disaster (fire, flood, power outage) doesn't destroy all copies at once.</td></tr>
+        <tr><td><strong>Gray-box testing</strong></td><td>A test where the tester has partial knowledge of the system.</td></tr>
+        <tr><td><strong>MDR</strong> <span class="g-exp">Managed Detection and Response</span></td><td>An outsourced service where a third-party provider delivers round-the-clock threat monitoring, investigation, and response — useful for organizations without a full in-house SOC.</td></tr>
+        <tr><td><strong>Missing logs</strong></td><td>Gaps or deleted entries in log files, often a sign an attacker cleared their tracks to hide activity — itself a key indicator of compromise.</td></tr>
+        <tr><td><strong>ML</strong> <span class="g-exp">Machine Learning</span></td><td>A subset of AI where systems learn patterns from data rather than following fixed rules — underlies modern anomaly detection and user behavior analytics (UBA).</td></tr>
+        <tr><td><strong>MTTF</strong> <span class="g-exp">Mean Time to Failure</span></td><td>The average time a non-repairable component or system is expected to run before it fails — used for parts that get replaced, not fixed, like drives.</td></tr>
+        <tr><td><strong>OpenVAS</strong> <span class="g-exp">Open Vulnerability Assessment System</span></td><td>A free, open-source vulnerability scanner (part of the Greenbone Vulnerability Management suite) that scans systems for known vulnerabilities and generates remediation reports.</td></tr>
+        <tr><td><strong>OTX</strong> <span class="g-exp">Open Threat Exchange</span></td><td>A free, crowd-sourced threat intelligence platform where security researchers and organizations share indicators of compromise in real time.</td></tr>
+        <tr><td><strong>Out-of-cycle logging</strong></td><td>Log entries appearing at unusual times outside normal patterns (e.g., 3 a.m. admin activity) — a red flag that an attacker is operating on the system.</td></tr>
+        <tr><td><strong>Parameterized query</strong></td><td>A query that binds user input as data rather than executable SQL — the definitive fix for SQL injection.</td></tr>
+        <tr><td><strong>Platform diversity</strong></td><td>Using different operating systems, vendors, or architectures across systems so a single exploit or outage can't take everything down at once.</td></tr>
+        <tr><td><strong>Published/documented indicator</strong></td><td>A known indicator of compromise that has already been publicly documented by researchers or threat feeds, letting defenders match it against their own logs.</td></tr>
+        <tr><td><strong>Removal of unnecessary software</strong></td><td>A hardening technique that uninstalls unused applications and default software to shrink the attack surface — fewer programs means fewer potential vulnerabilities.</td></tr>
+        <tr><td><strong>Rescanning</strong></td><td>Running a vulnerability scan again after remediation to confirm the fix actually worked and the vulnerability is really gone.</td></tr>
+        <tr><td><strong>SBOM</strong> <span class="g-exp">Software Bill of Materials</span></td><td>A complete inventory of every component and dependency inside a piece of software, used to quickly identify if a newly disclosed vulnerability affects you.</td></tr>
+        <tr><td><strong>TDR</strong> <span class="g-exp">Threat Detection and Response</span></td><td>The general practice of continuously monitoring for threats and responding to neutralize them — an umbrella term for the process that specific tools like EDR, XDR, and MDR carry out.</td></tr>
+        <tr><td><strong>Threat feed</strong></td><td>A continuously updated stream of threat intelligence data — malicious IPs, domains, hashes — ingested by security tools to detect known threats.</td></tr>
+        <tr><td><strong>UEBA</strong> <span class="g-exp">User and Entity Behavior Analytics</span></td><td>An extension of UBA that also baselines the behavior of non-human entities — servers, service accounts, IoT devices — to catch anomalies beyond just human user behavior.</td></tr>
+        <tr><td><strong>User Behavior Analytics</strong> <span class="g-exp">UBA</span></td><td>Monitoring tools that build a baseline of normal user activity and flag deviations, such as unusual access times or data access patterns, as potential threats.</td></tr>
+        <tr><td><strong>Wazuh</strong></td><td>An open-source security platform combining SIEM and XDR capabilities — log analysis, intrusion detection, and vulnerability assessment in one free, self-hosted tool.</td></tr>
+        <tr><td><strong>White-box testing</strong></td><td>A test where the tester has full knowledge of the system.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
 
   <footer class="site-footer">
     <a href="chapter8.html">← Chapter 8</a> &nbsp;·&nbsp; Chapter 9 &nbsp;·&nbsp; <a href="chapter10.html">Chapter 10 →</a>
