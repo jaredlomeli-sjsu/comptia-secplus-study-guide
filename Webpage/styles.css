@@ -2294,6 +2294,13 @@ td {
   border-color: var(--cyan);
   background: var(--blue-dim);
 }
+.g-tag-port {
+  margin-left: 0;
+  font-family: var(--font-mono);
+  color: var(--green);
+  border-color: var(--green);
+  background: var(--green-dim);
+}
 .g-def {
   font-size: 13.8px;
   color: var(--text);

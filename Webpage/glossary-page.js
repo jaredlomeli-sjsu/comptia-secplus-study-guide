@@ -147,7 +147,8 @@
     return (
       norm(e.t).indexOf(query) > -1 ||
       norm(e.f).indexOf(query) > -1 ||
-      norm(e.d).indexOf(query) > -1
+      norm(e.d).indexOf(query) > -1 ||
+      (e.p ? norm(e.p).indexOf(query) > -1 : false)
     );
   }
 
@@ -177,6 +178,13 @@
           e.ch +
           "</span>"
         : "";
+      var portTag = e.p
+        ? '<span class="g-tag g-tag-port" title="Port ' +
+          esc(e.p) +
+          '">Port ' +
+          esc(e.p) +
+          "</span>"
+        : "";
       html +=
         '<div class="g-entry">' +
         '<div class="g-term">' +
@@ -186,6 +194,7 @@
         esc(CAT_NAMES[e.c] || e.c) +
         "</span>" +
         chTag +
+        portTag +
         "</div>" +
         '<div class="g-def">' +
         esc(e.d) +

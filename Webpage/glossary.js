@@ -1,5 +1,5 @@
 /* Security+ SY0-701 Glossary — beginner-friendly definitions.
-   Fields: t=term/acronym, f=full expansion ("" for concepts), c=category, ch=chapter (1-11), d=definition.
+   Fields: t=term/acronym, f=full expansion ("" for concepts), c=category, ch=chapter (1-11), p=port number(s) (protocols only), d=definition.
    Categories: Core · Crypto · IAM · Network · Threats · Malware · SocEng · Cloud · Data · Ops · IR · GRC · Wireless · Endpoint */
 window.GLOSSARY = [
   /* ── Core Concepts ── */
@@ -761,7 +761,8 @@ window.GLOSSARY = [
     f: "",
     c: "IAM",
     ch: 3,
-    d: "A network authentication protocol that uses tickets and a key distribution center; common in Windows domains.",
+    p: "88",
+    d: "A network authentication protocol that uses tickets and a key distribution center; common in Windows domains. Uses TCP/UDP port 88.",
   },
   {
     t: "KDC",
@@ -782,21 +783,24 @@ window.GLOSSARY = [
     f: "Lightweight Directory Access Protocol",
     c: "IAM",
     ch: 3,
-    d: "A protocol for querying and managing a directory of users and resources.",
+    p: "389",
+    d: "A protocol for querying and managing a directory of users and resources. Uses TCP port 389 (636 for LDAPS).",
   },
   {
     t: "RADIUS",
     f: "Remote Authentication Dial-In User Service",
     c: "IAM",
     ch: 4,
-    d: "A protocol that centrally authenticates remote and wireless users.",
+    p: "1812/1813",
+    d: "A protocol that centrally authenticates remote and wireless users. Uses UDP ports 1812 (authentication) and 1813 (accounting); legacy systems use 1645/1646.",
   },
   {
     t: "TACACS+",
     f: "Terminal Access Controller Access-Control System Plus",
     c: "IAM",
     ch: 4,
-    d: "A Cisco AAA protocol that encrypts the full session and separates authentication from authorization.",
+    p: "49",
+    d: "A Cisco AAA protocol that encrypts the full session and separates authentication from authorization. Uses TCP port 49.",
   },
   {
     t: "PAP",
@@ -1064,7 +1068,8 @@ window.GLOSSARY = [
     f: "Internet Key Exchange",
     c: "Network",
     ch: 3,
-    d: "The IPsec protocol that negotiates keys and sets up the secure tunnel.",
+    p: "500",
+    d: "The IPsec protocol that negotiates keys and sets up the secure tunnel. Uses UDP port 500 (4500 when traversing NAT).",
   },
   {
     t: "TLS",
@@ -1288,7 +1293,8 @@ window.GLOSSARY = [
     f: "Domain Name System",
     c: "Network",
     ch: 7,
-    d: "The internet service that translates human names like example.com into IP addresses.",
+    p: "53",
+    d: "The internet service that translates human names like example.com into IP addresses. Uses port 53 (UDP for lookups, TCP for zone transfers).",
   },
   {
     t: "DNSSEC",
@@ -1302,7 +1308,8 @@ window.GLOSSARY = [
     f: "Dynamic Host Configuration Protocol",
     c: "Network",
     ch: 3,
-    d: "A protocol that automatically assigns IP addresses to devices on a network.",
+    p: "67/68",
+    d: "A protocol that automatically assigns IP addresses to devices on a network. Uses UDP ports 67 (server) and 68 (client).",
   },
   {
     t: "ICMP",
@@ -2203,7 +2210,8 @@ window.GLOSSARY = [
     f: "",
     c: "Ops",
     ch: 1,
-    d: "A standard protocol for sending log messages to a central server.",
+    p: "514",
+    d: "A standard protocol for sending log messages to a central server. Uses UDP port 514 (TCP 6514 when sent over TLS).",
   },
   {
     t: "NetFlow",
@@ -2976,6 +2984,7 @@ window.GLOSSARY = [
     f: "Secure Shell",
     c: "Network",
     ch: 3,
+    p: "22",
     d: "An encrypted protocol for secure remote login, file transfer, and tunneling; uses port 22.",
   },
   {
@@ -2983,6 +2992,7 @@ window.GLOSSARY = [
     f: "",
     c: "Network",
     ch: 3,
+    p: "23",
     d: "An old remote-login protocol that sends everything in cleartext on port 23; replaced by SSH.",
   },
   {
@@ -2990,6 +3000,7 @@ window.GLOSSARY = [
     f: "File Transfer Protocol",
     c: "Network",
     ch: 3,
+    p: "20/21",
     d: "Transfers files in cleartext on ports 20 and 21; use SFTP or FTPS instead.",
   },
   {
@@ -2997,6 +3008,7 @@ window.GLOSSARY = [
     f: "SSH File Transfer Protocol",
     c: "Network",
     ch: 3,
+    p: "22",
     d: "Secure file transfer carried over SSH on port 22.",
   },
   {
@@ -3004,6 +3016,7 @@ window.GLOSSARY = [
     f: "FTP Secure",
     c: "Network",
     ch: 3,
+    p: "989/990",
     d: "FTP secured with TLS, typically on port 990.",
   },
   {
@@ -3011,6 +3024,7 @@ window.GLOSSARY = [
     f: "Trivial File Transfer Protocol",
     c: "Network",
     ch: 3,
+    p: "69",
     d: "A simple, unauthenticated file transfer protocol on UDP port 69; avoid for sensitive data.",
   },
   {
@@ -3018,6 +3032,7 @@ window.GLOSSARY = [
     f: "Hypertext Transfer Protocol",
     c: "Network",
     ch: 3,
+    p: "80",
     d: "Unencrypted web traffic on port 80; use HTTPS instead.",
   },
   {
@@ -3025,6 +3040,7 @@ window.GLOSSARY = [
     f: "HTTP Secure",
     c: "Network",
     ch: 3,
+    p: "443",
     d: "Web traffic encrypted with TLS on port 443.",
   },
   {
@@ -3032,6 +3048,7 @@ window.GLOSSARY = [
     f: "Remote Desktop Protocol",
     c: "Network",
     ch: 3,
+    p: "3389",
     d: "Microsoft protocol for remote graphical desktop access on port 3389; keep it off the open internet.",
   },
   {
@@ -3039,6 +3056,7 @@ window.GLOSSARY = [
     f: "Server Message Block",
     c: "Network",
     ch: 3,
+    p: "445",
     d: "Windows file and printer sharing protocol on port 445; a common ransomware spread path if exposed.",
   },
   {
@@ -3046,6 +3064,7 @@ window.GLOSSARY = [
     f: "Simple Mail Transfer Protocol",
     c: "Network",
     ch: 3,
+    p: "25",
     d: "Sends email between servers on port 25; secured with TLS on 465 or 587.",
   },
   {
@@ -3053,6 +3072,7 @@ window.GLOSSARY = [
     f: "Internet Message Access Protocol",
     c: "Network",
     ch: 3,
+    p: "143",
     d: "Retrieves email while leaving it on the server (port 143; secure version IMAPS on 993).",
   },
   {
@@ -3060,6 +3080,7 @@ window.GLOSSARY = [
     f: "Post Office Protocol 3",
     c: "Network",
     ch: 3,
+    p: "110",
     d: "Downloads email from a server to one device (port 110; secure version POP3S on 995).",
   },
   {
@@ -3067,6 +3088,7 @@ window.GLOSSARY = [
     f: "Simple Network Management Protocol",
     c: "Network",
     ch: 3,
+    p: "161/162",
     d: "Monitors and manages network devices on ports 161 and 162; use SNMPv3 for encryption and authentication.",
   },
   {
@@ -3074,6 +3096,7 @@ window.GLOSSARY = [
     f: "Network Time Protocol",
     c: "Network",
     ch: 3,
+    p: "123",
     d: "Synchronizes clocks across devices on UDP port 123; accurate time is vital for logs and certificates.",
   },
   {
@@ -3081,6 +3104,7 @@ window.GLOSSARY = [
     f: "Lightweight Directory Access Protocol Secure",
     c: "Network",
     ch: 3,
+    p: "636",
     d: "LDAP encrypted with TLS on port 636; the secure replacement for plain LDAP (389).",
   },
   {
@@ -5209,14 +5233,16 @@ window.GLOSSARY = [
     f: "Layer 2 Tunneling Protocol",
     c: "Network",
     ch: 4,
-    d: "A VPN tunneling protocol that has no encryption of its own, so it's almost always paired with IPsec (L2TP/IPsec) to actually secure the traffic.",
+    p: "1701",
+    d: "A VPN tunneling protocol that has no encryption of its own, so it's almost always paired with IPsec (L2TP/IPsec) to actually secure the traffic. Uses UDP port 1701.",
   },
   {
     t: "PPTP",
     f: "Point-to-Point Tunneling Protocol",
     c: "Network",
     ch: 3,
-    d: "An old, now-insecure VPN protocol with well-known cryptographic weaknesses; replaced by more modern options like IPsec and OpenVPN.",
+    p: "1723",
+    d: "An old, now-insecure VPN protocol with well-known cryptographic weaknesses; replaced by more modern options like IPsec and OpenVPN. Uses TCP port 1723.",
   },
   {
     t: "HVAC",
@@ -5239,7 +5265,8 @@ window.GLOSSARY = [
     f: "Border Gateway Protocol",
     c: "Network",
     ch: 8,
-    d: "The routing protocol that exchanges route information between networks across the internet; BGP hijacking can redirect traffic to malicious destinations.",
+    p: "179",
+    d: "The routing protocol that exchanges route information between networks across the internet; BGP hijacking can redirect traffic to malicious destinations. Uses TCP port 179.",
   },
   {
     t: "OSPF",
@@ -5652,7 +5679,8 @@ window.GLOSSARY = [
     f: "SMTP Secure",
     c: "Network",
     ch: 10,
-    d: "SMTP email traffic wrapped in TLS encryption, protecting mail-server-to-mail-server or client-to-server communication from eavesdropping.",
+    p: "465",
+    d: "SMTP email traffic wrapped in TLS encryption, protecting mail-server-to-mail-server or client-to-server communication from eavesdropping. Uses TCP port 465 (or 587 for STARTTLS submission).",
   },
 
   /* ── Gap Analysis Round 2 · Increment 7 — Remaining Tier 1: Zero Trust, Change Mgmt, Crypto, Threats, Architecture, Ops, Governance + Acronyms ── */
@@ -6754,7 +6782,8 @@ window.GLOSSARY = [
     f: "Virtual Network Computing",
     c: "Network",
     ch: 3,
-    d: "A remote desktop protocol that lets you view and control another computer's screen over a network — similar in purpose to RDP but cross-platform and open standard.",
+    p: "5900",
+    d: "A remote desktop protocol that lets you view and control another computer's screen over a network — similar in purpose to RDP but cross-platform and open standard. Uses TCP port 5900.",
   },
   {
     t: "MIB",
@@ -7083,6 +7112,7 @@ window.GLOSSARY = [
     f: "IMAP Secure",
     c: "Network",
     ch: 3,
+    p: "993",
     d: "IMAP email retrieval wrapped in TLS encryption, protecting the connection between a mail client and server from eavesdropping.",
   },
   {
