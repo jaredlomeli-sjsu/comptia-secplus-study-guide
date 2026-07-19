@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -54,9 +54,7 @@
         <a href="#governance">Security Governance Structure</a>
         <a href="#legal-agreements">Legal Agreements &amp; Compliance</a>
         <a href="#awareness">Security Awareness Training</a>
-      
-    <a href="#ch11-more">More Terms</a>
-  </div>
+      </div>
 
       <!-- ════════════ DATA CLASSIFICATION ════════════ -->
       <section id="data-classification">
@@ -268,6 +266,186 @@
           <em>custodian</em> protects. Under GDPR, <em>controller</em> decides
           purpose; <em>processor</em> executes instructions.
         </div>
+
+        <h3>Classifying by Format, Then De-Identifying</h3>
+        <p>
+          Classification isn't only about sensitivity level — it also
+          distinguishes
+          <strong>human- and non-human-readable data</strong>: formats people
+          can read directly (plain text, PDFs) versus formats meant for machines
+          (binary, encrypted blobs, compiled code). The latter needs the right
+          tooling before an auditor — or an attacker — can make sense of it at
+          all.
+        </p>
+        <p>
+          Two techniques reduce sensitivity without deleting the data outright:
+          <strong>anonymization</strong> permanently removes identifying details
+          so data can never be traced back to a person, while
+          <strong>pseudonymization</strong> replaces identifying fields with
+          pseudonyms that <em>can</em> be reversed with a key. Only
+          anonymization takes data fully out of scope for privacy regulations —
+          pseudonymized data is still personal data as long as the key exists.
+        </p>
+
+        <figure class="diagram">
+          <svg
+            width="620"
+            viewBox="0 0 620 200"
+            role="img"
+            aria-label="Pseudonymization replaces identifying fields with a pseudonym that can be reversed using a separately stored key; anonymization permanently strips identifying details with no key and no way back"
+          >
+            <defs>
+              <marker
+                id="m-anon"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="7"
+                markerHeight="7"
+                orient="auto"
+              >
+                <path d="M0 0L10 5L0 10z" fill="var(--dim)" />
+              </marker>
+            </defs>
+            <text
+              x="20"
+              y="24"
+              font-size="11"
+              font-weight="700"
+              fill="var(--blue)"
+            >
+              Pseudonymization — reversible
+            </text>
+            <rect
+              x="20"
+              y="38"
+              width="170"
+              height="40"
+              rx="6"
+              fill="var(--surface2)"
+              stroke="var(--border-strong)"
+            />
+            <text
+              x="105"
+              y="62"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="600"
+              fill="var(--bright)"
+            >
+              "John Smith, SSN 123-45-6789"
+            </text>
+            <line
+              x1="192"
+              y1="58"
+              x2="246"
+              y2="58"
+              stroke="var(--dim)"
+              stroke-width="1.6"
+              marker-end="url(#m-anon)"
+            />
+            <rect
+              x="250"
+              y="38"
+              width="140"
+              height="40"
+              rx="6"
+              fill="var(--blue-dim)"
+              stroke="var(--blue)"
+            />
+            <text
+              x="320"
+              y="62"
+              text-anchor="middle"
+              font-size="10.5"
+              font-weight="700"
+              fill="var(--blue)"
+            >
+              "User_A7f3"
+            </text>
+            <path
+              d="M320 80 Q320 100 250 100"
+              fill="none"
+              stroke="var(--blue)"
+              stroke-width="1.4"
+              stroke-dasharray="4 3"
+              marker-end="url(#m-anon)"
+            />
+            <text
+              x="320"
+              y="112"
+              text-anchor="middle"
+              font-size="8.5"
+              fill="var(--blue)"
+            >
+              reversible with the separately-stored key
+            </text>
+
+            <text
+              x="20"
+              y="150"
+              font-size="11"
+              font-weight="700"
+              fill="var(--red)"
+            >
+              Anonymization — permanent
+            </text>
+            <rect
+              x="20"
+              y="164"
+              width="170"
+              height="34"
+              rx="6"
+              fill="var(--surface2)"
+              stroke="var(--border-strong)"
+            />
+            <text
+              x="105"
+              y="185"
+              text-anchor="middle"
+              font-size="9.5"
+              font-weight="600"
+              fill="var(--bright)"
+            >
+              "John Smith, SSN 123-45-6789"
+            </text>
+            <line
+              x1="192"
+              y1="181"
+              x2="246"
+              y2="181"
+              stroke="var(--dim)"
+              stroke-width="1.6"
+              marker-end="url(#m-anon)"
+            />
+            <rect
+              x="250"
+              y="164"
+              width="220"
+              height="34"
+              rx="6"
+              fill="var(--red-dim)"
+              stroke="var(--red)"
+            />
+            <text
+              x="360"
+              y="185"
+              text-anchor="middle"
+              font-size="9.5"
+              font-weight="700"
+              fill="var(--red)"
+            >
+              "Person, age 30–40, West region"
+            </text>
+          </svg>
+          <figcaption>
+            <b>The presence of a key is the whole distinction.</b> If a key
+            could reverse it back to the original, it's pseudonymization — and
+            still personal data under GDPR/CCPA. If no key exists anywhere, it's
+            anonymization, and the data is genuinely out of scope for privacy
+            law.
+          </figcaption>
+        </figure>
       </section>
 
       <!-- ════════════ REGULATED & SENSITIVE DATA ════════════ -->
@@ -571,6 +749,117 @@
           roles, escalation paths, and procedures before an incident occurs.
         </p>
         <p>
+          Not every occurrence rises to "incident." A
+          <strong>security event</strong> is any observable occurrence in a
+          system — a login attempt, a file access — and most events are routine
+          and don't indicate a problem. A <strong>security alert</strong> is a
+          notification a monitoring system generates when it spots suspicious or
+          anomalous activity among those events: a call to investigate further,
+          not yet a confirmed incident. Only once that investigation confirms
+          harm (or likely harm) does it become a security incident.
+        </p>
+
+        <figure class="diagram">
+          <svg
+            width="480"
+            viewBox="0 0 480 240"
+            role="img"
+            aria-label="A funnel narrowing from many routine security events at the top, down to a smaller number of alerts flagged as suspicious, down to the few that are confirmed as security incidents"
+          >
+            <polygon
+              points="40,20 440,20 340,110 140,110"
+              fill="var(--surface2)"
+              stroke="var(--border-strong)"
+            />
+            <text
+              x="240"
+              y="55"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="var(--bright)"
+            >
+              Security events
+            </text>
+            <text
+              x="240"
+              y="72"
+              text-anchor="middle"
+              font-size="9.5"
+              fill="var(--dim)"
+            >
+              thousands — logins, file access, routine activity
+            </text>
+            <text
+              x="240"
+              y="95"
+              text-anchor="middle"
+              font-size="9"
+              fill="var(--dim)"
+            >
+              most indicate nothing wrong
+            </text>
+
+            <polygon
+              points="140,114 340,114 280,175 200,175"
+              fill="var(--orange-dim)"
+              stroke="var(--orange)"
+            />
+            <text
+              x="240"
+              y="140"
+              text-anchor="middle"
+              font-size="11.5"
+              font-weight="700"
+              fill="var(--orange)"
+            >
+              Security alerts
+            </text>
+            <text
+              x="240"
+              y="157"
+              text-anchor="middle"
+              font-size="9"
+              fill="var(--dim)"
+            >
+              flagged as suspicious — needs investigation
+            </text>
+
+            <polygon
+              points="200,179 280,179 258,225 222,225"
+              fill="var(--red-dim)"
+              stroke="var(--red)"
+            />
+            <text
+              x="240"
+              y="205"
+              text-anchor="middle"
+              font-size="10.5"
+              font-weight="700"
+              fill="var(--red)"
+            >
+              Incidents
+            </text>
+            <text
+              x="240"
+              y="219"
+              text-anchor="middle"
+              font-size="8"
+              fill="var(--dim)"
+            >
+              confirmed harm
+            </text>
+          </svg>
+          <figcaption>
+            <b>Volume shrinks as certainty grows.</b> Almost everything a system
+            does is a routine event. A monitoring tool elevates the suspicious
+            fraction to alerts. Only the fraction of alerts an analyst confirms
+            as real harm ever becomes a security incident — and triggers the
+            four-phase lifecycle below.
+          </figcaption>
+        </figure>
+
+        <p>
           <strong>NIST SP 800-61 Revision 2</strong> (<em
             >Computer Security Incident Handling Guide</em
           >) is the authoritative federal framework for IR. It defines a
@@ -866,7 +1155,10 @@
                   <strong>4 — Post-Incident Activity (Lessons Learned)</strong>
                 </td>
                 <td>
-                  Document timeline, root cause, and impact. Identify what
+                  Document timeline, root cause, and impact via
+                  <strong>root cause analysis</strong> — determining the
+                  underlying reason the incident happened, not just its
+                  symptoms, so the same failure doesn't recur. Identify what
                   worked and what failed. Update IR plan, playbooks, and
                   detection rules. Produce the incident report. Hold
                   lessons-learned meeting within 2 weeks.
@@ -1076,6 +1368,10 @@
               Browser history, cookies, cached pages, download history, and
               saved credentials stored in browser profile folders. Index.dat (IE
               legacy) and SQLite databases (Chrome, Firefox).
+              <strong>URL analysis</strong> — examining a URL's structure
+              (domain, subdomains, encoding, redirects) during that review — is
+              how analysts spot phishing links, C2 traffic, or exfiltration
+              attempts hiding in the history.
             </p>
           </div>
           <div class="card accent-orange">
@@ -1085,6 +1381,16 @@
               connection history, and app permission logs. Require specialized
               tools (Cellebrite, Oxygen Forensics) and may need locked device
               bypass.
+            </p>
+          </div>
+          <div class="card accent-green">
+            <h4>Network &amp; Security-Device Logs</h4>
+            <p>
+              <strong>Network logs</strong> record connections, traffic flows,
+              and device events; <strong>IPS/IDS logs</strong> document detected
+              and blocked malicious traffic specifically. Both are used
+              alongside firewall and endpoint logs to reconstruct an incident
+              timeline — and are a key data source during any investigation.
             </p>
           </div>
         </div>
@@ -1192,7 +1498,11 @@
           evidence inadmissible in court. Every transfer of custody requires a
           signature. Digital evidence is sealed with a cryptographic hash
           (SHA-256) at time of collection — any modification changes the hash,
-          proving tampering.
+          proving tampering. All of this exists to satisfy
+          <strong>due process</strong> — the legal requirement that evidence be
+          collected and handled fairly and consistently, following established
+          procedures. Evidence gathered without due process may be thrown out
+          regardless of what it proves.
         </p>
         <div class="tip">
           <b>Exam tip:</b> Order of volatility: RAM first, disk last. Legal hold
@@ -1231,6 +1541,12 @@
               via APIs. Executes automated workflows when conditions are met.
               Tracks all actions taken for audit purposes. Examples: Splunk
               SOAR, Palo Alto XSOAR, IBM QRadar SOAR.
+            </p>
+            <p>
+              A common playbook output is <strong>automated reports</strong> —
+              scheduled or triggered reports a SOAR platform generates on its
+              own, summarizing findings without an analyst manually compiling
+              them.
             </p>
           </div>
           <div class="card accent-blue">
@@ -1725,6 +2041,15 @@
           maintain a <strong>data inventory</strong> to fulfill these requests
           within mandated timeframes.
         </p>
+        <p>
+          Underlying all of this is <strong>data sovereignty</strong> — the idea
+          that data is subject to the laws of the country where it is stored,
+          which is exactly why GDPR and CCPA apply based on where a data subject
+          or their data physically sits. Organizations enforce this with
+          <strong>geographic restrictions</strong>: rules that block or allow
+          data access based on the user's physical location, keeping data (and
+          access to it) inside the jurisdiction its governing law requires.
+        </p>
         <div class="tip">
           <b>Exam tip — agreement quick reference:</b><br />
           • SLA = measurable uptime/performance metrics with penalties<br />
@@ -1873,44 +2198,7 @@
         </div>
       </section>
 
-      
-  <!-- ══════════════════════ ADDITIONAL CH11 TERMS ══════════════════════ -->
-  <section id="ch11-more">
-    <div class="sec-head"><h2>Additional Ch 11 Terms</h2><span class="sec-tag">Quick reference — full entries in the Glossary</span></div>
-    <div class="table-wrap"><table class="wrap-first">
-      <thead><tr><th>Term</th><th>Definition</th></tr></thead>
-      <tbody>
-        <tr><td><strong>Anonymization</strong></td><td>Permanently removing identifying details so data can't be traced to a person.</td></tr>
-        <tr><td><strong>Automated reports</strong></td><td>Scheduled or triggered reports generated automatically by security tools, summarizing findings without requiring an analyst to manually compile them.</td></tr>
-        <tr><td><strong>Burning (incineration)</strong></td><td>Combustion of media to reduce it to ash — used for paper, optical discs, and other materials in high-security disposal contexts.</td></tr>
-        <tr><td><strong>Confidential (government)</strong></td><td>The lowest U.S. government classification requiring a clearance — unauthorized disclosure would cause damage to national security.</td></tr>
-        <tr><td><strong>Confidential/Private (commercial)</strong></td><td>A commercial classification for sensitive internal data whose disclosure could cause significant organizational harm.</td></tr>
-        <tr><td><strong>Data sovereignty</strong></td><td>The idea that data is subject to the laws of the country where it is stored.</td></tr>
-        <tr><td><strong>Due process</strong></td><td>The legal requirement that evidence be collected and handled fairly and consistently, following established procedures — evidence gathered without due process may be inadmissible in legal proceedings.</td></tr>
-        <tr><td><strong>Financial information</strong></td><td>Data like account numbers, transaction records, and financial statements — a high-value target for theft and a common compliance driver.</td></tr>
-        <tr><td><strong>Geographic restrictions</strong></td><td>Rules that block or allow data access based on the user's physical location, often used to comply with data sovereignty laws.</td></tr>
-        <tr><td><strong>Human- and non-human-readable data</strong></td><td>A data classification distinction between formats people can read directly (plain text, PDFs) and formats meant for machines (binary, encrypted blobs, compiled code).</td></tr>
-        <tr><td><strong>IPS/IDS logs</strong></td><td>Records generated by intrusion prevention/detection systems documenting detected and blocked malicious traffic — a key data source during an investigation.</td></tr>
-        <tr><td><strong>IR containment, eradication, and recovery phase</strong></td><td>Phase 3 of NIST SP 800-61: isolate affected systems, remove malware and root causes, then restore from clean backups and return to production.</td></tr>
-        <tr><td><strong>IR detection and analysis phase</strong></td><td>Phase 2 of NIST SP 800-61: using SIEM, IDS, and EDR to identify indicators of compromise, classify severity, and determine the scope of an incident.</td></tr>
-        <tr><td><strong>IR post-incident activity</strong></td><td>Phase 4 of NIST SP 800-61: documenting the timeline, root cause, and impact; holding a lessons-learned meeting; and feeding findings back into Preparation to improve the next cycle.</td></tr>
-        <tr><td><strong>IR preparation phase</strong></td><td>Phase 1 of NIST SP 800-61: building the IR plan, forming the team, staging tools, and conducting drills before any incident occurs.</td></tr>
-        <tr><td><strong>Network logs</strong></td><td>Records of network activity like connections, traffic flows, and device events — used alongside firewall and endpoint logs to reconstruct an incident timeline.</td></tr>
-        <tr><td><strong>Physical destruction (media)</strong></td><td>Shredding, crushing, or disintegrating storage media into small particles — the only reliable sanitization method for SSDs and NVMe drives.</td></tr>
-        <tr><td><strong>Pseudonymization</strong></td><td>Replacing identifying fields with pseudonyms that can be reversed with a key.</td></tr>
-        <tr><td><strong>Public (data)</strong></td><td>Data approved for public release requiring no special protection beyond accuracy.</td></tr>
-        <tr><td><strong>Restricted (commercial)</strong></td><td>The highest commercial data sensitivity label — disclosure would cause severe harm to the organization.</td></tr>
-        <tr><td><strong>Root cause analysis</strong></td><td>Determining the underlying reason an incident happened to prevent recurrence.</td></tr>
-        <tr><td><strong>Secret (classification)</strong></td><td>A U.S. government classification whose unauthorized disclosure would cause serious damage to national security.</td></tr>
-        <tr><td><strong>Security alert</strong></td><td>A notification generated by a monitoring system when it spots suspicious or anomalous activity — a call to investigate further, not yet a confirmed incident.</td></tr>
-        <tr><td><strong>Security event</strong></td><td>Any observable occurrence in a system, like a login attempt or file access — most events are routine and don't indicate a problem, unlike an incident.</td></tr>
-        <tr><td><strong>Sensitive/Internal</strong></td><td>Commercial data not intended for public release but with lower impact if disclosed; includes internal project plans and roadmaps.</td></tr>
-        <tr><td><strong>URL analysis</strong></td><td>Examining a URL's structure — domain, subdomains, encoding, redirects — during log review or an investigation to spot phishing links, C2 traffic, or exfiltration attempts.</td></tr>
-      </tbody>
-    </table></div>
-  </section>
-
-  <footer class="site-footer">
+      <footer class="site-footer">
         <a href="chapter10.html">← Chapter 10</a> &nbsp;·&nbsp; Chapter 11
         &nbsp;·&nbsp; <a href="practice.html">Practice →</a>
       </footer>

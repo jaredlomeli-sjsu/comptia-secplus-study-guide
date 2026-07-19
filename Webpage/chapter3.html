@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -62,9 +62,7 @@
         <a href="#isolation">SCADA &amp; Air Gaps</a>
         <a href="#proxy">Proxies</a>
         <a href="#zerotrust">Zero Trust</a>
-      
-    <a href="#ch3-more">More Terms</a>
-  </div>
+      </div>
 
       <!-- ════════ OSI ════════ -->
       <section id="osi">
@@ -420,6 +418,15 @@
             </p>
           </div>
         </div>
+        <p>
+          <strong>TSIG</strong>
+          <span class="g-exp">Transaction Signature</span> — a mechanism that
+          adds a shared-secret signature to DNS messages, letting DNS servers
+          verify that updates (like dynamic DNS changes) come from an authorized
+          source. Where DNSSEC authenticates the records a resolver hands back
+          to clients, TSIG authenticates the updates sent between DNS servers
+          themselves.
+        </p>
       </section>
 
       <!-- ════════ ADDRESSING ════════ -->
@@ -461,9 +468,13 @@
         </div>
         <p>
           Private addresses never route on the public internet — they require
-          <a href="#nat">NAT</a> to get out. Loopback:
-          <code>127.0.0.1</code> (IPv4), <code>::1</code> (IPv6). APIPA
-          self-assigned: <code>169.254.x.x</code> = "I couldn't reach DHCP."
+          <a href="#nat">NAT</a> to get out, via the
+          <strong>ISP</strong>
+          <span class="g-exp">Internet Service Provider</span> — the company
+          that provides an organization or individual with a connection to the
+          internet. Loopback: <code>127.0.0.1</code> (IPv4),
+          <code>::1</code> (IPv6). APIPA self-assigned:
+          <code>169.254.x.x</code> = "I couldn't reach DHCP."
         </p>
         <div class="grid2">
           <div class="card accent-blue">
@@ -475,7 +486,10 @@
             <p>
               IPv6: 128-bit hex (<code>2001:0db8::1</code>) — vast space,
               <strong>IPsec support built into the design</strong>, no NAT
-              needed.
+              needed. IPv6's replacement for ARP is
+              <strong>Neighbor Discovery</strong>
+              <span class="g-exp">ND</span> — it resolves IP addresses to MAC
+              addresses and discovers neighboring routers.
             </p>
           </div>
           <div class="card accent-purple">
@@ -488,6 +502,23 @@
             </p>
           </div>
         </div>
+
+        <h3>Subnetting &amp; Packet Size</h3>
+        <ul class="plain">
+          <li>
+            <strong>VLSM</strong>
+            <span class="g-exp">Variable Length Subnet Masking</span> — a
+            subnetting technique that allows different subnets on the same
+            network to use different-sized address ranges, reducing wasted IP
+            addresses.
+          </li>
+          <li>
+            <strong>MTU</strong>
+            <span class="g-exp">Maximum Transmission Unit</span> — the largest
+            packet size a network link can carry without fragmenting it;
+            mismatched MTUs can cause dropped or fragmented traffic.
+          </li>
+        </ul>
       </section>
 
       <!-- ════════ EMAIL ════════ -->
@@ -641,6 +672,30 @@
             </p>
           </div>
         </div>
+
+        <ul class="plain">
+          <li>
+            <strong>URI</strong>
+            <span class="g-exp">Uniform Resource Identifier</span> — a string
+            that identifies a resource, either by location (URL) or by name; a
+            URL is technically a type of URI.
+          </li>
+          <li>
+            <strong>SHTTP</strong>
+            <span class="g-exp">Secure HyperText Transfer Protocol</span> — an
+            older, now-obsolete protocol for encrypting individual HTTP
+            messages; lost out to HTTPS (HTTP over TLS), which encrypts the
+            whole connection instead.
+          </li>
+          <li>
+            <strong>SOAP</strong>
+            <span class="g-exp">Simple Object Access Protocol</span> — an older
+            XML-based messaging protocol for exchanging structured data between
+            web services, largely superseded by REST APIs but still found in
+            legacy enterprise systems.
+          </li>
+        </ul>
+
         <h3>IPsec — encryption at Layer 3</h3>
         <p>
           Secures <em>any</em> IP traffic (not just web). Two components, two
@@ -912,6 +967,30 @@
           application session; IPsec encrypts at the network layer regardless of
           application.
         </div>
+
+        <h3>Related Tunneling &amp; Key Vocabulary</h3>
+        <ul class="plain">
+          <li>
+            <strong>Security Association</strong>
+            <span class="g-exp">SA</span> — the negotiated set of security
+            parameters (keys, algorithms, protocols) between two IPsec peers
+            that governs how their traffic is protected — this is exactly what
+            IKE negotiates in the table above.
+          </li>
+          <li>
+            <strong>GRE</strong>
+            <span class="g-exp">Generic Routing Encapsulation</span> — a
+            tunneling protocol that wraps one type of network packet inside
+            another; it provides no encryption on its own, so it's often paired
+            with IPsec.
+          </li>
+          <li>
+            <strong>DTLS</strong>
+            <span class="g-exp">Datagram Transport Layer Security</span> — a
+            version of TLS adapted for UDP-based traffic like VoIP and VPNs,
+            providing encryption for protocols that don't use TCP.
+          </li>
+        </ul>
       </section>
 
       <!-- ════════ FILE TRANSFER ════════ -->
@@ -1006,7 +1085,15 @@
             <p>
               <strong>Hardening:</strong> never expose 3389 directly — require
               VPN or a jump server, enable Network Level Authentication, enforce
-              MFA and lockout.
+              MFA and lockout. A <strong>RDP gateway</strong> is a hardened
+              entry point that brokers Remote Desktop connections so RDP is
+              never exposed directly.
+            </p>
+            <p>
+              <strong>VNC</strong>
+              <span class="g-exp">Virtual Network Computing</span> — a remote
+              desktop protocol similar in purpose to RDP but cross-platform and
+              open standard, using <span class="pill port">TCP 5900</span>.
             </p>
           </div>
         </div>
@@ -1021,6 +1108,19 @@
                 >Chapter 4</a
               >.
             </p>
+            <p>
+              <strong>Remote access VPN</strong> — a VPN that lets individual
+              users connect securely to a network from anywhere.
+              <strong>Split tunneling</strong> — a VPN setup where only some
+              traffic goes through the tunnel and the rest goes direct.
+            </p>
+            <p>
+              <strong>PPTP</strong>
+              <span class="g-exp">Point-to-Point Tunneling Protocol</span> — an
+              old, now-insecure VPN protocol with well-known cryptographic
+              weaknesses; replaced by more modern options like IPsec.
+              <span class="pill insecure">TCP 1723</span>
+            </p>
           </div>
           <div class="card accent-purple">
             <h4>Jump Server (Jump Box)</h4>
@@ -1029,6 +1129,12 @@
               <em>first</em>, then hop into a protected segment (DMZ, server
               VLAN). Centralizes the choke point: one place for MFA, session
               recording, and auditing of all administrative access.
+            </p>
+            <p>
+              <strong>RAS</strong>
+              <span class="g-exp">Remote Access Server</span> — a server that
+              provides and manages remote connections into a private network,
+              historically over dial-up and now typically via VPN.
             </p>
           </div>
         </div>
@@ -1057,6 +1163,13 @@
               encrypted RTP; prevents eavesdropping on calls.
             </p>
             <p>Memory hook: SIP dials, RTP talks, SRTP whispers.</p>
+            <p>
+              <strong>VTC</strong>
+              <span class="g-exp">Video Teleconferencing</span> — real-time
+              video meeting technology; unauthorized access to a VTC session
+              ("zoombombing"-style) is a confidentiality risk worth securing
+              with waiting rooms and passcodes.
+            </p>
           </div>
           <div class="card accent-teal">
             <h4>Directory services</h4>
@@ -1077,6 +1190,33 @@
             </p>
           </div>
         </div>
+
+        <h3>Legacy Telephony &amp; WAN Links</h3>
+        <ul class="plain">
+          <li>
+            <strong>PBX</strong>
+            <span class="g-exp">Private Branch Exchange</span> — an
+            organization's internal telephone switching system; a poorly secured
+            PBX can be hijacked for toll fraud or eavesdropping.
+          </li>
+          <li>
+            <strong>POTS</strong>
+            <span class="g-exp">Plain Old Telephone Service</span> — traditional
+            analog landline telephone service, still relevant for legacy fax
+            lines, alarm systems, and out-of-band management links.
+          </li>
+          <li>
+            <strong>CSU</strong>
+            <span class="g-exp">Channel Service Unit</span> — a device that
+            connects a LAN to a digital WAN circuit, terminating the line and
+            providing diagnostics — often paired with a DSU (CSU/DSU).
+          </li>
+          <li>
+            <strong>DSL</strong>
+            <span class="g-exp">Digital Subscriber Line</span> — a technology
+            that delivers internet access over existing copper telephone lines.
+          </li>
+        </ul>
       </section>
 
       <!-- ════════ UPGRADE MAP ════════ -->
@@ -1087,6 +1227,12 @@
             >The single highest-yield list in this chapter</span
           >
         </div>
+        <p>
+          <strong>Protocol selection</strong> — choosing the most secure
+          available protocol for a given service (e.g., HTTPS over HTTP, SFTP
+          over FTP) when implementing secure communications. Every row below is
+          protocol selection in action.
+        </p>
         <div class="upgrade">
           <div class="from">Telnet <small>TCP 23 — cleartext shell</small></div>
           <div class="arrow">→</div>
@@ -1171,9 +1317,13 @@
           >
         </div>
         <p>
-          A switch learns which MAC address lives on which port and forwards
-          frames only where they need to go (unlike a hub, which repeats
-          everything to everyone — which is why hubs enable easy sniffing).
+          A switch learns which
+          <strong>MAC</strong>
+          <span class="g-exp">Media Access Control address</span> — a unique
+          hardware address burned into a network interface card — lives on which
+          port and forwards frames only where they need to go (unlike a hub,
+          which repeats everything to everyone — which is why hubs enable easy
+          sniffing).
         </p>
         <div class="table-wrap">
           <table class="wrap-first">
@@ -1401,6 +1551,194 @@
             switches from joining this election.
           </figcaption>
         </figure>
+
+        <h3>Switch Variants &amp; Physical Wiring</h3>
+        <ul class="plain">
+          <li>
+            <strong>Layer 3 switch</strong> — a switch that also performs
+            routing between VLANs, combining Layer 2 switching and Layer 3
+            routing in one device — common as the core of an enterprise network.
+            This is the "router/L3 switch" the VLAN row above refers to.
+          </li>
+          <li>
+            <strong>UTP</strong>
+            <span class="g-exp">Unshielded Twisted Pair</span> — the standard
+            copper cabling used for most Ethernet connections (like Cat 5e/Cat
+            6), without a metal shield — cheaper than shielded cable but more
+            susceptible to interference.
+          </li>
+          <li>
+            <strong>MDF</strong>
+            <span class="g-exp">Main Distribution Frame</span> — the central
+            wiring point where a building's external network connections and
+            internal wiring meet — a high-value physical security target.
+          </li>
+          <li>
+            <strong>IDF</strong>
+            <span class="g-exp">Intermediate Distribution Frame</span> — a
+            secondary wiring closet that connects end-user cabling back to the
+            main distribution frame — physical access to it should be
+            restricted.
+          </li>
+        </ul>
+        <figure class="diagram">
+          <svg
+            width="620"
+            viewBox="0 0 620 230"
+            role="img"
+            aria-label="Physical wiring hierarchy: the ISP demarc feeds the Main Distribution Frame, which feeds Intermediate Distribution Frames on each floor, which in turn feed end-user wall jacks over UTP cable"
+          >
+            <defs>
+              <marker
+                id="m-mdf"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="7"
+                markerHeight="7"
+                orient="auto"
+              >
+                <path d="M0 0L10 5L0 10z" fill="var(--dim)" />
+              </marker>
+            </defs>
+            <rect
+              x="225"
+              y="10"
+              width="170"
+              height="36"
+              rx="8"
+              fill="var(--surface2)"
+              stroke="var(--border-strong)"
+            />
+            <text
+              x="310"
+              y="33"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="600"
+              fill="var(--bright)"
+            >
+              ISP / WAN demarc
+            </text>
+            <line
+              x1="310"
+              y1="46"
+              x2="310"
+              y2="70"
+              stroke="var(--dim)"
+              stroke-width="1.6"
+              marker-end="url(#m-mdf)"
+            />
+            <rect
+              x="225"
+              y="74"
+              width="170"
+              height="44"
+              rx="8"
+              fill="var(--orange-dim)"
+              stroke="var(--orange)"
+            />
+            <text
+              x="310"
+              y="94"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="var(--orange)"
+            >
+              MDF
+            </text>
+            <text
+              x="310"
+              y="110"
+              text-anchor="middle"
+              font-size="9"
+              fill="var(--dim)"
+            >
+              high-value physical target
+            </text>
+            <line
+              x1="270"
+              y1="118"
+              x2="130"
+              y2="150"
+              stroke="var(--dim)"
+              stroke-width="1.6"
+              marker-end="url(#m-mdf)"
+            />
+            <line
+              x1="350"
+              y1="118"
+              x2="490"
+              y2="150"
+              stroke="var(--dim)"
+              stroke-width="1.6"
+              marker-end="url(#m-mdf)"
+            />
+            <rect
+              x="40"
+              y="154"
+              width="180"
+              height="40"
+              rx="8"
+              fill="var(--blue-dim)"
+              stroke="var(--blue)"
+            />
+            <text
+              x="130"
+              y="178"
+              text-anchor="middle"
+              font-size="10.5"
+              font-weight="700"
+              fill="var(--blue)"
+            >
+              IDF — Floor 2
+            </text>
+            <rect
+              x="400"
+              y="154"
+              width="180"
+              height="40"
+              rx="8"
+              fill="var(--blue-dim)"
+              stroke="var(--blue)"
+            />
+            <text
+              x="490"
+              y="178"
+              text-anchor="middle"
+              font-size="10.5"
+              font-weight="700"
+              fill="var(--blue)"
+            >
+              IDF — Floor 3
+            </text>
+            <text
+              x="130"
+              y="212"
+              text-anchor="middle"
+              font-size="9.5"
+              fill="var(--dim)"
+            >
+              → UTP drops to wall jacks
+            </text>
+            <text
+              x="490"
+              y="212"
+              text-anchor="middle"
+              font-size="9.5"
+              fill="var(--dim)"
+            >
+              → UTP drops to wall jacks
+            </text>
+          </svg>
+          <figcaption>
+            <b>The wiring hierarchy.</b> Everything funnels through the MDF —
+            compromise it and you've compromised every floor. IDFs decentralize
+            the last hop to end users, which is why both deserve restricted
+            physical access.
+          </figcaption>
+        </figure>
       </section>
 
       <!-- ════════ ROUTER / SNMP ════════ -->
@@ -1428,7 +1766,36 @@
             is silently dropped by the invisible rule at the end of every
             ACL/firewall ruleset. The bedrock principle of rule-based filtering.
           </li>
+          <li>
+            <strong>Out-of-band management</strong> — managing devices over a
+            separate channel so it works even if the main network is down.
+          </li>
+          <li>
+            <strong>RTBH</strong>
+            <span class="g-exp">Remotely Triggered Black Hole</span> — a DDoS
+            mitigation technique that routes traffic destined for an attacked IP
+            address to a null route ("black hole"), dropping it before it
+            overwhelms the network.
+          </li>
         </ul>
+
+        <h3>Routing Protocols &amp; WAN Links</h3>
+        <ul class="plain">
+          <li>
+            <strong>OSPF</strong>
+            <span class="g-exp">Open Shortest Path First</span> — a routing
+            protocol used inside a single organization's network to find the
+            fastest path for traffic between routers.
+          </li>
+          <li>
+            <strong>MPLS</strong>
+            <span class="g-exp">Multiprotocol Label Switching</span> — a
+            technique that speeds up and directs network traffic using short
+            path labels instead of long network addresses, often used by ISPs
+            for private WAN links.
+          </li>
+        </ul>
+
         <h3>Managing network devices — SNMP</h3>
         <div class="grid2">
           <div class="card accent-red">
@@ -1452,6 +1819,234 @@
             </p>
           </div>
         </div>
+        <p>
+          <strong>MIB</strong>
+          <span class="g-exp">Management Information Base</span> — a structured
+          database of manageable objects on a network device (like CPU load or
+          interface status) that SNMP queries and reports on.
+        </p>
+
+        <h3>Software-Defined Networking Planes</h3>
+        <p>
+          SDN separates network intelligence into three planes — full treatment
+          of SDN and SD-WAN is in
+          <a href="chapters4-5.html#cloudsec" style="color: var(--blue)"
+            >Chapter 4</a
+          >, but the vocabulary starts here:
+        </p>
+        <ul class="plain">
+          <li>
+            <strong>Management plane</strong> — the layer that monitors traffic
+            conditions and overall network status, distinct from the control
+            plane (decisions) and data plane (traffic handling).
+          </li>
+          <li>
+            <strong>Northbound API</strong> — the interface between the SDN
+            controller and the applications that tell it what policies to
+            enforce.
+          </li>
+          <li>
+            <strong>Southbound API</strong> — the interface between the SDN
+            controller and the actual network devices it configures and
+            controls.
+          </li>
+        </ul>
+        <figure class="diagram">
+          <svg
+            width="640"
+            viewBox="0 0 640 280"
+            role="img"
+            aria-label="SDN architecture: applications talk to the SDN controller in the control plane via a northbound API, the controller talks to network devices in the data plane via a southbound API, and the management plane monitors both"
+          >
+            <defs>
+              <marker
+                id="m-sdn"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="7"
+                markerHeight="7"
+                orient="auto"
+              >
+                <path d="M0 0L10 5L0 10z" fill="var(--dim)" />
+              </marker>
+            </defs>
+            <rect
+              x="40"
+              y="16"
+              width="220"
+              height="48"
+              rx="8"
+              fill="var(--blue-dim)"
+              stroke="var(--blue)"
+            />
+            <text
+              x="150"
+              y="37"
+              text-anchor="middle"
+              font-size="11.5"
+              font-weight="700"
+              fill="var(--blue)"
+            >
+              Applications
+            </text>
+            <text
+              x="150"
+              y="53"
+              text-anchor="middle"
+              font-size="9.5"
+              fill="var(--dim)"
+            >
+              business logic / policy intent
+            </text>
+            <line
+              x1="150"
+              y1="64"
+              x2="150"
+              y2="106"
+              stroke="var(--dim)"
+              stroke-width="1.6"
+              marker-end="url(#m-sdn)"
+            />
+            <text
+              x="255"
+              y="88"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="600"
+              fill="var(--dim)"
+            >
+              Northbound API
+            </text>
+            <rect
+              x="40"
+              y="110"
+              width="220"
+              height="60"
+              rx="8"
+              fill="var(--purple-dim)"
+              stroke="var(--purple)"
+            />
+            <text
+              x="150"
+              y="135"
+              text-anchor="middle"
+              font-size="11.5"
+              font-weight="700"
+              fill="var(--purple)"
+            >
+              SDN Controller
+            </text>
+            <text
+              x="150"
+              y="151"
+              text-anchor="middle"
+              font-size="9.5"
+              fill="var(--dim)"
+            >
+              control plane — makes decisions
+            </text>
+            <line
+              x1="150"
+              y1="170"
+              x2="150"
+              y2="212"
+              stroke="var(--dim)"
+              stroke-width="1.6"
+              marker-end="url(#m-sdn)"
+            />
+            <text
+              x="255"
+              y="194"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="600"
+              fill="var(--dim)"
+            >
+              Southbound API
+            </text>
+            <rect
+              x="40"
+              y="216"
+              width="220"
+              height="48"
+              rx="8"
+              fill="var(--teal-dim)"
+              stroke="var(--teal)"
+            />
+            <text
+              x="150"
+              y="237"
+              text-anchor="middle"
+              font-size="11.5"
+              font-weight="700"
+              fill="var(--teal)"
+            >
+              Network Devices
+            </text>
+            <text
+              x="150"
+              y="253"
+              text-anchor="middle"
+              font-size="9.5"
+              fill="var(--dim)"
+            >
+              data plane — moves the traffic
+            </text>
+            <rect
+              x="340"
+              y="110"
+              width="260"
+              height="60"
+              rx="8"
+              fill="var(--green-dim)"
+              stroke="var(--green)"
+            />
+            <text
+              x="470"
+              y="132"
+              text-anchor="middle"
+              font-size="11.5"
+              font-weight="700"
+              fill="var(--green)"
+            >
+              Management Plane
+            </text>
+            <text
+              x="470"
+              y="149"
+              text-anchor="middle"
+              font-size="9.5"
+              fill="var(--dim)"
+            >
+              monitors traffic conditions &amp; status
+            </text>
+            <line
+              x1="336"
+              y1="130"
+              x2="264"
+              y2="130"
+              stroke="var(--green)"
+              stroke-width="1.3"
+              stroke-dasharray="4 3"
+            />
+            <line
+              x1="336"
+              y1="150"
+              x2="264"
+              y2="240"
+              stroke="var(--green)"
+              stroke-width="1.3"
+              stroke-dasharray="4 3"
+            />
+          </svg>
+          <figcaption>
+            <b>Three planes, two APIs.</b> The controller is the brains of SDN —
+            it takes intent from applications over the northbound API and pushes
+            configuration down to switches/routers over the southbound API. The
+            management plane watches both without making decisions itself.
+          </figcaption>
+        </figure>
       </section>
 
       <!-- ════════ FIREWALLS ════════ -->
@@ -1501,6 +2096,19 @@
                   IPS, TLS inspection
                 </td>
                 <td>"Identifies the application regardless of port"</td>
+              </tr>
+              <tr>
+                <td>
+                  NIPS
+                  <span class="g-exp"
+                    >Network-based Intrusion Prevention System</span
+                  >
+                </td>
+                <td>
+                  Sits inline on the network, monitoring traffic and actively
+                  blocking malicious activity in real time
+                </td>
+                <td>The IPS an NGFW's "integrated IPS" row refers to</td>
               </tr>
               <tr>
                 <td>UTM — Unified Threat Management</td>
@@ -1733,6 +2341,35 @@
             </p>
           </div>
         </div>
+
+        <h3>Device Placement &amp; Detection Concepts</h3>
+        <ul class="plain">
+          <li>
+            <strong>Active device</strong> — a network security device (like an
+            inline firewall or IPS) that sits directly in the traffic path and
+            can act on what it sees, such as blocking packets.
+          </li>
+          <li>
+            <strong>Passive device</strong> — a network security device (like a
+            traditional IDS) that only observes a copy of traffic and can alert
+            but cannot block it in real time.
+          </li>
+          <li>
+            <strong>Inline vs. tap/monitor</strong> — inline placement puts a
+            device directly in the traffic path so it can block traffic; a tap
+            or monitor port only feeds it a copy, so it can observe but not
+            intervene.
+          </li>
+          <li>
+            <strong>Device placement</strong> — deciding where in the network
+            topology a security device sits (e.g., before or after a firewall) —
+            placement determines what traffic it can actually see and control.
+          </li>
+          <li>
+            <strong>Anomaly-based detection</strong> — detecting threats by
+            spotting deviations from normal behavior; can catch unknown attacks.
+          </li>
+        </ul>
         <div class="tip">
           <b>Scenario cue:</b> "attacks against the company web application
           (SQLi/XSS)" → <strong>WAF</strong>, not NGFW. "One appliance for a
@@ -1790,12 +2427,37 @@
                 </td>
               </tr>
               <tr>
+                <td>North-south traffic</td>
+                <td>
+                  Network traffic moving <em>in and out</em> of the data center
+                  to clients — the counterpart to east-west traffic above.
+                </td>
+              </tr>
+              <tr>
+                <td>Network / Logical segmentation</td>
+                <td>
+                  <strong>Network segmentation</strong> — dividing a network
+                  into separate zones to limit how far an attacker can move.
+                  <strong>Logical segmentation</strong> — doing this with VLANs
+                  or software rules on shared hardware, as opposed to physical
+                  isolation like air-gapping.
+                </td>
+              </tr>
+              <tr>
                 <td>Attack surface</td>
                 <td>
                   The sum of all points where an attacker could try to get in:
                   open ports, running services, exposed APIs, user accounts.
                   Hardening = shrinking it (disable services, close ports,
-                  remove accounts).
+                  remove accounts). Two contributors worth knowing by name:
+                  <strong>P2P</strong>
+                  <span class="g-exp">Peer-to-Peer</span> networking, where
+                  devices share resources directly instead of through a central
+                  server (used by some malware for resilient C2), and
+                  <strong>IRC</strong>
+                  <span class="g-exp">Internet Relay Chat</span>, an old text
+                  chat protocol historically popular as a botnet C2 channel due
+                  to its simple, low-overhead messaging.
                 </td>
               </tr>
             </tbody>
@@ -2080,6 +2742,22 @@
                 <td>Managed NAT device/service (common cloud term)</td>
                 <td>
                   Lets private subnets reach out without being reachable inbound
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  DNAT
+                  <span class="g-exp"
+                    >Destination Network Address Translation</span
+                  >
+                </td>
+                <td>
+                  Rewrites the <strong>destination</strong> address of incoming
+                  traffic — the reverse direction of the outbound rows above
+                </td>
+                <td>
+                  Commonly used to forward external requests to an internal
+                  server (port forwarding)
                 </td>
               </tr>
             </tbody>
@@ -2546,6 +3224,43 @@
           proxy. "Distribute requests across web servers / shield the web farm"
           = reverse proxy.
         </div>
+
+        <h3>Web Filtering Vocabulary</h3>
+        <p>
+          A forward proxy's URL/content filtering is usually delivered as a
+          dedicated <strong>web filter</strong> — a security tool that inspects
+          and controls outbound web traffic, blocking or allowing sites based on
+          category, reputation, or explicit rules. It's built from a few
+          distinct pieces:
+        </p>
+        <ul class="plain">
+          <li>
+            <strong>Centralized proxy</strong> — routing all outbound web
+            traffic through one central proxy server that applies filtering
+            rules before traffic reaches the internet.
+          </li>
+          <li>
+            <strong>Content categorization</strong> — sorting websites into
+            categories (gambling, social media, malware) so policy can block or
+            allow entire categories at once.
+          </li>
+          <li>
+            <strong>Block rules</strong> — explicit rules that deny access to
+            specific sites, categories, or URL patterns regardless of reputation
+            score.
+          </li>
+          <li>
+            <strong>URL scanning</strong> — checking requested URLs against
+            known-malicious lists or analyzing them in real time before allowing
+            the connection through.
+          </li>
+          <li>
+            <strong>Content filter</strong> — the broader control that blocks
+            access to disallowed websites or content categories; "web filter"
+            and "content filter" are largely interchangeable terms for the same
+            control.
+          </li>
+        </ul>
       </section>
 
       <!-- ════════ ZERO TRUST ════════ -->
@@ -2920,74 +3635,7 @@
         </div>
       </section>
 
-      
-  <!-- ══════════════════════ ADDITIONAL CH3 TERMS ══════════════════════ -->
-  <section id="ch3-more">
-    <div class="sec-head"><h2>Additional Ch 3 Terms</h2><span class="sec-tag">Quick reference — full entries in the Glossary</span></div>
-    <div class="table-wrap"><table class="wrap-first">
-      <thead><tr><th>Term</th><th>Definition</th></tr></thead>
-      <tbody>
-        <tr><td><strong>Active device</strong></td><td>A network security device (like an inline firewall or IPS) that sits directly in the traffic path and can act on what it sees, such as blocking packets.</td></tr>
-        <tr><td><strong>Anomaly-based detection</strong></td><td>Detecting threats by spotting deviations from normal behavior; can catch unknown attacks.</td></tr>
-        <tr><td><strong>Block rules</strong></td><td>Explicit web filter rules that deny access to specific sites, categories, or URL patterns regardless of reputation score.</td></tr>
-        <tr><td><strong>Centralized proxy</strong></td><td>A web filtering approach where all outbound web traffic is routed through one central proxy server that applies filtering rules before traffic reaches the internet.</td></tr>
-        <tr><td><strong>Content categorization</strong></td><td>A web filter feature that sorts websites into categories (gambling, social media, malware) so policy can block or allow entire categories at once.</td></tr>
-        <tr><td><strong>Content filter</strong></td><td>A control that blocks access to disallowed websites or content categories.</td></tr>
-        <tr><td><strong>CSU</strong> <span class="g-exp">Channel Service Unit</span></td><td>A device that connects a LAN to a digital WAN circuit, terminating the line and providing diagnostics — often paired with a DSU (CSU/DSU).</td></tr>
-        <tr><td><strong>Device placement</strong></td><td>Deciding where in the network topology a security device sits (e.g., before or after a firewall) — placement determines what traffic it can actually see and control.</td></tr>
-        <tr><td><strong>DNAT</strong> <span class="g-exp">Destination Network Address Translation</span></td><td>NAT that rewrites the destination address of incoming traffic, commonly used to forward external requests to an internal server (port forwarding).</td></tr>
-        <tr><td><strong>DSL</strong> <span class="g-exp">Digital Subscriber Line</span></td><td>A technology that delivers internet access over existing copper telephone lines.</td></tr>
-        <tr><td><strong>DTLS</strong> <span class="g-exp">Datagram Transport Layer Security</span></td><td>A version of TLS adapted for UDP-based traffic like VoIP and VPNs, providing encryption for protocols that don't use TCP.</td></tr>
-        <tr><td><strong>GRE</strong> <span class="g-exp">Generic Routing Encapsulation</span></td><td>A tunneling protocol that wraps one type of network packet inside another; it provides no encryption on its own, so it's often paired with IPsec.</td></tr>
-        <tr><td><strong>IDF</strong> <span class="g-exp">Intermediate Distribution Frame</span></td><td>A secondary wiring closet that connects end-user cabling back to the main distribution frame — physical access to it should be restricted.</td></tr>
-        <tr><td><strong>Inline vs. tap/monitor</strong></td><td>Inline placement puts a device directly in the traffic path so it can block traffic; a tap or monitor port only feeds it a copy, so it can observe but not intervene.</td></tr>
-        <tr><td><strong>IRC</strong> <span class="g-exp">Internet Relay Chat</span></td><td>An old text chat protocol; historically popular as a command-and-control channel for botnets due to its simple, low-overhead messaging.</td></tr>
-        <tr><td><strong>ISP</strong> <span class="g-exp">Internet Service Provider</span></td><td>The company that provides an organization or individual with a connection to the internet.</td></tr>
-        <tr><td><strong>Layer 3 switch</strong></td><td>A switch that also performs routing between VLANs, combining Layer 2 switching and Layer 3 routing in one device — common as the core of an enterprise network.</td></tr>
-        <tr><td><strong>Logical segmentation</strong></td><td>Dividing a network into isolated zones using VLANs or software rules rather than separate physical hardware — contrast with physical isolation like air-gapping.</td></tr>
-        <tr><td><strong>MAC (media access)</strong> <span class="g-exp">Media Access Control address</span></td><td>A unique hardware address burned into a network interface card.</td></tr>
-        <tr><td><strong>Management plane</strong></td><td>In Software-Defined Networking, the layer that monitors traffic conditions and overall network status — distinct from the control plane (decisions) and data plane (traffic handling).</td></tr>
-        <tr><td><strong>MDF</strong> <span class="g-exp">Main Distribution Frame</span></td><td>The central wiring point where a building's external network connections and internal wiring meet — a high-value physical security target.</td></tr>
-        <tr><td><strong>MIB</strong> <span class="g-exp">Management Information Base</span></td><td>A structured database of manageable objects on a network device (like CPU load or interface status) that SNMP queries and reports on.</td></tr>
-        <tr><td><strong>MPLS</strong> <span class="g-exp">Multiprotocol Label Switching</span></td><td>A technique that speeds up and directs network traffic using short path labels instead of long network addresses, often used by ISPs for private WAN links.</td></tr>
-        <tr><td><strong>MTU</strong> <span class="g-exp">Maximum Transmission Unit</span></td><td>The largest packet size a network link can carry without fragmenting it; mismatched MTUs can cause dropped or fragmented traffic.</td></tr>
-        <tr><td><strong>Neighbor Discovery</strong> <span class="g-exp">ND</span></td><td>The IPv6 protocol that resolves IP addresses to MAC addresses and discovers neighboring routers — IPv6's replacement for ARP.</td></tr>
-        <tr><td><strong>Network segmentation</strong></td><td>Dividing a network into separate zones to limit how far an attacker can move.</td></tr>
-        <tr><td><strong>NIPS</strong> <span class="g-exp">Network-based Intrusion Prevention System</span></td><td>A system that sits inline on the network, monitoring traffic and actively blocking malicious activity in real time.</td></tr>
-        <tr><td><strong>North-south traffic</strong></td><td>Network traffic moving in and out of the data center to clients.</td></tr>
-        <tr><td><strong>Northbound API</strong></td><td>In Software-Defined Networking, the interface between the SDN controller and the applications that tell it what policies to enforce.</td></tr>
-        <tr><td><strong>OSPF</strong> <span class="g-exp">Open Shortest Path First</span></td><td>A routing protocol used inside a single organization's network to find the fastest path for traffic between routers.</td></tr>
-        <tr><td><strong>Out-of-band management</strong></td><td>Managing devices over a separate channel so it works even if the main network is down.</td></tr>
-        <tr><td><strong>P2P</strong> <span class="g-exp">Peer-to-Peer</span></td><td>A network model where devices connect and share resources directly with each other instead of through a central server — used by some malware for resilient C2 communication.</td></tr>
-        <tr><td><strong>Passive device</strong></td><td>A network security device (like a traditional IDS) that only observes a copy of traffic and can alert but cannot block it in real time.</td></tr>
-        <tr><td><strong>PBX</strong> <span class="g-exp">Private Branch Exchange</span></td><td>An organization's internal telephone switching system; a poorly secured PBX can be hijacked for toll fraud or eavesdropping.</td></tr>
-        <tr><td><strong>POTS</strong> <span class="g-exp">Plain Old Telephone Service</span></td><td>Traditional analog landline telephone service, still relevant for legacy fax lines, alarm systems, and out-of-band management links.</td></tr>
-        <tr><td><strong>PPTP</strong> <span class="g-exp">Point-to-Point Tunneling Protocol</span></td><td>An old, now-insecure VPN protocol with well-known cryptographic weaknesses; replaced by more modern options like IPsec and OpenVPN. Uses TCP port 1723.</td></tr>
-        <tr><td><strong>Protocol selection</strong></td><td>Choosing the most secure available protocol for a given service (e.g., HTTPS over HTTP, SFTP over FTP) when implementing secure communications.</td></tr>
-        <tr><td><strong>Proxy server</strong></td><td>An intermediary that forwards, filters, and can cache requests between clients and servers.</td></tr>
-        <tr><td><strong>RAS</strong> <span class="g-exp">Remote Access Server</span></td><td>A server that provides and manages remote connections into a private network, historically over dial-up and now typically via VPN.</td></tr>
-        <tr><td><strong>RDP gateway</strong></td><td>A hardened entry point that brokers Remote Desktop connections so RDP is never exposed directly.</td></tr>
-        <tr><td><strong>Remote access VPN</strong></td><td>A VPN that lets individual users connect securely to a network from anywhere.</td></tr>
-        <tr><td><strong>RTBH</strong> <span class="g-exp">Remotely Triggered Black Hole</span></td><td>A DDoS mitigation technique that routes traffic destined for an attacked IP address to a null route ("black hole"), dropping it before it overwhelms the network.</td></tr>
-        <tr><td><strong>Security Association</strong> <span class="g-exp">SA</span></td><td>The negotiated set of security parameters (keys, algorithms, protocols) between two IPsec peers that governs how their traffic is protected.</td></tr>
-        <tr><td><strong>SHTTP</strong> <span class="g-exp">Secure HyperText Transfer Protocol</span></td><td>An older, now-obsolete protocol for encrypting individual HTTP messages; lost out to HTTPS (HTTP over TLS), which encrypts the whole connection instead.</td></tr>
-        <tr><td><strong>SOAP</strong> <span class="g-exp">Simple Object Access Protocol</span></td><td>An older XML-based messaging protocol for exchanging structured data between web services, largely superseded by REST APIs but still found in legacy enterprise systems.</td></tr>
-        <tr><td><strong>Southbound API</strong></td><td>In Software-Defined Networking, the interface between the SDN controller and the actual network devices it configures and controls.</td></tr>
-        <tr><td><strong>Split tunneling</strong></td><td>A VPN setup where only some traffic goes through the tunnel and the rest goes direct.</td></tr>
-        <tr><td><strong>Stateful firewall</strong></td><td>A firewall that tracks active connections and allows return traffic for them.</td></tr>
-        <tr><td><strong>TSIG</strong> <span class="g-exp">Transaction Signature</span></td><td>A mechanism that adds a shared-secret signature to DNS messages, letting DNS servers verify that updates (like dynamic DNS changes) come from an authorized source.</td></tr>
-        <tr><td><strong>URI</strong> <span class="g-exp">Uniform Resource Identifier</span></td><td>A string that identifies a resource, either by location (URL) or by name; a URL is technically a type of URI.</td></tr>
-        <tr><td><strong>URL scanning</strong></td><td>A web filter feature that checks requested URLs against known-malicious lists or analyzes them in real time before allowing the connection through.</td></tr>
-        <tr><td><strong>UTP</strong> <span class="g-exp">Unshielded Twisted Pair</span></td><td>The standard copper cabling used for most Ethernet connections (like Cat 5e/Cat 6), without a metal shield — cheaper than shielded cable but more susceptible to interference.</td></tr>
-        <tr><td><strong>VLSM</strong> <span class="g-exp">Variable Length Subnet Masking</span></td><td>A subnetting technique that allows different subnets on the same network to use different-sized address ranges, reducing wasted IP addresses.</td></tr>
-        <tr><td><strong>VNC</strong> <span class="g-exp">Virtual Network Computing</span></td><td>A remote desktop protocol that lets you view and control another computer's screen over a network — similar in purpose to RDP but cross-platform and open standard. Uses TCP port 5900.</td></tr>
-        <tr><td><strong>VTC</strong> <span class="g-exp">Video Teleconferencing</span></td><td>Real-time video meeting technology; unauthorized access to a VTC session ("zoombombing"-style) is a confidentiality risk worth securing with waiting rooms and passcodes.</td></tr>
-        <tr><td><strong>Web filter</strong></td><td>A security tool that inspects and controls outbound web traffic, blocking or allowing sites based on category, reputation, or explicit rules — implemented via a centralized proxy, URL scanning, and content categorization.</td></tr>
-      </tbody>
-    </table></div>
-  </section>
-
-  <footer class="site-footer">
+      <footer class="site-footer">
         <a href="chapters1-2.html">← Chapters 1–2</a> &nbsp;·&nbsp; Chapter 3
         &nbsp;·&nbsp; Next:
         <a href="chapters4-5.html"
