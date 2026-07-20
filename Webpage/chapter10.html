@@ -549,6 +549,19 @@
           (Windows) prevents hash extraction from LSASS memory.
         </div>
 
+        <div class="tip">
+          <b>Named cracking tools:</b> <strong>Cain and Abel</strong> — a legacy
+          Windows tool combining packet sniffing, brute force, and cryptanalysis
+          to recover passwords. <strong>L0phtcrack</strong> — a Windows
+          password-auditing tool historically used by admins (and attackers) to
+          test password strength by cracking captured hashes.
+          <strong>Hashcat</strong> — a modern, GPU-accelerated cracker
+          supporting dictionary, brute-force, and mask attack modes at very high
+          hash-rates. A hardware/software OTP token like
+          <strong>RSA SecurID</strong> (something-you-have) sidesteps all of
+          these by never transmitting a reusable static password.
+        </div>
+
         <h3>Password Defenses — Salting &amp; Key Stretching</h3>
         <div class="grid2" style="margin-top: 14px">
           <div class="card accent-green">
@@ -2619,6 +2632,16 @@
             <p>
               <strong>Risk:</strong> If the pinned cert expires and the app is
               not updated, connections break until the app is patched.
+            </p>
+            <p>
+              <strong>HPKP</strong>
+              <span class="g-exp">HTTP Public Key Pinning</span> was a
+              browser-enforced version of this idea delivered via an HTTP
+              response header, letting a site pin its own key without app-level
+              hardcoding. It is now deprecated and removed from modern browsers
+              — the same "detect a fraudulent cert" goal is handled instead by
+              <strong>Certificate Transparency</strong> logs, which don't carry
+              HPKP's risk of a site accidentally locking itself out.
             </p>
           </div>
           <div class="card accent-red">

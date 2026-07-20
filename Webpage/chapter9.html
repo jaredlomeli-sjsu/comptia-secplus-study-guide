@@ -423,6 +423,87 @@
           answer is <strong>environmental attack</strong>. If they force a door
           or break a lock, it is <strong>physical brute force</strong>.
         </div>
+
+        <div class="sec-head" style="margin-top: 28px">
+          <h3 style="font-size: 1.1rem">Electromagnetic Shielding</h3>
+          <span class="sec-tag"
+            >Stopping signals from leaking out — or interference from getting
+            in</span
+          >
+        </div>
+        <div class="grid2">
+          <div class="card accent-blue">
+            <h4>TEMPEST</h4>
+            <p>
+              A U.S. government standard covering the study and suppression of
+              <strong>compromising electromagnetic emanations</strong> given off
+              by electronic equipment — monitors, keyboards, cabling. Without
+              shielding, these emissions can be captured at a distance and
+              reconstructed into the original data, a side-channel attack
+              against otherwise "air-gapped" or encrypted systems.
+            </p>
+          </div>
+          <div class="card accent-blue">
+            <h4>Faraday cage</h4>
+            <p>
+              An enclosure of conductive material that
+              <strong>blocks electromagnetic signals</strong> from entering or
+              leaving — the practical way TEMPEST-level protection gets
+              implemented. Used to shield sensitive rooms from eavesdropping and
+              to prevent wireless signal leakage (or, in forensics, to isolate a
+              seized phone from remote wipe commands).
+            </p>
+          </div>
+        </div>
+
+        <div class="sec-head" style="margin-top: 28px">
+          <h3 style="font-size: 1.1rem">Fire Suppression Systems</h3>
+          <span class="sec-tag"
+            >Containing fire in a data center without destroying the
+            hardware</span
+          >
+        </div>
+        <div class="grid2">
+          <div class="card accent-orange">
+            <h4>Dry pipe</h4>
+            <p>
+              Sprinkler piping holds
+              <strong>pressurized air instead of water</strong> until heat
+              triggers a valve that floods the pipes — reduces the risk of an
+              accidental discharge or a frozen, burst pipe damaging equipment
+              before a fire even starts.
+            </p>
+          </div>
+          <div class="card accent-orange">
+            <h4>Pre-action</h4>
+            <p>
+              Requires <strong>two separate triggers</strong> — smoke/heat
+              detection first arms the system, then a sprinkler head must itself
+              reach fire temperature — before water is released. Cuts the risk
+              of a false-alarm soaking to nearly zero, common in server rooms.
+            </p>
+          </div>
+          <div class="card accent-red">
+            <h4>Halon</h4>
+            <p>
+              A gaseous chemical suppressant that
+              <strong>displaces oxygen</strong> to smother a fire without
+              spraying liquid on electronics. Largely phased out under
+              environmental regulations (ozone depletion) and replaced by Clean
+              Agent systems, though legacy installations still exist.
+            </p>
+          </div>
+          <div class="card accent-red">
+            <h4>Clean Agent</h4>
+            <p>
+              The modern replacement family for Halon —
+              <strong>non-conductive, residue-free gaseous agents</strong>
+              (e.g., FM-200, Novec 1230) that suppress fire without damaging
+              servers or leaving cleanup behind. The standard choice for today's
+              data centers.
+            </p>
+          </div>
+        </div>
       </section>
 
       <!-- ════════ ASSET MANAGEMENT ════════ -->
@@ -718,6 +799,12 @@
                 disposal</strong
               >. Ensures sensitive data is protected appropriately and deleted
               securely at end of life.
+              <strong>Instant Secure Erase (ISE)</strong>, also called
+              <strong>crypto erase</strong>, is the fastest disposal method for
+              a self-encrypting drive: deleting only the drive's internal
+              encryption key instantly renders every bit of stored data
+              permanently unreadable, without the hours a full overwrite-based
+              Secure Erase or physical degaussing would take.
             </p>
           </div>
         </div>
@@ -871,6 +958,30 @@
               search engines, like private databases and login-walled pages) and
               the dark web are both places organizations watch for their own
               leaked assets and credentials showing up for sale.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid2" style="margin-top: 14px">
+          <div class="card accent-blue">
+            <h4>Trend analysis</h4>
+            <p>
+              Reviewing security data <strong>over time</strong> rather than as
+              isolated events — spotting frequency changes, volume spikes, or
+              statistical deviations from a baseline that indicate a
+              slow-building or low-and-slow threat a single log entry would
+              never reveal.
+            </p>
+          </div>
+          <div class="card accent-purple">
+            <h4>Adversarial AI</h4>
+            <p>
+              Attacks that target the
+              <strong>machine-learning model itself</strong>
+              — poisoning its training data or crafting inputs specifically
+              designed to cause misclassification — so that UEBA, spam filters,
+              or malware classifiers built on ML can be evaded or manipulated by
+              an attacker who understands how the model learns.
             </p>
           </div>
         </div>

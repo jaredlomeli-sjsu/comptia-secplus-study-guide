@@ -286,6 +286,28 @@
           anonymization takes data fully out of scope for privacy regulations —
           pseudonymized data is still personal data as long as the key exists.
         </p>
+        <p>
+          <strong>De-identification</strong> is the umbrella term for both
+          techniques — any process that strips or alters personal identifiers so
+          a record can no longer be directly attributed to an individual.
+          <strong>K-anonymity</strong> is a specific de-identification
+          guarantee: a dataset satisfies k-anonymity if every record is
+          indistinguishable from at least <em>k</em>-1 other records on the
+          attributes that could identify someone (e.g., ZIP code, age, gender) —
+          the larger the k, the harder it is to re-identify any one person by
+          cross-referencing outside data.
+        </p>
+        <p>
+          Two related technologies control what happens to data
+          <em>after</em> it's shared:
+          <strong>RMS (Rights Management Services)</strong> attaches persistent
+          usage restrictions to a document or email itself — blocking printing,
+          forwarding, or copying even after it leaves the organization — and
+          <strong>tombstoning</strong>, a DLP remediation action that replaces a
+          blocked or quarantined file with a placeholder record explaining why
+          the original was removed, so users aren't left wondering where a file
+          went.
+        </p>
 
         <figure class="diagram">
           <svg
@@ -1315,7 +1337,9 @@
                 <td>
                   File system artifacts, logs, deleted files. Survives power
                   cycle. Capture with write-blocker + forensic image (dd, FTK
-                  Imager).
+                  Imager, EnCase Forensic, WinHex). The Sleuth Kit (with its
+                  Autopsy GUI) is the standard open-source alternative to
+                  commercial suites like FTK and EnCase.
                 </td>
               </tr>
               <tr>
@@ -1445,6 +1469,18 @@
                 <td>
                   Evidence that programs were executed, even if deleted
                   afterward. Timestamps and run count.
+                </td>
+              </tr>
+              <tr>
+                <td>Amcache.hve</td>
+                <td>
+                  <code>%SystemRoot%\AppCompat\Programs\Amcache.hve</code>
+                </td>
+                <td>
+                  Registry hive recording metadata about every executed
+                  application — path, first-run timestamp, and a SHA-1 hash —
+                  even more granular than Prefetch and often survives when
+                  Prefetch is cleared.
                 </td>
               </tr>
               <tr>
@@ -1634,6 +1670,19 @@
           Information Expression) and TAXII (Trusted Automated eXchange of
           Indicator Information) are the standard formats and protocols for
           sharing TTP data between organizations.
+        </p>
+        <p>
+          Two other attack-modeling frameworks complement MITRE ATT&amp;CK: the
+          <strong>Cyber Kill Chain</strong> (Lockheed Martin) describes an
+          intrusion as a linear sequence of seven stages — reconnaissance,
+          weaponization, delivery, exploitation, installation, command &amp;
+          control, and actions on objectives — and is useful for identifying
+          where in the chain a detection or control can break the attack. The
+          <strong>Diamond Model of Intrusion Analysis</strong> instead plots an
+          intrusion event as four connected core features — adversary,
+          capability, infrastructure, and victim — making it better suited than
+          the linear Kill Chain for pivoting between related incidents during
+          threat hunting.
         </p>
         <div class="tip">
           <b>Exam tip:</b> SOAR automates response; SIEM generates alerts.

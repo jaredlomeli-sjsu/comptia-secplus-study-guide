@@ -1966,6 +1966,23 @@
           organization demonstrates <strong>due care</strong>: taking
           reasonable, ongoing steps to protect assets.
         </div>
+
+        <p>
+          <strong>RCSA — Risk and Control Self-Assessment:</strong> a process
+          where individual business units (not a central audit team) identify
+          and evaluate their own risks and the effectiveness of the controls
+          they rely on, then report results up to risk management/audit.
+          Distributes risk-identification workload and builds ownership at the
+          point closest to the risk.
+        </p>
+        <p>
+          <strong>ROSI — Return on Security Investment:</strong> a metric
+          estimating the financial benefit of a control relative to its cost —
+          conceptually
+          <code>ROSI = (ALE reduction − cost of control) / cost of control</code
+          >. Used to justify security spend to leadership in the same financial
+          language as any other business investment.
+        </p>
       </section>
 
       <!-- ════════ SUPPLY CHAIN ════════ -->
@@ -3032,6 +3049,57 @@
                   only).
                 </td>
               </tr>
+              <tr>
+                <td><code>theHarvester</code></td>
+                <td>
+                  OSINT reconnaissance tool that collates emails, subdomains,
+                  hostnames, employee names, and IPs about a target from public
+                  sources — search engines, PGP key servers, Shodan, and more.
+                </td>
+                <td>
+                  Entirely <strong>passive</strong>: never touches the target's
+                  infrastructure directly, only public/third-party data sources.
+                </td>
+              </tr>
+              <tr>
+                <td>Dsniff</td>
+                <td>
+                  A suite of network auditing and penetration-testing tools
+                  built around traffic interception — includes password sniffers
+                  plus MITM utilities (e.g., <code>arpspoof</code>,
+                  <code>dnsspoof</code>) for testing switched-network defenses.
+                </td>
+                <td>
+                  Exam cue: think of it as an early, foundational MITM/sniffing
+                  toolkit — a conceptual predecessor to Ettercap.
+                </td>
+              </tr>
+              <tr>
+                <td>Ettercap</td>
+                <td>
+                  A comprehensive LAN man-in-the-middle tool: performs ARP
+                  poisoning, supports live packet/protocol filtering and
+                  injection, and can capture credentials from unsecured
+                  protocols in real time.
+                </td>
+                <td>
+                  Used to demonstrate why switched networks still need Dynamic
+                  ARP Inspection — it actively poisons ARP caches rather than
+                  passively sniffing.
+                </td>
+              </tr>
+              <tr>
+                <td>Scapy</td>
+                <td>
+                  A Python-based interactive packet manipulation tool/library —
+                  craft, send, sniff, dissect, and forge almost any network
+                  packet programmatically.
+                </td>
+                <td>
+                  More flexible (and more code-driven) than hping; favored when
+                  a tester needs to script custom or unusual packet structures.
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -3598,6 +3666,20 @@
                   NetFlow = traffic statistics. Protocol analyzer = full packet
                   contents. NetFlow is used for traffic analysis, capacity
                   planning, anomaly detection, and security monitoring at scale.
+                </td>
+              </tr>
+              <tr>
+                <td>sFlow</td>
+                <td>
+                  A traffic-visibility alternative to NetFlow that uses
+                  <strong>statistical sampling</strong> — it captures only a
+                  subset of packets (e.g., 1 in every N) plus periodic interface
+                  counters, rather than tracking every flow.
+                </td>
+                <td>
+                  Trades some accuracy for much lower overhead on
+                  very-high-throughput links, where full flow-record collection
+                  (NetFlow/IPFIX) would be too resource-intensive.
                 </td>
               </tr>
             </tbody>
@@ -4382,6 +4464,85 @@
           CISA Zero Trust reference architecture, and cloud-provider security
           landing zones.
         </p>
+
+        <h3>Attestation, cloud &amp; benchmark frameworks</h3>
+        <div class="table-wrap">
+          <table class="wrap-first">
+            <thead>
+              <tr>
+                <th>Framework</th>
+                <th>Full Name</th>
+                <th>What It Covers</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>SSAE</td>
+                <td>Statement on Standards for Attestation Engagements</td>
+                <td>
+                  The AICPA auditing standard that governs how an independent
+                  auditor examines and reports on a service organization's
+                  controls. SOC 1/2/3 reports are all produced
+                  <em>under</em> SSAE — it's the underlying audit standard, not
+                  the report itself.
+                </td>
+              </tr>
+              <tr>
+                <td>SOC 3 report</td>
+                <td>Service Organization Control 3</td>
+                <td>
+                  A general-use, public-facing summary of a SOC 2 report — same
+                  Trust Services Criteria (security, availability,
+                  confidentiality, processing integrity, privacy) but without
+                  the detailed control-testing evidence, so it can be freely
+                  distributed (e.g., posted on a vendor's website) instead of
+                  shared only under NDA like a full SOC 2.
+                </td>
+              </tr>
+              <tr>
+                <td>CCM</td>
+                <td>Cloud Controls Matrix</td>
+                <td>
+                  The Cloud Security Alliance's cloud-specific control framework
+                  — maps controls across domains (IAM, data security, incident
+                  response, etc.) to other standards like ISO 27001 and NIST,
+                  giving cloud providers/customers a common cloud-focused
+                  control baseline.
+                </td>
+              </tr>
+              <tr>
+                <td>CIS-RAM</td>
+                <td>CIS Risk Assessment Method</td>
+                <td>
+                  The Center for Internet Security's method for evaluating and
+                  documenting risk when implementing the CIS Controls — helps an
+                  organization justify <em>which</em> CIS Controls to prioritize
+                  based on its own risk tolerance.
+                </td>
+              </tr>
+              <tr>
+                <td>DoD Cyber Exchange</td>
+                <td>—</td>
+                <td>
+                  The U.S. Department of Defense's public portal for
+                  cybersecurity policy, guidance, and Security Technical
+                  Implementation Guides (STIGs) — the hardening benchmarks
+                  required for DoD and many government-contractor systems.
+                </td>
+              </tr>
+              <tr>
+                <td>NIST NCP</td>
+                <td>National Checklist Program</td>
+                <td>
+                  NIST's official repository of vetted, vendor- and
+                  platform-specific security configuration checklists and
+                  benchmarks — a go-to source (alongside CIS Benchmarks) for
+                  secure baseline configuration guides.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <!-- ════════ AUDITS & ASSESSMENTS ════════ -->

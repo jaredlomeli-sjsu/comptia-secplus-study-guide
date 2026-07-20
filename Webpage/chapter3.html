@@ -59,6 +59,7 @@
         <a href="#firewalls">Firewalls</a>
         <a href="#zones">Network Zones</a>
         <a href="#nat">NAT &amp; PAT</a>
+        <a href="#loadbalancing">Load Balancing &amp; QoS</a>
         <a href="#isolation">SCADA &amp; Air Gaps</a>
         <a href="#proxy">Proxies</a>
         <a href="#zerotrust">Zero Trust</a>
@@ -366,6 +367,22 @@
           by anyone with a sniffer — the recurring theme of this chapter is
           replacing cleartext protocols with encrypted ones.
         </p>
+        <p>
+          <span class="pill insecure">attack</span>
+          <strong>MAC flooding</strong> — an attacker floods a switch with
+          frames carrying fake source MAC addresses until its CAM (content
+          addressable memory) table fills up. Once full, the switch can no
+          longer map MACs to ports and fails open, broadcasting traffic out
+          <em>every</em> port like a hub — turning a switched network into one
+          big collision domain an attacker can sniff.
+        </p>
+        <p>
+          <span class="pill secure">fix</span>
+          <strong>Dynamic ARP Inspection (DAI)</strong> — a switch feature that
+          checks every ARP packet against a trusted table of IP-to-MAC bindings
+          (built from DHCP snooping records) and drops any ARP reply that
+          doesn't match, directly blocking ARP poisoning at the switch port.
+        </p>
       </section>
 
       <!-- ════════ INFRA PROTOCOLS ════════ -->
@@ -415,6 +432,14 @@
               Synchronizes clocks. Critical for security:
               <strong>Kerberos breaks beyond ~5 min skew</strong>, and log
               correlation in a SIEM is meaningless without a common timeline.
+            </p>
+            <p>
+              <strong>Stratum hierarchy</strong>: Stratum 0 devices are the
+              reference clocks themselves (atomic/GPS clocks, not networked).
+              <strong>Stratum 1</strong> servers sync directly to a Stratum 0
+              source. <strong>Stratum 2</strong> servers sync to a Stratum 1
+              server, and so on — each hop away from the reference clock adds a
+              stratum number and a little more drift.
             </p>
           </div>
         </div>
@@ -1187,6 +1212,17 @@
               <span class="pill secure">LDAP over TLS</span> — required whenever
               directory traffic crosses untrusted segments. (LDAP injection =
               manipulating directory queries via unsanitized input.)
+            </p>
+            <p>
+              <strong>SASL</strong>
+              <span class="g-exp"
+                >Simple Authentication and Security Layer</span
+              >
+              — a pluggable framework for how a client binds (authenticates) to
+              an LDAP directory. Bind methods range from an anonymous or simple
+              (cleartext password) bind up to SASL mechanisms like
+              Kerberos/GSSAPI — layering strong authentication onto the
+              connection independently of whether LDAPS is also encrypting it.
             </p>
           </div>
         </div>
@@ -2323,6 +2359,15 @@
           </figcaption>
         </figure>
 
+        <p>
+          <strong>iptables</strong> — the built-in Linux command-line
+          packet-filtering firewall (front-ending the kernel's netfilter
+          framework). Rules are organized into chains (INPUT, OUTPUT, FORWARD)
+          evaluated top-to-bottom with an implicit deny at the end — the
+          concrete, real-world example of the stateless/stateful
+          packet-filtering concepts above.
+        </p>
+
         <h3>Failure modes</h3>
         <div class="grid2">
           <div class="card accent-red">
@@ -2955,6 +3000,68 @@
             — and why IPv4 survived address exhaustion.
           </figcaption>
         </figure>
+      </section>
+
+      <!-- ════════ LOAD BALANCING & QOS ════════ -->
+      <section id="loadbalancing">
+        <div class="sec-head">
+          <h2>Load Balancing &amp; QoS</h2>
+          <span class="sec-tag">Spreading traffic, then prioritizing it</span>
+        </div>
+        <div class="grid2">
+          <div class="card accent-blue">
+            <h4>Load balancer scheduling</h4>
+            <p>
+              A <strong>Layer 4</strong> load balancer distributes connections
+              based on IP/port alone (fast, protocol-agnostic); a
+              <strong>Layer 7</strong> load balancer (content switch) reads the
+              actual HTTP request — URL, cookie, header — to route smarter, at
+              the cost of more overhead.
+            </p>
+            <p>
+              Scheduling methods: <strong>round robin</strong> (rotate through
+              every server in turn), <strong>least connections</strong> (send
+              new traffic to the least-busy node), <strong>weighted</strong>
+              (bias toward more powerful servers), and
+              <strong>source-IP affinity</strong>
+              <span class="g-exp">a.k.a. session persistence</span> — pin a
+              client's requests to the same backend node so session state isn't
+              lost mid-transaction.
+            </p>
+          </div>
+          <div class="card accent-green">
+            <h4>CARP <span class="pill layer">HA</span></h4>
+            <p>
+              <strong>Common Address Redundancy Protocol</strong> — an
+              open-standard (BSD-originated) protocol that lets a group of hosts
+              or firewalls share a single virtual IP for failover, the same role
+              Cisco's proprietary HSRP/VRRP play. If the active node dies, a
+              standby node silently takes over the virtual IP.
+            </p>
+          </div>
+          <div class="card accent-orange">
+            <h4>QoS — Quality of Service</h4>
+            <p>
+              Prioritizes latency-sensitive traffic (VoIP, video) over
+              best-effort traffic (bulk downloads) so a saturated link doesn't
+              cause jitter on a call.
+            </p>
+            <p>
+              <strong>DiffServ</strong> marks the priority of an IP packet in
+              its header (Layer 3); <strong>802.1p</strong> marks the priority
+              of an Ethernet frame (Layer 2). Switches/routers along the path
+              read these markings to decide what to forward first when the link
+              is congested.
+            </p>
+          </div>
+        </div>
+        <div class="tip">
+          <b>Don't confuse with Ch 9:</b> load-balancer <em>redundancy</em>
+          (clustering, active/active vs active/passive, health checks) is
+          covered under High Availability in Chapter 9 — this section is just
+          about how a balancer picks a target and how QoS prioritizes what gets
+          sent first.
+        </div>
       </section>
 
       <!-- ════════ SCADA / AIR GAP ════════ -->

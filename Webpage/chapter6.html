@@ -1996,7 +1996,11 @@
               Matches files against a database of
               <strong>known malware fingerprints</strong>. Accurate, low false
               positives — but <strong>blind to brand-new malware</strong> until
-              signatures update. Why definitions must auto-update.
+              signatures update. Why definitions must auto-update. Vendors
+              cross-reference samples against
+              <strong>CME (Common Malware Enumeration)</strong> — a shared
+              naming scheme so different anti-malware products agree on what to
+              call the same piece of malware.
             </p>
           </div>
           <div class="card accent-purple">
@@ -2018,8 +2022,39 @@
           <strong>File Integrity Monitoring (FIM)</strong> — baselines hashes of
           critical system files and alerts on <em>any</em> change. Catches what
           scanners miss: if a rootkit alters a system binary, the hash no longer
-          matches. (Tripwire is the classic example.)
+          matches. (Tripwire is the classic example — <strong>OSSEC</strong> is
+          a comparable open-source HIDS that bundles FIM with log analysis and
+          rootkit detection.)
         </p>
+
+        <div class="grid3">
+          <div class="card accent-blue">
+            <h4>Cuckoo Sandbox</h4>
+            <p>
+              Open-source automated malware-analysis sandbox — detonates a
+              suspicious file in an isolated VM and reports exactly what it did
+              (files touched, registry changes, network calls). The practical
+              implementation behind "heuristic/behavior-based detection" above.
+            </p>
+          </div>
+          <div class="card accent-green">
+            <h4>Process Explorer (Sysinternals)</h4>
+            <p>
+              Microsoft's advanced Task Manager — shows every running process's
+              handles, loaded DLLs, and parent/child tree. Used to manually spot
+              an injected DLL or a process masquerading under a legitimate name.
+            </p>
+          </div>
+          <div class="card accent-purple">
+            <h4>Sysmon (System Monitor)</h4>
+            <p>
+              A Sysinternals Windows service that logs detailed
+              process-creation, network-connection, and file-change events to
+              the Windows event log — the raw feed a SIEM correlates to detect
+              the "living off the land" techniques signature A-V misses.
+            </p>
+          </div>
+        </div>
 
         <figure class="diagram">
           <svg

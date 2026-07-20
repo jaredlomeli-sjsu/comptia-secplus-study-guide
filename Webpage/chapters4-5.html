@@ -136,6 +136,15 @@
           <em>aggregator</em> combines multiple links into one feed for the
           sensor.
         </p>
+        <p>
+          <strong>NTA</strong>
+          <span class="g-exp">Network Traffic Analysis</span> — the
+          anomaly/trend-based approach above, applied specifically to network
+          flows and packet metadata: an NTA platform baselines normal traffic
+          patterns and flags deviations, often using the same AI/ML-assisted
+          modeling as <strong>UEBA</strong> but focused on the wire instead of
+          user/entity behavior.
+        </p>
         <figure class="diagram">
           <svg
             width="640"
@@ -954,6 +963,20 @@
                 <td>
                   Taking <strong>control</strong> of the device — backdoor,
                   calls, messages
+                </td>
+              </tr>
+              <tr>
+                <td>Bluebourne</td>
+                <td>
+                  A set of Bluetooth stack vulnerabilities allowing
+                  <strong
+                    >full device takeover with no pairing and no user
+                    interaction at all</strong
+                  >
+                  — the attacker doesn't even need the device to be
+                  discoverable, making it more severe than bluejacking,
+                  bluesnarfing, or bluebugging, which all require some form of
+                  connection or victim action
                 </td>
               </tr>
               <tr>
@@ -2198,11 +2221,33 @@
                 </td>
               </tr>
               <tr>
+                <td>Transit gateway</td>
+                <td>
+                  A cloud networking hub that interconnects multiple VPCs and
+                  on-premises networks through a single virtual router, instead
+                  of meshing every VPC to every other VPC with individual
+                  peering connections
+                </td>
+              </tr>
+              <tr>
+                <td>VPC endpoint / PrivateLink</td>
+                <td>
+                  Lets an instance inside a VPC reach a supported cloud service
+                  (storage, a partner's service) over the provider's internal
+                  network — the traffic never traverses the public internet, so
+                  there's no exposure to route around
+                </td>
+              </tr>
+              <tr>
                 <td>IaC</td>
                 <td>
                   Infrastructure as Code — environments defined in
                   version-controlled templates (Terraform); consistent,
-                  auditable, no config drift
+                  auditable, no config drift. A core property of a good IaC
+                  template is <strong>idempotence</strong> — applying it
+                  repeatedly with the same inputs always produces the same end
+                  state, instead of stacking up duplicate resources or drifting
+                  further each run.
                 </td>
               </tr>
               <tr>
@@ -2888,6 +2933,35 @@
             USB drives — expands the attack surface of otherwise locked-down
             mobile devices.
           </li>
+          <li>
+            <strong>SEAndroid</strong>
+            <span class="g-exp">Security-Enhanced Android</span> — Android's
+            built-in mandatory access control layer, based on SELinux, that
+            sandboxes every app so a compromised app can't touch another app's
+            data or the rest of the OS without an explicit policy allowing it.
+          </li>
+          <li>
+            <strong>Apple DEP / VPP</strong>
+            <span class="g-exp"
+              >Device Enrollment Program / Volume Purchase Program</span
+            >
+            — Apple's enterprise programs for bulk-enrolling iOS devices into
+            MDM automatically at first boot (DEP) and bulk-purchasing/licensing
+            apps for the whole organization (VPP), instead of provisioning and
+            buying one device/app at a time.
+          </li>
+          <li>
+            <strong>Sheep dip</strong> — an isolated, air-gapped system used to
+            test a suspicious USB drive or device (found in a parking lot,
+            received unexpectedly) before it ever touches a production machine —
+            the mobile/removable-media equivalent of a sandbox.
+          </li>
+          <li>
+            <strong>Abandonware</strong> — software or firmware the vendor has
+            stopped supporting entirely (beyond just end-of-life) but that
+            remains installed and running, silently accumulating unpatched
+            vulnerabilities with no path to a fix short of replacement.
+          </li>
         </ul>
       </section>
 
@@ -2950,6 +3024,44 @@
                 </td>
               </tr>
               <tr>
+                <td>PLC</td>
+                <td>
+                  Programmable Logic Controller — a ruggedized industrial
+                  computer that directly drives ICS/SCADA machinery (valves,
+                  motors, conveyor belts); the DCS/SCADA row above is the layer
+                  that supervises many PLCs across a facility.
+                </td>
+              </tr>
+              <tr>
+                <td>HMI</td>
+                <td>
+                  Human-Machine Interface — the operator's control screen/panel
+                  for an ICS/SCADA system. A compromised HMI can let an attacker
+                  issue commands to physical equipment directly, so it's a
+                  high-value target despite looking like "just a monitor."
+                </td>
+              </tr>
+              <tr>
+                <td>Data historian</td>
+                <td>
+                  A specialized time-series database that logs every sensor
+                  reading and process value from an ICS/SCADA environment over
+                  time — used for trend analysis, compliance, and
+                  troubleshooting, and itself a target since it centralizes
+                  operational data.
+                </td>
+              </tr>
+              <tr>
+                <td>AIC triad</td>
+                <td>
+                  OT/ICS's reordering of the standard CIA triad (see Chapter 1)
+                  to <strong>Availability first</strong>, then Integrity, then
+                  Confidentiality — a plant going offline is far more dangerous
+                  than data being read, which is why OT favors uptime over
+                  patching.
+                </td>
+              </tr>
+              <tr>
                 <td>SoC</td>
                 <td>
                   System on a Chip — CPU, memory, radios on one chip (Raspberry
@@ -2972,6 +3084,62 @@
           credentials, long deployed lifespans. Compensating controls: network
           segmentation, firewalls in front, monitoring.
         </p>
+
+        <h3>Low-Power &amp; Cellular IoT Connectivity</h3>
+        <ul class="plain">
+          <li>
+            <strong>Z-Wave</strong> and <strong>Zigbee</strong> — competing
+            low-power, low-bandwidth mesh wireless protocols (Z-Wave ~900 MHz,
+            Zigbee 2.4 GHz) used by home-automation and building sensors;
+            devices relay each other's traffic instead of all talking straight
+            to one hub, which extends range but widens the attack surface to
+            every node in the mesh.
+          </li>
+          <li>
+            <strong>NB-IoT</strong>
+            <span class="g-exp">Narrowband IoT</span> and
+            <strong>LTE-M</strong> — carrier-grade low-power cellular
+            connectivity standards for IoT devices that need years of battery
+            life and wide-area coverage without Wi-Fi, trading bandwidth for
+            range and power efficiency.
+          </li>
+        </ul>
+
+        <h3>Specialized OT/Building Systems</h3>
+        <ul class="plain">
+          <li>
+            <strong>BAS</strong>
+            <span class="g-exp">Building Automation System</span> — networked
+            control of HVAC, lighting, and elevators; often installed and
+            managed by a facilities vendor with weaker security practices than
+            IT, and rarely segmented from the rest of the network.
+          </li>
+          <li>
+            <strong>Smart meters</strong> — networked utility meters that report
+            usage back to the provider; part of critical infrastructure, so a
+            compromised fleet of them is a grid-availability risk, not just a
+            privacy one.
+          </li>
+          <li>
+            <strong>PACS</strong>
+            <span class="g-exp">Physical Access Control System</span> — the
+            networked backend behind badge readers, door locks, and entry
+            logging (ties back to the physical security controls in Chapter 9);
+            compromising the PACS server can unlock doors that no amount of
+            badge cloning ever could.
+          </li>
+          <li>
+            <strong>CAN bus</strong>
+            <span class="g-exp">Controller Area Network</span> — the internal
+            communications bus that lets a vehicle's ECUs (engine, brakes,
+            infotainment) talk to each other; it was designed for reliability on
+            a closed system, not authentication, so anything with access to it
+            (including the <strong>OBD-II</strong> diagnostic port, or a
+            compromised cellular/Wi-Fi-connected infotainment unit) can
+            potentially inject commands to safety-critical systems.
+          </li>
+        </ul>
+
         <ul class="plain">
           <li>
             <strong>EOL / legacy hardware</strong> — end-of-life means
