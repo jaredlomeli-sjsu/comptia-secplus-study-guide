@@ -415,5 +415,145 @@ window.PBQ_BANK = [
     ],
     options: ['1', '2', '3', '4', '5', '6'],
     e: 'Step 1 — Scope and asset inventory: you cannot manage risk for assets you do not know exist — shadow IT and forgotten servers are often the entry point for breaches. A complete and accurate asset inventory is the prerequisite for every subsequent step. | Step 2 — Scanning: authenticated scans (using credentials to inspect installed software, patch level, and configuration) find significantly more vulnerabilities than unauthenticated scans — both should be used where possible. | Step 3 — Prioritization: NOT every CVSS Critical finding is equally urgent — a CVSS 9.8 vulnerability on an isolated test server with no internet exposure may be lower priority than a CVSS 7.5 vulnerability on a public-facing payment server with active exploitation in the wild. Effective prioritization uses CVSS + asset criticality + threat intel on active exploitation (CISA KEV catalog). | Step 4 — Remediation: patches address root causes; compensating controls (network segmentation, WAF rules, access restrictions) reduce exposure when patching is not immediately feasible. Compensating controls must be documented and tracked until the root-cause patch is applied. | Step 5 — Verification: a patch applied incorrectly, a compensating control misconfigured, or a system that missed the patch deployment are common — verification confirms the fix actually worked before marking the finding closed. Closing findings without verification creates false assurance in the program. | Step 6 — Reporting LAST: the report should reflect verified outcomes, not preliminary scan findings. Reporting before verification means stakeholders see unresolved items as resolved, creating compliance and risk posture misrepresentation. The report also feeds back into the next cycle\'s scope definition (Step 1), making vulnerability management a continuous loop rather than a one-time project.'
+  },
+  {
+    id: 'pbq29', d: 5, sub: 'Continuity metrics',
+    q: 'A business continuity planner is documenting recovery targets for the order-processing system. Match each metric to what it measures.',
+    rows: [
+      ['The maximum acceptable time to restore a system to service after an outage', 'RTO'],
+      ['The maximum acceptable amount of data loss, measured backward from the moment of failure', 'RPO'],
+      ['The additional time needed after technical restoration to reconcile data and clear backlog before normal business resumes', 'WRT'],
+      ['The average time required to repair a failed component and return it to service', 'MTTR'],
+      ['The average time a repairable system operates between failures', 'MTBF'],
+      ['The expected monetary loss from a single occurrence of a risk event', 'SLE']
+    ],
+    options: ['RTO', 'RPO', 'WRT', 'MTTR', 'MTBF', 'SLE', 'ALE', 'ARO'],
+    e: 'RTO looks FORWARD from the outage — how long until we are running again. RPO looks BACKWARD — how much data can we afford to lose, which directly sets backup frequency (a 4-hour RPO requires backups at least every 4 hours). WRT is the often-forgotten gap AFTER technical restoration: reconciling manual records and clearing backlog; RTO + WRT = Maximum Tolerable Downtime. MTTR measures repair speed and MTBF measures reliability between failures — both are hardware/service metrics, not recovery targets. SLE (asset value x exposure factor) is the loss from one event; multiply by ARO to get ALE, the annualized figure.'
+  },
+  {
+    id: 'pbq30', d: 5, sub: 'Agreement types',
+    q: 'A vendor manager is assembling the contract file for a new managed service provider. Match each document to its purpose.',
+    rows: [
+      ['Defines measurable service commitments such as 99.9% uptime, along with remedies like service credits when they are missed', 'SLA'],
+      ['A non-binding statement of intent describing how two parties plan to cooperate, with no enforceable obligations', 'MOU'],
+      ['The overarching contract establishing legal terms, liability, and payment conditions governing all future work between the parties', 'MSA'],
+      ['Authorizes and scopes one specific piece of work — deliverables, hours, and price — under the terms of an existing master contract', 'SOW / WO'],
+      ['Legally binds the parties to protect confidential information disclosed during the engagement', 'NDA'],
+      ['Governs the terms of an ongoing business partnership, including each partner’s responsibilities and profit sharing', 'BPA']
+    ],
+    options: ['SLA', 'MOU', 'MSA', 'SOW / WO', 'NDA', 'BPA', 'MOA'],
+    e: 'The exam tests the binding-versus-non-binding distinction hardest. An MOU expresses intent and is generally NOT enforceable — an MOA is its more definite cousin that does create obligations. The MSA is signed once and sets the legal framework; each individual project then rides on a SOW or Work Order rather than renegotiating the master terms. An SLA is where availability and response commitments live along with the remedy when they are breached, which is why SLA remedies must be negotiated BEFORE an incident, not after. An NDA protects confidentiality and typically survives termination of the engagement.'
+  },
+  {
+    id: 'pbq31', d: 5, sub: 'Data governance roles',
+    q: 'A privacy program is assigning accountability for a customer database. Match each responsibility to the correct role.',
+    rows: [
+      ['The senior business official accountable for the data, who sets its classification and approves access', 'Data owner'],
+      ['The technical role that implements storage, backup, encryption, and access enforcement as directed', 'Data custodian'],
+      ['Manages data quality, definitions, and appropriate use within a business domain', 'Data steward'],
+      ['Under GDPR, the entity that determines the purposes and means of processing personal data', 'Data controller'],
+      ['Under GDPR, the entity that processes personal data on behalf of another party, following its instructions', 'Data processor'],
+      ['Oversees the privacy program and serves as the contact point for regulators and data subjects', 'DPO']
+    ],
+    options: ['Data owner', 'Data custodian', 'Data steward', 'Data controller', 'Data processor', 'DPO'],
+    e: 'Accountability versus implementation is the core distinction: the OWNER decides classification and access and cannot delegate accountability, while the CUSTODIAN (usually IT) implements those decisions technically. The STEWARD sits between them, governing data quality and appropriate use within a business domain. The GDPR pair is a favorite exam trap — the CONTROLLER decides why and how data is processed and carries primary legal responsibility, while the PROCESSOR acts only on the controller’s documented instructions. A cloud provider hosting your customer data is typically a processor; you remain the controller. The DPO is an independent oversight role, not the decision-maker for individual access requests.'
+  },
+  {
+    id: 'pbq32', d: 2, sub: 'Threat actor matching',
+    q: 'A threat intelligence analyst is profiling recent incidents. Match each description to the threat actor type.',
+    rows: [
+      ['Extremely well resourced, highly sophisticated, pursuing espionage or disruption aligned to government objectives', 'Nation-state'],
+      ['Attacks to advance a political or social cause, favoring publicity such as defacement and data leaks over profit', 'Hacktivist'],
+      ['Professional criminal enterprise motivated by financial gain, operating ransomware and fraud at scale', 'Organized crime'],
+      ['Limited technical skill, relying on tools and exploits written by others, often motivated by notoriety', 'Unskilled attacker'],
+      ['Already holds legitimate authorized access, making detection dependent on behavioral analytics rather than perimeter controls', 'Insider threat'],
+      ['A department deploying an unsanctioned SaaS application without IT approval, creating unmanaged risk without malicious intent', 'Shadow IT']
+    ],
+    options: ['Nation-state', 'Hacktivist', 'Organized crime', 'Unskilled attacker', 'Insider threat', 'Shadow IT'],
+    e: 'Sort actors by RESOURCES and MOTIVATION. Nation-states have effectively unlimited funding and patience, pursuing espionage and strategic disruption — they are the actor most associated with true zero-days and multi-year dwell time. Organized crime is equally professional but profit-driven, which is why ransomware-as-a-service is a business model. Hacktivists want visibility, so their attacks are loud by design. Unskilled attackers (script kiddies) use others’ tools and are dangerous mainly because those tools are freely available. The insider is distinguished not by motivation but by ALREADY having authorized access, defeating perimeter controls entirely. Shadow IT is the outlier: unmanaged risk created without any malicious intent at all.'
+  },
+  {
+    id: 'pbq33', d: 2, sub: 'Vulnerability mitigation',
+    q: 'A secure code review produced several findings. Match each vulnerability to the mitigation that MOST directly addresses its root cause.',
+    rows: [
+      ['SQL injection in a reporting query built by string concatenation', 'Parameterized queries'],
+      ['Reflected cross-site scripting in a search results page', 'Context-aware output encoding'],
+      ['Cross-site request forgery on the funds-transfer endpoint', 'Anti-CSRF token + SameSite cookie'],
+      ['Buffer overflow in a C string-handling routine', 'Bounds checking + ASLR/DEP'],
+      ['Time-of-check to time-of-use race condition on a file path', 'Atomic operations on a file handle'],
+      ['Session fixation allowing an attacker-supplied session ID to become authenticated', 'Regenerate session ID after login']
+    ],
+    options: ['Parameterized queries', 'Context-aware output encoding', 'Anti-CSRF token + SameSite cookie', 'Bounds checking + ASLR/DEP', 'Atomic operations on a file handle', 'Regenerate session ID after login', 'Longer password policy'],
+    e: 'Each mitigation must address the ROOT CAUSE, not merely the symptom. SQL injection is fixed by keeping user input as DATA rather than executable query text — parameterized queries and properly written stored procedures do this; input filtering alone is bypassable. XSS is an OUTPUT problem: encode on the way out, using encoding appropriate to the context (HTML body, attribute, JavaScript, URL). CSRF exploits the browser automatically attaching cookies, so the fix is an unpredictable token the attacker cannot forge plus SameSite to stop cross-site cookie attachment. Buffer overflows need bounds checking in code, with ASLR and DEP as defense in depth that raises exploitation cost. TOCTOU is a timing gap — operate atomically on a handle instead of re-resolving the path. Session fixation is defeated by issuing a NEW session ID at the moment privilege changes.'
+  },
+  {
+    id: 'pbq34', d: 2, sub: 'Wireless & mobile attacks',
+    q: 'A security team is investigating incidents affecting mobile and wireless users. Match each description to the attack.',
+    rows: [
+      ['A rogue access point broadcasting the same SSID as the corporate network to lure clients into connecting', 'Evil twin'],
+      ['Forged 802.11 management frames that force clients to disconnect, often as a precursor to another attack', 'Deauthentication attack'],
+      ['Theft of contacts, messages, or files from a device over an unsecured Bluetooth connection', 'Bluesnarfing'],
+      ['Sending unsolicited messages to nearby Bluetooth devices — annoying but not data-stealing', 'Bluejacking'],
+      ['Flooding a frequency band with RF noise to deny wireless service entirely', 'Jamming'],
+      ['Reading a passive badge or payment tag at a distance without the holder’s knowledge, then replaying it', 'RFID cloning']
+    ],
+    options: ['Evil twin', 'Deauthentication attack', 'Bluesnarfing', 'Bluejacking', 'Jamming', 'RFID cloning'],
+    e: 'The two Bluetooth attacks are a classic exam pair: bluejacking SENDS unwanted data (nuisance), bluesnarfing TAKES data (breach) — remember snarf = steal. Evil twin and deauthentication are usually chained: the attacker deauthenticates clients from the legitimate AP, and they reassociate to the attacker’s identically named twin. 802.11w Protected Management Frames is the direct mitigation, because unprotected management frames carry no authentication. Jamming is a pure availability attack, defeated by spectrum monitoring and locating the transmitter rather than by any cryptographic control. RFID cloning exploits passive tags that respond to any reader, which is why shielded sleeves and cryptographic badge formats exist.'
+  },
+  {
+    id: 'pbq35', d: 4, sub: 'Backup strategy',
+    q: 'A backup administrator is documenting the organization’s strategy. Match each backup concept to its defining characteristic.',
+    rows: [
+      ['Copies everything changed since the last FULL backup; restore needs only the full plus the most recent copy', 'Differential'],
+      ['Copies everything changed since the last backup of ANY type; restore needs the full plus the entire chain', 'Incremental'],
+      ['A point-in-time image of a system or volume, commonly used before risky changes', 'Snapshot'],
+      ['Remains continuously connected for fast restores, but is reachable by ransomware that compromises the backup server', 'Online backup'],
+      ['Disconnected or immutable media that ransomware cannot reach or encrypt', 'Offline backup'],
+      ['Stored at a geographically separate location so a regional disaster cannot destroy both copies', 'Offsite backup']
+    ],
+    options: ['Differential', 'Incremental', 'Snapshot', 'Online backup', 'Offline backup', 'Offsite backup', 'Full backup'],
+    e: 'Differential versus incremental is decided by the RESTORE, not the backup: differentials grow larger through the week but restore from just two pieces (full + latest differential), while incrementals stay small and fast but require the full plus every incremental in the chain — more media and more points of failure. The online/offline/offsite trio addresses different threats and is why the 3-2-1 rule exists: 3 copies, on 2 media types, with 1 offsite. Online backups deliver the fastest RTO but are the ones ransomware encrypts, since the backup server can reach them — which is exactly why at least one copy must be offline or immutable. Offsite addresses regional disaster, a separate concern from ransomware reachability.'
+  },
+  {
+    id: 'pbq36', d: 4, sub: 'Order of volatility',
+    q: 'A forensic responder must collect evidence from a running compromised server. Order the collection from MOST volatile (1) to LEAST volatile (6).',
+    rows: [
+      ['CPU registers, cache, and running process state', '1'],
+      ['RAM contents, including encryption keys and injected code that exist nowhere on disk', '2'],
+      ['Network connections, routing tables, and ARP cache', '3'],
+      ['Temporary file systems and swap or paging space', '4'],
+      ['Data on persistent disk, including the file system and deleted-file remnants', '5'],
+      ['Archival backups and printed documentation stored offline', '6']
+    ],
+    options: ['1', '2', '3', '4', '5', '6'],
+    e: 'The order of volatility (RFC 3227) dictates that the most perishable evidence is captured FIRST, because collecting anything else destroys it. Registers and cache change nanosecond to nanosecond. RAM is the highest-value target in modern investigations — encryption keys, decrypted data, and fileless malware exist only there and vanish the instant the machine is powered off, which is why "pull the plug" is now wrong for a running system. Network state (active connections, ARP cache) survives only while the host is running and reveals active C2 channels. Temporary and swap space persist somewhat longer. Disk is comparatively stable, and archival media is the most durable of all. Getting this order wrong destroys the evidence that most often proves the case.'
+  },
+  {
+    id: 'pbq37', d: 4, sub: 'Forensic artifacts',
+    q: 'An analyst must answer specific investigative questions on a Windows host. Match each question to the artifact that BEST answers it.',
+    rows: [
+      ['Did this specific executable ever run, even though the file has since been deleted?', 'Amcache / Prefetch'],
+      ['What are the local account password hashes an attacker may have targeted for offline cracking?', 'SAM'],
+      ['What did the attacker actually see on screen during their remote desktop session?', 'RDP bitmap cache'],
+      ['Which external hosts did this server communicate with, and how much data was transferred?', 'NetFlow / firewall logs'],
+      ['What files exist, including timestamps and remnants of deleted entries, on the NTFS volume?', 'MFT'],
+      ['What authentication attempts, service starts, and log-clearing events occurred on the host?', 'Windows Event Logs']
+    ],
+    options: ['Amcache / Prefetch', 'SAM', 'RDP bitmap cache', 'NetFlow / firewall logs', 'MFT', 'Windows Event Logs'],
+    e: 'Match the QUESTION to the artifact that records it. Amcache and Prefetch prove execution — critically, they survive deletion of the binary itself, so they answer "did it run" when the malware is long gone. The SAM stores local credential hashes and is a target rather than a record of activity. The RDP bitmap cache reconstructs fragments of what was displayed during a remote session, sometimes literally showing the attacker’s screen. NetFlow and firewall logs answer questions about external communication and data volume, which endpoint artifacts cannot. The MFT is the NTFS master file table, recording every file with timestamps and retaining entries for deleted files. Event Log ID 1102 (audit log cleared) is itself strong evidence of anti-forensic activity.'
+  },
+  {
+    id: 'pbq38', d: 1, sub: 'Zero Trust components',
+    q: 'A security architect is documenting the organization’s Zero Trust design. Match each element to its role in the architecture.',
+    rows: [
+      ['Evaluates each access request against policy and decides permit, deny, or step up authentication', 'Policy Engine'],
+      ['Executes the Policy Engine’s decision by establishing or terminating the session', 'Policy Administrator'],
+      ['Sits in the traffic path and enforces the decision at the point of access to the resource', 'Policy Enforcement Point'],
+      ['The portion of the architecture where policy decisions are made, separated from where traffic flows', 'Control Plane'],
+      ['The portion of the architecture where approved traffic actually travels to the resource', 'Data Plane'],
+      ['The legacy assumption that anything already inside the network perimeter can be trusted', 'Implicit trust zone']
+    ],
+    options: ['Policy Engine', 'Policy Administrator', 'Policy Enforcement Point', 'Control Plane', 'Data Plane', 'Implicit trust zone'],
+    e: 'Zero Trust separates DECIDING from ENFORCING. The Policy Engine decides, using identity, device posture, resource sensitivity, and behavioral risk; the Policy Administrator carries out that decision by establishing or tearing down the session; the Policy Enforcement Point is the component actually in the traffic path applying it. Those decision components live in the CONTROL plane, deliberately separated from the DATA plane where approved traffic flows — so compromising the traffic path does not grant the ability to rewrite policy. The implicit trust zone is precisely what Zero Trust eliminates: the flat internal network where one compromised workstation can reach everything, which is why threat scope reduction is a core Zero Trust goal.'
   }
 ];
