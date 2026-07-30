@@ -67,6 +67,74 @@
     return pool;
   }
 
+  /* ────────────────────────────────────────────────────────────
+     No-repeat draw ("shuffled deck"): independent random draws
+     collide constantly once you ask for more than ~half of a
+     filtered pool (e.g. 25 from a 49-question Easy pool repeats
+     ~50% of questions every attempt). Instead we deal from a
+     shuffled deck of the pool's ids, per filter combo, and only
+     reshuffle a fresh deck once the current one runs out — so the
+     full pool is exhausted before anything repeats.
+  ──────────────────────────────────────────────────────────── */
+  var deckMemory = {}; // in-memory fallback if localStorage is unavailable
+
+  function deckStorageKey(d, diff) {
+    return "spQuizDeck:" + d + ":" + diff;
+  }
+
+  function loadDeck(key, pool) {
+    var ids = null;
+    try {
+      var raw = localStorage.getItem(key);
+      ids = raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      ids = deckMemory[key] || null;
+    }
+    if (!Array.isArray(ids)) ids = [];
+    var validId = {};
+    pool.forEach(function (q) {
+      validId[q.id] = true;
+    });
+    return ids.filter(function (id) {
+      return validId[id];
+    });
+  }
+
+  function saveDeck(key, ids) {
+    deckMemory[key] = ids;
+    try {
+      localStorage.setItem(key, JSON.stringify(ids));
+    } catch (e) {
+      /* private browsing / quota exceeded — deckMemory fallback covers this tab */
+    }
+  }
+
+  /* Draw n questions for the given filter without repeating any
+     question until the whole filtered pool has been dealt once. */
+  function drawSet(d, diff, requestedN) {
+    var pool = poolFor(d, diff);
+    var n = Math.min(requestedN, pool.length);
+    var key = deckStorageKey(d, diff);
+    var deck = loadDeck(key, pool);
+    var byId = {};
+    pool.forEach(function (q) {
+      byId[q.id] = q;
+    });
+    var result = [];
+    while (result.length < n) {
+      if (!deck.length) {
+        deck = shuffle(
+          pool.map(function (q) {
+            return q.id;
+          }),
+        );
+      }
+      result.push(byId[deck.shift()]);
+    }
+    saveDeck(key, deck);
+    return result;
+  }
+
   /* Convert a v2 question into a runtime question with shuffled option order */
   function prepare(q) {
     var letters = Object.keys(q.options); // ['A','B','C','D'] or ['A','B','C','D','E']
@@ -149,9 +217,8 @@
   }
 
   function startQuiz() {
-    var pool = poolFor(domainSel.value, getDiff());
-    var n = Math.min(parseInt(lenSel.value, 10) || 10, pool.length);
-    quiz.set = shuffle(pool).slice(0, n).map(prepare);
+    var requested = parseInt(lenSel.value, 10) || 10;
+    quiz.set = drawSet(domainSel.value, getDiff(), requested).map(prepare);
     quiz.idx = 0;
     quiz.answered = [];
     quiz.score = 0;
