@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Final-Night Cram Sheet — Security+ SY0-701</title>
+    <meta
+      name="description"
+      content="A last-minute CompTIA Security+ SY0-701 cram sheet: the highest-yield formulas, mappings, and definitions to review the night before and the morning of the exam."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <nav class="topnav">
+      <a class="brand" href="index.html">Security<span>+</span> SY0-701</a>
+      <a class="navlink" href="index.html">Home</a>
+      <a class="navlink" href="chapters1-2.html">Ch 1–2 · Basics &amp; IAM</a>
+      <a class="navlink" href="chapter3.html">Ch 3 · Networks</a>
+      <a class="navlink" href="chapters4-5.html"
+        >Ch 4–5 · Net Defense &amp; Hosts</a
+      >
+      <a class="navlink" href="chapter6.html">Ch 6 · Threats</a>
+      <a class="navlink" href="chapter7.html">Ch 7 · Advanced Attacks</a>
+      <a class="navlink" href="chapter8.html">Ch 8 · Risk Mgmt</a>
+      <a class="navlink" href="chapter9.html">Ch 9 · Controls</a>
+      <a class="navlink" href="chapter10.html">Ch 10 · Cryptography</a>
+      <a class="navlink" href="chapter11.html">Ch 11 · Policies</a>
+      <a class="navlink" href="practice.html">Practice</a>
+      <a class="navlink" href="glossary.html">Glossary</a>
+      <a class="navlink active" href="cram.html">Cram Sheet</a>
+    </nav>
+
+    <main class="page" id="main">
+      <header class="page-header">
+        <div class="badge">Final Night</div>
+        <h1>Cram <span>Sheet</span></h1>
+        <p class="subtitle">
+          The highest-yield facts, in the areas this site drills least. Built
+          from a term-by-term gap analysis of these notes against the official
+          SY0-701 objectives. Read it tonight, read it again in the morning —
+          and add nothing new after that.
+        </p>
+      </header>
+
+      <div class="tip">
+        <b>How to use this:</b> everything here is already correct on the rest
+        of the site — this page exists because these specific items get the
+        fewest practice questions in the 800-question bank, so they are the most
+        likely to feel unfamiliar under time pressure. Press
+        <b>Ctrl/Cmd&nbsp;+&nbsp;P</b>
+        for a two-column printable version.
+      </div>
+
+      <section>
+        <div class="sec-head">
+          <h2>Not covered elsewhere on this site</h2>
+          <span class="sec-tag"
+            >Four genuine holes found by the gap analysis — learn these
+            first</span
+          >
+        </div>
+
+        <div class="cram-grid">
+          <div class="cram-card cram-hot">
+            <h3>
+              <span class="cram-num">GAP</span> Ports missing from the table
+            </h3>
+            <ul>
+              <li>
+                <span class="cram-k">445</span> — <b>SMB</b>. The
+                lateral-movement and ransomware port (EternalBlue/WannaCry).
+                Highest-yield of the four.
+              </li>
+              <li>
+                <span class="cram-k">137–139</span> — <b>NetBIOS</b> (name
+                service, datagram, session). Legacy Windows file/printer
+                sharing.
+              </li>
+              <li>
+                <span class="cram-k">3268</span> — <b>LDAP Global Catalog</b>
+                (3269 for the TLS version).
+              </li>
+              <li>
+                Every other exam port is already on the
+                <a href="index.html#ports">home-page master table</a>.
+              </li>
+            </ul>
+          </div>
+
+          <div class="cram-card cram-hot">
+            <h3><span class="cram-num">GAP</span> Vendor selection (5.3)</h3>
+            <ul>
+              <li>
+                <b>Due diligence</b> — investigating a vendor's security
+                posture, finances, and track record <em>before</em> signing.
+              </li>
+              <li>
+                <b>Conflict of interest</b> — a vendor relationship that
+                compromises impartial judgment (e.g. the auditor also sells you
+                the remediation). Appears nowhere else in these notes.
+              </li>
+              <li>
+                Those two are the entire "vendor selection" bullet. Do not
+                confuse them with <b>vendor monitoring</b> (ongoing) or
+                <b>vendor assessment</b> (pen test, right-to-audit clause,
+                independent assessments, supply chain analysis).
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="sec-head">
+          <h2>Thinly drilled topics</h2>
+          <span class="sec-tag"
+            >Fewer than ~10 practice questions each · everything else on the
+            site gets 20–36</span
+          >
+        </div>
+
+        <div class="cram-grid">
+          <div class="cram-card">
+            <h3><span class="cram-num">5.2</span> Risk math</h3>
+            <ul>
+              <li>
+                <span class="cram-formula">SLE = AV × EF</span>
+                Single Loss Expectancy = Asset Value × Exposure Factor (the % of
+                the asset destroyed by one event).
+              </li>
+              <li>
+                <span class="cram-formula">ALE = SLE × ARO</span>
+                Annualized Loss Expectancy = SLE × how many times per year.
+              </li>
+              <li>
+                <b>ARO</b> is a rate: once every 4 years =
+                <span class="cram-k">0.25</span>.
+              </li>
+              <li>
+                A control is worth buying only if it costs
+                <b>less than the ALE reduction</b> it delivers.
+              </li>
+              <li>
+                <b>Qualitative</b> = high/medium/low judgment.
+                <b>Quantitative</b> = dollars and these formulas.
+              </li>
+            </ul>
+          </div>
+
+          <div class="cram-card">
+            <h3><span class="cram-num">1.2</span> Zero Trust planes</h3>
+            <ul>
+              <li>
+                <b>Control Plane</b> — decides.
+                <span class="cram-k">Policy Engine</span> makes the grant/deny
+                decision;
+                <span class="cram-k">Policy Administrator</span> issues the
+                token/credential that carries it out. Also here: adaptive
+                identity, threat scope reduction, policy-driven access control.
+              </li>
+              <li>
+                <b>Data Plane</b> — does.
+                <span class="cram-k">Policy Enforcement Point</span> is the gate
+                that actually allows or blocks traffic. Also here: implicit
+                trust zones, subject/system.
+              </li>
+              <li>
+                Exam trap:
+                <b>Engine decides, Administrator issues, PEP enforces.</b>
+              </li>
+            </ul>
+          </div>
+
+          <div class="cram-card">
+            <h3>
+              <span class="cram-num">1.2</span> Deception &amp; disruption
+            </h3>
+            <ul>
+              <li><b>Honeypot</b> — one decoy <em>system</em>.</li>
+              <li><b>Honeynet</b> — a decoy <em>network</em> of honeypots.</li>
+              <li>
+                <b>Honeyfile</b> — bait <em>file</em> (e.g. "passwords.xlsx")
+                that alerts when opened.
+              </li>
+              <li>
+                <b>Honeytoken</b> — fake <em>data/credential</em> planted so any
+                use of it proves a breach and traces the path.
+              </li>
+              <li>Scale cue: token → file → pot → net.</li>
+            </ul>
+          </div>
+
+          <div class="cram-card">
+            <h3>
+              <span class="cram-num">4.7</span> Automation &amp; orchestration
+            </h3>
+            <ul>
+              <li>
+                <b>SOAR</b> — Security Orchestration, Automation, and Response.
+                Runs <b>playbooks</b>; SIEM detects, SOAR acts.
+              </li>
+              <li>
+                <b>Guardrails</b> — automated policy limits that stop unsafe
+                configurations from ever deploying.
+              </li>
+              <li>
+                Use cases: user/resource provisioning, ticket creation,
+                escalation, enabling/disabling services, CI/CD testing, APIs.
+              </li>
+              <li>
+                Benefits: efficiency, <b>enforcing baselines</b>, secure
+                scaling, faster reaction, <b>workforce multiplier</b>.
+              </li>
+              <li>
+                Downsides: complexity, cost, <b>single point of failure</b>,
+                <b>technical debt</b>, ongoing supportability.
+              </li>
+            </ul>
+          </div>
+
+          <div class="cram-card">
+            <h3><span class="cram-num">3.1</span> ICS / SCADA / embedded</h3>
+            <ul>
+              <li>
+                <b>ICS</b> industrial control systems; <b>SCADA</b> supervises
+                them across sites; <b>PLC</b> is the device doing the work.
+              </li>
+              <li>
+                <b>RTOS</b> — real-time OS, guarantees timing. Used in medical,
+                automotive, aviation.
+              </li>
+              <li>
+                Shared weakness: <b>cannot be patched or taken offline</b>.
+                Correct answers are almost always <b>network segmentation</b>,
+                air-gapping, or compensating controls — <em>not</em> "apply the
+                patch."
+              </li>
+            </ul>
+          </div>
+
+          <div class="cram-card">
+            <h3><span class="cram-num">1.4</span> Crypto modes &amp; PFS</h3>
+            <ul>
+              <li>
+                <b>ECB</b> — never use; identical plaintext blocks produce
+                identical ciphertext (leaks patterns).
+              </li>
+              <li>
+                <b>CBC</b> — chains blocks with an IV; confidentiality only.
+              </li>
+              <li>
+                <b>GCM</b> — the one to pick:
+                <b>confidentiality + integrity/authentication</b> (AEAD).
+              </li>
+              <li>
+                <b>Perfect Forward Secrecy</b> comes from <b>ephemeral</b> key
+                exchange — <span class="cram-k">DHE</span> /
+                <span class="cram-k">ECDHE</span>. Stealing the server's private
+                key later cannot decrypt past sessions.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="sec-head">
+          <h2>Mappings people blank on</h2>
+          <span class="sec-tag"
+            >Well covered on the site — but easy to scramble under time</span
+          >
+        </div>
+
+        <div class="cram-grid">
+          <div class="cram-card">
+            <h3><span class="cram-num">5.5</span> Audits &amp; pen testing</h3>
+            <ul>
+              <li>
+                <b>Known</b> environment = full info (old white box).
+                <b>Partially known</b> = some (gray). <b>Unknown</b> = none
+                (black).
+              </li>
+              <li>
+                <b>Offensive</b> = red team. <b>Defensive</b> = blue team.
+                <b>Integrated</b> = purple (both, together).
+              </li>
+              <li>
+                <b>Passive recon</b> — no contact with the target (OSINT, WHOIS,
+                social media). <b>Active recon</b> — scanning, enumeration; it
+                can be detected.
+              </li>
+              <li>
+                <b>Attestation</b> = a formal signed statement that controls are
+                in place.
+              </li>
+            </ul>
+          </div>
+
+          <div class="cram-card">
+            <h3><span class="cram-num">5.3</span> Agreement types</h3>
+            <ul>
+              <li><b>SLA</b> — measurable performance/uptime commitments.</li>
+              <li><b>MOU</b> — non-binding statement of intent.</li>
+              <li><b>MOA</b> — more formal than an MOU; can be binding.</li>
+              <li><b>MSA</b> — master terms governing all future work.</li>
+              <li><b>SOW / WO</b> — the specific deliverables under an MSA.</li>
+              <li><b>NDA</b> — confidentiality.</li>
+              <li><b>BPA</b> — terms of a business partnership.</li>
+            </ul>
+          </div>
+
+          <div class="cram-card">
+            <h3>
+              <span class="cram-num">4.8</span> Forensics &amp; volatility
+            </h3>
+            <ul>
+              <li>
+                <b>Order of volatility</b> — collect most-perishable first:
+                <span class="cram-formula"
+                  >registers/cache → RAM → swap → disk → remote logs →
+                  archive</span
+                >
+              </li>
+              <li>
+                <b>Legal hold</b> — the duty to preserve data once litigation is
+                anticipated. Comes <em>first</em>.
+              </li>
+              <li>
+                <b>Chain of custody</b> — who touched the evidence, when, and
+                why. Broken chain = inadmissible.
+              </li>
+              <li>
+                <b>IR order:</b> Preparation → Detection → Analysis →
+                Containment → Eradication → Recovery → Lessons Learned.
+              </li>
+            </ul>
+          </div>
+
+          <div class="cram-card">
+            <h3><span class="cram-num">5.2</span> BIA metrics</h3>
+            <ul>
+              <li>
+                <b>RTO</b> — how fast you must be back up (time to restore).
+              </li>
+              <li>
+                <b>RPO</b> — how much data you can afford to lose (drives backup
+                frequency).
+              </li>
+              <li><b>MTTR</b> — mean time to repair.</li>
+              <li><b>MTBF</b> — mean time between failures (reliability).</li>
+              <li>
+                Trap: a 4-hour <b>RPO</b> means back up at least every 4 hours;
+                it says nothing about how long recovery takes.
+              </li>
+            </ul>
+          </div>
+
+          <div class="cram-card">
+            <h3><span class="cram-num">1.4</span> Certificate lifecycle</h3>
+            <ul>
+              <li>
+                <b>CSR</b> — request you send to the CA; carries the public key.
+              </li>
+              <li>
+                <b>CRL</b> — periodically downloaded list of revoked certs.
+              </li>
+              <li><b>OCSP</b> — real-time single-cert revocation query.</li>
+              <li>
+                <b>OCSP stapling</b> — the <em>server</em> attaches a fresh
+                signed status, so the client need not ask the CA.
+              </li>
+              <li>
+                <b>Wildcard</b> (<span class="cram-k">*.site.com</span>) covers
+                subdomains; <b>SAN</b> covers multiple distinct names.
+              </li>
+              <li>
+                <b>Key escrow</b> — a third party holds a copy of the key.
+              </li>
+            </ul>
+          </div>
+
+          <div class="cram-card">
+            <h3><span class="cram-num">4.5</span> Email authentication</h3>
+            <ul>
+              <li>
+                <b>SPF</b> — DNS record listing which IPs may send for the
+                domain.
+              </li>
+              <li>
+                <b>DKIM</b> — cryptographic signature proving the message was
+                not altered.
+              </li>
+              <li>
+                <b>DMARC</b> — ties SPF+DKIM together: sets the
+                <b>policy</b> (none/quarantine/reject) and gets <b>reports</b>.
+              </li>
+              <li>Order to remember: authorize → sign → enforce.</li>
+            </ul>
+          </div>
+
+          <div class="cram-card">
+            <h3><span class="cram-num">3.4</span> Backups</h3>
+            <ul>
+              <li>
+                <b>Full</b> — everything, every time. Slow backup, fastest
+                restore.
+              </li>
+              <li>
+                <b>Incremental</b> — since the last backup <em>of any kind</em>.
+                Fastest backup, <b>slowest restore</b> (full + every increment).
+              </li>
+              <li>
+                <b>Differential</b> — since the last <em>full</em>. Slower
+                backup, <b>faster restore</b> (full + one differential).
+              </li>
+              <li><b>3-2-1</b> — 3 copies, 2 different media, 1 offsite.</li>
+              <li>
+                Sites: <b>hot</b> = running now · <b>warm</b> = hardware ready,
+                data stale · <b>cold</b> = empty space.
+              </li>
+            </ul>
+          </div>
+
+          <div class="cram-card">
+            <h3>
+              <span class="cram-num">1.1</span> Control categories vs types
+            </h3>
+            <ul>
+              <li>
+                <b>Categories (who/what runs it):</b> Technical · Managerial ·
+                Operational · Physical.
+              </li>
+              <li>
+                <b>Types (what it does):</b> Preventive · Deterrent · Detective
+                · Corrective · Compensating · <b>Directive</b>.
+              </li>
+              <li>
+                <b>Directive</b> is the one most often forgotten — it
+                <em>instructs</em> (policy, signage, procedure).
+              </li>
+              <li>
+                Deterrent <em>discourages</em> (warning sign); preventive
+                <em>stops</em> (lock).
+              </li>
+            </ul>
+          </div>
+
+          <div class="cram-card">
+            <h3><span class="cram-num">4.1</span> Wireless &amp; EAP</h3>
+            <ul>
+              <li>
+                <b>WPA3</b> — uses <b>SAE</b> (Simultaneous Authentication of
+                Equals) to replace the WPA2 pre-shared key handshake; blocks
+                offline dictionary attacks.
+              </li>
+              <li>
+                <b>EAP-TLS</b> — certificates on <em>both</em> sides. Strongest,
+                most work.
+              </li>
+              <li>
+                <b>PEAP</b> / <b>EAP-TTLS</b> — server certificate only; builds
+                a TLS tunnel, client authenticates inside it.
+              </li>
+              <li><b>EAP-FAST</b> — uses a PAC instead of certificates.</li>
+              <li>
+                <b>802.1X</b> = port-based network access control; the RADIUS
+                server is the authentication server.
+              </li>
+              <li>
+                <b>Site survey</b> + <b>heat map</b> = where to place APs and at
+                what power.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="sec-head">
+          <h2>Exam-day mechanics</h2>
+          <span class="sec-tag">Worth more points than any single topic</span>
+        </div>
+
+        <div class="cram-grid">
+          <div class="cram-card cram-hot">
+            <h3><span class="cram-num">PBQ</span> Time strategy</h3>
+            <ul>
+              <li>
+                <b>90 questions · 90 minutes · 750 / 900 to pass.</b>
+              </li>
+              <li>
+                PBQs come <b>first</b> and are Domain-4 heavy (log analysis, IR
+                ordering, tool selection). Expect roughly 4–5.
+              </li>
+              <li>
+                <b>Flag and skip every PBQ immediately.</b> Clear all the
+                multiple choice first — they are faster points — then return
+                with the time you have left.
+              </li>
+              <li>
+                More candidates fail from sinking 15 minutes into one PBQ than
+                from any knowledge gap.
+              </li>
+              <li>
+                Partial credit exists on PBQs. Fill in every field, even a
+                guess.
+              </li>
+            </ul>
+          </div>
+
+          <div class="cram-card">
+            <h3><span class="cram-num">MCQ</span> Reading the question</h3>
+            <ul>
+              <li>
+                Find the qualifier: <b>BEST</b>, <b>MOST likely</b>,
+                <b>FIRST</b>. Several options will be true; only one fits the
+                qualifier.
+              </li>
+              <li>
+                "What should the analyst do <b>FIRST</b>?" almost always means
+                <b>contain</b> / <b>isolate</b>, or verify the alert is real —
+                not eradicate.
+              </li>
+              <li>
+                Answers naming an <em>unpatchable</em> system point to
+                segmentation or compensating controls.
+              </li>
+              <li>
+                Eliminate the two clearly wrong options before weighing the last
+                two. Never leave a blank — no penalty for guessing.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <div class="tip">
+        <b>Tonight:</b> Practice → filter <b>Domain 4</b>, 25 questions, twice ·
+        then Domain 5, 25 · then 5–6 Domain-4 PBQ labs · then read this page
+        once and stop. <b>Tomorrow morning:</b> the
+        <a href="index.html#ports">port table</a> and this page. Nothing new.
+      </div>
+
+      <footer class="site-footer chapter-nav">
+        <div class="chapter-nav-row">
+          <a class="nav-prev" href="glossary.html">← Glossary</a>
+          <span class="chapter-nav-current">Cram Sheet</span>
+          <a class="nav-next" href="practice.html">Practice →</a>
+        </div>
+        <a class="chapter-nav-hub" href="index.html">↑ Back to Hub</a>
+      </footer>
+    </main>
+
+    <script src="guide.js"></script>
+    <script src="glossary.js"></script>
+    <script src="assistant.js"></script>
+  </body>
+</html>

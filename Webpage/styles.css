@@ -868,6 +868,112 @@ td {
   }
 }
 
+/* ── Final-night cram sheet ── */
+.cram-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin: 18px 0 34px;
+}
+.cram-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+.cram-card h3 {
+  margin: 0 0 10px;
+  font-size: 15px;
+  color: var(--bright);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cram-card h3 .cram-num {
+  font:
+    600 11px/1 "JetBrains Mono",
+    monospace;
+  color: var(--cyan);
+  background: var(--blue-dim);
+  border-radius: 5px;
+  padding: 4px 6px;
+}
+.cram-card ul {
+  margin: 0;
+  padding-left: 18px;
+}
+.cram-card li {
+  margin: 7px 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--dim);
+}
+.cram-card li b,
+.cram-card li strong {
+  color: var(--text);
+}
+.cram-k {
+  font:
+    600 12.5px/1 "JetBrains Mono",
+    monospace;
+  color: var(--cyan);
+  white-space: nowrap;
+}
+.cram-formula {
+  display: block;
+  font:
+    600 13px/1.7 "JetBrains Mono",
+    monospace;
+  color: var(--emerald);
+  margin: 2px 0;
+}
+.cram-hot {
+  border-color: rgba(251, 113, 133, 0.3);
+  background: var(--red-dim);
+}
+.cram-hot h3 .cram-num {
+  color: var(--rose);
+  background: rgba(251, 113, 133, 0.14);
+}
+
+/* printable one-pager */
+@media print {
+  .topnav,
+  .site-footer,
+  .back-to-top,
+  .ai-launcher,
+  .skip-link,
+  .cram-noprint {
+    display: none !important;
+  }
+  body,
+  .page {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .cram-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .cram-card {
+    background: #fff !important;
+    border: 1px solid #999 !important;
+    padding: 8px 10px;
+    break-inside: avoid;
+  }
+  .cram-card h3,
+  .cram-card li,
+  .cram-card li b {
+    color: #000 !important;
+  }
+  .cram-k,
+  .cram-formula,
+  .cram-card h3 .cram-num {
+    color: #000 !important;
+    background: none !important;
+  }
+}
+
 /* ── Back to top ── */
 .back-to-top {
   position: fixed;
