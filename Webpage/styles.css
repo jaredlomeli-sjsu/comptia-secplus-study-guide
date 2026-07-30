@@ -822,6 +822,52 @@ td {
   background: var(--blue-dim);
 }
 
+/* ── Chapter footer nav: prev left, next right, hub below ── */
+.chapter-nav {
+  flex-direction: column;
+  gap: 14px;
+}
+.chapter-nav-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 760px;
+}
+.chapter-nav-row .nav-prev {
+  justify-self: start;
+}
+.chapter-nav-row .nav-next {
+  justify-self: end;
+}
+.chapter-nav-current {
+  color: var(--faint);
+  font-weight: 600;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+.chapter-nav-hub {
+  border: 1px solid var(--border);
+}
+.chapter-nav-hub:hover {
+  border-color: var(--border-strong);
+}
+@media (max-width: 620px) {
+  .chapter-nav-row {
+    grid-template-columns: 1fr 1fr;
+    justify-items: center;
+  }
+  .chapter-nav-row .nav-prev,
+  .chapter-nav-row .nav-next {
+    justify-self: center;
+  }
+  .chapter-nav-current {
+    grid-column: 1 / -1;
+    order: -1;
+  }
+}
+
 /* ── Back to top ── */
 .back-to-top {
   position: fixed;
@@ -1619,6 +1665,20 @@ td {
 .practice-card.setup .muted {
   max-width: 46ch;
   margin: 0 auto 22px;
+}
+/* keyboard-shortcut hint on the quiz setup card */
+.practice-card.setup .kbd-hint {
+  font-size: 12.5px;
+  margin-bottom: 20px;
+}
+.kbd-hint kbd {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11px;
+  padding: 1px 5px;
+  border-radius: 5px;
+  border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.18));
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--bright);
 }
 .muted {
   color: var(--dim);
