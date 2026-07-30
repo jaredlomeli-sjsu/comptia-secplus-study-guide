@@ -128,7 +128,14 @@
           "<strong>" +
           n +
           "</strong>-question pool. " +
-          "Single-answer and <strong>Select TWO</strong> questions are mixed in.",
+          "Single-answer and <strong>Select TWO / THREE</strong> questions are mixed in.",
+      ),
+    );
+    card.appendChild(
+      el(
+        "p",
+        "muted kbd-hint",
+        "Keyboard: <kbd>A</kbd>–<kbd>E</kbd> or <kbd>1</kbd>–<kbd>5</kbd> to answer · <kbd>Enter</kbd> to continue",
       ),
     );
     var start = el("button", "btn btn-primary", "Start quiz →");
@@ -151,9 +158,16 @@
     renderQuestion();
   }
 
+  /* how many answers a question expects — multi questions may want 2 or 3 */
+  function neededFor(item) {
+    return Array.isArray(item.correct) ? item.correct.length : 1;
+  }
+  var NUM_WORD = { 2: "TWO", 3: "THREE", 4: "FOUR", 5: "FIVE" };
+
   function renderQuestion() {
     var item = quiz.set[quiz.idx];
     var isMulti = item.type === "multi";
+    var needed = neededFor(item);
     quizArea.innerHTML = "";
 
     /* progress bar */
@@ -185,9 +199,15 @@
 
     var card = el("div", "practice-card");
 
-    /* "Select TWO" banner */
+    /* "Select TWO/THREE" banner — count comes from the question itself */
     if (isMulti) {
-      card.appendChild(el("div", "q-select-two", "★ Select TWO answers"));
+      card.appendChild(
+        el(
+          "div",
+          "q-select-two",
+          "★ Select " + (NUM_WORD[needed] || needed) + " answers",
+        ),
+      );
     }
 
     card.appendChild(el("div", "q-text", esc(item.stem)));
@@ -211,7 +231,7 @@
           if (card.classList.contains("locked")) return;
           var pos = selected.indexOf(i);
           if (pos === -1) {
-            if (selected.length < 2) {
+            if (selected.length < needed) {
               selected.push(i);
               b.classList.add("selected");
             }
@@ -219,7 +239,7 @@
             selected.splice(pos, 1);
             b.classList.remove("selected");
           }
-          if (submitBtn) submitBtn.disabled = selected.length !== 2;
+          if (submitBtn) submitBtn.disabled = selected.length !== needed;
         });
       } else {
         b.addEventListener("click", function () {
@@ -289,18 +309,22 @@
       else if (selected.indexOf(bi) !== -1) b.classList.add("incorrect");
     });
 
-    appendFeedback(card, right, item.e, true);
+    appendFeedback(card, right, item.e, item.correct.length);
     /* replace the "Check answers" nav with the next button */
     var oldNav = card.querySelector(".q-nav");
     if (oldNav) oldNav.remove();
     appendNextBtn(card);
   }
 
-  function appendFeedback(card, right, explanation, isMulti) {
+  /* multiCount: number of answers a multi-select question wanted (falsy = single) */
+  function appendFeedback(card, right, explanation, multiCount) {
     var fb = el("div", "q-feedback " + (right ? "good" : "bad"));
-    var label = right
-      ? "✓ Correct" + (isMulti ? " — both right" : "")
-      : "✗ Not quite";
+    var suffix = !multiCount
+      ? ""
+      : multiCount === 2
+        ? " — both right"
+        : " — all " + multiCount + " right";
+    var label = right ? "✓ Correct" + suffix : "✗ Not quite";
     fb.innerHTML = "<b>" + label + "</b> — " + esc(explanation);
     card.appendChild(fb);
   }
@@ -755,6 +779,57 @@
     });
   });
 
+  /* ════════════════════════════════════════
+     KEYBOARD SHORTCUTS (quiz mode)
+       A–E / 1–5 → pick an option
+       Enter     → start, submit a multi-select, or advance
+  ════════════════════════════════════════ */
+  document.addEventListener("keydown", function (ev) {
+    if (mode !== "quiz" || quizArea.hidden) return;
+    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
+
+    /* never hijack typing or a focused filter dropdown */
+    var t = ev.target;
+    if (
+      t &&
+      (t.tagName === "INPUT" ||
+        t.tagName === "SELECT" ||
+        t.tagName === "TEXTAREA" ||
+        t.isContentEditable)
+    )
+      return;
+
+    var card = quizArea.querySelector(".practice-card");
+    if (!card) return;
+
+    if (ev.key === "Enter") {
+      /* a focused button already handles Enter natively — don't double-fire */
+      var active = document.activeElement;
+      if (active && active.tagName === "BUTTON") return;
+      var btn =
+        card.querySelector(".q-nav .btn-primary") ||
+        card.querySelector(".btn-primary");
+      if (btn && !btn.disabled) {
+        ev.preventDefault();
+        btn.click();
+      }
+      return;
+    }
+
+    var opts = card.querySelectorAll(".q-option");
+    if (!opts.length || card.classList.contains("locked")) return;
+
+    var k = String(ev.key).toUpperCase();
+    var idx = -1;
+    if (k.length === 1) {
+      if (k >= "A" && k <= "E") idx = k.charCodeAt(0) - 65;
+      else if (k >= "1" && k <= "5") idx = k.charCodeAt(0) - 49;
+    }
+    if (idx < 0 || idx >= opts.length) return;
+    ev.preventDefault();
+    opts[idx].click();
+  });
+
   domainSel.addEventListener("change", function () {
     updatePoolCount();
     if (mode === "quiz") quizSetup();
@@ -916,7 +991,7 @@
       else if (selected.indexOf(letter) !== -1)
         buttons[i].classList.add("incorrect");
     });
-    appendFeedback(card, right, q.explanation, true);
+    appendFeedback(card, right, q.explanation, correct.length);
     var oldNav = card.querySelector(".q-nav");
     if (oldNav) oldNav.remove();
     appendAdvNextBtn(card, lab);
