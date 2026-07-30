@@ -42,28 +42,31 @@
         <div class="badge">Final Night</div>
         <h1>Cram <span>Sheet</span></h1>
         <p class="subtitle">
-          The highest-yield facts, in the areas this site drills least. Built
-          from a term-by-term gap analysis of these notes against the official
-          SY0-701 objectives. Read it tonight, read it again in the morning —
-          and add nothing new after that.
+          The highest-yield facts, built from a term-by-term gap analysis of
+          these notes against the official SY0-701 objectives — then balanced so
+          each domain gets roughly the share of the page it gets on the exam.
+          Read it tonight, read it again in the morning, and add nothing new
+          after that.
         </p>
       </header>
 
       <div class="tip">
-        <b>How to use this:</b> everything here is already correct on the rest
-        of the site — this page exists because these specific items get the
-        fewest practice questions in the 800-question bank, so they are the most
-        likely to feel unfamiliar under time pressure. Press
-        <b>Ctrl/Cmd&nbsp;+&nbsp;P</b>
-        for a two-column printable version.
+        <b>How this sheet is weighted:</b> 25 cards — <b>D2 24%</b> (exam 22%) ·
+        <b>D5 20%</b> (20%) · <b>D1 20%</b> (12%) · <b>D4 16%</b> (28%) ·
+        <b>D3 8%</b> (18%), plus 3 exam-strategy cards. Domain 2 and Domain 5
+        now track the real exam. Domain 1 runs hot on purpose — crypto and
+        Zero&nbsp;Trust are the least-drilled topics in the 800-question bank.
+        Domains 3 and 4 run light because the chapter notes already cover them
+        well and the strategy cards are Domain-4 work; get that weight back by
+        <b>drilling</b> Domain 4 in Practice, not by reading. Press
+        <b>Ctrl/Cmd&nbsp;+&nbsp;P</b> for a two-column printable version.
       </div>
 
       <section>
         <div class="sec-head">
           <h2>Not covered elsewhere on this site</h2>
           <span class="sec-tag"
-            >Four genuine holes found by the gap analysis — learn these
-            first</span
+            >Genuine holes found by the gap analysis — learn these first</span
           >
         </div>
 
@@ -76,7 +79,7 @@
               <li>
                 <span class="cram-k">445</span> — <b>SMB</b>. The
                 lateral-movement and ransomware port (EternalBlue/WannaCry).
-                Highest-yield of the four.
+                Highest-yield of the three.
               </li>
               <li>
                 <span class="cram-k">137–139</span> — <b>NetBIOS</b> (name
@@ -95,7 +98,38 @@
           </div>
 
           <div class="cram-card cram-hot">
-            <h3><span class="cram-num">GAP</span> Vendor selection (5.3)</h3>
+            <h3><span class="cram-num">2.5</span> Hardening techniques</h3>
+            <ul>
+              <li>
+                The enumerated list CompTIA expects you to recognize — and the
+                thinnest spot in these notes (<b>0 practice questions</b> on
+                default passwords).
+              </li>
+              <li>
+                <b>Change default passwords</b> — the single most-tested
+                hardening step for IoT, network gear, and ICS.
+              </li>
+              <li>
+                <b>Disable unnecessary ports and protocols</b> — shrinks the
+                attack surface; the flip side of "open service ports" as a
+                vector in 2.2.
+              </li>
+              <li><b>Remove unnecessary software</b> (debloating).</li>
+              <li>
+                <b>Install endpoint protection</b> (EDR/AV) ·
+                <b>host-based firewall</b> · <b>HIPS</b>.
+              </li>
+              <li>Encryption of the host itself.</li>
+              <li>
+                Exam cue: a <em>newly deployed</em> device, an IoT fleet, or an
+                unpatchable system wants <b>change defaults</b> and
+                <b>disable unused services</b> before anything sophisticated.
+              </li>
+            </ul>
+          </div>
+
+          <div class="cram-card cram-hot">
+            <h3><span class="cram-num">5.3</span> Vendor selection</h3>
             <ul>
               <li>
                 <b>Due diligence</b> — investigating a vendor's security
@@ -107,10 +141,193 @@
                 the remediation). Appears nowhere else in these notes.
               </li>
               <li>
-                Those two are the entire "vendor selection" bullet. Do not
-                confuse them with <b>vendor monitoring</b> (ongoing) or
+                Do not confuse those with <b>vendor monitoring</b> (ongoing) or
                 <b>vendor assessment</b> (pen test, right-to-audit clause,
                 independent assessments, supply chain analysis).
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="sec-head">
+          <h2>Domain 2 — Threats, Vulnerabilities &amp; Mitigations</h2>
+          <span class="sec-tag"
+            >22% of the exam — the second-heaviest domain</span
+          >
+        </div>
+
+        <div class="cram-grid">
+          <div class="cram-card">
+            <h3>
+              <span class="cram-num">2.1</span> Threat actors &amp; motivations
+            </h3>
+            <ul>
+              <li>
+                <b>Nation-state</b> — highest resources and sophistication; the
+                <b>APT</b>. Motives: espionage, war, service disruption.
+              </li>
+              <li>
+                <b>Unskilled attacker</b> — runs other people's tools. Motive:
+                disruption/chaos.
+              </li>
+              <li>
+                <b>Hacktivist</b> — philosophical/political. Defacement, leaks,
+                doxxing.
+              </li>
+              <li>
+                <b>Insider threat</b> — <em>already has access</em>, so hardest
+                to detect. Motives: revenge, financial gain.
+              </li>
+              <li>
+                <b>Organized crime</b> — well-funded and professional. Motive:
+                financial gain (ransomware).
+              </li>
+              <li>
+                <b>Shadow IT</b> — not malicious; employees deploying
+                unsanctioned tech, creating unmanaged attack surface.
+              </li>
+              <li>
+                Compare actors on three <b>attributes</b>: internal vs external
+                · resources/funding · sophistication.
+              </li>
+            </ul>
+          </div>
+
+          <div class="cram-card">
+            <h3>
+              <span class="cram-num">2.2</span> Vectors &amp; social engineering
+            </h3>
+            <ul>
+              <li>
+                Same trick, different channel: <b>phishing</b> (email) ·
+                <b>vishing</b> (voice) · <b>smishing</b> (SMS).
+              </li>
+              <li>
+                <b>Spear phishing</b> targets a specific person;
+                <b>whaling</b> targets executives.
+              </li>
+              <li>
+                <b>BEC</b> — business email compromise; a spoofed or hijacked
+                executive account requesting an urgent wire transfer.
+              </li>
+              <li>
+                <b>Pretexting</b> — an invented scenario that justifies the ask.
+              </li>
+              <li>
+                <b>Watering hole</b> — compromise a site the target group
+                already visits.
+              </li>
+              <li>
+                <b>Typosquatting</b> — lookalike domain.
+                <b>Brand impersonation</b> — lookalike sender.
+              </li>
+              <li>
+                <b>Misinformation</b> = false. <b>Disinformation</b> = false
+                <em>on purpose</em>.
+              </li>
+              <li>
+                Non-human vectors: removable device (BadUSB), unsupported
+                systems, unsecure networks, <b>open service ports</b>,
+                <b>default credentials</b>, supply chain (MSP, vendor,
+                supplier).
+              </li>
+            </ul>
+          </div>
+
+          <div class="cram-card">
+            <h3><span class="cram-num">2.3</span> Vulnerability types</h3>
+            <ul>
+              <li>
+                <b>Race condition / TOC-TOU</b> — state changes between
+                <em>time of check</em> and <em>time of use</em>.
+              </li>
+              <li>
+                <b>Buffer overflow</b> — writing past allocated memory;
+                <b>memory injection</b> puts code into a running process.
+              </li>
+              <li>
+                <b>VM escape</b> — breaking out of a guest onto the hypervisor.
+                <b>Resource reuse</b> — another tenant's leftover
+                memory/storage.
+              </li>
+              <li>
+                <b>Side loading</b> — installing apps outside the official
+                store. <b>Jailbreaking/rooting</b> — removing OS restrictions.
+              </li>
+              <li>
+                <b>Legacy / end-of-life</b> — no vendor patches exist at all.
+              </li>
+              <li>
+                <b>Zero-day</b> — no patch <em>and</em> no signature, so
+                signature-based tools miss it. Behavior-based detection is the
+                answer.
+              </li>
+            </ul>
+          </div>
+
+          <div class="cram-card">
+            <h3><span class="cram-num">2.4</span> Malware &amp; indicators</h3>
+            <ul>
+              <li>
+                <b>Worm</b> self-propagates with no user action; a
+                <b>virus</b> needs a host file or a click.
+              </li>
+              <li>
+                <b>Logic bomb</b> triggers on a condition/date.
+                <b>Rootkit</b> hides at kernel level. <b>Bloatware</b> is
+                unwanted preinstalled software.
+              </li>
+              <li>
+                <b>Password spraying</b> — one common password against many
+                accounts, specifically to <em>avoid lockout</em>. Brute force
+                hammers one account.
+              </li>
+              <li>
+                <b>Impossible travel</b> — logins from two distant places too
+                close in time. Classic credential-compromise indicator.
+              </li>
+              <li>
+                <b>Missing logs</b> / <b>out-of-cycle logging</b> — evidence of
+                an attacker covering tracks.
+              </li>
+              <li>
+                Other indicators: account lockout, concurrent session usage,
+                blocked content, resource consumption, resource inaccessibility.
+              </li>
+              <li>
+                Crypto attacks: <b>downgrade</b> (force a weaker protocol) ·
+                <b>collision</b> · <b>birthday</b>.
+              </li>
+            </ul>
+          </div>
+
+          <div class="cram-card">
+            <h3><span class="cram-num">2.5</span> Mitigation techniques</h3>
+            <ul>
+              <li>
+                <b>Segmentation</b> — the default correct answer for anything
+                that cannot be patched (ICS, legacy, medical).
+              </li>
+              <li>
+                <b>Isolation</b> — fully cut off; stronger than segmentation.
+              </li>
+              <li>
+                <b>Application allow list</b> — only approved software runs
+                (deny-by-default). Far stronger than a block list.
+              </li>
+              <li>
+                <b>Least privilege</b> · <b>ACLs and permissions</b> ·
+                <b>patching</b> · <b>encryption</b> · <b>monitoring</b>.
+              </li>
+              <li>
+                <b>Configuration enforcement</b> — continuously push devices
+                back to the approved baseline.
+              </li>
+              <li>
+                <b>Decommissioning</b> — retire the asset properly rather than
+                leave it running unmanaged.
               </li>
             </ul>
           </div>
@@ -543,8 +760,8 @@
 
       <div class="tip">
         <b>Tonight:</b> Practice → filter <b>Domain 4</b>, 25 questions, twice ·
-        then Domain 5, 25 · then 5–6 Domain-4 PBQ labs · then read this page
-        once and stop. <b>Tomorrow morning:</b> the
+        then <b>Domain 2</b>, 25 · then Domain 5, 25 · then 5–6 Domain-4 PBQ
+        labs · then read this page once and stop. <b>Tomorrow morning:</b> the
         <a href="index.html#ports">port table</a> and this page. Nothing new.
       </div>
 
