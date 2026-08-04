@@ -22,8 +22,18 @@ All line numbers refer to files under `Webpage/` as of 2026-07-24.
    this file is the running state of the work, not a one-time report.
 5. Ask before deploying or committing.
 
-**Exam is the week of 2026-07-31.** If that date has passed, ask what the goal is now
-before working through this list — most of it is calibrated to a one-week cram.
+**The exam was passed on 2026-07-30.** Everything below was ordered by "value per hour
+of remaining cram time," so that ranking is now obsolete. Ask what the goal is before
+working through this list.
+
+**Since then:**
+
+- Item 10 (cram sheet) shipped — see below.
+- **Linux Lab** (2026-08-04, not from this list): `Webpage/linux.html` plus
+  `linux-sim.js` and `linux-lessons.js` — a simulated shell with a virtual filesystem,
+  8 guided lessons, a free-play sandbox, and 5 SEC+ scenario challenges. Built from
+  the CISCO Linux Unhatched notes and the SEC+ domain mapping in the
+  `linux-learning` repo. Verified by `tools/test-linux-sim.js`.
 
 ---
 
@@ -260,7 +270,10 @@ zero single/multi type mismatches, every question has a subdomain.
 
 ---
 
-## 10. Cram sheet page
+## 10. Cram sheet page — ✅ DONE (2026-08-03)
+
+Shipped as `Webpage/cram.html` in commits `8ae66f8` and `07ad3e5`, weighted to the
+exam domains. The rest of this entry is the original spec, kept for reference.
 
 **Why:** The one page you'd actually read in the parking lot. Print CSS already
 exists (`styles.css:1465`, `2787`).

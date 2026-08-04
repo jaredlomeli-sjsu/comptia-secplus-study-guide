@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Linux Lab · Simulated Shell — Security+ SY0-701</title>
+    <meta
+      name="description"
+      content="A simulated Linux shell in the browser: 8 guided command-line lessons, a free-play sandbox, and 5 Security+ scenario challenges covering log analysis, least privilege, and process triage."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <nav class="topnav">
+      <a class="brand" href="index.html">Security<span>+</span> SY0-701</a>
+      <a class="navlink" href="index.html">Home</a>
+      <a class="navlink" href="chapters1-2.html">Ch 1–2 · Basics &amp; IAM</a>
+      <a class="navlink" href="chapter3.html">Ch 3 · Networks</a>
+      <a class="navlink" href="chapters4-5.html"
+        >Ch 4–5 · Net Defense &amp; Hosts</a
+      >
+      <a class="navlink" href="chapter6.html">Ch 6 · Threats</a>
+      <a class="navlink" href="chapter7.html">Ch 7 · Advanced Attacks</a>
+      <a class="navlink" href="chapter8.html">Ch 8 · Risk Mgmt</a>
+      <a class="navlink" href="chapter9.html">Ch 9 · Controls</a>
+      <a class="navlink" href="chapter10.html">Ch 10 · Cryptography</a>
+      <a class="navlink" href="chapter11.html">Ch 11 · Policies</a>
+      <a class="navlink" href="practice.html">Practice</a>
+      <a class="navlink" href="glossary.html">Glossary</a>
+      <a class="navlink" href="cram.html">Cram Sheet</a>
+      <a class="navlink active" href="linux.html">Linux Lab</a>
+    </nav>
+
+    <main class="page wide" id="main">
+      <header class="page-header">
+        <div class="badge">Linux Lab</div>
+        <h1>Stop reading commands. <span>Start running them.</span></h1>
+        <p class="subtitle">
+          A simulated Debian shell with a real filesystem, real permissions, and
+          real <code>grep</code>. Eight guided lessons build the command line
+          from <code>ls</code> up; five scenario challenges then use it the way
+          the exam assumes you can — hunting a brute force in
+          <code>auth.log</code>, fixing a <code>chmod 777</code>, tracing a
+          process back to its parent.
+        </p>
+      </header>
+
+      <div class="practice-toolbar">
+        <div class="mode-tabs" role="tablist">
+          <button class="mode-tab active" data-mode="lesson" type="button">
+            Guided Lessons
+          </button>
+          <button class="mode-tab" data-mode="free" type="button">
+            Free Play
+          </button>
+          <button class="mode-tab" data-mode="challenge" type="button">
+            SEC+ Challenges
+          </button>
+        </div>
+        <div class="practice-filters">
+          <button class="btn btn-ghost btn-sm" id="resetAll" type="button">
+            Clear progress
+          </button>
+        </div>
+      </div>
+
+      <section class="lesson-brief" id="lessonBrief" hidden></section>
+
+      <div class="lab-grid" id="labGrid">
+        <section class="lab-term" aria-label="Simulated terminal">
+          <div class="term-chrome">
+            <span class="term-dot red"></span>
+            <span class="term-dot amber"></span>
+            <span class="term-dot green"></span>
+            <span class="term-title">sysadmin@localhost — bash</span>
+          </div>
+          <div id="termHost"></div>
+        </section>
+        <aside class="lab-side" id="sidePanel"></aside>
+      </div>
+
+      <footer class="site-footer">
+        Simulated shell · commands drawn from CISCO Linux Unhatched and the
+        Kali/Metasploitable SEC+ labs · not a real machine, and nothing here
+        touches your system
+      </footer>
+    </main>
+
+    <script src="linux-lessons.js"></script>
+    <script src="linux-sim.js"></script>
+    <script src="guide.js"></script>
+    <script src="glossary.js"></script>
+    <script src="assistant.js"></script>
+  </body>
+</html>

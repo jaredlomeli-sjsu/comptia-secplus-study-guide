@@ -1,10 +1,9 @@
 # CompTIA Security+ SY0-701 Study Guide
 
-Personal exam-prep site for Jared. **Exam date: week of 2026-07-31** (as of the
-2026-07-24 session — confirm this is still accurate before prioritizing work).
-
-Optimize every decision for "does this help pass the exam in the remaining days,"
-not for architectural purity. Shipping a rough drill mode beats a clean refactor.
+Personal exam-prep site for Jared. **He passed SY0-701 on 2026-07-30**, so the
+one-week-cram framing that drove earlier sessions no longer applies — this is now
+a portfolio artifact and a place to keep practicing. Ask what the goal is before
+working from the old backlog, whose priorities were calibrated to exam week.
 
 ## Where things are
 
@@ -15,6 +14,10 @@ Webpage/              the entire site — plain static HTML/CSS/vanilla JS, no b
   quiz.js             the practice engine — quiz, flashcard, and PBQ rendering + grading
   questions-v2.js     800-question bank (window.QUESTION_BANK)
   pbq.js / pbq2.js    50 PBQ labs (window.PBQ_BANK) — 38 row-matching + 12 scenario
+  cram.html           final-night cram sheet, weighted to the exam domains
+  linux.html          Linux Lab: simulated shell (lessons / free play / challenges)
+  linux-sim.js        the shell engine — virtual FS, command dispatch, terminal UI
+  linux-lessons.js    8 lessons + 5 SEC+ challenges (window.LINUX_LESSONS)
   glossary.js         1090 terms (window.GLOSSARY); glossary-page.js renders/filters
   assistant.js        study assistant: keyword retrieval + optional in-browser WebLLM
   guide.js            TOC scroll-spy, reveal animations, count-up stats
@@ -62,13 +65,14 @@ correct: ["A","B"], explanation}`. `correct` is always an array. Never assume a
 
 ## Verifying changes
 
-There is no test runner or CI. Two node scripts do the checking:
+There is no test runner or CI. Three node scripts do the checking:
 
 ```sh
 node tools/quiz-coverage.js --thin     # glossary terms untested by the question bank
 
 npm install jsdom --prefix /tmp/qa     # one-time
 NODE_PATH=/tmp/qa/node_modules node tools/test-quiz.js
+NODE_PATH=/tmp/qa/node_modules node tools/test-linux-sim.js
 ```
 
 `tools/test-quiz.js` loads the real `practice.html` + data + `quiz.js` into jsdom and
@@ -80,6 +84,35 @@ When adding a feature to `quiz.js`, add a section to that harness. Two jsdom qui
 to know: it has no layout (`scrollIntoView` is stubbed in the harness) and it does
 not emulate Enter activating a focused button, so a test must click explicitly where
 a real browser would fire on Enter.
+
+`tools/test-linux-sim.js` does the same for the Linux Lab, and additionally **walks
+every lesson and challenge to completion** using a `SOLUTIONS` table of the commands
+a learner would type. **Any new lesson step needs a matching solution entry or the
+harness fails** — that is deliberate, since it is the only thing proving a step is
+solvable at all. It also asserts a deliberate wrong answer is rejected, which catches
+a validator so loose it passes everything.
+
+## Linux Lab notes
+
+- **Lessons are gated by a reading page.** Clicking a lesson opens a full-width brief
+  (`#lessonBrief`) built from its `teach` field, hiding `#labGrid`; a Next button
+  reveals the terminal. Challenges are deliberately _not_ gated — working out the
+  approach is the exercise — so they keep their `teach` inline in the sidebar. A
+  lesson's `teach` and `note` render only on the brief, never duplicated in the
+  sidebar, which offers a "Re-read the lesson" button instead.
+- `linux-sim.js` is self-contained: it exports `window.LinuxSim` and only touches the
+  DOM if `#termHost` exists, so the harness can load it headlessly.
+- Commands live in the `CMDS` table and return `{out, err, code}` rather than writing
+  to the DOM. That is what lets pipes and `>`/`>>` compose — keep new commands pure.
+- `grep`'s BRE→JS translation (`breToJs`) is the subtlest code in the file: in BRE
+  `+ ? { } ( ) |` are literal, and `^`/`$` only anchor at the pattern's very ends.
+  Every example from the source study notes is asserted in the harness; if you touch
+  that function, run it.
+- Permission strings are 9 chars (`rwxr-xr-x`). The sticky/setuid bits render as
+  `t`/`s` **in place of** `x`, so `can()` treats those as execute — `/tmp` is
+  `rwxrwxrwt` and must stay traversable.
+- The simulated clock is fixed (`BOOT`) so `ls -l` output is deterministic and
+  testable. Don't introduce `Date.now()`.
 
 ## Deploying
 
