@@ -1,3 +1,8 @@
 # Local backups and dev-only tooling — not needed in the deployed site
 _backup-*/
 build-questions.js
+
+# Superseded v1 question bank (500 Qs), replaced by questions-v2.js (800 Qs).
+# No page loads it; it stayed in the repo only because build-questions.js
+# regenerates it. Keeping it out of the deploy saves ~151 KB.
+questions.js
