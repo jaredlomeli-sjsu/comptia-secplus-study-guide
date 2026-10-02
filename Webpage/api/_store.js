@@ -36,7 +36,7 @@ async function writeJson(path, obj, opts) {
       throw Object.assign(new Error("conflict"), { code: "CONFLICT" });
     }
     const etag = '"m' + ++seq + '"';
-    mem.set(path, { text, etag });
+    mem.set(path, { text, etag, at: Date.now() });
     return { etag };
   }
   const { put } = require("@vercel/blob");
@@ -69,4 +69,40 @@ async function deleteJson(path) {
   await del(path);
 }
 
-module.exports = { readJson, writeJson, deleteJson };
+/*
+ * Delete objects under `prefix` that were last written more than maxAgeMs ago.
+ * Looks at one page (`limit`) per call, so it is cheap enough to run
+ * occasionally from a request path. Returns how many were deleted.
+ */
+async function pruneOlderThan(prefix, maxAgeMs, limit) {
+  const cap = limit || 100;
+  const now = Date.now();
+  if (useMemory()) {
+    let n = 0;
+    for (const [k, v] of mem) {
+      if (n >= cap) break;
+      if (k.startsWith(prefix) && now - v.at > maxAgeMs) {
+        mem.delete(k);
+        n++;
+      }
+    }
+    return n;
+  }
+  const { list, del } = require("@vercel/blob");
+  const page = await list({ prefix, limit: cap });
+  const stale = page.blobs
+    .filter((b) => now - new Date(b.uploadedAt).getTime() > maxAgeMs)
+    .map((b) => b.pathname);
+  if (stale.length) await del(stale);
+  return stale.length;
+}
+
+module.exports = {
+  readJson,
+  writeJson,
+  deleteJson,
+  pruneOlderThan,
+  _test: {
+    keys: (prefix) => [...mem.keys()].filter((k) => k.startsWith(prefix)),
+  },
+};

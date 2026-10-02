@@ -5,6 +5,7 @@
 "use strict";
 process.env.SP_STORE = "memory";
 process.env.SESSION_SECRET = "test-secret-test-secret-test-secret-123456";
+process.env.SP_PRUNE_PROB = "1"; // sweep on every rate-limited call so cleanup is testable
 const path = require("node:path");
 const handler = require(
   path.join(__dirname, "..", "Webpage", "api", "[action].js"),
@@ -309,6 +310,61 @@ const cookieOf = (r) => (r.headers["set-cookie"] || "").split(";")[0];
     r.status === 200 && /Max-Age=0/.test(r.headers["set-cookie"]),
     "logout clears the cookie",
   );
+
+  console.log("rate-record cleanup");
+  const store = require(
+    path.join(__dirname, "..", "Webpage", "api", "_store.js"),
+  );
+  const realNow = Date.now;
+  const rlKeys = () => store._test.keys("rl/").length;
+  await call(
+    "POST",
+    "login",
+    { username: "x1", password: "whatever whatever" },
+    { ip: "198.51.100.1" },
+  );
+  const before = rlKeys();
+  ok(before > 0, "rate-limit records are being written (" + before + ")");
+  Date.now = () => realNow() + 30 * 60 * 1000; // +30 min: still inside any window
+  await call(
+    "POST",
+    "login",
+    { username: "x2", password: "whatever whatever" },
+    { ip: "198.51.100.2" },
+  );
+  ok(rlKeys() >= before, "records younger than 2h survive a sweep");
+  Date.now = () => realNow() + 3 * 60 * 60 * 1000; // +3 h: everything earlier is stale
+  await call(
+    "POST",
+    "login",
+    { username: "x3", password: "whatever whatever" },
+    { ip: "198.51.100.3" },
+  );
+  Date.now = realNow;
+  ok(
+    rlKeys() <= 2,
+    "stale records are swept (" + before + " -> " + rlKeys() + ")",
+  );
+  ok(
+    store._test.keys("users/").length > 0,
+    "cleanup never touches users/ data",
+  );
+  ok(
+    store._test.keys("data/").length > 0,
+    "cleanup never touches data/ records",
+  );
+  const direct = await store.pruneOlderThan("rl/", -4 * 60 * 60 * 1000, 100);
+  ok(
+    direct >= 0 && rlKeys() === 0,
+    "pruneOlderThan deletes only what it is asked to",
+  );
+  r = await call(
+    "POST",
+    "login",
+    { username: "x4", password: "whatever whatever" },
+    { ip: "198.51.100.4" },
+  );
+  ok(r.status === 401, "rate limiting still works after a sweep");
 
   console.log("fail-closed");
   const saved = process.env.SESSION_SECRET;

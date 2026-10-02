@@ -114,6 +114,23 @@ function clientIp(req) {
   return String(h).split(",")[0].trim() || "unknown";
 }
 
+/*
+ * Housekeeping for rate-limit records. Each record only matters for its window
+ * (the longest is 1 hour), so anything untouched for 2 hours is dead weight.
+ * Rather than a cron job (which needs its own secret), roughly 1 in 50
+ * rate-limited requests sweeps one page of stale records. Never fails a request.
+ */
+const PRUNE_PROB = Number(process.env.SP_PRUNE_PROB || 0.02);
+const PRUNE_AFTER_MS = 2 * 60 * 60 * 1000;
+async function maybePruneRateRecords() {
+  if (Math.random() >= PRUNE_PROB) return;
+  try {
+    await store.pruneOlderThan("rl/", PRUNE_AFTER_MS, 100);
+  } catch (e) {
+    console.error("rate-record cleanup failed", e && e.name);
+  }
+}
+
 /* Fixed-window counter. Keys are HMACs, so raw IPs are never stored. */
 async function rateLimit(req, bucket, limit, windowMs) {
   const id = b64u(hmac(secret(), "rl:" + bucket + ":" + clientIp(req))).slice(
@@ -122,6 +139,7 @@ async function rateLimit(req, bucket, limit, windowMs) {
   );
   const path = "rl/" + bucket + "-" + id + ".json";
   const now = Date.now();
+  await maybePruneRateRecords();
   const cur = await store.readJson(path);
   let rec = cur ? cur.data : null;
   if (!rec || now - rec.t > windowMs) rec = { n: 0, t: now };
