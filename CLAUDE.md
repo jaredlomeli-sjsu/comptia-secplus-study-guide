@@ -58,10 +58,26 @@ difficulty: easy|medium|hard, type: single|multi, stem, options: {A..E},
 correct: ["A","B"], explanation}`. `correct` is always an array. Never assume a
   multi question wants exactly 2 answers — 20 of them want 3. Derive the count from
   `correct.length`.
-- **Nothing is persisted** except the assistant's AI opt-in flag. If you add
-  `localStorage`, namespace keys `sp_*` and wrap access in try/catch.
-- **CSP is strict** (`Webpage/vercel.json`) — same-origin only, no CDN scripts. Fonts
-  from Google Fonts are the sole exception. Don't add external dependencies.
+- **Persistence is local-first.** Quiz deck queues (`spQuizDeck:*`), Linux Lab
+  progress (`sp_linux_progress`), the AI opt-in (`sp_ai_enabled`) and the privacy-notice
+  flag (`sp_consent`) live in `localStorage`. If you add keys, namespace them `sp_*`,
+  wrap access in try/catch, and validate on load (it is user-editable). Only the first
+  two sync to the cloud; to sync a new key, extend `KEY_RE` in **both**
+  `Webpage/account.js` and `Webpage/api/[action].js`, plus a merge rule in `account.js`.
+- **CSP is strict** (`Webpage/vercel.json`) — same-origin only, no CDN scripts, **no
+  inline scripts or `onclick=` attributes anywhere** (the diagrams use `data-fn` /
+  `data-arg` bound by `diagrams/diagram-actions.js`; keep it that way and don't put
+  `<script>` bodies in HTML). Fonts from Google Fonts are the sole exception. Don't add
+  client-side external dependencies. `style-src 'unsafe-inline'` is a knowingly accepted
+  residual risk (documented on `security.html`).
+- **Accounts + sync** (added 2026-10): `Webpage/account.js` (privacy notice, sign-in
+  dialog, sync; DOM methods only, no `innerHTML`) talks to `Webpage/api/[action].js`
+  (Vercel Function: scrypt passwords, HMAC `__Host-` HttpOnly cookie, CSRF header +
+  Origin check, lockout, rate limits) over a **private Vercel Blob store** via
+  `api/_store.js`. `@vercel/blob` (in `Webpage/package.json`) is server-only. Needs the
+  `SESSION_SECRET` env var (48+ random bytes); without it the API returns 503 and the
+  site silently runs local-only, as does the GitHub Pages mirror. Never read or grep
+  `Webpage/.env.local`.
 
 ## Verifying changes
 
@@ -84,6 +100,12 @@ When adding a feature to `quiz.js`, add a section to that harness. Two jsdom qui
 to know: it has no layout (`scrollIntoView` is stubbed in the harness) and it does
 not emulate Enter activating a focused button, so a test must click explicitly where
 a real browser would fire on Enter.
+
+Two more harnesses cover the account system — **run them after touching `api/` or
+`account.js`**: `node tools/test-api.js` (no deps; 44 checks incl. CSRF, forged/expired
+tokens, lockout, injection, oversized payloads, sync conflicts, fail-closed) and
+`NODE_PATH=<jsdom> node tools/test-account.js` (drives `account.js` against the real
+handler: banner, sign-up, two-device merge, wrong password, no-API host).
 
 `tools/test-linux-sim.js` does the same for the Linux Lab, and additionally **walks
 every lesson and challenge to completion** using a `SOLUTIONS` table of the commands

@@ -1,0 +1,12 @@
+{
+  "name": "securityplus-studyguide",
+  "private": true,
+  "description": "Security+ study guide. Static site plus a small /api for accounts and progress sync (server-side only dependency).",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@vercel/blob": "^2.8.0"
+  }
+}

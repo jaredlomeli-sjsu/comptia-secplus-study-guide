@@ -1,0 +1,6 @@
+Contact: mailto:jaredlomelicnsm@gmail.com
+Expires: 2027-10-01T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://securityplus-studyguide.vercel.app/.well-known/security.txt
+Policy: https://securityplus-studyguide.vercel.app/security.html
+# This is a personal study project. Good-faith reports are welcome; there is no bounty.

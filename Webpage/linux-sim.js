@@ -27,8 +27,14 @@
     return e;
   }
   function esc(s) {
-    return String(s).replace(/[&<>"]/g, function (c) {
-      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      }[c];
     });
   }
   function padL(s, n) {
@@ -1841,8 +1847,27 @@
 
   var STORE = "sp_linux_progress";
   function loadProgress() {
+    /* localStorage is user-editable (and now synced), so rebuild the object
+       from validated pieces instead of trusting whatever JSON is there. */
     try {
-      return JSON.parse(localStorage.getItem(STORE) || "{}") || {};
+      var raw = JSON.parse(localStorage.getItem(STORE) || "{}");
+      var clean = {};
+      if (!raw || typeof raw !== "object" || Array.isArray(raw)) return clean;
+      Object.keys(raw).forEach(function (k) {
+        var v = raw[k];
+        if (k === "__proto__" || !v || !Array.isArray(v.steps)) return;
+        clean[k] = {
+          steps: v.steps.filter(function (n, i, a) {
+            return (
+              typeof n === "number" &&
+              isFinite(n) &&
+              n >= 0 &&
+              a.indexOf(n) === i
+            );
+          }),
+        };
+      });
+      return clean;
     } catch (e) {
       return {};
     }

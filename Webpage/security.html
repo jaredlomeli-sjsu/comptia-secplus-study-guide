@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Security &amp; Privacy — Security+ SY0-701</title>
+    <meta
+      name="description"
+      content="How the Security+ study guide is secured: headers, authentication, data stored, the latest audit, and known limits."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <nav class="topnav">
+      <a class="brand" href="index.html">Security<span>+</span> SY0-701</a>
+      <a class="navlink" href="index.html">Home</a>
+      <a class="navlink" href="chapters1-2.html">Ch 1–2 · Basics &amp; IAM</a>
+      <a class="navlink" href="chapter3.html">Ch 3 · Networks</a>
+      <a class="navlink" href="chapters4-5.html"
+        >Ch 4–5 · Net Defense &amp; Hosts</a
+      >
+      <a class="navlink" href="chapter6.html">Ch 6 · Threats</a>
+      <a class="navlink" href="chapter7.html">Ch 7 · Advanced Attacks</a>
+      <a class="navlink" href="chapter8.html">Ch 8 · Risk Mgmt</a>
+      <a class="navlink" href="chapter9.html">Ch 9 · Controls</a>
+      <a class="navlink" href="chapter10.html">Ch 10 · Cryptography</a>
+      <a class="navlink" href="chapter11.html">Ch 11 · Policies</a>
+      <a class="navlink" href="practice.html">Practice</a>
+      <a class="navlink" href="glossary.html">Glossary</a>
+      <a class="navlink" href="cram.html">Cram Sheet</a>
+      <a class="navlink" href="linux.html">Linux Lab</a>
+    </nav>
+
+    <main class="page" id="main">
+      <header class="page-header">
+        <div class="badge">Security &amp; Privacy</div>
+        <h1>How this site is <span>secured</span></h1>
+        <p class="subtitle">
+          A study site for a security certification should practice what it
+          teaches. This page documents the defenses in place, what the last
+          audit found, what data is stored, and what is knowingly left as
+          residual risk.
+        </p>
+      </header>
+
+      <section aria-labelledby="layers">
+        <h2 id="layers">Defense in depth</h2>
+        <div class="sec-grid">
+          <div class="sec-card">
+            <h3>Browser-side</h3>
+            <ul>
+              <li>Strict Content-Security-Policy: scripts only from this origin; no inline script anywhere (including the 11 interactive diagrams)</li>
+              <li>All dynamic text is escaped before it touches the DOM</li>
+              <li>HSTS with preload, nosniff, frame protection, locked-down Permissions-Policy, COOP and CORP</li>
+              <li>No third-party scripts, trackers, or analytics</li>
+            </ul>
+          </div>
+          <div class="sec-card">
+            <h3>Accounts &amp; sessions</h3>
+            <ul>
+              <li>Passwords hashed with scrypt and a per-user random salt; never stored or logged in plain text</li>
+              <li>Session token is HMAC-signed and lives in an <code>HttpOnly</code>, <code>Secure</code>, <code>SameSite=Strict</code> <code>__Host-</code> cookie, so page JavaScript can never read it</li>
+              <li>30-day sessions, revocable on every device with "Sign out everywhere"</li>
+              <li>Per-account lockout and per-IP rate limits; identical errors for unknown users and wrong passwords</li>
+            </ul>
+          </div>
+          <div class="sec-card">
+            <h3>API &amp; storage</h3>
+            <ul>
+              <li>CSRF defense: custom header, same-origin <code>Origin</code> check, and JSON-only bodies</li>
+              <li>Strict allow-list validation of every synced key, type, and size</li>
+              <li>Private object storage: nothing is reachable by URL</li>
+              <li>Fails closed: if the signing secret is missing, the API refuses to run</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="data">
+        <h2 id="data">What is stored</h2>
+        <table class="sec-table">
+          <thead><tr><th>Where</th><th>What</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>Your browser (<code>localStorage</code>)</td><td>Quiz-deck progress, Linux Lab progress, AI-assistant opt-in, this privacy notice's acknowledgement</td><td>So your place is remembered. Never leaves the device unless you sign in.</td></tr>
+            <tr><td>Session cookie (<code>__Host-sp_session</code>)</td><td>A signed token. Set only when you sign in.</td><td>Keeps you signed in. Not readable by scripts.</td></tr>
+            <tr><td>Server (private storage), only if you create an account</td><td>Username, password hash, and your quiz/lab progress</td><td>Cross-device sync. No email, name, or other personal data is collected.</td></tr>
+          </tbody>
+        </table>
+        <p class="sec-note">
+          There is no password recovery by design: with no email on file,
+          there is nothing to attack or leak. You can delete your account and
+          all cloud data at any time from the account menu.
+        </p>
+      </section>
+
+      <section aria-labelledby="audit">
+        <h2 id="audit">Latest audit: October 2026</h2>
+        <table class="sec-table">
+          <thead><tr><th>Finding</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Interactive diagrams allowed inline scripts (<code>'unsafe-inline'</code>) via about 900 inline <code>onclick</code> attributes</td><td><span class="sec-pill fixed">Fixed</span> All handlers moved to an external script; exception removed; behavior verified identical across every handler</td></tr>
+            <tr><td>HTML-escape helper did not encode single quotes (4 copies)</td><td><span class="sec-pill fixed">Fixed</span></td></tr>
+            <tr><td>Saved Linux Lab progress trusted whatever JSON was in <code>localStorage</code></td><td><span class="sec-pill fixed">Fixed</span> Rebuilt from validated fields on load</td></tr>
+            <tr><td>No cross-origin isolation headers</td><td><span class="sec-pill fixed">Fixed</span> COOP and CORP added</td></tr>
+            <tr><td>No vulnerability-disclosure contact</td><td><span class="sec-pill fixed">Fixed</span> <a href="/.well-known/security.txt">security.txt</a></td></tr>
+            <tr><td><code>style-src 'unsafe-inline'</code> remains</td><td><span class="sec-pill accepted">Accepted</span> Hundreds of inline <code>style</code> attributes. Impact is limited to CSS, not script execution.</td></tr>
+            <tr><td>Trusted Types not enforced</td><td><span class="sec-pill accepted">Accepted</span> About 120 reviewed <code>innerHTML</code> sinks, all fed by first-party data through the escape helper. A pass-through policy would add no real protection.</td></tr>
+            <tr><td><code>connect-src</code> allows Hugging Face</td><td><span class="sec-pill accepted">Accepted</span> Required to download the optional in-browser AI model; scoped to that origin only</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section aria-labelledby="residual">
+        <h2 id="residual">Known limits</h2>
+        <div class="sec-grid">
+          <div class="sec-card">
+            <h3>No multi-factor authentication</h3>
+            <p>Accounts are protected by a password only. The data behind them is low-stakes (study progress), which is why MFA was left out. Use a unique password.</p>
+          </div>
+          <div class="sec-card">
+            <h3>Lockout trade-off</h3>
+            <p>Five wrong passwords lock an account for 15 minutes. That stops guessing, but it also means someone could lock you out briefly. It is a deliberate choice for a site with no email recovery channel.</p>
+          </div>
+          <div class="sec-card">
+            <h3>GitHub Pages mirror</h3>
+            <p>A secondary copy on GitHub Pages cannot send security headers or run the API. It works in local-only mode. The Vercel site is the canonical, hardened deployment.</p>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="report">
+        <h2 id="report">Reporting an issue</h2>
+        <p>
+          Found something? See <a href="/.well-known/security.txt">security.txt</a>
+          for contact details. This is a personal study project with no bounty,
+          but good-faith reports are welcome and appreciated.
+        </p>
+      </section>
+    </main>
+    <script src="guide.js"></script>
+    <script src="glossary.js"></script>
+    <script src="assistant.js"></script>
+    <script src="account.js"></script>
+  </body>
+</html>
